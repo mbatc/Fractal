@@ -4,11 +4,21 @@ Game engine project
 
 ## Engine Programming Guide
 
-### Public Interfaces
+### Public API
 
-Public interfaces should be designed in such a way to maintain the Application Binary Interface. This is neccessary to improve compatibility between C++ compilers. This section describes the prefered practices for this
+This section describes the prefered practices when adding components to the public API of the engine.
 
-#### General
+Public interfaces should be designed in such a way to maintain a stable Application Binary Interface. This is neccessary to improve compatibility between different C++ compilers. This is a driving factor for the design desicions detailed below.
+
+The public API should also attempt to hide the internal implementation details as best as possible by minimising the number of external includes.
+
+#### Functions
+
+Public global functions should be exported using the `flEXPORT` define.
+
+However, where appropriate inlining functions should be prefered (for example single line functions) to reduce overhead when calling them. Implementations should be placed in an `.inl` file with the same name as the header.
+
+#### Classes
 
 Wherever possible, components should follow the OOP Factory design pattern. This should be done using a pure virtual base class to define the interface in the public API, and a derived class which implements that interface.
 
