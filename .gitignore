@@ -1,0 +1,7 @@
+/.vs
+[bB]in/
+
+*.user
+*.filters
+*.vcxproj
+*.sln
