@@ -81,3 +81,7 @@ Public template class and functions are not
 #### Performance Critical Components
 
 Components in which performance is a key consideration should be implemented using C style opaque pointers.
+
+#### Documentation
+
+Doxygen is used to generate the documentation for the project. As a result, all functions exposed in the public API should be commented using Javadoc comments.
