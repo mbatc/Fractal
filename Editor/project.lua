@@ -55,7 +55,8 @@ linkoptions { "/ignore:4075" }
 -- Shared Defines
 
   defines { "_CRT_SECURE_NO_WARNINGS" }
-  defines { "atSHAREDLIB" }
+  
+  defines { "flCOMPILESHARED" }
 
 -- Includes
   includedirs { "source/" } 
