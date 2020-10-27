@@ -31,6 +31,6 @@
 static_assert(false, "The current platform is not supported. Must be Windows or Linux");
 #endif
 
-#define USING(x) x
+#define flUSING(x) x
 
 #endif // flConfig_h__

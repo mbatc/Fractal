@@ -1,6 +1,7 @@
 /.vs
 [bB]in/
 [dD]ocumentation/
+output/
 
 *.user
 *.filters

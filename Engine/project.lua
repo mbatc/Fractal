@@ -9,13 +9,11 @@ end
 
 -- Setup WIN32 Project
 if (win32Build == true) then
-  defines { "atPLATFORM_WIN32" }
   print("Creating project for Windows...")
 end
 
 -- Setup Linux Project
 if (linuxBuild == true) then
-  defines { "atPLATFORM_LINUX" }
   includedirs { "/usr/include" }
   libdirs {"/usr/lib"}
   print("Creating project for Linux...")
@@ -30,12 +28,12 @@ characterset ("MBCS")
 
 -- Set Directories
 
-bin_path = "..\\builds\\bin"
+bin_path = "..\\bin"
 
 symbolspath '$(OutDir)$(TargetName).pdb'
-targetdir "../builds/bin/"
-debugdir "../builds/bin/"
-objdir "../builds/output/%{cfg.platform}_%{cfg.buildcfg}"
+targetdir "../bin/"
+debugdir "../bin/"
+objdir "output/%{cfg.platform}_%{cfg.buildcfg}"
 
 -- Project Flags
 
@@ -54,6 +52,7 @@ linkoptions { "/ignore:4075" }
 
 -- Shared Defines
 
+  defines { "flCOMPILESHARED" }
   defines { "_CRT_SECURE_NO_WARNINGS" }
 
 -- Includes

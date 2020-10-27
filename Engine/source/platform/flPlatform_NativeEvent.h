@@ -10,7 +10,13 @@ namespace flEngine
     struct NativeEvent
     {
 #if flUSING(flPLATFORM_WINDOWS)
-
+      void *hWnd;
+      uint32_t msg;
+      uint32_t wParam;
+      uint32_t lParam;
+      uint32_t time;
+      uint32_t cursorX;
+      uint32_t cursorY;
 #endif
 
 #if flUSING(flPLATFORM_LINUX)

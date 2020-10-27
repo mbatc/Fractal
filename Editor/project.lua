@@ -30,12 +30,12 @@ characterset ("MBCS")
 
 -- Set Directories
 
-bin_path = "..\\builds\\bin"
+bin_path = "..\\bin"
 
 symbolspath '$(OutDir)$(TargetName).pdb'
-targetdir "../builds/bin/"
-debugdir "../builds/bin/"
-objdir "../builds/output/%{cfg.platform}_%{cfg.buildcfg}"
+targetdir "../bin/"
+debugdir "../bin/"
+objdir "output/%{cfg.platform}_%{cfg.buildcfg}"
 
 -- Project Flags
 

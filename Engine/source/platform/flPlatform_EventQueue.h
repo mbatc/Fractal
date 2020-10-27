@@ -26,7 +26,7 @@ namespace flEngine
       * event queue. Event types can be combined to allow more than 1 or more
       * types.
       */
-      virtual void SetFilter() = 0;
+      virtual void SetFilter(EventType type) = 0;
 
       /**
       * @brief Get the next event without removing it from the queue.
@@ -39,6 +39,18 @@ namespace flEngine
       *
       */
       virtual bool NextEvent(Event **ppEvent) = 0;
+
+      /**
+       * @brief Add an event to this event queue instance.
+       * 
+       */
+      virtual bool PostEvent(Event *pEvent) = 0;
+
+      /**
+       * @brief Add an event to all event queues.
+       * 
+       */
+      static bool flCCONV PostGlobalEvent(Event *pEvent);
     };
   }
 }
