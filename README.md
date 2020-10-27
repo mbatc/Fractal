@@ -26,7 +26,7 @@ A factory function should also be declared in the interface for the implementati
 
 For example,
 ```
-// Example.h (Public interface header)
+// flUtil_Example.h (Public interface header)
 
 namespace flEngine
 { // Namespaces should be used so the global namespace is not polluted
@@ -45,21 +45,19 @@ namespace flEngine
 
 // Example_Impl.h (Implementation class header)
 
-#include "Example.h"
+#include "flUtil_Example.h"
 
 namespace flEngine
 {
   namespace Util
   {
-    namespace Impl
+    // Implementations of interfaces are prefixed with Impl_
+    class Impl_Example : public Example // Notice the implementation is not exported so can be implemented using any available tools/libs
     {
-      class Example // Notice the implementation is not exported - can be implemented using any available tools/libs
-      {
-      public:
-        virtual void MemberA() override;
-        virtual void MemberB() override;
-      };
-    }
+    public:
+      virtual void MemberA() override;
+      virtual void MemberB() override;
+    };
   }
 }
 
@@ -67,10 +65,12 @@ namespace flEngine
 
 // Example_Impl.cpp (Implementation source file) 
 
-using namespace flEngine::Util::Impl; // Using statement for readability
+#include "flUtil_Example_Impl.h"
 
-void Example::MemberA() { printf("Hello from MemberA()\n"); }
-void Example::MemberB() { printf("Hello from MemberA()\n"); } 
+using namespace flEngine::Util; // Using statement for readability
+
+void Impl_Example::MemberA() { printf("Hello from MemberA()\n"); }
+void Impl_Example::MemberB() { printf("Hello from MemberA()\n"); } 
       
 ```
 
@@ -85,3 +85,134 @@ Components in which performance is a key consideration should be implemented usi
 #### Documentation
 
 Doxygen is used to generate the documentation for the project. As a result, all functions exposed in the public API should be commented using Javadoc comments.
+
+### Cross-Platform
+
+Public API components should be platform independent. Platform specifics can be exposed, but the API's should work without needing these to be used.
+
+Platform specific code should always be wrapped in `#ifdef flUSING(platform) ... #endif`, where `platform` is the appropriate `flPLATFORM_*` define (e.g. `flPLATFORM_WINDOWS`).
+
+#### Member Function Implementations
+
+When an interface implementation requires platform specific code, the implementations should generally be placed in separate files. These files should have the platform as a suffix. Shared code in an implementation can be placed in a single file. For example, a cross platform implementation of a Platform::Window class may have the files,
+
+* flPlatform_Window.h              (public API header)
+* flPlatform_Window_Impl.h         (internal implementation)
+* flPlatform_Window_Impl.cpp       (implementation of functions shared by all platforms)
+* flPlatform_Window_Impl_Win32.cpp (implementation of Windows specific code)
+* flPlatform_Window_Impl_Linux.cpp (implementation of Linux specific code)
+
+Although there are plenty of files, this will help to keep implementation details for each platform well separated and easier to follow.
+
+However, if only a small section of the implementation is platform specific (e.g. a single function or a small section of a function), it can be placed in the same file.
+
+#### Member Variables and Nested Structs/Classes
+
+Platform specific member variables and nested structs or classes should be declared in the internal implementation header within the appropriate `#ifdef`. If different members are required for multiple platforms, this should be do using `#ifdef flUSING(pltfm1) ... #elif flUSING(pltfm2) ... #endif`. All platform specific members should be group together within the same protection level (`public`, `protected` or `private`) where possible.
+
+#### Example
+
+```
+// flPlatform_SomeSpecifics.h
+
+namespace flEngine
+{
+  namespace Platform
+  {
+    class SomeSpecifics : public Interface
+    {
+    public:
+      virtual void Foo();
+      virtual void Bar();
+    }
+  }
+}
+
+...
+
+// flPlatform_SomeSpecifics_Impl.h
+
+#include "flPlatform_SomeSpecifics.h"
+
+namespace flEngine
+{
+  namespace Platform
+  {
+    class Impl_SomeSpecifics : public SomeSpecifics
+    {
+    public:
+      virtual void Foo();
+      virtual void Bar();
+      virtual void Shared();
+
+    protected:
+      #if flUSING(flPLATFORM_WINDOWS)
+
+      // Windows specific protected members
+
+      #elif flUSING(flPLATFORM_LINUX)
+
+      // Linux specific protected members
+
+      #endif
+      
+    private:
+      #if flUSING(flPLATFORM_WINDOWS)
+
+      // Windows specific private members
+
+      #elif flUSING(flPLATFORM_LINUX)
+
+      // Linux specific private members
+
+      #endif
+    }
+  }
+}
+
+...
+
+// flPlatform_SomeSpecifics_Impl.cpp (Shared implementation of SomeSpecifics)
+
+#if flUSING(flPLATFORM_WINDOWS)
+
+#include "flPlatform_SomeSpecifics_Impl.h"
+
+using namespace flEngine::Platform;
+
+SomeSpecifics* SomeSpecifics::Create() { return flNew Impl_SomeSpecifics; }
+
+void Impl_SomeSpecifics::Shared() { /*Shared implementation*/ }
+
+#endif
+
+...
+
+// flPlatform_SomeSpecifics_Impl_Win32.cpp (Windows implementation of SomeSpecifics)
+
+#if flUSING(flPLATFORM_WINDOWS)
+
+#include "flPlatform_SomeSpecifics_Impl.h"
+
+using namespace flEngine::Platform;
+
+void Impl_SomeSpecifics::Foo() { /*Some Windows code*/ }
+void Impl_SomeSpecifics::Bar() { /*Some more Windows code*/ }
+
+#endif
+...
+
+// flPlatform_SomeSpecifics_Impl_Linux.cpp (Linux implementation of SomeSpecifics)
+
+#if flUSING(flPLATFORM_LINUX)
+
+#include "flPlatform_SomeSpecifics_Impl.h"
+
+using namespace flEngine::Platform;
+
+void Impl_SomeSpecifics::Foo() { /*Some Linux code*/ }
+void Impl_SomeSpecifics::Bar() { /*Some more Linux code*/ }
+
+#endif
+
+```
