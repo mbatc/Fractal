@@ -32,13 +32,13 @@ namespace flEngine
       * @brief Get the next event without removing it from the queue.
       *
       */
-      virtual bool PeekEvent() = 0;
+      virtual bool PeekEvent(Event **ppEvent) = 0;
 
       /**
       * @brief Get the next event and remove it from the queue.
       *
       */
-      virtual bool NextEvent() = 0;
+      virtual bool NextEvent(Event **ppEvent) = 0;
     };
   }
 }
