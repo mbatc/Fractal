@@ -90,11 +90,11 @@ Doxygen is used to generate the documentation for the project. As a result, all 
 
 Public API components should be platform independent. Platform specifics can be exposed, but the API's should work without needing these to be used.
 
-Platform specific code should always be wrapped in `#ifdef flUSING(platform) ... #endif`, where `platform` is the appropriate `flPLATFORM_*` define (e.g. flPLATFORM_WINDOWS).
+Platform specific code should always be wrapped in `#ifdef flUSING(platform) ... #endif`, where `platform` is the appropriate `flPLATFORM_*` define (e.g. `flPLATFORM_WINDOWS`).
 
 #### Member Function Implementations
 
-When an interface implementation requires platform specific code, the implementations should generally be placed in separate files. These files should have the platform as a suffix. Shared code in an implementation can be placed in a single file. For example, a cross platform implementation of a Platorm::Window class may have the files,
+When an interface implementation requires platform specific code, the implementations should generally be placed in separate files. These files should have the platform as a suffix. Shared code in an implementation can be placed in a single file. For example, a cross platform implementation of a Platform::Window class may have the files,
 
 * flPlatform_Window.h              (public API header)
 * flPlatform_Window_Impl.h         (internal implementation)
@@ -104,7 +104,7 @@ When an interface implementation requires platform specific code, the implementa
 
 Although there are plenty of files, this will help to keep implementation details for each platform well separated and easier to follow.
 
-However, if only a small section of the implementation is platform specific (e.g. a single function), it can be placed in the same file in a function.
+However, if only a small section of the implementation is platform specific (e.g. a single function or a small section of a function), it can be placed in the same file.
 
 #### Member Variables and Nested Structs/Classes
 
