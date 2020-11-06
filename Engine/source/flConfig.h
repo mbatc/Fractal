@@ -33,4 +33,7 @@ static_assert(false, "The current platform is not supported. Must be Windows or 
 
 #define flUSING(x) x
 
+#define flOUT
+#define flIN
+
 #endif // flConfig_h__
