@@ -3,14 +3,14 @@
 
 using namespace flEngine::Platform;
 
-void flCCONV Event_Create(flOUT Event *pEvent, flIN void *pData, void (*DestroyFunc)(Event*))
+void flCCONV flEngine::Platform::Event_Create(flOUT Event *pEvent, flIN void *pData, void (*DestroyFunc)(Event*))
 {
   memset(pEvent, 0, sizeof(Event));
   pEvent->userEvent.pData = pData;
   pEvent->userEvent.DestroyFunc = DestroyFunc;
 }
 
-void flCCONV Event_Destroy(flOUT Event *pEvent)
+void flCCONV flEngine::Platform::Event_Destroy(flIN flOUT Event *pEvent)
 {
   // Destroy built-in event types
   switch (pEvent->id)

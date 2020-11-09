@@ -2,6 +2,7 @@
 #define flInterface_h__
 
 #include "flConfig.h"
+#include "flPImpl.h"
 
 namespace flEngine
 {

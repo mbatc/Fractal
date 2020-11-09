@@ -3,12 +3,13 @@
 #if flUSING(flPLATFORM_WINDOWS)
 
 #include <windows.h>
+#include <windowsx.h>
 
 using namespace flEngine::Platform;
 
 // Event interface factory function
 // This function will translate NativeEvent's to Fractal engine events
-void flCCONV Event_Create(flOUT Event *pEvent, flIN NativeEvent *pNativeEvent)
+void flCCONV flEngine::Platform::Event_Create(flOUT Event *pEvent, flIN NativeEvent *pNativeEvent)
 {
   memset(pEvent, 0, sizeof(Event));
 
@@ -19,112 +20,161 @@ void flCCONV Event_Create(flOUT Event *pEvent, flIN NativeEvent *pNativeEvent)
   {
     // System Events
   case WM_QUIT:
+  {
     pEvent->type = E_Type_System;
     pEvent->id = E_Sys_Quit;
     pEvent->sysQuit.code = pNativeEvent->wParam;
-    break;
+  } break;
 
   case WM_THEMECHANGED:
+  {
     pEvent->type = E_Type_System;
     pEvent->id = E_Sys_ThemeChanged;
-    break;
+  } break;
 
     // Window Events
   case WM_CREATE:
+  {
     pEvent->type = E_Type_Window;
     pEvent->id = E_Wnd_Create;
-    break;
+    CREATESTRUCT *pCreateInfo = (CREATESTRUCT*)pNativeEvent->lParam;
+
+    pEvent->wndCreate.width = pCreateInfo->cx;
+    pEvent->wndCreate.height = pCreateInfo->cy;
+    pEvent->wndCreate.x = pCreateInfo->x;
+    pEvent->wndCreate.y = pCreateInfo->y;
+    pEvent->wndCreate.name = nullptr;
+  } break;
 
   case WM_CLOSE:
+  {
     pEvent->type = E_Type_Window;
     pEvent->id = E_Wnd_Close;
-    break;
+  } break;
 
   case WM_DESTROY:
+  {
     pEvent->type = E_Type_Window;
     pEvent->id = E_Wnd_Destroy;
-    break;
+  } break;
 
   case WM_DPICHANGED:
+  {
     pEvent->type = E_Type_Window;
     pEvent->id = E_Wnd_DpiChanged;
-    break;
+    pEvent->wndDpiChanged.dpiX = HIWORD(pNativeEvent->wParam);
+    pEvent->wndDpiChanged.dpiY = LOWORD(pNativeEvent->wParam);
+
+    RECT *pRect = (RECT*)pNativeEvent->lParam;
+    pEvent->wndDpiChanged.suggestedHeight = pRect->bottom - pRect->top;
+    pEvent->wndDpiChanged.suggestedWidth = pRect->right - pRect->left;
+    pEvent->wndDpiChanged.suggestedX = pRect->left;
+    pEvent->wndDpiChanged.suggestedY = pRect->top;
+  } break;
 
   case WM_MOVING:
+  {
     pEvent->type = E_Type_Window;
     pEvent->id = E_Wnd_Moving;
-    break;
 
-  case WM_SIZING:           
+    RECT *pRect = (RECT *)pNativeEvent->lParam;
+    pEvent->wndMoving.x = pRect->left;
+    pEvent->wndMoving.y = pRect->top;
+  } break;
+
+  case WM_SIZING:
+  {
     pEvent->type = E_Type_Window;
     pEvent->id = E_Wnd_Sizing;
-    break;
 
-  case WM_SHOWWINDOW:       
+    RECT *pRect = (RECT*)pNativeEvent->lParam;
+    pEvent->wndSizing.width = pRect->right - pRect->left;
+    pEvent->wndSizing.height = pRect->bottom - pRect->top;
+  } break;
+
+  case WM_SHOWWINDOW:
+  {
     pEvent->type = E_Type_Window;
     pEvent->id = E_Wnd_Show;
-    break;
+
+    pEvent->wndShow.isShown = (bool)pNativeEvent->wParam;
+  } break;
 
   case WM_STYLECHANGED:
+  {
     pEvent->type = E_Type_Window;
     pEvent->id = E_Wnd_StyleChanged;
-    break;
+
+    STYLESTRUCT *pStyle = (STYLESTRUCT*)pNativeEvent->lParam;
+    pEvent->wndStyleChanged.newStyle = pStyle->styleNew;
+    pEvent->wndStyleChanged.oldStyle = pStyle->styleOld;
+  } break;
 
   case WM_WINDOWPOSCHANGED:
+  {
     pEvent->type = E_Type_Window;
     pEvent->id = E_Wnd_RectUpdated;
-    break;
+
+    WINDOWPOS *pPos = (WINDOWPOS*)pNativeEvent->lParam;
+    pEvent->wndRectUpdated.x = pPos->x;
+    pEvent->wndRectUpdated.y = pPos->y;
+    pEvent->wndRectUpdated.width = pPos->cx;
+    pEvent->wndRectUpdated.height = pPos->cy;
+  } break;
 
   case WM_MOUSEACTIVATE: pEvent->wndActive.mouseActivated = true;
   case WM_ACTIVATE:      // fall-through
+  {
     pEvent->type = E_Type_Window;
     pEvent->id = E_Wnd_Activate;
-    pEvent->wndActive.isActive;
-    break;
+    pEvent->wndActive.isActive = LOWORD(pNativeEvent->wParam);
+    pEvent->wndActive.mouseActivated |= HIWORD(pNativeEvent->wParam) == WA_CLICKACTIVE;
+  } break;
 
     // Keyboard Events
-  case WM_KEYDOWN:
+  case WM_KEYDOWN: pEvent->kbdState.isDown = true;
+  case WM_KEYUP:
+  {
     pEvent->type = E_Type_Keyboard;
-    pEvent->id = E_Wnd_Activate;
-    break;
-
-  case WM_KEYUP:       
-    pEvent->type = E_Type_Keyboard;
-    pEvent->id = E_Wnd_Activate;
-    break;
+    pEvent->id = E_Kbd_KeyState;
+    pEvent->kbdState.keyCode = pNativeEvent->wParam;
+  } break;
 
   case WM_CHAR:
+  {
     pEvent->type = E_Type_Keyboard;
-    pEvent->id = E_Wnd_Activate;
-    break;
-
-  case WM_UNICHAR:
-    pEvent->type = E_Type_Keyboard;
-    pEvent->id = E_Wnd_Activate;
-    break;
+    pEvent->id = E_Kbd_ASCII;
+    pEvent->kbdASCII.character = pNativeEvent->wParam;
+  } break;
 
   case WM_KILLFOCUS:
+  {
     pEvent->type = E_Type_Keyboard;
-    pEvent->id = E_Wnd_Activate;
-    break;
+    pEvent->id = E_Kbd_KillFocus;
+  } break;
 
   case WM_SETFOCUS:
+  {
     pEvent->type = E_Type_Keyboard;
-    pEvent->id = E_Wnd_Activate;
-    break;
-
+    pEvent->id = E_Kbd_SetFocus;
+  } break;
 
     // Mouse Events
   case WM_MOUSEHWHEEL: pEvent->mseScroll.isHorizontal = true;
   case WM_MOUSEWHEEL:  // fall-through
+  {
     pEvent->type = E_Type_Mouse;
     pEvent->id = E_Mse_Scroll;
-    break;
+    pEvent->mseScroll.amount = HIWORD(pNativeEvent->wParam);
+  } break;
 
   case WM_MOUSEMOVE:
+  {
     pEvent->type = E_Type_Mouse;
     pEvent->id = E_Mse_Move;
-    break;
+    pEvent->mseMove.x = GET_X_LPARAM(pNativeEvent->lParam);
+    pEvent->mseMove.y = GET_Y_LPARAM(pNativeEvent->lParam);
+  } break;
 
   case WM_XBUTTONDOWN:  mouseDown = 0; break;
   case WM_LBUTTONDOWN:  mouseDown = 1; break;

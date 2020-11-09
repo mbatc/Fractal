@@ -1,12 +1,27 @@
 #include "flEngine.h"
 
+using namespace flEngine::Platform;
+
 int main(char **argv, int argc)
 {
-  flEngine::Util::RectF rect;
+  EventQueue queue;
+  Event e = { 0 };
 
-  flEngine::Math::Vec2F vec;
+  bool run = true;
+  while (run)
+  {
+    if (queue.NextEvent(&e))
+    {
+      if (e.id == E_Sys_Quit)
+        run = false;
+    }
 
-  flEngine::UI::ICheckbox
+    Event tst = { 0 };
+    tst.id = E_Sys_Quit;
+    tst.type = E_Type_System;
+    tst.sysQuit.code = 1;
+    queue.PostEvent(&tst);
+  }
 
-  return 0;
+  return (int)e.sysQuit.code;
 }
