@@ -1,7 +1,6 @@
 #ifndef fl_Platform_Event_h__
 #define fl_Platform_Event_h__
 
-#include "../flInterface.h"
 #include "flNativeEvent.h"
 
 namespace flEngine
