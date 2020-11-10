@@ -10,11 +10,13 @@ namespace flEngine
     class Impl_EventQueue;
 
     /**
-      * @brief Create a system event queue.
+      * @brief An event queue for system receiving events.
       *
-      * The system event queue can be used to receive events from the operating
-      * system. Each event queue instance is independent of others, meaning OS
-      * events will be forwarded individually to every Events instance.
+      * An EventQueue can be used to receive events from the operating
+      * system. OS events will be forwarded individually to every EventQueue instance.
+      * 
+      * Custom events can also be posted via the Event classes custom event
+      * mechanism.
       */
     class flEXPORT EventQueue
     {
