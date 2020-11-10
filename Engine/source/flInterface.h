@@ -2,6 +2,7 @@
 #define flInterface_h__
 
 #include "flConfig.h"
+#include "flPImpl.h"
 
 namespace flEngine
 {
@@ -66,15 +67,15 @@ namespace flEngine
     */
     Interface();
 
-  private:
     /**
     * @brief Destruct an Interface instance.
     *
-    * Interface object destructor. This is private as Engine API objects should only be
+    * Interface object destructor. This is protected as Engine API objects should only be
     * destroyed via the DecRef() or Destroy() functions.
     */
     virtual ~Interface();
 
+  private:
     int64_t m_refCount = 0; // Internal reference count
   };
 }

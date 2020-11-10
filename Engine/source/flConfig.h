@@ -18,4 +18,22 @@
 #define flNew new
 #define flDelete delete
 
+#define flPLATFORM_WINDOWS 0
+#define flPLATFORM_LINUX 0
+
+#ifdef _WIN32
+#undef flPLATFORM_WINDOWS
+#define flPLATFORM_WINDOWS 1
+#elif __linux__
+#undef flPLATFORM_LINUX
+#define flPLATFORM_LINUX 1
+#else
+static_assert(false, "The current platform is not supported. Must be Windows or Linux");
+#endif
+
+#define flUSING(x) x
+
+#define flOUT
+#define flIN
+
 #endif // flConfig_h__

@@ -1,8 +1,11 @@
 /.vs
 [bB]in/
 [dD]ocumentation/
+output/
 
 *.user
 *.filters
 *.vcxproj
 *.sln
+*.db
+*.opendb

@@ -30,12 +30,12 @@ characterset ("MBCS")
 
 -- Set Directories
 
-bin_path = "..\\builds\\bin"
+bin_path = "..\\bin"
 
 symbolspath '$(OutDir)$(TargetName).pdb'
-targetdir "../builds/bin/"
-debugdir "../builds/bin/"
-objdir "../builds/output/%{cfg.platform}_%{cfg.buildcfg}"
+targetdir "../bin/"
+debugdir "../bin/"
+objdir "output/%{cfg.platform}_%{cfg.buildcfg}"
 
 -- Project Flags
 
@@ -55,8 +55,6 @@ linkoptions { "/ignore:4075" }
 -- Shared Defines
 
   defines { "_CRT_SECURE_NO_WARNINGS" }
-  
-  defines { "flCOMPILESHARED" }
 
 -- Includes
   includedirs { "source/" } 
@@ -84,6 +82,7 @@ linkoptions { "/ignore:4075" }
   files { "source/**.cpp", "source/**.h", "source/**.inl" , "**.natvis" }
 
   links { "opengl32", "glew32", "atLib" }
+  links { "FractalEngine" }
   
   libdirs { "../atLib/projects/atLib/3rdParty/glew/lib/Release/x64/" }
   libdirs { "../builds/bin/" }
