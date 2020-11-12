@@ -1,5 +1,6 @@
 #include "flEngine.h"
 #include <stdio.h>
+#include "flPlatform_Window.h"
 
 using namespace flEngine::Platform;
 using namespace flEngine::Util;
@@ -33,6 +34,8 @@ int main(char **argv, int argc)
   }, &tasks);
 
   Event e = { 0 };
+
+  Window window("Title", Window::Flag_Visible, Window::DM_Windowed);
 
   bool run = true;
 

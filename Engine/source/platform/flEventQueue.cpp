@@ -1,6 +1,5 @@
 #include "platform/flEventQueue.h"
 #include "atPool.h"
-#include <type_traits>
 
 using namespace flEngine;
 using namespace flEngine::Platform;

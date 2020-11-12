@@ -231,9 +231,9 @@ namespace flEngine
      * the Events internal pUserEvent member.
      *
      * @param [out] pEvent A pointer to the the Event struct to fill out
-     * @param [in] pData A pointer to the custom events data (if needed)
-     * @param [in] DestroyFunc A pointer to a function to call when destroying the event. This can be used to
-     *             cleanup the event data.
+     * @param [in]  pData A pointer to the custom events data (if needed)
+     * @param [in]  DestroyFunc A pointer to a function to call when destroying the event. This can be used to
+     *              cleanup the event data.
      */
     void flCCONV Event_Create(flOUT Event *pEvent, flIN void *pData, void (*DestroyFunc)(Event *));
 
