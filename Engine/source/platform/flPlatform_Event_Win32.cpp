@@ -1,4 +1,4 @@
-#include "flPlatform_Event.h"
+#include "platform/flPlatform_Event.h"
 
 #if flUSING(flPLATFORM_WINDOWS)
 
@@ -97,7 +97,7 @@ void flCCONV flEngine::Platform::Event_Create(flOUT Event *pEvent, flIN NativeEv
     pEvent->type = E_Type_Window;
     pEvent->id = E_Wnd_Show;
 
-    pEvent->wndShow.isShown = (bool)pNativeEvent->wParam;
+    pEvent->wndShow.isShown = pNativeEvent->wParam > 0;
   } break;
 
   case WM_STYLECHANGED:
@@ -127,7 +127,7 @@ void flCCONV flEngine::Platform::Event_Create(flOUT Event *pEvent, flIN NativeEv
   {
     pEvent->type = E_Type_Window;
     pEvent->id = E_Wnd_Activate;
-    pEvent->wndActive.isActive = LOWORD(pNativeEvent->wParam);
+    pEvent->wndActive.isActive = LOWORD(pNativeEvent->wParam) > 0;
     pEvent->wndActive.mouseActivated |= HIWORD(pNativeEvent->wParam) == WA_CLICKACTIVE;
   } break;
 

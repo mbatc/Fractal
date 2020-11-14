@@ -57,9 +57,8 @@ linkoptions { "/ignore:4075" }
   defines { "_CRT_SECURE_NO_WARNINGS" }
 
 -- Includes
-  includedirs { "source/" } 
-  includedirs { "source/**" } 
-
+  includedirs { "include/" }
+  
   -- atLib Includes
   includedirs { "../atLib/projects/atLib/include/" } 
   includedirs { "../atLib/projects/atLib/include/**" } 

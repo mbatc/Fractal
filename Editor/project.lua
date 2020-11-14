@@ -74,8 +74,7 @@ linkoptions { "/ignore:4075" }
   includedirs { "../atLib/projects/atLib/3rdParty/imgui" }
   includedirs { "../atLib/projects/atLib/3rdParty/fbxsdk/include" }
 
-  includedirs { "../Engine/source/" } 
-  includedirs { "../Engine/source/**" } 
+  includedirs { "../Engine/include/" } 
 
 -- Project Files
 

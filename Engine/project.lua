@@ -57,7 +57,7 @@ linkoptions { "/ignore:4075" }
 
 -- Includes
   includedirs { "source/" } 
-  includedirs { "source/**" } 
+  includedirs { "include/" }
 
   -- atLib Includes
   includedirs { "../atLib/projects/atLib/include/" } 
@@ -75,6 +75,7 @@ linkoptions { "/ignore:4075" }
 
 -- Project Files
 
+  files { "include/**.cpp", "include/**.h", "include/**.inl"}
   files { "source/**.cpp", "source/**.h", "source/**.inl" , "**.natvis" }
 
   links { "opengl32", "glew32", "atLib" }
