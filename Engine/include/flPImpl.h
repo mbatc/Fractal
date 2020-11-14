@@ -4,7 +4,7 @@
 /**
  * Implementation typename for a class
  */
-#define flPIMPL_NAME(Class) Impl_ ## Class
+#define flPIMPL_CLASS(Class) Impl_ ## Class
 
 /**
  * Implementation member variable name for a class
@@ -19,13 +19,15 @@
  * destruct the internal data.
  */
 #define flPIMPL_DEF(Class)\
-public:                                                 \
-  ~Class();                                             \
-  Class &operator=(const Class &rhs);                   \
-  Class &operator=(Class &&rhs);                        \
-private:                                                \
-  static flPIMPL_NAME(Class)* __CreateImpl();           \
-  flPIMPL_NAME(Class)* flPIMPL(Class) = __CreateImpl(); \
+public:                                                  \
+  ~Class();                                              \
+private:                                                 \
+  static flPIMPL_CLASS(Class)* __CreateImpl();           \
+  flPIMPL_CLASS(Class)* flPIMPL(Class) = __CreateImpl();
+
+#define flPIMPL_DEF_COPY(Class) Class &operator=(const Class &rhs);
+
+#define flPIMPL_DEF_MOVE(Class) Class &operator=(Class &&rhs);
 
 
  /**
@@ -36,8 +38,10 @@ private:                                                \
   */
 #define flPIMPL_IMPL(Class)\
 Class::~Class() { flDelete flPIMPL(Class); }\
-Class& Class::operator=(const Class &rhs) { *flPIMPL(Class) = *rhs.flPIMPL(Class); return *this; }\
-Class& Class::operator=(Class &&rhs) { std::swap(flPIMPL(Class), rhs.flPIMPL(Class)); return *this; }\
-decltype(Class::flPIMPL(Class)) Class::__CreateImpl() { return flNew std::remove_pointer<decltype(Class::flPIMPL(Class))>::type; }\
+decltype(Class::flPIMPL(Class)) Class::__CreateImpl() { return flNew std::remove_pointer<decltype(Class::flPIMPL(Class))>::type; }
+
+#define flPIMPL_IMPL_COPY(Class) Class &operator=(const Class &rhs) Class& Class::operator=(const Class &rhs) { *flPIMPL(Class) = *rhs.flPIMPL(Class); return *this; }
+
+#define flPIMPL_IMPL_MOVE(Class) Class& Class::operator=(Class &&rhs) { std::swap(flPIMPL(Class), rhs.flPIMPL(Class)); return *this; }
 
 #endif // flPImpl_h__

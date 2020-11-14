@@ -48,7 +48,7 @@ namespace flEngine
      *
      * This will invalidate the pointer to the interface.
      */
-    void Destroy();
+    virtual void Destroy();
 
     /**
      * @brief Get the active reference count.
