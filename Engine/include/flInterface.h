@@ -1,5 +1,5 @@
-#ifndef flInterface_h__
-#define flInterface_h__
+#ifndef fl_Interface_h__
+#define fl_Interface_h__
 
 #include "flConfig.h"
 #include "flPImpl.h"
@@ -80,4 +80,4 @@ namespace flEngine
   };
 }
 
-#endif // flInterface_h__
+#endif // fl_Interface_h__

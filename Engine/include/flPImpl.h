@@ -1,5 +1,5 @@
-#ifndef flPImpl_h__
-#define flPImpl_h__
+#ifndef fl_PImpl_h__
+#define fl_PImpl_h__
 
 /**
  * Implementation typename for a class

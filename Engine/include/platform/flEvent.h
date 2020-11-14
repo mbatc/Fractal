@@ -1,8 +1,8 @@
-#ifndef flPlatform_Event_h__
-#define flPlatform_Event_h__
+#ifndef fl_Platform_Event_h__
+#define fl_Platform_Event_h__
 
 #include "../flInterface.h"
-#include "flPlatform_NativeEvent.h"
+#include "flNativeEvent.h"
 
 namespace flEngine
 {
@@ -249,4 +249,4 @@ namespace flEngine
   }
 }
 
-#endif // flPlatform_Event_h__
+#endif // fl_Platform_Event_h__

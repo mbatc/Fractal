@@ -1,7 +1,7 @@
-#ifndef flPlatform_EventQueue_h__
-#define flPlatform_EventQueue_h__
+#ifndef fl_Platform_EventQueue_h__
+#define fl_Platform_EventQueue_h__
 
-#include "flPlatform_Event.h"
+#include "flEvent.h"
 
 namespace flEngine
 {

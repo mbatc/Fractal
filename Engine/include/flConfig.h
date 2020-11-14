@@ -1,5 +1,5 @@
-#ifndef flConfig_h__
-#define flConfig_h__
+#ifndef fl_Config_h__
+#define fl_Config_h__
 
 #include <stdint.h>
 

@@ -1,5 +1,5 @@
-#ifndef flUtil_Threads_h__
-#define flUtil_Threads_h__
+#ifndef fl_Threads_h__
+#define fl_Threads_h__
 
 #include "../flConfig.h"
 #include <mutex>
@@ -37,4 +37,4 @@ namespace flEngine
   }
 }
 
-#endif // flUtil_Threads_h__
+#endif // fl_Threads_h__
