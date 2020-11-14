@@ -1,19 +1,39 @@
 #ifndef flUtil_Threads_h__
 #define flUtil_Threads_h__
 
-#include <mutex>
 #include "../flConfig.h"
+#include <mutex>
 
 namespace flEngine
 {
   namespace Threads
   {
+    /**
+     * Alias for std::mutex
+     */
     typedef std::mutex           Mutex;
+
+    /**
+    * Alias for std::recursive_mutex
+    */
     typedef std::recursive_mutex RecursiveMutex;
+
+    /**
+    * Alias for std::thread
+    */
     typedef std::thread          Thread;
 
-    void flEXPORT Sleep(int64_t milli);
-    void flEXPORT Yield(int64_t milli);
+    /**
+     * Stop execution of the current thread for a given amount of time.
+     *
+     * @param [in] milli How long to sleep for in milliseconds
+     */
+    void flEXPORT Sleep(flIN int64_t milli);
+
+    /**
+    * Attempt to reschedule this thread, so that another may be run.
+    */
+    void flEXPORT Yield();
   }
 }
 
