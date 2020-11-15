@@ -1,4 +1,4 @@
-#include "util/flUtil_TaskQueue.h"
+#include "util/flTaskQueue.h"
 #include "atVector.h"
 #include <type_traits>
 
@@ -100,12 +100,12 @@ flPIMPL_IMPL(TaskQueue)
 
 #define flIMPL flPIMPL(TaskQueue)
 
-bool TaskQueue::Add(Task *pTask)
+bool TaskQueue::Add(flIN Task *pTask)
 {
   return flIMPL->Add(pTask);
 }
 
-bool TaskQueue::Add(TaskFunc taskFunc, void *pUserData)
+bool TaskQueue::Add(flIN TaskFunc taskFunc, flIN void *pUserData)
 {
   return flIMPL->Add(taskFunc, pUserData);
 }

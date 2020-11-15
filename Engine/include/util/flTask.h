@@ -1,5 +1,5 @@
-#ifndef flUtil_Task_h__
-#define flUtil_Task_h__
+#ifndef fl_Util_Task_h__
+#define fl_Util_Task_h__
 
 #include "../flInterface.h"
 
@@ -19,11 +19,11 @@ namespace flEngine
        */
       enum Status
       {
-        Status_Waiting,  ///> The Task is waiting to be executed.
-        Status_Running,  ///> The Task is being executed.
-        Status_Complete, ///> The Task has finised executing.
+        Status_Waiting,   ///> The Task is waiting to be executed.
+        Status_Running,   ///> The Task is being executed.
+        Status_Complete,  ///> The Task has finised executing.
         Status_Cancelled, ///> The Task has finised executing.
-        Status_Count,    ///> The number of status codes.
+        Status_Count,     ///> The number of status codes.
       };
 
       /**
