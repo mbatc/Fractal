@@ -9,6 +9,11 @@ namespace flEngine
   namespace Threads
   {
     /**
+    * Alias for std::thread
+    */
+    typedef std::thread          Thread;
+
+    /**
      * Alias for std::mutex
      */
     typedef std::mutex           Mutex;
@@ -17,11 +22,6 @@ namespace flEngine
     * Alias for std::recursive_mutex
     */
     typedef std::recursive_mutex RecursiveMutex;
-
-    /**
-    * Alias for std::thread
-    */
-    typedef std::thread          Thread;
 
     /**
      * Stop execution of the current thread for a given amount of time.

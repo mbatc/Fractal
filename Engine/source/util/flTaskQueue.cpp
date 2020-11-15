@@ -1,3 +1,4 @@
+#include "threads/flThreads.h"
 #include "util/flTaskQueue.h"
 #include "atVector.h"
 #include <type_traits>
@@ -46,8 +47,10 @@ namespace flEngine
         if (!HasNext())
           return -1;
 
+        m_lock.lock();
         TaskData nextTask = m_tasks.front();
         m_tasks.pop_front();
+        m_lock.unlock();
 
         int64_t result = -1;
         if (nextTask.pTask)
@@ -63,16 +66,18 @@ namespace flEngine
         return result;
       }
 
-      bool HasNext() const
+      bool HasNext()
       {
-        return m_tasks.size() > 0;
+        return GetCount() > 0;
       }
 
-      int64_t GetCount() const
+      int64_t GetCount()
       {
-        return m_tasks.size();
+        m_lock.lock();
+        int64_t count = m_tasks.size();
+        m_lock.unlock();
+        return count;
       }
-
 
     protected:
       struct TaskData
@@ -88,9 +93,12 @@ namespace flEngine
         if (newTask.pTask)
           newTask.pTask->IncRef();
 
+        m_lock.lock();
         m_tasks.push_back(newTask);
+        m_lock.unlock();
       }
 
+      Threads::Mutex     m_lock;
       atVector<TaskData> m_tasks;
     };
   }
