@@ -9,6 +9,12 @@ namespace flEngine
   {
     class flPIMPL_CLASS(ThreadPool);
 
+    /**
+    * @brief A thread pool for executing generic tasks.
+    *
+    * This class is similar to an EventQueue, however tasks added to the thread pool
+    * may not be executed in the same order they were added. 
+    */
     class flEXPORT ThreadPool
     {
       flPIMPL_DEF(ThreadPool);

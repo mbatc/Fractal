@@ -2,6 +2,7 @@
 #include "atPool.h"
 #include <type_traits>
 
+using namespace flEngine;
 using namespace flEngine::Platform;
 
 // TODO: Add thread-safety features

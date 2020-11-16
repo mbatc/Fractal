@@ -9,6 +9,12 @@ namespace flEngine
   {
     class flPIMPL_CLASS(ThreadQueue);
 
+    /**
+     * @brief A threaded task queue.
+     *
+     * This class is essentially a threaded EventQueue. It spawns a worker thread,
+     * which executes tasks added to it sequentially.
+     */
     class flEXPORT ThreadQueue
     {
       flPIMPL_DEF(ThreadQueue);
