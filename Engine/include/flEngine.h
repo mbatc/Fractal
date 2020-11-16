@@ -6,7 +6,12 @@
 #include "platform\flEventQueue.h"
 
 // Utility
-#include "util\flUtil_Task.h"
-#include "util\flUtil_TaskQueue.h"
+#include "util\flTask.h"
+#include "util\flTaskQueue.h"
+
+// Threading
+#include "threads\flThreads.h"
+#include "threads\flThreadPool.h"
+#include "threads\flThreadQueue.h"
 
 #endif // fl_Engine_h__

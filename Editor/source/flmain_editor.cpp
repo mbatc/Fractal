@@ -3,10 +3,11 @@
 
 using namespace flEngine::Platform;
 using namespace flEngine::Util;
+using namespace flEngine::Threads;
 
 int main(char **argv, int argc)
 {
-  TaskQueue tasks;
+  ThreadQueue tasks;
 
   EventQueue queue;
 
@@ -23,7 +24,7 @@ int main(char **argv, int argc)
   tasks.Add([](void *pQueuePtr) {
     printf("My third task\n");
 
-    ((TaskQueue*)pQueuePtr)->Add([](void *) {
+    ((ThreadQueue*)pQueuePtr)->Add([](void *) {
       printf("I was added in another task");
       return 0ll;
     });
@@ -34,7 +35,6 @@ int main(char **argv, int argc)
   Event e = { 0 };
 
   bool run = true;
-  tasks.Flush();
 
   while (run)
   {
