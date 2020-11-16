@@ -2,6 +2,7 @@
 #define fl_Platform_EventQueue_h__
 
 #include "flEvent.h"
+#include "../threads/flThreadQueue.h"
 
 namespace flEngine
 {
@@ -20,6 +21,8 @@ namespace flEngine
       */
     class flEXPORT EventQueue
     {
+      flPIMPL_DEF(EventQueue);
+
     public:
       /**
       * @brief Set a filter for this event queue.
@@ -105,8 +108,12 @@ namespace flEngine
        */
       static bool flCCONV PostGlobalEvent(flIN Event *pEvent);
 
-    protected:
-      flPIMPL_DEF(EventQueue);
+      /**
+       * Get the system event thread.
+       *
+       * @return The ThreadQueue used to process system events.
+       */
+      static Threads::ThreadQueue* GetEventThread();
     };
   }
 }
