@@ -55,6 +55,8 @@ namespace flEngine
 
       // Custom User Events
       E_Usr_Custom,       ///< Start value for custom events. Custom events should be greater than this value
+
+      Event_Count,        ///< The number of supported events
     };
 
     /**

@@ -30,9 +30,9 @@ bool ThreadQueue::Add(flIN Util::Task *pTask)
   return flIMPL->m_pool.Add(pTask);
 }
 
-bool ThreadQueue::Add(flIN Util::TaskFunc taskFunc, flIN void *pUserData)
+bool ThreadQueue::Add(flIN Util::TaskFunc taskFunc, flIN void *pUserData, flOUT Util::Task **ppTask)
 {
-  return flIMPL->m_pool.Add(taskFunc, pUserData);
+  return flIMPL->m_pool.Add(taskFunc, pUserData, ppTask);
 }
 
 void ThreadQueue::Flush()

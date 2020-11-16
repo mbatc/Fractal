@@ -1,13 +1,19 @@
-#include "flPlatform_Window.h"
-#include "flPlatform_Window_Impl.h"
+#include "platform/flWindow_Impl.h"
 
 using namespace flEngine::Platform;
+
+bool Impl_Window::ReceivedEvent(EventID id, bool reset)
+{
+  bool received = m_receivedEvents[id];
+  m_receivedEvents[id] &= !reset;
+  return received;
+}
 
 #define flIMPL flPIMPL(Window)
 
 flPIMPL_IMPL(Window);
 
-Window::Window(flIN const char *title, flIN Flags flags, flIN Window::DisplayMode displayMode)
+Window::Window(flIN const char *title, flIN Flags flags, flIN DisplayMode displayMode)
 {
   flIMPL->Construct(title, flags, displayMode);
 }
@@ -17,12 +23,12 @@ void Window::SetTitle(flIN const char *title)
   return flIMPL->SetTitle(title);
 }
 
-void Window::SetDisplayMode(flIN Window::DisplayMode mode)
+void Window::SetDisplayMode(flIN DisplayMode mode)
 {
   return flIMPL->SetDisplayMode(mode);
 }
 
-void Window::SetFocus(flIN Window::FocusFlags flags, flIN bool focused)
+void Window::SetFocus(flIN FocusFlags flags, flIN bool focused)
 {
   return flIMPL->SetFocus(flags, focused);
 }
@@ -90,4 +96,9 @@ int64_t Window::GetY() const
 void Window::GetRect(int64_t *pPosX, int64_t *pPosY, int64_t *pWidth, int64_t *pHeight) const
 {
   flIMPL->GetRect(pPosX, pPosY, pWidth, pHeight);
+}
+
+bool Window::ReceivedEvent(EventID id, bool reset)
+{
+  return flIMPL->ReceivedEvent(id, reset);
 }

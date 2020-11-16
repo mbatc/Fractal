@@ -28,12 +28,22 @@ namespace flEngine
       /**
        * Add a task to the queue.
        *
-       * @param [in] taskFunc  A pointer to a callback to add to the queue.
-       * @param [in] pUserData User data pointer passed to the callback
+       * @param [in] args Arguments to forward to the tasks types Create(...) function
        *
        * @return Returns true if the task was successfully added to the queue.
        */
-      bool Add(flIN TaskFunc taskFunc, flIN void *pUserData = nullptr);
+      template<typename T, typename... Args> bool Add(flIN Args&&... args);
+
+      /**
+       * Add a task to the queue.
+       *
+       * @param [in]  taskFunc  A pointer to a callback to add to the queue.
+       * @param [in]  pUserData User data pointer passed to the callback. Can be nullptr.
+       * @param [out] ppTask    A pointer the the new task added. Can be nullptr.
+       *
+       * @return Returns true if the task was successfully added to the queue.
+       */
+      bool Add(flIN TaskFunc taskFunc, flIN void *pUserData = nullptr, flOUT Task **ppTask = nullptr);
 
       /**
       * @brief Run all the tasks currently in the queue.
@@ -67,5 +77,7 @@ namespace flEngine
     };
   }
 }
+
+#include "flTaskQueue.inl"
 
 #endif // flUtil_TaskQueue_h__

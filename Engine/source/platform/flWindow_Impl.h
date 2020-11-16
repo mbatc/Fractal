@@ -1,7 +1,8 @@
-#ifndef flPlatform_Window_Impl_h__
-#define flPlatform_Window_Impl_h__
+#ifndef fl_Platform_Window_Impl_h__
+#define fl_Platform_Window_Impl_h__
 
-#include "flPlatform_Window.h"
+#include "platform/flWindow.h"
+#include "platform/flEventQueue.h"
 
 namespace flEngine
 {
@@ -38,12 +39,17 @@ namespace flEngine
       int64_t GetX() const;
       int64_t GetY() const;
 
+      bool ReceivedEvent(Platform::EventID id, bool reset);
+
     protected:
+      bool m_receivedEvents[Platform::Event_Count] = { 0 };
+
+      EventQueue m_events;
+
 #if flUSING(flPLATFORM_WINDOWS)
       char *m_wndTitleBuffer = nullptr;
       void *m_pHandle = nullptr;
 #endif
-
     };
   }
 }

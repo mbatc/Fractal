@@ -1,9 +1,9 @@
-#include "flPlatform_Window_Impl.h"
+#include "platform/flWindow_Impl.h"
 
 #if flUSING(flPLATFORM_WINDOWS)
 
-#include "flPlatform_EventQueue.h"
-#include "flPlatform_Event.h"
+#include "platform/flEventQueue.h"
+#include "platform/flEvent.h"
 #include "atString.h"
 #include <windows.h>
 #include <mutex>
@@ -17,47 +17,109 @@ static int64_t _windowInitCount = 0;
 static atString _windowClsName = "FractalEngine_WindowClass";
 static ATOM _atom = 0;
 
-flEngine::Platform::Impl_Window::~Impl_Window()
-{
-  if (m_pHandle)
-    DestroyWindow((HWND)m_pHandle);
-
-  _windowInitLock.lock();
-  if (--_windowInitCount == 0)
-    UnregisterClass(_windowClsName.c_str(), GetModuleHandle(NULL));
-  _windowInitLock.unlock();
-}
-
 void flEngine::Platform::Impl_Window::Construct(const char *title, Window::Flags flags, Window::DisplayMode displayMode)
 {
   HINSTANCE hInstance = GetModuleHandle(NULL);
 
+  m_events.SetFilter([](Event *pEvent, void *pUserData) {
+    Impl_Window *pWnd = (Impl_Window*)pUserData;
+    return pEvent->nativeEvent.hWnd == pWnd->m_pHandle || pEvent->nativeEvent.hWnd == nullptr;
+  }, this);
+
+  m_events.SetEventCallback([](Event *pEvent, void *pUserData) {
+    Impl_Window *pWnd = (Impl_Window*)pUserData;
+    pWnd->m_receivedEvents[pEvent->id] = true;
+  }, this);
+
   _windowInitLock.lock();
   if (_windowInitCount++ == 0)
   { // Create the window class for flEngine win32 windows
-    WNDCLASSEX wndCls = { 0 };
-    wndCls.cbSize = sizeof(WNDCLASSEX);
-    wndCls.style = 0;
-    wndCls.lpfnWndProc = _flWindowProc;
-    wndCls.hInstance = hInstance;
-    wndCls.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-    wndCls.hCursor = LoadCursor(NULL, IDC_ARROW);
-    wndCls.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-    wndCls.lpszClassName = _windowClsName.c_str();
+    EventQueue::GetEventThread()->Add([](void *pUserData) {
+      WNDCLASSEX wndCls = { 0 };
+      wndCls.cbSize = sizeof(WNDCLASSEX);
+      wndCls.style = 0;
+      wndCls.lpfnWndProc = _flWindowProc;
+      wndCls.hInstance = (HINSTANCE)pUserData;
+      wndCls.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+      wndCls.hCursor = LoadCursor(NULL, IDC_ARROW);
+      wndCls.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+      wndCls.lpszClassName = _windowClsName.c_str();
 
-    // TODO: Add error reporting
-    _atom = RegisterClassEx(&wndCls);
+      // TODO: Add error reporting
+      _atom = RegisterClassEx(&wndCls);
+
+      return 0ll;
+    }, hInstance);
   }
   _windowInitLock.unlock();
 
-  // TODO: Add error reporting
-  m_pHandle = CreateWindowEx(WS_EX_OVERLAPPEDWINDOW, _windowClsName.c_str(), title, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, 0, 0, hInstance, 0);
+  Util::Task *pCreateTask = nullptr;
 
-  int show = SW_HIDE;
+  // Create the window on the System event thread
+  struct CreateData
+  {
+    void **ppHandle;
+    const char *title;
+    Window::Flags flags;
+    HINSTANCE hInstance;
+  };
 
-  if ((flags & Window::Flag_Visible) > 0)
-    UpdateWindow((HWND)m_pHandle);
-  ShowWindow((HWND)m_pHandle, SW_SHOW);
+  CreateData createData;
+  createData.ppHandle = &m_pHandle;
+  createData.title = title;
+  createData.flags = flags;
+  createData.hInstance = hInstance;
+
+  EventQueue::GetEventThread()->Add([](void *pUserData) {
+    CreateData *pCreateData = (CreateData*)pUserData;
+
+    // TODO: Add error reporting
+    *pCreateData->ppHandle = CreateWindowEx(
+      WS_EX_OVERLAPPEDWINDOW,
+      _windowClsName.c_str(),
+      pCreateData->title,
+      WS_OVERLAPPEDWINDOW,
+      CW_USEDEFAULT, CW_USEDEFAULT,
+      CW_USEDEFAULT, CW_USEDEFAULT,
+      0,
+      0,
+      pCreateData->hInstance,
+      0);
+
+    int show = SW_HIDE;
+
+    if ((pCreateData->flags & Window::Flag_Visible) > 0)
+      UpdateWindow((HWND)*pCreateData->ppHandle);
+
+    ShowWindow((HWND)*pCreateData->ppHandle, SW_SHOW);
+
+    return 0ll;
+  }, &createData, &pCreateTask);
+
+  pCreateTask->Wait();   // Wait for the task to complete
+  pCreateTask->DecRef();
+}
+
+flEngine::Platform::Impl_Window::~Impl_Window()
+{
+  if (m_pHandle)
+  {
+    EventQueue::GetEventThread()->Add([](void *pHandle) {
+      DestroyWindow((HWND)pHandle);
+      return 0ll;
+    }, m_pHandle);
+  }
+
+  _windowInitLock.lock();
+
+  if (--_windowInitCount == 0)
+  {
+    EventQueue::GetEventThread()->Add([](void *) {
+      UnregisterClass(_windowClsName.c_str(), GetModuleHandle(NULL));
+      return 0ll;
+    });
+  }
+  _windowInitLock.unlock();
 }
 
 void Impl_Window::SetTitle(const char *title)
@@ -113,7 +175,7 @@ Window::Flags flEngine::Platform::Impl_Window::GetFlags() const
   return flags;
 }
 
-void Impl_Window::GetRect(int64_t * pPosX, int64_t * pPosY, int64_t * pWidth, int64_t * pHeight) const
+void Impl_Window::GetRect(int64_t *pPosX, int64_t *pPosY, int64_t *pWidth, int64_t *pHeight) const
 {
   RECT rect = { 0 };
   GetWindowRect((HWND)m_pHandle, &rect);

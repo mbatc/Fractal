@@ -47,7 +47,7 @@ namespace flEngine
        * 
        * @param FilterFunc A pointer to the callback that should be used to filter Events.
        */
-      void SetFilter(flIN bool (*FilterFunc)(Event *));
+      void SetFilter(flIN bool (*FilterFunc)(Event *, void *), void *pUserData = nullptr);
 
       /**
       * @brief Get the next event without removing it from the queue.
@@ -57,6 +57,8 @@ namespace flEngine
       * @return Returns true if the next event exists, otherwise false is returned.
       */
       bool PeekEvent(flOUT Event *pEvent) const;
+
+      void SetEventCallback(flIN void(*EventHandler)(Event *, void *), void *pUserData = nullptr);
 
       /**
       * @brief Get the next event and remove it from the queue.

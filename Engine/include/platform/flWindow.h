@@ -1,8 +1,8 @@
-#ifndef flPlatform_Window_h__
-#define flPlatform_Window_h__
+#ifndef fl_Platform_Window_h__
+#define fl_Platform_Window_h__
 
-#include "../flPImpl.h"
-#include "../flConfig.h"
+#include "flPImpl.h"
+#include "platform/flEvent.h"
 
 namespace flEngine
 {
@@ -139,7 +139,7 @@ namespace flEngine
        *
        * @return The Flags for this window.
        */
-      Window::Flags GetFlags() const;
+      Flags GetFlags() const;
 
       /**
        * Get the size of the window.
@@ -195,6 +195,8 @@ namespace flEngine
        * @param [out] pHeight A pointer to an int64 to copy the windows height to. Can be NULL.
        */
       void GetRect(int64_t *pPosX, int64_t *pPosY, int64_t *pWidth, int64_t *pHeight) const;
+
+      bool ReceivedEvent(Platform::EventID id, bool reset = true);
     };
 
     flBITWISE_ENUM_OPERATORS(Window::FocusFlags);

@@ -17,21 +17,11 @@ namespace flEngine
       {
         if (!pTask)
           return false;
-        TaskData newTask;
-        newTask.pTask = pTask;
-        AddTask(newTask);
-        return true;
-      }
 
-      bool Add(TaskFunc taskFunc, void *pUserData)
-      {
-        if (!taskFunc)
-          return false;
-
-        TaskData newTask;
-        newTask.TaskCallback = taskFunc;
-        newTask.pCallbackUserData = pUserData;
-        AddTask(newTask);
+        pTask->IncRef();
+        m_lock.lock();
+        m_tasks.push_back(pTask);
+        m_lock.unlock();
         return true;
       }
 
@@ -48,19 +38,15 @@ namespace flEngine
           return -1;
 
         m_lock.lock();
-        TaskData nextTask = m_tasks.front();
+        Task *pNextTask = m_tasks.front();
         m_tasks.pop_front();
         m_lock.unlock();
 
         int64_t result = -1;
-        if (nextTask.pTask)
+        if (pNextTask)
         {
-          result = nextTask.pTask->Run();
-          nextTask.pTask->DecRef();
-        }
-        else if (nextTask.TaskCallback)
-        {
-          result = nextTask.TaskCallback(nextTask.pCallbackUserData);
+          result = pNextTask->Run();
+          pNextTask->DecRef();
         }
 
         return result;
@@ -80,26 +66,8 @@ namespace flEngine
       }
 
     protected:
-      struct TaskData
-      {
-        TaskFunc TaskCallback = nullptr;
-        void *pCallbackUserData = nullptr;
-
-        Task *pTask = nullptr;
-      };
-
-      void AddTask(const TaskData &newTask)
-      {
-        if (newTask.pTask)
-          newTask.pTask->IncRef();
-
-        m_lock.lock();
-        m_tasks.push_back(newTask);
-        m_lock.unlock();
-      }
-
       Threads::Mutex     m_lock;
-      atVector<TaskData> m_tasks;
+      atVector<Task*> m_tasks;
     };
   }
 }
@@ -108,14 +76,52 @@ flPIMPL_IMPL(TaskQueue)
 
 #define flIMPL flPIMPL(TaskQueue)
 
+class _flGenericTask : public Task
+{
+  _flGenericTask(flIN TaskFunc taskFunc, flIN void *pUserData)
+    : m_callback(taskFunc)
+    , m_pUserData(pUserData)
+  {}
+
+public:
+  static _flGenericTask* Create(flIN TaskFunc taskFunc, flIN void *pUserData)
+  {
+    return flNew _flGenericTask(taskFunc, pUserData);
+  }
+
+  virtual void Destroy() override
+  {
+    flDelete this;
+  }
+
+  int64_t DoTask() override
+  {
+    return m_callback(m_pUserData);
+  }
+
+protected:
+  TaskFunc m_callback = nullptr;
+  void *m_pUserData = nullptr;
+};
+
 bool TaskQueue::Add(flIN Task *pTask)
 {
   return flIMPL->Add(pTask);
 }
 
-bool TaskQueue::Add(flIN TaskFunc taskFunc, flIN void *pUserData)
+bool TaskQueue::Add(flIN TaskFunc taskFunc, flIN void *pUserData, flOUT Task **ppTask)
 {
-  return flIMPL->Add(taskFunc, pUserData);
+  Task *pNewTask = _flGenericTask::Create(taskFunc, pUserData);
+  if (ppTask)
+  {
+    pNewTask->IncRef();
+    *ppTask = pNewTask;
+  }
+
+  bool result = flIMPL->Add(pNewTask);
+  pNewTask->DecRef();
+
+  return result;
 }
 
 void TaskQueue::Flush()

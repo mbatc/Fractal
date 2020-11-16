@@ -25,6 +25,8 @@ static int64_t _ProcessEvents(void *)
     Threads::Sleep(1);
 
   EventQueue::GetEventThread()->Add(_ProcessEvents);
+
+  return 0;
 }
 
 Threads::ThreadQueue* Platform::EventQueue::GetEventThread()
@@ -33,7 +35,10 @@ Threads::ThreadQueue* Platform::EventQueue::GetEventThread()
   static bool _initialised = false;
 
   if (!_initialised)
+  {
+    _initialised = true;
     _eventThread.Add(_ProcessEvents);
+  }
 
   return &_eventThread;
 }

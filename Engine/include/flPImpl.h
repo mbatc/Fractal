@@ -39,18 +39,18 @@ private:                                                 \
 #define flPIMPL_IMPL(Class)\
 template<typename T> inline T __remove_ptr(T *p) { return *p; }\
 Class::~Class() { flDelete flPIMPL(Class); }\
-Class& Class::operator=(const Class &rhs) { *flPIMPL(Class) = *rhs.flPIMPL(Class); return *this; }\
-Class& Class::operator=(Class &&rhs)\
-{\
-  flPIMPL_NAME(Class) *pTemp = flPIMPL(Class);\
-  flPIMPL(Class) = rhs.flPIMPL(Class);\
-  rhs.flPIMPL(Class) = pTemp;\
-  return *this;\
-}\
-decltype(Class::flPIMPL(Class)) Class::__CreateImpl() { return flNew decltype(__remove_ptr(Class::flPIMPL(Class))); }\
+decltype(Class::flPIMPL(Class)) Class::__CreateImpl() { return flNew decltype(__remove_ptr(Class::flPIMPL(Class))); }
 
-#define flPIMPL_IMPL_COPY(Class) Class &operator=(const Class &rhs) Class& Class::operator=(const Class &rhs) { *flPIMPL(Class) = *rhs.flPIMPL(Class); return *this; }
+#define flPIMPL_IMPL_COPY(Class) Class& Class::operator=(const Class &rhs) { *flPIMPL(Class) = *rhs.flPIMPL(Class); return *this; }
 
-#define flPIMPL_IMPL_MOVE(Class) Class& Class::operator=(Class &&rhs) { std::swap(flPIMPL(Class), rhs.flPIMPL(Class)); return *this; }
+#define flPIMPL_IMPL_MOVE(Class) Class& Class::operator=(Class &&rhs) \
+Class& Class::operator=(Class &&rhs)                                  \
+{                                                                     \
+  flPIMPL_NAME(Class) *pTemp = flPIMPL(Class);                        \
+  flPIMPL(Class) = rhs.flPIMPL(Class);                                \
+  rhs.flPIMPL(Class) = pTemp;                                         \
+  return *this;                                                       \
+}
+
 
 #endif // flPImpl_h__
