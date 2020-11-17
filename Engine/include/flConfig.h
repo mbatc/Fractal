@@ -17,6 +17,9 @@
 
 #define flNew new
 #define flDelete delete
+#define flAlloc(size) malloc(size)
+#define flAllocT(type, count) (type*)malloc(sizeof(type) * count)
+#define flFree(pMem) (free(pMem), pMem = nullptr)
 
 #define flPLATFORM_WINDOWS 0
 #define flPLATFORM_LINUX 0
@@ -35,5 +38,13 @@ static_assert(false, "The current platform is not supported. Must be Windows or 
 
 #define flOUT
 #define flIN
+
+#define flBITWISE_ENUM_OPERATOR(type, op)\
+inline type operator op (const type &a, const type &b) { return (type)((int64_t)a op (int64_t)b); }\
+
+#define flBITWISE_ENUM_OPERATORS(type)\
+flBITWISE_ENUM_OPERATOR(type, | )\
+flBITWISE_ENUM_OPERATOR(type, & )\
+inline type operator~(const type &a) { return (type)(~(int64_t)a); }
 
 #endif // flConfig_h__

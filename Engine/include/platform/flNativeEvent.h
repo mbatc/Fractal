@@ -13,10 +13,7 @@ namespace flEngine
       void *hWnd;
       uint32_t msg;
       uint32_t wParam;
-      void* lParam;
-      uint32_t time;
-      uint32_t cursorX;
-      uint32_t cursorY;
+      void *lParam;
 #endif
 
 #if flUSING(flPLATFORM_LINUX)

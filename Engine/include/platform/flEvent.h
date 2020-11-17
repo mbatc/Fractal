@@ -1,7 +1,6 @@
 #ifndef fl_Platform_Event_h__
 #define fl_Platform_Event_h__
 
-#include "../flInterface.h"
 #include "flNativeEvent.h"
 
 namespace flEngine
@@ -56,6 +55,8 @@ namespace flEngine
 
       // Custom User Events
       E_Usr_Custom,       ///< Start value for custom events. Custom events should be greater than this value
+
+      Event_Count,        ///< The number of supported events
     };
 
     /**
@@ -232,9 +233,9 @@ namespace flEngine
      * the Events internal pUserEvent member.
      *
      * @param [out] pEvent A pointer to the the Event struct to fill out
-     * @param [in] pData A pointer to the custom events data (if needed)
-     * @param [in] DestroyFunc A pointer to a function to call when destroying the event. This can be used to
-     *             cleanup the event data.
+     * @param [in]  pData A pointer to the custom events data (if needed)
+     * @param [in]  DestroyFunc A pointer to a function to call when destroying the event. This can be used to
+     *              cleanup the event data.
      */
     void flCCONV Event_Create(flOUT Event *pEvent, flIN void *pData, void (*DestroyFunc)(Event *));
 

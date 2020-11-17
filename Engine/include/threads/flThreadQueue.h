@@ -21,23 +21,24 @@ namespace flEngine
 
     public:
       /**
-      * Add a task to the queue.
-      *
-      * @param [in] pTask
-      *
-      * @return Returns true if the task was successfully added to the queue.
-      */
+       * Add a task to the queue.
+       *
+       * @param [in] pTask
+       *
+       * @return Returns true if the task was successfully added to the queue.
+       */
       bool Add(flIN Util::Task *pTask);
 
       /**
-      * Add a task to the queue.
-      *
-      * @param [in] taskFunc  A pointer to a callback to add to the queue.
-      * @param [in] pUserData User data pointer passed to the callback
-      *
-      * @return Returns true if the task was successfully added to the queue.
-      */
-      bool Add(flIN Util::TaskFunc taskFunc, flIN void *pUserData = nullptr);
+       * Add a task to the queue.
+       *
+       * @param [in]  taskFunc  A pointer to a callback to add to the queue.
+       * @param [in]  pUserData User data pointer passed to the callback
+       * @param [out] ppTask    A pointer the the new task added. Can be nullptr.
+       *
+       * @return Returns true if the task was successfully added to the queue.
+       */
+      bool Add(flIN Util::TaskFunc taskFunc, flIN void *pUserData = nullptr, flOUT Util::Task **ppTask = nullptr);
 
       /**
        * Wait for all the tasks the queue to complete.
@@ -64,10 +65,10 @@ namespace flEngine
       bool IsPaused() const;
 
       /**
-      * Get the number of tasks in the queue.
-      *
-      * @return The number of tasks in the queue.
-      */
+       * Get the number of tasks in the queue.
+       *
+       * @return The number of tasks in the queue.
+       */
       int64_t GetCount() const;
     };
   }

@@ -1,6 +1,5 @@
 #include "platform/flEventQueue.h"
 #include "atPool.h"
-#include <type_traits>
 
 using namespace flEngine;
 using namespace flEngine::Platform;
@@ -35,9 +34,10 @@ namespace flEngine
         m_eventFilter = type;
       }
 
-      void SetFilter(bool (*FilterFunc)(Event *))
+      void SetFilter(bool (*FilterFunc)(Event *, void *), void *pUserData)
       {
         m_FilterFunc = FilterFunc;
+        m_pFilterUserData = pUserData;
       }
 
       bool PeekEvent(Event *pEvent)
@@ -68,12 +68,26 @@ namespace flEngine
 
       bool PostEvent(Event *pEvent)
       {
-        if ((pEvent->type & m_eventFilter) == 0 || (m_FilterFunc && !m_FilterFunc(pEvent)))
+        if ((pEvent->type & m_eventFilter) == 0 || (m_FilterFunc && !m_FilterFunc(pEvent, m_pFilterUserData)))
           return false;
 
-        m_events.emplace_back();
-        memcpy(&m_events.back(), pEvent, sizeof(Event));
+        if (m_EventHandler)
+        {
+          m_EventHandler(pEvent, m_pHandlerUserData);
+        }
+        else
+        {
+          m_events.emplace_back();
+          memcpy(&m_events.back(), pEvent, sizeof(Event));
+        }
+
         return true;
+      }
+
+      void SetEventCallback(flIN void(*EventHandler)(Event *, void *), void *pUserData)
+      {
+        m_EventHandler = EventHandler;
+        m_pHandlerUserData = pUserData;
       }
 
       int64_t GetEventCount() const
@@ -98,7 +112,12 @@ namespace flEngine
 
       // Filtering
       EventType m_eventFilter = E_Type_All;
-      bool (*m_FilterFunc)(Event *) = nullptr;
+      bool(*m_FilterFunc)(Event *, void *) = nullptr;
+      void *m_pFilterUserData = nullptr;
+
+      // Event handler callback
+      void(*m_EventHandler)(Event *, void *) = nullptr;
+      void *m_pHandlerUserData = nullptr;
     };
   }
 }
@@ -124,14 +143,19 @@ void EventQueue::SetFilter(flIN EventType type)
   flIMPL->SetFilter(type);
 }
 
-void EventQueue::SetFilter(flIN bool (*FilterFunc)(Event *))
+void EventQueue::SetFilter(flIN bool (*FilterFunc)(Event *, void *), void *pUserData)
 {
-  flIMPL->SetFilter(FilterFunc);
+  flIMPL->SetFilter(FilterFunc, pUserData);
 }
 
 bool EventQueue::PeekEvent(flOUT Event *pEvent) const
 {
   return flIMPL->PeekEvent(pEvent);
+}
+
+void EventQueue::SetEventCallback(flIN void(*EventHandler)(Event *, void *), void *pUserData)
+{
+  flIMPL->SetEventCallback(EventHandler, pUserData);
 }
 
 bool EventQueue::NextEvent(flOUT Event *pEvent)
