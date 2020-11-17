@@ -15,15 +15,15 @@ namespace flEngine
 
     public:
       /**
-       * The Status enum describes the Task's current state within a queue.
+       * @brief The Status enum describes the Task's current state within a queue.
        */
-      enum Status
+      enum Status : int64_t
       {
-        Status_Waiting,   ///> The Task is waiting to be executed.
-        Status_Running,   ///> The Task is being executed.
-        Status_Complete,  ///> The Task has finised executing.
-        Status_Cancelled, ///> The Task has finised executing.
-        Status_Count,     ///> The number of status codes.
+        Status_Waiting,   ///< The Task is waiting to be executed.
+        Status_Running,   ///< The Task is being executed.
+        Status_Complete,  ///< The Task has finised executing.
+        Status_Cancelled, ///< The Task has finised executing.
+        Status_Count,     ///< The number of status codes.
       };
 
       /**
@@ -47,13 +47,13 @@ namespace flEngine
       int64_t Wait();
 
       /**
-      * @brief The Task implementation function
-      *
-      * This function must be overridden to define the work performed by the task. This function
-      * should not be called directly. Use Run() instead.
-      *
-      * @return A int64 indicating the result of the function.
-      */
+       * @brief The Task implementation function
+       *
+       * This function must be overridden to define the work performed by the task. This function
+       * should not be called directly. Use Run() instead.
+       *
+       * @return A int64 indicating the result of the function.
+       */
       virtual int64_t DoTask() = 0;
 
       /**
@@ -79,13 +79,13 @@ namespace flEngine
       bool Cancel();
 
       /**
-      * @brief The Task implementation function
-      *
-      * This function must be overridden to define the work performed by the task. This function
-      * should not be called directly. Use Run() instead.
-      *
-      * @return A int64 indicating the result of the function.
-      */
+       * @brief The Task implementation function
+       *
+       * This function must be overridden to define the work performed by the task. This function
+       * should not be called directly. Use Run() instead.
+       *
+       * @return A int64 indicating the result of the function.
+       */
       virtual bool OnReset();
 
       /**
@@ -112,14 +112,14 @@ namespace flEngine
       virtual void Destroy() override = 0;
 
       /**
-       * Get the current status of the task.
+       * @brief Get the current status of the task.
        *
        * @return The current status of the task.
        */
       Status GetStatus() const;
 
       /**
-       * Get the result of a completed task.
+       * @brief Get the result of a completed task.
        *
        * @return The result of the task.
        */

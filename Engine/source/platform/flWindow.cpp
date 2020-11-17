@@ -98,12 +98,12 @@ int64_t Window::GetY() const
   return flIMPL->GetY();
 }
 
-void Window::GetRect(int64_t *pPosX, int64_t *pPosY, int64_t *pWidth, int64_t *pHeight) const
+void Window::GetRect(flOUT int64_t *pPosX, flOUT int64_t *pPosY, flOUT int64_t *pWidth, flOUT int64_t *pHeight) const
 {
   flIMPL->GetRect(pPosX, pPosY, pWidth, pHeight);
 }
 
-bool Window::ReceivedEvent(EventID id, bool reset)
+bool Window::ReceivedEvent(flIN Platform::EventID id, flIN bool reset)
 {
   return flIMPL->ReceivedEvent(id, reset);
 }

@@ -23,7 +23,7 @@ namespace flEngine
       ThreadPool(int64_t threadCount);
 
       /**
-       * Add a task to the queue.
+       * @brief Add a task to the queue.
        *
        * @param [in] pTask
        *
@@ -32,7 +32,7 @@ namespace flEngine
       bool Add(flIN Util::Task *pTask);
 
       /**
-       * Add a task to the queue.
+       * @brief Add a task to the queue.
        *
        * @param [in]  taskFunc  A pointer to a callback to add to the queue.
        * @param [in]  pUserData User data pointer passed to the callback.
@@ -43,31 +43,31 @@ namespace flEngine
       bool Add(flIN Util::TaskFunc taskFunc, flIN void *pUserData = nullptr, flOUT Util::Task **ppTask = nullptr);
 
       /**
-       * Wait for all the tasks the queue to complete.
+       * @brief Wait for all the tasks the queue to complete.
        */
       void Flush();
 
       /**
-       * Suspend the execution of tasks.
+       * @brief Suspend the execution of tasks.
        *
        * @return Returns true if the
        */
       void Pause();
 
       /**
-       * Resume the execution of tasks.
+       * @brief Resume the execution of tasks.
        */
       void Resume();
 
       /**
-       * Check if execution of tasks is paused.
+       * @brief Check if execution of tasks is paused.
        *
        * @return Returns true if the thread is paused.
        */
       bool IsPaused() const;
 
       /**
-       * Get the number of tasks in the queue.
+       * @brief Get the number of tasks in the queue.
        *
        * @return The number of tasks in the queue.
        */

@@ -8,7 +8,7 @@ namespace flEngine
   namespace Platform
   {
     /**
-     * List of event type groupings.
+     * @brief List of event type groupings.
      */
     enum EventType : int64_t
     {
@@ -21,7 +21,7 @@ namespace flEngine
     };
 
     /**
-     * Supported OS events.
+     * @brief Supported OS events.
      */
     enum EventID : int64_t
     {

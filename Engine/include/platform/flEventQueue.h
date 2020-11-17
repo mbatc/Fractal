@@ -11,28 +11,28 @@ namespace flEngine
     class Impl_EventQueue;
 
     /**
-      * @brief An event queue for system receiving events.
-      *
-      * An EventQueue can be used to receive events from the operating
-      * system. OS events will be forwarded individually to every EventQueue instance.
-      * 
-      * Custom events can also be posted via the Event classes custom event
-      * mechanism.
-      */
+     * @brief An event queue for system receiving events.
+     *
+     * An EventQueue can be used to receive events from the operating
+     * system. OS events will be forwarded individually to every EventQueue instance.
+     * 
+     * Custom events can also be posted via the Event classes custom event
+     * mechanism.
+     */
     class flEXPORT EventQueue
     {
       flPIMPL_DEF(EventQueue);
 
     public:
       /**
-      * @brief Set a filter for this event queue.
-      *
-      * This will only allow events of the specified type to be added to this
-      * event queue. Event types can be combined to allow more than 1 or more
-      * types.
-      * 
-      * @param Any combination of the EventType bit field.
-      */
+       * @brief Set a filter for this event queue.
+       *
+       * This will only allow events of the specified type to be added to this
+       * event queue. Event types can be combined to allow more than 1 or more
+       * types.
+       *
+       * @param Any combination of the EventType bit field.
+       */
       void SetFilter(flIN EventType type);
 
       /**
@@ -50,23 +50,23 @@ namespace flEngine
       void SetFilter(flIN bool (*FilterFunc)(Event *, void *), void *pUserData = nullptr);
 
       /**
-      * @brief Get the next event without removing it from the queue.
-      *
-      * @param [out] pEvent A pointer to an event struct to copy the next event to.
-      * 
-      * @return Returns true if the next event exists, otherwise false is returned.
-      */
+       * @brief Get the next event without removing it from the queue.
+       *
+       * @param [out] pEvent A pointer to an event struct to copy the next event to.
+       * 
+       * @return Returns true if the next event exists, otherwise false is returned.
+       */
       bool PeekEvent(flOUT Event *pEvent) const;
 
       void SetEventCallback(flIN void(*EventHandler)(Event *, void *), void *pUserData = nullptr);
 
       /**
-      * @brief Get the next event and remove it from the queue.
-      *
-      * @param [out] pEvent A pointer to an event struct to copy the next event to.
-      * 
-      * @return Returns true if the next event exists, otherwise false is returned.
-      */
+       * @brief Get the next event and remove it from the queue.
+       *
+       * @param [out] pEvent A pointer to an event struct to copy the next event to.
+       *
+       * @return Returns true if the next event exists, otherwise false is returned.
+       */
       bool NextEvent(flOUT Event *pEvent);
 
       /**
@@ -111,7 +111,7 @@ namespace flEngine
       static bool flCCONV PostGlobalEvent(flIN Event *pEvent);
 
       /**
-       * Get the system event thread.
+       * @brief Get the system event thread.
        *
        * @return The ThreadQueue used to process system events.
        */

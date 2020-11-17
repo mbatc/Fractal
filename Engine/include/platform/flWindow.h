@@ -16,44 +16,44 @@ namespace flEngine
 
     public:
       /**
-       * Available Window display modes.
+       * @brief Available Window display modes.
        */
-      enum DisplayMode
+      enum DisplayMode : int64_t
       {
-        DM_Windowed,           ///> Windowed mode
-        DM_Fullscreen,         ///> Fullscreen mode
-        DM_FullscreenWindowed, ///> Fullscreen Windowed mode
-        DM_Count = 3           ///> Number of window display modes
+        DM_Windowed,           ///< Windowed mode
+        DM_Fullscreen,         ///< Fullscreen mode
+        DM_FullscreenWindowed, ///< Fullscreen Windowed mode
+        DM_Count = 3           ///< Number of window display modes
       };
 
       /**
-       * Input focus flags
+       * @brief Input focus flags
        */
-      enum FocusFlags
+      enum FocusFlags : int64_t
       {
-        FF_None     = 0,      ///> The window has no input focus
-        FF_Keyboard = 1 << 0, ///> The window has keyboard focus
-        FF_Mouse    = 1 << 1, ///> The window has mouse focus
-        FF_Grabbed  = 1 << 2, ///> Did the window just gain focus
-        FF_Count = 3          ///> Number of window focus flags
+        FF_None     = 0,      ///< The window has no input focus
+        FF_Keyboard = 1 << 0, ///< The window has keyboard focus
+        FF_Mouse    = 1 << 1, ///< The window has mouse focus
+        FF_Grabbed  = 1 << 2, ///< Did the window just gain focus
+        FF_Count = 3          ///< Number of window focus flags
       };
       
       /**
-       * General window behavior flags
+       * @brief General window behavior flags
        */
-      enum Flags
+      enum Flags : int64_t
       {
-        Flag_None       = 0,      ///> Special No-Flags value
-        Flag_Visible    = 1 << 0, ///> The window is visible
-        Flag_Resizable  = 1 << 1, ///> The window can be resized using the borders
-        Flag_Borderless = 1 << 2, ///> The window has a border
-        Flag_Minimized  = 1 << 3, ///> The window is minimized
-        Flag_Maximized  = 1 << 4, ///> The window is maximized
-        Flag_Count      = 5       ///> Number of window flags
+        Flag_None       = 0,      ///< Special No-Flags value
+        Flag_Visible    = 1 << 0, ///< The window is visible
+        Flag_Resizable  = 1 << 1, ///< The window can be resized using the borders
+        Flag_Borderless = 1 << 2, ///< The window has a border
+        Flag_Minimized  = 1 << 3, ///< The window is minimized
+        Flag_Maximized  = 1 << 4, ///< The window is maximized
+        Flag_Count      = 5       ///< Number of window flags
       };
 
       /**
-       * Create a new window.
+       * @brief Create a new window.
        *
        * @param [in] title       A c-string to use as the title. This will be copied so it may be destroyed after calling this function.
        * @param [in] flags       A set of initial flags for this window.
@@ -62,7 +62,7 @@ namespace flEngine
       Window(flIN const char *title, flIN Flags flags, flIN DisplayMode displayMode);
 
       /**
-       * Set the title of the Window.
+       * @brief Set the title of the Window.
        *
        * @param [in] title A c-string to set the window title to.
        */
@@ -90,7 +90,7 @@ namespace flEngine
       void SetFocus(flIN FocusFlags flags, flIN bool focused);
 
       /**
-       * Set the size of the window.
+       * @brief Set the size of the window.
        *
        * @param [in] width  The new width of the window.
        * @param [in] height The new height of the window.
@@ -98,7 +98,7 @@ namespace flEngine
       void SetSize(flIN int64_t width, flIN int64_t height);
 
       /**
-      * Set the position of the window.
+      * @brief Set the position of the window.
       *
       * @param [in] posX The new X position of the window.
       * @param [in] posY TThe new X position of the window.
@@ -106,7 +106,7 @@ namespace flEngine
       void SetPosition(flIN int64_t posX, flIN int64_t posY);
 
       /**
-      * Set the windows screen rect.
+      * @brief Set the windows screen rect.
       *
       * @param [in] posX   The new X position of the window.
       * @param [in] posY   The new Y position of the window.
@@ -116,7 +116,7 @@ namespace flEngine
       void SetRect(flIN int64_t posX, flIN int64_t posY, flIN int64_t width, flIN int64_t height);
 
       /**
-       * Get the window title.
+       * @brief Get the window title.
        *
        * @return A c-string containing the window title. 
        */
@@ -152,7 +152,7 @@ namespace flEngine
       Flags GetFlags() const;
 
       /**
-       * Get the size of the window.
+       * @brief Get the size of the window.
        *
        * @param [out] pPosX 
        * @param [out] pWidth  A pointer to an int64 to copy the windows width to. Can be NULL.
@@ -161,21 +161,21 @@ namespace flEngine
       void GetSize(flOUT int64_t *pWidth, flOUT int64_t *pHeight) const;
 
       /**
-      * Get the width of the window.
+      * @brief Get the width of the window.
       *
       * @return The width of the window
       */
       int64_t GetWidth() const;
 
       /**
-       * Get the height of the window.
+       * @brief Get the height of the window.
        *
        * @return The height of the window
        */
       int64_t GetHeight() const;
 
       /**
-       * Get the position of the window.
+       * @brief Get the position of the window.
        *
        * @param [out] pPosX A pointer to an int64 to copy the X position to. Can be NULL.
        * @param [out] pPosY A pointer to an int64 to copy the Y position to. Can be NULL.
@@ -183,21 +183,21 @@ namespace flEngine
       void GetPosition(flOUT int64_t *pPosX, flOUT int64_t *pPosY) const;
 
       /**
-      * Get the X position of the window.
+      * @brief Get the X position of the window.
       *
       * @return The X position of the window.
       */
       int64_t GetX() const;
 
       /**
-       * Get the Y position of the window.
+       * @brief Get the Y position of the window.
        *
        * @return The Y position of the window.
        */
       int64_t GetY() const;
 
       /**
-       * Get the windows screen rect.
+       * @brief Get the windows screen rect.
        *
        * @param [out] pPosX   A pointer to an int64 to copy the X position to. Can be NULL.
        * @param [out] pPosY   A pointer to an int64 to copy the Y position to. Can be NULL.
@@ -206,7 +206,13 @@ namespace flEngine
        */
       void GetRect(flOUT int64_t *pPosX, flOUT int64_t *pPosY, flOUT int64_t *pWidth, flOUT int64_t *pHeight) const;
 
-      bool ReceivedEvent(Platform::EventID id, bool reset = true);
+      /**
+       * @brief Check if the window has received a system event.
+       *
+       * @param [in] id    The event ID to check for.
+       * @param [in] reset Set this to false if the received status should NOT be reset to false.
+       */
+      bool ReceivedEvent(flIN Platform::EventID id, flIN bool reset = true);
     };
 
     flBITWISE_ENUM_OPERATORS(Window::FocusFlags);

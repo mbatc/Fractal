@@ -17,7 +17,7 @@ namespace flEngine
 
     public:
       /**
-       * Add a task to the queue.
+       * @brief Add a task to the queue.
        *
        * @param [in] pTask
        *
@@ -26,7 +26,7 @@ namespace flEngine
       bool Add(flIN Task *pTask);
 
       /**
-       * Add a task to the queue.
+       * @brief Add a task to the queue.
        *
        * @param [in] args Arguments to forward to the tasks types Create(...) function
        *
@@ -35,7 +35,7 @@ namespace flEngine
       template<typename T, typename... Args> bool Add(flIN Args&&... args);
 
       /**
-       * Add a task to the queue.
+       * @brief Add a task to the queue.
        *
        * @param [in]  taskFunc  A pointer to a callback to add to the queue.
        * @param [in]  pUserData User data pointer passed to the callback. Can be nullptr.
@@ -46,30 +46,30 @@ namespace flEngine
       bool Add(flIN TaskFunc taskFunc, flIN void *pUserData = nullptr, flOUT Task **ppTask = nullptr);
 
       /**
-      * @brief Run all the tasks currently in the queue.
-      *
-      * If a task is added during a call to Flush, it will not be executed.
-      * Only the tasks in the queue at the time of calling Flush() will be
-      * run.
-      */
+       * @brief Run all the tasks currently in the queue.
+       *
+       * If a task is added during a call to Flush, it will not be executed.
+       * Only the tasks in the queue at the time of calling Flush() will be
+       * run.
+       */
       void Flush();
 
       /**
-       * Run the next task in the queue.
+       * @brief Run the next task in the queue.
        *
        * @return The value returned by the task.
        */
       int64_t RunNext();
 
       /**
-       * Check if there is a task in the queue.
+       * @brief Check if there is a task in the queue.
        *
        * @return Returns true if there is one or more tasks in the queue.
        */
       bool HasNext() const;
 
       /**
-       * Get the number of tasks in the queue.
+       * @brief Get the number of tasks in the queue.
        *
        * @return The number of tasks in the queue.
        */
