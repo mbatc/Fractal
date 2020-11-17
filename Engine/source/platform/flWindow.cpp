@@ -43,6 +43,11 @@ void Window::SetPosition(flIN int64_t posX, flIN int64_t posY)
   return flIMPL->SetPosition(posX, posY);
 }
 
+void Window::SetRect(flIN int64_t posX, flIN int64_t posY, flIN int64_t width, flIN int64_t height)
+{
+  return flIMPL->SetRect(posX, posY, width, height);
+}
+
 const char* Window::GetTitle() const
 {
   return flIMPL->GetTitle();

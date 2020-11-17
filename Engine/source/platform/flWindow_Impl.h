@@ -8,7 +8,7 @@ namespace flEngine
 {
   namespace Platform
   {
-    class flEXPORT Impl_Window
+    class Impl_Window
     {
     public:
       ~Impl_Window();
@@ -20,7 +20,8 @@ namespace flEngine
       void SetFocus(Window::FocusFlags flags, bool focused);
       void SetSize(int64_t width, int64_t height);
       void SetPosition(int64_t posX, int64_t posY);
-      
+      void SetRect(int64_t posX, int64_t posY, int64_t width, int64_t height);
+
       const char* GetTitle();
 
       Window::DisplayMode GetDisplayMode() const;
@@ -42,11 +43,24 @@ namespace flEngine
       bool ReceivedEvent(Platform::EventID id, bool reset);
 
     protected:
+      EventQueue m_events;
       bool m_receivedEvents[Platform::Event_Count] = { 0 };
 
-      EventQueue m_events;
+      Window::FocusFlags m_focus = Window::FF_None;
+      Window::DisplayMode m_displayMode = Window::DM_Windowed;
 
 #if flUSING(flPLATFORM_WINDOWS)
+      struct
+      { // Backup struct for full-screen a window in WinAPI
+        bool maximized  = false;
+        int64_t x       = 0;
+        int64_t y       = 0;
+        int64_t width   = 0;
+        int64_t height  = 0;
+        int64_t style   = 0;
+        int64_t exStyle = 0;
+      } m_windowedState;
+
       char *m_wndTitleBuffer = nullptr;
       void *m_pHandle = nullptr;
 #endif

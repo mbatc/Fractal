@@ -101,10 +101,20 @@ namespace flEngine
       * Set the position of the window.
       *
       * @param [in] posX The new X position of the window.
-      * @param [in] posY The new Y position of the window.
+      * @param [in] posY TThe new X position of the window.
       */
       void SetPosition(flIN int64_t posX, flIN int64_t posY);
-      
+
+      /**
+      * Set the windows screen rect.
+      *
+      * @param [in] posX   The new X position of the window.
+      * @param [in] posY   The new Y position of the window.
+      * @param [in] width  The new width of the window.
+      * @param [in] height The new height of the window.
+      */
+      void SetRect(flIN int64_t posX, flIN int64_t posY, flIN int64_t width, flIN int64_t height);
+
       /**
        * Get the window title.
        *
@@ -194,7 +204,7 @@ namespace flEngine
        * @param [out] pWidth  A pointer to an int64 to copy the windows width to. Can be NULL.
        * @param [out] pHeight A pointer to an int64 to copy the windows height to. Can be NULL.
        */
-      void GetRect(int64_t *pPosX, int64_t *pPosY, int64_t *pWidth, int64_t *pHeight) const;
+      void GetRect(flOUT int64_t *pPosX, flOUT int64_t *pPosY, flOUT int64_t *pWidth, flOUT int64_t *pHeight) const;
 
       bool ReceivedEvent(Platform::EventID id, bool reset = true);
     };
