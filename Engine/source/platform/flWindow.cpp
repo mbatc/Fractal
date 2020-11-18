@@ -1,5 +1,6 @@
 #include "platform/flWindow_Impl.h"
 
+using namespace flEngine;
 using namespace flEngine::Platform;
 
 bool Impl_Window::ReceivedEvent(EventID id, bool reset)
