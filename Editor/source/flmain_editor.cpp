@@ -10,6 +10,9 @@ using namespace flEngine::Threads;
 
 int main(char **argv, int argc)
 {
+  Input::Keyboard kbd;
+  Input::Mouse mse;
+
   Window window("Title", Window::Flag_Visible, Window::DM_Windowed);
 
   while (!window.ReceivedEvent(E_Wnd_Close))
