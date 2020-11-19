@@ -72,9 +72,11 @@ linkoptions { "/ignore:4075" }
   includedirs { "../atLib/projects/atLib/3rdParty/glew/include" }
   includedirs { "../atLib/projects/atLib/3rdParty/imgui" }
   includedirs { "../atLib/projects/atLib/3rdParty/fbxsdk/include" }
+  includedirs { "../tml/include/" }
 
 -- Project Files
 
+  files { "../tml/include/**.h" }
   files { "include/**.cpp", "include/**.h", "include/**.inl"}
   files { "source/**.cpp", "source/**.h", "source/**.inl" , "**.natvis" }
 
