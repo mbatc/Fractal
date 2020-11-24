@@ -2,6 +2,7 @@
 #define fl_Platform_Window_h__
 
 #include "flPImpl.h"
+#include "input/flInputs.h"
 #include "platform/flEvent.h"
 
 namespace flEngine
@@ -213,6 +214,13 @@ namespace flEngine
        * @param [in] reset Set this to false if the received status should NOT be reset to false.
        */
       bool ReceivedEvent(flIN Platform::EventID id, flIN bool reset = true);
+
+      /**
+       * @brief Get the inputs interface for this window.
+       *
+       * @return The inputs interface
+       */
+      Inputs* GetInputs();
     };
 
     flBITWISE_ENUM_OPERATORS(Window::FocusFlags);

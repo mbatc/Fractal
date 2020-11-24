@@ -9,6 +9,7 @@ namespace flEngine
   {
     enum KeyCode
     {
+      KC_Unknown,
       KC_Equals,
       KC_Apostraphe,
       KC_OpenSqrBracket,
@@ -18,7 +19,6 @@ namespace flEngine
       KC_ForwardSlash,
       KC_BackSlash,
       KC_Tab,
-      KC_CapsLock,
       KC_Shift,
       KC_LShift,
       KC_RShift,
@@ -111,6 +111,29 @@ namespace flEngine
       KC_PrintScreen,
       KC_NumLock,
       KC_ScrollLock,
+      KC_Back,
+      KC_Clear,
+      KC_Select,
+      KC_Execute,
+      KC_Print,
+      KC_Help,
+      KC_Jump,
+      KC_Minus,
+      KC_Play,
+      KC_Subtract,
+      KC_Zoom,
+      KC_Separator,
+      KC_VolumeUp,
+      KC_VolumeDown,
+      KC_Mute,
+      KC_PlayPause,
+      KC_NextTrack,
+      KC_PrevTrack,
+      KC_Stop,
+      KC_Quote,
+      KC_SemiColon,
+      KC_CapsLock,
+
       KC_Count
     };
 

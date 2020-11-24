@@ -10,6 +10,11 @@ bool Impl_Window::ReceivedEvent(EventID id, bool reset)
   return received;
 }
 
+Inputs* Impl_Window::GetInputs()
+{
+  return &m_inputs;
+}
+
 #define flIMPL flPIMPL(Window)
 
 flPIMPL_IMPL(Window);
@@ -107,4 +112,9 @@ void Window::GetRect(flOUT int64_t *pPosX, flOUT int64_t *pPosY, flOUT int64_t *
 bool Window::ReceivedEvent(flIN Platform::EventID id, flIN bool reset)
 {
   return flIMPL->ReceivedEvent(id, reset);
+}
+
+Inputs* Window::GetInputs()
+{
+  return flIMPL->GetInputs();
 }

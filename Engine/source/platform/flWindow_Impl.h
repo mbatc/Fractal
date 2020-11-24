@@ -42,12 +42,16 @@ namespace flEngine
 
       bool ReceivedEvent(Platform::EventID id, bool reset);
 
+      Inputs* GetInputs();
+
     protected:
       EventQueue m_events;
       bool m_receivedEvents[Platform::Event_Count] = { 0 };
 
       Window::FocusFlags m_focus = Window::FF_None;
       Window::DisplayMode m_displayMode = Window::DM_Windowed;
+
+      Inputs m_inputs;
 
 #if flUSING(flPLATFORM_WINDOWS)
       struct

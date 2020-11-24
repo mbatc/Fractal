@@ -53,6 +53,9 @@ namespace flEngine
 
       Math::flVec2F GetScroll() const;
       Math::flVec2F GetScrollDelta() const;
+
+    protected:
+      void OnUpdate() override;
     };
   }
 }

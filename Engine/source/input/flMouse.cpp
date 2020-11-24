@@ -7,6 +7,21 @@ Mouse::Mouse()
   : InputDevice(MB_Count + MB_ExtendedCount, MA_Count)
 {}
 
+bool Mouse::GetDown(MouseButton button) const
+{
+  return GetButton(button)->IsDown();
+}
+
+bool Mouse::GetPressed(MouseButton button) const
+{
+  return GetButton(button)->IsPressed();
+}
+
+bool Mouse::GetReleased(MouseButton button) const
+{
+  return GetButton(button)->IsReleased();
+}
+
 float Mouse::GetX() const
 {
   return GetAnalog(MA_XPos)->GetValue();
@@ -65,4 +80,9 @@ flVec2F Mouse::GetScroll() const
 flVec2F Mouse::GetScrollDelta() const
 {
   return flVec2F(GetScrollHDelta(), GetScrollVDelta());
+}
+
+void flEngine::Input::Mouse::OnUpdate()
+{
+  GetAnalog(MA_HScroll)->;
 }
