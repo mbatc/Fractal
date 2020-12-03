@@ -33,9 +33,6 @@ void Impl_Window::Construct(const char *title, Window::Flags flags, Window::Disp
     Impl_Window *pWnd = (Impl_Window*)pUserData;
     pWnd->m_receivedEvents[pEvent->id] = true;
 
-    InputDeviceServer *pKbdServer = pWnd->GetInputs()->GetKeyboard()->GetServer();
-    InputDeviceServer *pMseServer = pWnd->GetInputs()->GetMouse()->GetServer();
-
     switch (pEvent->id)
     {
     case E_Wnd_Activate:
@@ -47,34 +44,10 @@ void Impl_Window::Construct(const char *title, Window::Flags flags, Window::Disp
 
     case E_Kbd_SetFocus:
       pWnd->m_focus = pWnd->m_focus | Window::FF_Keyboard;
-      Inputs::SetActiveKeyboard(pWnd->GetInputs()->GetKeyboard());
-      Inputs::SetActiveMouse(pWnd->GetInputs()->GetMouse());
       break;
 
     case E_Kbd_KillFocus:
       pWnd->m_focus = pWnd->m_focus & ~Window::FF_Keyboard;
-      Inputs::SetActiveKeyboard(nullptr);
-      Inputs::SetActiveMouse(nullptr);
-      break;
-
-    case E_Kbd_KeyState:
-      pKbdServer->SendEvent(pEvent->kbdState.keyCode, pEvent->kbdState.isDown);
-      break;
-
-    case E_Mse_State:
-      pMseServer->SendEvent(pEvent->mseState.button, pEvent->mseState.isDown);
-      break;
-
-    case E_Mse_Scroll:
-      if (pEvent->mseScroll.isHorizontal)
-        pMseServer->SendEvent(Input::MA_HScroll, (float)pEvent->mseScroll.amount, true);
-      else
-        pMseServer->SendEvent(Input::MA_VScroll, (float)pEvent->mseScroll.amount, true);
-      break;
-
-    case E_Mse_Move:
-      pMseServer->SendEvent(Input::MA_XPos, (float)pEvent->mseMove.x);
-      pMseServer->SendEvent(Input::MA_YPos, (float)pEvent->mseMove.y);
       break;
     }
   }, this);

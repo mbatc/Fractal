@@ -1,10 +1,54 @@
 #include "input\flMouse.h"
+#include "platform\flEventQueue.h"
 
-using namespace flEngine::Input;
+using namespace flEngine;
 using namespace flEngine::Math;
+using namespace flEngine::Input;
+
+class _GlobalMouseServer : public InputDeviceServer
+{
+public:
+  _GlobalMouseServer()
+  {
+    m_events.SetFilter(Platform::E_Type_Mouse);
+    m_events.SetEventCallback(
+      [](Platform::Event *pEvent, void *pUserData)
+      {
+        _GlobalMouseServer *pServer = (_GlobalMouseServer*)pUserData;
+
+        switch (pEvent->id)
+        {
+        case Platform::E_Mse_State:
+          pServer->SendEvent(pEvent->mseState.button, pEvent->mseState.isDown);
+          break;
+
+        case Platform::E_Mse_Scroll:
+          if (pEvent->mseScroll.isHorizontal)
+            pServer->SendEvent(Input::MA_HScroll, (float)pEvent->mseScroll.amount, true);
+          else
+            pServer->SendEvent(Input::MA_VScroll, (float)pEvent->mseScroll.amount, true);
+          break;
+
+        case Platform::E_Mse_Move:
+          pServer->SendEvent(Input::MA_XPos, (float)pEvent->mseMove.x);
+          pServer->SendEvent(Input::MA_YPos, (float)pEvent->mseMove.y);
+          break;
+        }
+      },
+      this);
+  }
+
+  static _GlobalMouseServer* Create()
+  {
+    return flNew _GlobalMouseServer;
+  }
+
+protected:
+  Platform::EventQueue m_events;
+};
 
 Mouse::Mouse()
-  : InputDevice(MB_Count + MB_ExtendedCount, MA_Count)
+  : InputDevice(MB_Count + MB_ExtendedCount, MA_Count, _GlobalMouseServer::Create())
 {}
 
 bool Mouse::GetDown(MouseButton button) const
@@ -84,5 +128,4 @@ flVec2F Mouse::GetScrollDelta() const
 
 void flEngine::Input::Mouse::OnUpdate()
 {
-  GetAnalog(MA_HScroll)->;
 }

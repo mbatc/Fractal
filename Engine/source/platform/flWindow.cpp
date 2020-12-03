@@ -1,7 +1,66 @@
 #include "platform/flWindow_Impl.h"
 
 using namespace flEngine;
+using namespace flEngine::Input;
 using namespace flEngine::Platform;
+
+class _WindowMouseServer : public InputDeviceServer
+{
+public:
+  _WindowMouseServer()
+  {
+    m_events.SetFilter(Platform::E_Type_Mouse);
+    m_events.SetEventCallback(
+      [](Platform::Event *pEvent, void *pUserData)
+      {
+        InputDeviceServer *pServer = (InputDeviceServer*)pUserData;
+      
+        switch (pEvent->id)
+        {
+        case Platform::E_Mse_State:
+          pServer->SendEvent(pEvent->mseState.button, pEvent->mseState.isDown);
+          break;
+      
+        case Platform::E_Mse_Scroll:
+          if (pEvent->mseScroll.isHorizontal)
+            pServer->SendEvent(Input::MA_HScroll, (float)pEvent->mseScroll.amount, true);
+          else
+            pServer->SendEvent(Input::MA_VScroll, (float)pEvent->mseScroll.amount, true);
+          break;
+      
+        case Platform::E_Mse_Move:
+          pServer->SendEvent(Input::MA_XPos, (float)pEvent->mseMove.x);
+          pServer->SendEvent(Input::MA_YPos, (float)pEvent->mseMove.y);
+          break;
+        }
+      },
+      this);
+  }
+
+protected:
+  EventQueue m_events;
+};
+
+class _WindowKeyboardServer : public InputDeviceServer
+{
+public:
+  _WindowKeyboardServer()
+  {
+    m_events.SetFilter(Platform::E_Type_Keyboard);
+    m_events.SetEventCallback(
+      [](Platform::Event *pEvent, void *pUserData)
+    {
+      _WindowKeyboardServer *pServer = (_WindowKeyboardServer*)pUserData;
+
+      if (pEvent->id == Platform::E_Kbd_KeyState) // Send the keyboard events
+        pServer->SendEvent(pEvent->kbdState.keyCode, pEvent->kbdState.isDown);
+    },
+      this);
+  }
+
+protected:
+  EventQueue m_events;
+};
 
 bool Impl_Window::ReceivedEvent(EventID id, bool reset)
 {
@@ -10,9 +69,14 @@ bool Impl_Window::ReceivedEvent(EventID id, bool reset)
   return received;
 }
 
-Inputs* Impl_Window::GetInputs()
+Input::Keyboard* flEngine::Platform::Impl_Window::GetKeyboard()
 {
-  return &m_inputs;
+  return &m_keyboard;
+}
+
+Input::Mouse* flEngine::Platform::Impl_Window::GetMouse()
+{
+  return &m_mouse;
 }
 
 #define flIMPL flPIMPL(Window)
@@ -114,7 +178,12 @@ bool Window::ReceivedEvent(flIN Platform::EventID id, flIN bool reset)
   return flIMPL->ReceivedEvent(id, reset);
 }
 
-Inputs* Window::GetInputs()
+Input::Keyboard* flEngine::Platform::Window::GetKeyboard() const
 {
-  return flIMPL->GetInputs();
+  return flIMPL->GetKeyboard();
+}
+
+Input::Mouse* flEngine::Platform::Window::GetMouse() const
+{
+  return flIMPL->GetMouse();
 }

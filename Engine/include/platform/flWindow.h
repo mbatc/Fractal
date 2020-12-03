@@ -216,11 +216,18 @@ namespace flEngine
       bool ReceivedEvent(flIN Platform::EventID id, flIN bool reset = true);
 
       /**
-       * @brief Get the inputs interface for this window.
+       * @brief Get the keyboard input interface for this window.
        *
-       * @return The inputs interface
+       * @return The Keyboard interface
        */
-      Inputs* GetInputs();
+      Input::Keyboard* GetKeyboard() const;
+
+      /**
+      * @brief Get the mouse input interface for this window.
+      *
+      * @return The Mouse interface
+      */
+      Input::Mouse* GetMouse() const;
     };
 
     flBITWISE_ENUM_OPERATORS(Window::FocusFlags);

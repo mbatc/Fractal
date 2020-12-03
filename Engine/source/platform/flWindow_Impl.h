@@ -42,7 +42,8 @@ namespace flEngine
 
       bool ReceivedEvent(Platform::EventID id, bool reset);
 
-      Inputs* GetInputs();
+      Input::Keyboard* GetKeyboard();
+      Input::Mouse* GetMouse();
 
     protected:
       EventQueue m_events;
@@ -51,7 +52,8 @@ namespace flEngine
       Window::FocusFlags m_focus = Window::FF_None;
       Window::DisplayMode m_displayMode = Window::DM_Windowed;
 
-      Inputs m_inputs;
+      Input::Keyboard m_keyboard;
+      Input::Mouse m_mouse;
 
 #if flUSING(flPLATFORM_WINDOWS)
       struct

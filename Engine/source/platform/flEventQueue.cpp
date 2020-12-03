@@ -1,5 +1,6 @@
 #include "platform/flEventQueue.h"
 #include "atPool.h"
+#include <mutex>
 
 using namespace flEngine;
 using namespace flEngine::Platform;
@@ -9,6 +10,7 @@ using namespace flEngine::Platform;
 class flEngine::Platform::Impl_EventQueue;
 
 static atPool<Impl_EventQueue*> _eventQueues;
+static std::mutex _eventQueueLock;
 
 namespace flEngine
 {
@@ -19,14 +21,18 @@ namespace flEngine
     public:
       Impl_EventQueue()
       {
+        _eventQueueLock.lock();
         m_queueID = _eventQueues.Add(0);
         _eventQueues[m_queueID] = this;
+        _eventQueueLock.unlock();
       }
 
       ~Impl_EventQueue()
       {
         Clear();
+        _eventQueueLock.lock();
         _eventQueues.erase(m_queueID);
+        _eventQueueLock.unlock();
       }
 
       void SetFilter(EventType type)
@@ -131,8 +137,10 @@ flPIMPL_IMPL(EventQueue)
 bool EventQueue::PostGlobalEvent(flIN Event *pEvent)
 {
   bool wasReceived = false;
+  _eventQueueLock.lock();
   for (Impl_EventQueue *pQueue : _eventQueues)
     wasReceived |= pQueue->PostEvent(pEvent);
+  _eventQueueLock.unlock();
   return wasReceived;
 }
 

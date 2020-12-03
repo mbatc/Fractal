@@ -14,8 +14,9 @@ namespace flEngine
     class flEXPORT InputDeviceServer : public Interface
     {
       flPIMPL_DEF(InputDeviceServer);
-
+    protected:
       InputDeviceServer();
+
     public:
       /**
        * @brief Create a device input server/
