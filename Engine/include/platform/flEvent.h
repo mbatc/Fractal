@@ -196,7 +196,7 @@ namespace flEngine
         struct MseScroll
         {
           bool isHorizontal; ///< The mouse scroll direction
-          int64_t amount;    ///< The mouse scroll amount ('+' away from used, '-' towards user)
+          float amount;      ///< The mouse scroll amount ('+' away from used, '-' towards user)
         } mseScroll; ///< Mouse scroll event data
 
         struct UserEvent

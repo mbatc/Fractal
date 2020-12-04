@@ -2,6 +2,7 @@
 #define fl_Input_Keyboard_h__
 
 #include "flInputDevice.h"
+#include "../platform/flEvent.h"
 
 namespace flEngine
 {

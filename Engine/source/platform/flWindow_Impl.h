@@ -13,7 +13,7 @@ namespace flEngine
     public:
       ~Impl_Window();
 
-      void Construct(const char *title, Window::Flags flags, Window::DisplayMode displayMode, InputDeviceServer *pKeyboardServer, InputDeviceServer *pMouseServer);
+      void Construct(const char *title, Window::Flags flags, Window::DisplayMode displayMode, Input::InputDeviceServer *pKeyboardServer, Input::InputDeviceServer *pMouseServer);
 
       void SetTitle(const char *title);
       void SetDisplayMode(Window::DisplayMode mode);

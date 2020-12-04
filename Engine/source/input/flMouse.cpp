@@ -128,4 +128,6 @@ void Mouse::EventHandler(Platform::Event *pEvent, void *pUserData)
 
 void Mouse::OnUpdate()
 {
+  GetServer()->SendEvent(Input::MA_HScroll, 0.0f);
+  GetServer()->SendEvent(Input::MA_VScroll, 0.0f);
 }

@@ -42,7 +42,7 @@ bool Keyboard::GetKeyReleased(KeyCode key) const
   return GetButton(key)->IsReleased();
 }
 
-void flEngine::Input::Keyboard::EventHandler(Platform::Event *pEvent, void *pUserData)
+void Keyboard::EventHandler(Platform::Event *pEvent, void *pUserData)
 {
   _GlobalKeyboardServer *pServer = (_GlobalKeyboardServer *)pUserData;
 

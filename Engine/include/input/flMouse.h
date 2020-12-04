@@ -1,8 +1,9 @@
 #ifndef fl_Input_Mouse_h__
 #define fl_Input_Mouse_h__
 
-#include "../math/flMath.h"
 #include "flInputDevice.h"
+#include "../math/flMath.h"
+#include "../platform/flEvent.h"
 
 namespace flEngine
 {

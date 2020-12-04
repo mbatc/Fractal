@@ -22,6 +22,8 @@ void flCCONV flEngine::Platform::Event_Create(flOUT Event *pEvent, flIN NativeEv
   int64_t mouseUp = -1;
   int64_t mouseDown = -1;
 
+  pEvent->nativeEvent = *pNativeEvent;
+
   switch (pNativeEvent->msg)
   {
     // System Events
@@ -171,7 +173,7 @@ void flCCONV flEngine::Platform::Event_Create(flOUT Event *pEvent, flIN NativeEv
   {
     pEvent->type = E_Type_Mouse;
     pEvent->id   = E_Mse_Scroll;
-    pEvent->mseScroll.amount = HIWORD(pNativeEvent->wParam);
+    pEvent->mseScroll.amount = GET_WHEEL_DELTA_WPARAM(pNativeEvent->wParam) / (float)WHEEL_DELTA;
   } break;
 
   case WM_MOUSEMOVE:

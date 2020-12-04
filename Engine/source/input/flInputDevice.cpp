@@ -278,8 +278,6 @@ int64_t InputDevice::GetAnalogIndex(flIN const char *name) const
 
 void InputDevice::Update()
 {
-  OnUpdate();
-
   flIMPL->m_pServer->Lock(); // Lock to stop new events from being received
 
   int64_t id          = 0;
@@ -340,6 +338,8 @@ void InputDevice::Update()
   }
 
   flIMPL->m_pServer->Unlock();
+
+  OnUpdate();
 }
 
 int64_t InputDevice::GetRegisteredDeviceCount()

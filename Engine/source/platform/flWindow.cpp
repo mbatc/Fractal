@@ -78,7 +78,13 @@ flPIMPL_IMPL(Window);
 
 Window::Window(flIN const char *title, flIN Flags flags, flIN DisplayMode displayMode)
 {
-  flIMPL->Construct(title, flags, displayMode, _WindowKeyboardServer::Create(this), _WindowMouseServer::Create(this));
+  _WindowKeyboardServer *pKeyboardServer = _WindowKeyboardServer::Create(this);
+  _WindowMouseServer *pMouseServer = _WindowMouseServer::Create(this);
+
+  flIMPL->Construct(title, flags, displayMode, pKeyboardServer, pMouseServer);
+
+  pKeyboardServer->DecRef();
+  pMouseServer->DecRef();
 }
 
 void Window::SetTitle(flIN const char *title)
