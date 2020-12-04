@@ -215,9 +215,8 @@ static int64_t _TranslateKeyCode(int64_t winKey)
 {
   switch (winKey)
   {
-  case VK_BACK:             return KC_Back;
+  case VK_BACK:             return KC_Backspace;
   case VK_TAB:              return KC_Tab;
-  case VK_CLEAR:            return KC_Clear;
   case VK_RETURN:           return KC_Return;
   case VK_SHIFT:            return KC_Shift;
   case VK_CONTROL:          return KC_Control;
@@ -234,13 +233,9 @@ static int64_t _TranslateKeyCode(int64_t winKey)
   case VK_RIGHT:            return KC_Right;
   case VK_UP:               return KC_Up;
   case VK_DOWN:             return KC_Down;
-  case VK_SELECT:           return KC_Select;
   case VK_SNAPSHOT:         return KC_PrintScreen;
-  case VK_EXECUTE:          return KC_Execute;
-  case VK_PRINT:            return KC_Print;
   case VK_INSERT:           return KC_Insert;
   case VK_DELETE:           return KC_Delete;
-  case VK_HELP:             return KC_Help;
   case VK_NUMPAD0:          return KC_Numpad0;
   case VK_NUMPAD1:          return KC_Numpad1;
   case VK_NUMPAD2:          return KC_Numpad2;
@@ -300,12 +295,12 @@ static int64_t _TranslateKeyCode(int64_t winKey)
   case 'Y':                 return KC_Y;
   case 'Z':                 return KC_Z;
   case VK_OEM_COMMA:        return KC_Comma;
-  case VK_OEM_JUMP:         return KC_Jump;
   case VK_OEM_MINUS:        return KC_Minus;
-  case VK_PLAY:             return KC_Play;
-  case VK_SUBTRACT:         return KC_Subtract;
-  case VK_ZOOM:             return KC_Zoom;
-  case VK_SEPARATOR:        return KC_Separator;
+  case VK_SUBTRACT:         return KC_NumpadMinus;
+  case VK_DECIMAL:          return KC_NumpadDecimal;
+  case VK_DIVIDE:           return KC_NumpadDivide;
+  case VK_ADD:              return KC_NumpadAdd;
+  case VK_MULTIPLY:         return KC_NumpadMultiply;
   case VK_OEM_PERIOD:       return KC_Period;
   case VK_VOLUME_UP:        return KC_VolumeUp;
   case VK_VOLUME_DOWN:      return KC_VolumeDown;

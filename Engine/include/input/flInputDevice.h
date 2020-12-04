@@ -31,17 +31,30 @@ namespace flEngine
 
       public:
         /**
+         * @brief Get the 'Pressed' state of the button.
          *
+         * A Button is 'Pressed' when the its state goes from Up to Down.
+         *
+         * @return True if the button is pressed, otherwise false.
          */
         bool IsPressed() const;
 
         /**
+         * @brief Get the 'Released' state of the button.
          *
+         * A Button is 'Released' when the its state goes from Down to Up.
+         *
+         * @return True if the button is released, otherwise false.
          */
         bool IsReleased() const;
 
         /**
+         * @brief Get the 'Down' state of the button.
          *
+         * A Button is 'Down' when the it is pressed and held i.e. if a Button is pressed,
+         * it will be down until it is released.
+         *
+         * @return True if the button is down, otherwise false.
          */
         bool IsDown() const;
 
@@ -61,17 +74,23 @@ namespace flEngine
 
       public:
         /**
+         * @brief Get the input current value.
          *
+         * @return The current value of the input.
          */
         float GetValue() const;
 
         /**
+         * @brief Get the change in the value since the last update.
          *
+         * @return The change in the value.
          */
         float GetDelta() const;
 
         /**
-         *
+         * @brief Check if the value was changed in the last update.
+         * 
+         * @return True if the value has changed, otherwise false.
          */
         bool HasChanged() const;
 
@@ -84,115 +103,58 @@ namespace flEngine
       };
 
       /**
-       * @brief Create a new input device.
+       * @brief Create a new InputDevice.
        *
        * Create a new input device and specify how many buttons and analog
        * inputs it has.
        *
        * @param [in] buttonCount How many button (digital) inputs to allocate for this device
        * @param [in] analogCount How many analog inputs to allocate for this device
+       * @param [in] pServer     The InputDeviceServer to use when updating the input device state.
        */
       InputDevice(flIN int64_t buttonCount, flIN int64_t analogCount, flIN InputDeviceServer *pServer = nullptr);
       
       /**
+       * @brief Get the number of buttons this InputDevice interface has.
        *
+       * @return The number of buttons in the interface.
        */
       int64_t GetButtonCount() const;
 
       /**
+       * @brief Get the number of analog inputs this InputDevice interface has.
        *
+       * @return The number of analog inputs in the interface.
        */
       int64_t GetAnalogCount() const;
 
       /**
+       * @brief Access a button in the InputDevice.
        *
+       * @param [in] index The index of the Button, where 0 <= index < GetButtonCount().
        */
       Button* GetButton(flIN int64_t index);
 
       /**
-       *
-       */
-      Button* GetButton(flIN const char *name);
-
-      /**
-       *
-       */
+      * @brief Access an analog input in the InputDevice.
+      *
+      * @param [in] index The index of the an analog input, where 0 <= index < GetAnalogCount().
+      */
       Analog* GetAnalog(flIN int64_t index);
 
       /**
-       *
-       */
-      Analog* GetAnalog(flIN const char *name);
-
-      /**
-       *
-       */
+      * @brief Immutable access to a button in the InputDevice.
+      *
+      * @param [in] index The index of the Button, where 0 <= index < GetButtonCount().
+      */
       const Button* GetButton(flIN int64_t index) const;
 
       /**
-       *
-       */
-      const Button* GetButton(flIN const char *name) const;
-
-      /**
-       *
-       */
+      * @brief Immutable access to an analog input in the InputDevice.
+      *
+      * @param [in] index The index of the an analog input, where 0 <= index < GetAnalogCount().
+      */
       const Analog* GetAnalog(flIN int64_t index) const;
-
-      /**
-       *
-       */
-      const Analog* GetAnalog(flIN const char *name) const;
-
-      /**
-       *
-       */
-      bool AddButtonName(flIN int64_t index, flIN const char *name);
-
-      /**
-       *
-       */
-      bool AddAnalogName(flIN int64_t index, flIN const char *name);
-
-      /**
-       *
-       */
-      bool RemoveButtonName(flIN const char *name);
-
-      /**
-       *
-       */
-      bool RemoveAnalogName(flIN const char *name);
-
-      /**
-       *
-       */
-      int64_t GetButtonNameCount(flIN int64_t index) const;
-
-      /**
-       *
-       */
-      const char* GetButtonName(flIN int64_t buttonIndex, flIN int64_t nameIndex) const;
-
-      /**
-       *
-       */
-      int64_t GetAnalogNameCount(flIN int64_t index) const;
-
-      /**
-       *
-       */
-      const char* GetAnalogName(flIN int64_t buttonIndex, flIN int64_t nameIndex) const;
-
-      /**
-       *
-       */
-      int64_t GetButtonIndex(flIN const char *name) const;
-
-      /**
-       *
-       */
-      int64_t GetAnalogIndex(flIN const char *name) const;
 
       /**
       * @brief Set the input server for this device.
@@ -236,7 +198,27 @@ namespace flEngine
       static InputDevice* GetRegisteredDevice(flIN int64_t index);
 
     protected:
-      virtual void OnUpdate();
+      /**
+       * @brief Performs any pre-update steps for the input device.
+       *
+       * This function is called during the Update, BEFORE processing any events
+       * from the input server.
+       *
+       * This function should be overridden to perform any necessary processing BEFORE
+       * updating the device state.
+       */
+      virtual void OnPreUpdate();
+
+      /**
+       * @brief Performs any post-update steps for the input device.
+       *
+       * This function is called during the Update, AFTER processing all events
+       * from the input server.
+       *
+       * This function should be overridden to perform any necessary processing AFTER
+       * updating the device state.
+       */
+      virtual void OnPostUpdate();
     };
   }
 }

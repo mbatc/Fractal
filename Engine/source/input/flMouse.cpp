@@ -126,8 +126,9 @@ void Mouse::EventHandler(Platform::Event *pEvent, void *pUserData)
   }
 }
 
-void Mouse::OnUpdate()
+void Mouse::OnPostUpdate()
 {
+  // Clear the scroll amount before receiving more scroll events.
   GetServer()->SendEvent(Input::MA_HScroll, 0.0f);
   GetServer()->SendEvent(Input::MA_VScroll, 0.0f);
 }

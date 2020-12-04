@@ -27,22 +27,22 @@ Keyboard::Keyboard()
   : InputDevice(KC_Count, 0, _GlobalKeyboardServer::Create())
 {}
 
-bool Keyboard::GetKeyDown(KeyCode key) const
+bool Keyboard::GetKeyDown(flIN KeyCode key) const
 {
   return GetButton(key)->IsDown();
 }
 
-bool Keyboard::GetKeyPressed(KeyCode key) const
+bool Keyboard::GetKeyPressed(flIN KeyCode key) const
 {
   return GetButton(key)->IsPressed();
 }
 
-bool Keyboard::GetKeyReleased(KeyCode key) const
+bool Keyboard::GetKeyReleased(flIN KeyCode key) const
 {
   return GetButton(key)->IsReleased();
 }
 
-void Keyboard::EventHandler(Platform::Event *pEvent, void *pUserData)
+void Keyboard::EventHandler(flIN Platform::Event *pEvent, flIN void *pUserData)
 {
   _GlobalKeyboardServer *pServer = (_GlobalKeyboardServer *)pUserData;
 
