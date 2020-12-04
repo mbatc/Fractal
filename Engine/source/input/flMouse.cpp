@@ -27,17 +27,17 @@ Mouse::Mouse()
   : InputDevice(MB_Count + MB_ExtendedCount, MA_Count, _GlobalMouseServer::Create())
 {}
 
-bool Mouse::GetDown(MouseButton button) const
+bool Mouse::GetDown(flIN MouseButton button) const
 {
   return GetButton(button)->IsDown();
 }
 
-bool Mouse::GetPressed(MouseButton button) const
+bool Mouse::GetPressed(flIN MouseButton button) const
 {
   return GetButton(button)->IsPressed();
 }
 
-bool Mouse::GetReleased(MouseButton button) const
+bool Mouse::GetReleased(flIN MouseButton button) const
 {
   return GetButton(button)->IsReleased();
 }
@@ -102,7 +102,7 @@ flVec2F Mouse::GetScrollDelta() const
   return flVec2F(GetScrollHDelta(), GetScrollVDelta());
 }
 
-void Mouse::EventHandler(Platform::Event *pEvent, void *pUserData)
+void Mouse::EventHandler(flIN Platform::Event *pEvent, flIN void *pUserData)
 {
   InputDeviceServer *pServer = (InputDeviceServer*)pUserData;
 

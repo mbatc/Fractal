@@ -61,7 +61,7 @@ namespace flEngine
        *
        * @return True if the button specified is down, otherwise false.
        */
-      bool GetDown(MouseButton button) const;
+      bool GetDown(flIN MouseButton button) const;
 
       /**
        * @brief Get the 'Pressed' state of a mouse button.
@@ -72,7 +72,7 @@ namespace flEngine
        *
        * @return True if the button specified is pressed, otherwise false.
        */
-      bool GetPressed(MouseButton button) const;
+      bool GetPressed(flIN MouseButton button) const;
 
       /**
        * @brief Get the 'Pressed' state of a mouse button.
@@ -83,7 +83,7 @@ namespace flEngine
        *
        * @return True if the button specified is pressed, otherwise false.
        */
-      bool GetReleased(MouseButton button) const;
+      bool GetReleased(flIN MouseButton button) const;
 
       /**
        * @brief Get the X position of the mouse cursor.
@@ -178,7 +178,7 @@ namespace flEngine
        * @param [in]  pEvent       The event to handle.
        * @param [out] pInputServer A pointer to an InputDeviceServer.
        */
-      static void EventHandler(Platform::Event *pEvent, void *pUserData);
+      static void EventHandler(flIN Platform::Event *pEvent, flIN void *pUserData);
 
     protected:
       void OnPostUpdate() override;
