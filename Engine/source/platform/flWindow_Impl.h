@@ -13,7 +13,7 @@ namespace flEngine
     public:
       ~Impl_Window();
 
-      void Construct(const char *title, Window::Flags flags, Window::DisplayMode displayMode);
+      void Construct(const char *title, Window::Flags flags, Window::DisplayMode displayMode, InputDeviceServer *pKeyboardServer, InputDeviceServer *pMouseServer);
 
       void SetTitle(const char *title);
       void SetDisplayMode(Window::DisplayMode mode);
@@ -44,6 +44,8 @@ namespace flEngine
 
       Input::Keyboard* GetKeyboard();
       Input::Mouse* GetMouse();
+
+      bool IsEventSource(const Event *pEvent) const;
 
     protected:
       EventQueue m_events;

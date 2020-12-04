@@ -7,34 +7,22 @@ using namespace flEngine::Platform;
 class _WindowMouseServer : public InputDeviceServer
 {
 public:
-  _WindowMouseServer()
+  static _WindowMouseServer *Create(Window *pWindow)
+  {
+    return flNew _WindowMouseServer(pWindow);
+  }
+
+  _WindowMouseServer(Window *pWindow)
   {
     m_events.SetFilter(Platform::E_Type_Mouse);
-    m_events.SetEventCallback(
+    m_events.SetFilter(
       [](Platform::Event *pEvent, void *pUserData)
       {
-        InputDeviceServer *pServer = (InputDeviceServer*)pUserData;
-      
-        switch (pEvent->id)
-        {
-        case Platform::E_Mse_State:
-          pServer->SendEvent(pEvent->mseState.button, pEvent->mseState.isDown);
-          break;
-      
-        case Platform::E_Mse_Scroll:
-          if (pEvent->mseScroll.isHorizontal)
-            pServer->SendEvent(Input::MA_HScroll, (float)pEvent->mseScroll.amount, true);
-          else
-            pServer->SendEvent(Input::MA_VScroll, (float)pEvent->mseScroll.amount, true);
-          break;
-      
-        case Platform::E_Mse_Move:
-          pServer->SendEvent(Input::MA_XPos, (float)pEvent->mseMove.x);
-          pServer->SendEvent(Input::MA_YPos, (float)pEvent->mseMove.y);
-          break;
-        }
+        return ((Window*)pUserData)->IsEventSource(pEvent);
       },
-      this);
+      pWindow);
+
+    m_events.SetEventCallback(&Mouse::EventHandler, this);
   }
 
 protected:
@@ -44,18 +32,23 @@ protected:
 class _WindowKeyboardServer : public InputDeviceServer
 {
 public:
-  _WindowKeyboardServer()
+  static _WindowKeyboardServer *Create(Window *pWindow)
+  {
+    return flNew _WindowKeyboardServer(pWindow);
+  }
+
+  _WindowKeyboardServer(Window *pWindow)
   {
     m_events.SetFilter(Platform::E_Type_Keyboard);
-    m_events.SetEventCallback(
-      [](Platform::Event *pEvent, void *pUserData)
-    {
-      _WindowKeyboardServer *pServer = (_WindowKeyboardServer*)pUserData;
 
-      if (pEvent->id == Platform::E_Kbd_KeyState) // Send the keyboard events
-        pServer->SendEvent(pEvent->kbdState.keyCode, pEvent->kbdState.isDown);
-    },
-      this);
+    m_events.SetFilter(
+      [](Platform::Event *pEvent, void *pUserData)
+      {
+        return ((Window*)pUserData)->IsEventSource(pEvent);
+      },
+      pWindow);
+
+    m_events.SetEventCallback(&Keyboard::EventHandler, this);
   }
 
 protected:
@@ -69,12 +62,12 @@ bool Impl_Window::ReceivedEvent(EventID id, bool reset)
   return received;
 }
 
-Input::Keyboard* flEngine::Platform::Impl_Window::GetKeyboard()
+Keyboard* Impl_Window::GetKeyboard()
 {
   return &m_keyboard;
 }
 
-Input::Mouse* flEngine::Platform::Impl_Window::GetMouse()
+Mouse* Impl_Window::GetMouse()
 {
   return &m_mouse;
 }
@@ -85,7 +78,7 @@ flPIMPL_IMPL(Window);
 
 Window::Window(flIN const char *title, flIN Flags flags, flIN DisplayMode displayMode)
 {
-  flIMPL->Construct(title, flags, displayMode);
+  flIMPL->Construct(title, flags, displayMode, _WindowKeyboardServer::Create(this), _WindowMouseServer::Create(this));
 }
 
 void Window::SetTitle(flIN const char *title)
@@ -178,12 +171,17 @@ bool Window::ReceivedEvent(flIN Platform::EventID id, flIN bool reset)
   return flIMPL->ReceivedEvent(id, reset);
 }
 
-Input::Keyboard* flEngine::Platform::Window::GetKeyboard() const
+Input::Keyboard* Window::GetKeyboard() const
 {
   return flIMPL->GetKeyboard();
 }
 
-Input::Mouse* flEngine::Platform::Window::GetMouse() const
+Input::Mouse* Window::GetMouse() const
 {
   return flIMPL->GetMouse();
+}
+
+bool Window::IsEventSource(const Event *pEvent) const
+{
+  return flIMPL->IsEventSource(pEvent);
 }

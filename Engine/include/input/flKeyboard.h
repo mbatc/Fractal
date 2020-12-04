@@ -146,7 +146,7 @@ namespace flEngine
       bool GetKeyPressed(KeyCode key) const;
       bool GetKeyReleased(KeyCode key) const;
 
-      static void KeyboardEventHandler(Platform::Event *pEvent, void *pUserData);
+      static void EventHandler(Platform::Event *pEvent, void *pUserData);
     };
   }
 }

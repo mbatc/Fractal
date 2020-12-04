@@ -11,15 +11,7 @@ public:
   _GlobalKeyboardServer()
   {
     m_events.SetFilter(Platform::E_Type_Keyboard);
-    m_events.SetEventCallback(
-      [](Platform::Event *pEvent, void *pUserData)
-      {
-        _GlobalKeyboardServer *pServer = (_GlobalKeyboardServer*)pUserData;
-
-        if (pEvent->id == Platform::E_Kbd_KeyState) // Send the keyboard events
-          pServer->SendEvent(pEvent->kbdState.keyCode, pEvent->kbdState.isDown);
-      },
-      this);
+    m_events.SetEventCallback(&Keyboard::EventHandler, this);
   }
 
   static _GlobalKeyboardServer* Create()
@@ -48,4 +40,12 @@ bool Keyboard::GetKeyPressed(KeyCode key) const
 bool Keyboard::GetKeyReleased(KeyCode key) const
 {
   return GetButton(key)->IsReleased();
+}
+
+void flEngine::Input::Keyboard::EventHandler(Platform::Event *pEvent, void *pUserData)
+{
+  _GlobalKeyboardServer *pServer = (_GlobalKeyboardServer *)pUserData;
+
+  if (pEvent->id == Platform::E_Kbd_KeyState) // Send the keyboard events
+    pServer->SendEvent(pEvent->kbdState.keyCode, pEvent->kbdState.isDown);
 }

@@ -228,6 +228,13 @@ namespace flEngine
       * @return The Mouse interface
       */
       Input::Mouse* GetMouse() const;
+
+      /**
+      * @brief Test if this window is the source of the given event.
+      *
+      * @return True if this window is the source of the event.
+      */
+      bool IsEventSource(const Event *pEvent) const;
     };
 
     flBITWISE_ENUM_OPERATORS(Window::FocusFlags);
