@@ -17,4 +17,9 @@
 // Math
 #include "math/flMath.h"
 
+// User Input
+#include "input/flKeyboard.h"
+#include "input/flMouse.h"
+#include "input/flInputs.h"
+
 #endif // fl_Engine_h__

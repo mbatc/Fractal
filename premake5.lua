@@ -2,8 +2,12 @@ workspace "Fractal"
   configurations {"Debug", "Release" }
   startproject "atEngine"
 
+  flBuildsPath = "..\\builds"
+  flBinPath = flBuildsPath .. "\\bin"
+
   -- General Config
-  atLibBuildPath = "..\\..\\..\\bin"
+  atLibBuildPath = "..\\..\\" .. flBinPath
+
 
   staticruntime "off"
 

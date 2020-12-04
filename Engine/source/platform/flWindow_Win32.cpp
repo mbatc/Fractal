@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <mutex>
 
+using namespace flEngine::Input;
 using namespace flEngine::Platform;
 
 LRESULT CALLBACK _flWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -17,14 +18,18 @@ static int64_t _windowInitCount = 0;
 static atString _windowClsName = "FractalEngine_WindowClass";
 static ATOM _atom = 0;
 
-void Impl_Window::Construct(const char *title, Window::Flags flags, Window::DisplayMode displayMode)
+void Impl_Window::Construct(const char *title, Window::Flags flags, Window::DisplayMode displayMode, InputDeviceServer *pKeyboardServer, InputDeviceServer *pMouseServer)
 {
+  // Set input device servers
+  m_keyboard.SetServer(pKeyboardServer);
+  m_mouse.SetServer(pMouseServer);
+
   HINSTANCE hInstance = ::GetModuleHandle(NULL);
 
   // Setup the event filter, so we only receive events for this window
   m_events.SetFilter([](Event *pEvent, void *pUserData) {
     Impl_Window *pWnd = (Impl_Window*)pUserData;
-    return pEvent->nativeEvent.hWnd == pWnd->m_pHandle || pEvent->nativeEvent.hWnd == nullptr;
+    return pWnd->IsEventSource(pEvent) || pEvent->nativeEvent.hWnd == nullptr;
   }, this);
 
   // Setup the event callback
@@ -40,9 +45,11 @@ void Impl_Window::Construct(const char *title, Window::Flags flags, Window::Disp
       else
         pWnd->m_focus = Window::FF_None;
       break;
+
     case E_Kbd_SetFocus:
       pWnd->m_focus = pWnd->m_focus | Window::FF_Keyboard;
       break;
+
     case E_Kbd_KillFocus:
       pWnd->m_focus = pWnd->m_focus & ~Window::FF_Keyboard;
       break;
@@ -334,5 +341,7 @@ static LRESULT CALLBACK _flWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
 
   return ::DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
+
+bool flEngine::Platform::Impl_Window::IsEventSource(const Event *pEvent) const { return pEvent->nativeEvent.hWnd == m_pHandle; }
 
 #endif
