@@ -29,8 +29,6 @@ namespace flEngine
       /**
        * @brief Get the next event from the server for a button input.
        *
-       * This function will return 
-       *
        * @param [out] pButtonID  A pointer to a int64 to copy the button input ID into.
        * @param [out] pValue     A pointer to a bool to copy the pressed state of the button into.
        * @param [out] pTimestamp A pointer to a int64 to copy the timestamp of the event into.
