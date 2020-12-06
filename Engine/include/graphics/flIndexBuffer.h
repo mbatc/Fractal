@@ -7,7 +7,7 @@ namespace flEngine
 {
   namespace Graphics
   {
-    class IndexBuffer : public HardwareBuffer
+    class flEXPORT IndexBuffer : public HardwareBuffer
     {
     public:
 

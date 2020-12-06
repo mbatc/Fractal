@@ -1,7 +1,7 @@
 #ifndef fl_Graphics_RenderTarget_h__
 #define fl_Graphics_RenderTarget_h__
 
-#include "../flInterface.h"
+#include "flRenderTarget.h"
 
 namespace flEngine
 {
@@ -9,7 +9,7 @@ namespace flEngine
   {
     class PixelBuffer;
 
-    class flEXPORT RenderTarget : public Interface
+    class flEXPORT TextureRenderTarget : public RenderTarget
     {
     public:
       PixelBuffer* GetPixels();

@@ -7,7 +7,7 @@ namespace flEngine
 {
   namespace Graphics
   {
-    class PixelBuffer : public HardwareBuffer
+    class flEXPORT PixelBuffer : public HardwareBuffer
     {
     public:
 

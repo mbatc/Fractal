@@ -15,13 +15,13 @@ namespace flEngine
       AF_ReadWrite = (int64_t)AF_Read | AF_Write,
     };
 
-    class HardwareBuffer : public Interface
+    class flEXPORT HardwareBuffer : public Interface
     {
     public:
       /**
        * @brief Create a hardware buffer.
        */
-      HardwareBuffer(AccessFlags flags, int64_t initialSize, void *pInitialData);
+      HardwareBuffer(AccessFlags flags, int64_t initialSize, void *pInitialData = nullptr);
 
       /**
        * @brief Resize the buffer.
@@ -42,6 +42,16 @@ namespace flEngine
        * @brief Apply any changes made to the buffer.
        */
       virtual bool Update() = 0;
+
+      /**
+       * @brief Get the size of the buffer.
+       */
+      virtual int64_t GetSize() = 0;
+
+      /**
+       * @brief GEt the access flags for this buffer.
+       */
+      virtual AccessFlags GetAccessFlags() = 0;
 
       /**
        * @brief Map the buffer to client memory.

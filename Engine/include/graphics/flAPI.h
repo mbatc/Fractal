@@ -7,12 +7,17 @@ namespace flEngine
 {
   namespace Graphics
   {
-    class Program;
     class Geometry;
+    class Program;
     class RenderTarget;
+    class IndexBuffer;
+    class VertexBuffer;
+    class PixelBuffer;
     class DeviceState;
+    class WindowRenderTarget;
+    class TextureRenderTarget;
 
-    class API : public Interface
+    class flEXPORT API : public Interface
     {
     public:
       /**
@@ -39,6 +44,20 @@ namespace flEngine
        * @brief Execute a render command.
        */
       virtual void Render() = 0;
+
+      virtual WindowRenderTarget* CreateWindowRenderTarget() = 0;
+
+      virtual TextureRenderTarget* CreateTextureRenderTarget() = 0;
+      
+      virtual Geometry* CreateGeometry() = 0;
+      
+      virtual IndexBuffer* CreateIndexBuffer() = 0;
+      
+      virtual VertexBuffer* CreateVertexBuffer() = 0;
+      
+      virtual PixelBuffer* CreatePixelBuffer() = 0;
+      
+      virtual Program* CreateProgram() = 0;
     };
 
     Threads::ThreadQueue renderThread;
