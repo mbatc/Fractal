@@ -12,7 +12,6 @@ namespace flEngine
     class flEXPORT WindowRenderTarget : public RenderTarget
     {
     public:
-      PixelBuffer* GetPixels();
     };
   }
 }

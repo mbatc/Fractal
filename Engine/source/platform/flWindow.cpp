@@ -191,3 +191,13 @@ bool Window::IsEventSource(const Event *pEvent) const
 {
   return flIMPL->IsEventSource(pEvent);
 }
+
+void* Window::GetNativeHandle() const
+{
+  return flIMPL->GetNativeHandle();
+}
+
+void Window::SetPixelFormat(Graphics::PixelFormat pixelFmt, Graphics::PixelComponentType pixelComponentType, Graphics::DepthFormat depthFmt)
+{
+  flIMPL->SetPixelFormat(pixelFmt, pixelComponentType, depthFmt);
+}

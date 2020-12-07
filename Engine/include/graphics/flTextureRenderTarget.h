@@ -1,5 +1,5 @@
-#ifndef fl_Graphics_RenderTarget_h__
-#define fl_Graphics_RenderTarget_h__
+#ifndef fl_Graphics_TextureRenderTarget_h__
+#define fl_Graphics_TextureRenderTarget_h__
 
 #include "flRenderTarget.h"
 
@@ -12,7 +12,6 @@ namespace flEngine
     class flEXPORT TextureRenderTarget : public RenderTarget
     {
     public:
-      PixelBuffer* GetPixels();
     };
   }
 }

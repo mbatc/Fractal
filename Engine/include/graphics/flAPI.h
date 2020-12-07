@@ -17,6 +17,11 @@ namespace flEngine
     class WindowRenderTarget;
     class TextureRenderTarget;
 
+    struct flEXPORT APIConfig
+    {
+      int64_t multisampleCount;
+    };
+
     class flEXPORT API : public Interface
     {
     public:

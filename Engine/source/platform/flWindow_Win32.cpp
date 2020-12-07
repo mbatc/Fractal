@@ -78,6 +78,27 @@ void Impl_Window::Construct(const char *title, Window::Flags flags, Window::Disp
   }
   _windowInitLock.unlock();
 
+  Create(title, flags, hInstance);
+}
+
+Impl_Window::~Impl_Window()
+{
+  Destroy();
+
+  _windowInitLock.lock();
+
+  if (--_windowInitCount == 0)
+  {
+    EventQueue::GetEventThread()->Add([](void *) {
+      UnregisterClass(_windowClsName.c_str(), ::GetModuleHandle(NULL));
+      return 0ll;
+    });
+  }
+  _windowInitLock.unlock();
+}
+
+void Impl_Window::Create(const char *title, Window::Flags flags, void *hInstance)
+{
   Util::Task *pCreateTask = nullptr;
 
   // Create the window on the System event thread
@@ -90,10 +111,10 @@ void Impl_Window::Construct(const char *title, Window::Flags flags, Window::Disp
   };
 
   CreateData createData;
-  createData.ppHandle = &m_pHandle;
+  createData.ppHandle = &m_hWnd;
   createData.title = title;
   createData.flags = flags;
-  createData.hInstance = hInstance;
+  createData.hInstance = (HINSTANCE)hInstance;
 
   // Create the window
   EventQueue::GetEventThread()->Add([](void *pUserData) {
@@ -126,31 +147,20 @@ void Impl_Window::Construct(const char *title, Window::Flags flags, Window::Disp
   pCreateTask->DecRef();
 }
 
-Impl_Window::~Impl_Window()
+void Impl_Window::Destroy()
 {
-  if (m_pHandle)
-  {
-    EventQueue::GetEventThread()->Add([](void *pHandle) {
-      ::DestroyWindow((HWND)pHandle);
-      return 0ll;
-    }, m_pHandle);
-  }
+  if (!m_hWnd)
+    return;
 
-  _windowInitLock.lock();
-
-  if (--_windowInitCount == 0)
-  {
-    EventQueue::GetEventThread()->Add([](void *) {
-      UnregisterClass(_windowClsName.c_str(), ::GetModuleHandle(NULL));
-      return 0ll;
-    });
-  }
-  _windowInitLock.unlock();
+  EventQueue::GetEventThread()->Add([](void *pHandle) {
+    ::DestroyWindow((HWND)pHandle);
+    return 0ll;
+  }, m_hWnd);
 }
 
 void Impl_Window::SetTitle(const char *title)
 {
-  ::SetWindowText((HWND)m_pHandle, title);
+  ::SetWindowText((HWND)m_hWnd, title);
 }
 
 void Impl_Window::SetDisplayMode(Window::DisplayMode mode)
@@ -158,7 +168,7 @@ void Impl_Window::SetDisplayMode(Window::DisplayMode mode)
   if (m_displayMode == mode)
     return;
 
-  HWND hWnd = (HWND)m_pHandle;
+  HWND hWnd = (HWND)m_hWnd;
   if (m_displayMode == Window::DM_Windowed)
   { // Store the windowed window state
     m_windowedState.maximized = (GetFlags() & Window::Flag_Maximized) > 0;
@@ -213,7 +223,7 @@ void Impl_Window::SetDisplayMode(Window::DisplayMode mode)
 
 void Impl_Window::SetFocus(Window::FocusFlags flags, bool focused)
 {
-  HWND hWnd = (HWND)m_pHandle;
+  HWND hWnd = (HWND)m_hWnd;
   if (flags & Window::FF_Mouse)
     ::SetFocus(focused ? hWnd : 0);
 
@@ -231,26 +241,26 @@ void Impl_Window::SetFocus(Window::FocusFlags flags, bool focused)
 
 void Impl_Window::SetSize(int64_t width, int64_t height)
 {
-  ::SetWindowPos((HWND)m_pHandle, 0, 0, 0, (int)width, (int)height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+  ::SetWindowPos((HWND)m_hWnd, 0, 0, 0, (int)width, (int)height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 
 void Impl_Window::SetPosition(int64_t posX, int64_t posY)
 {
-  ::SetWindowPos((HWND)m_pHandle, 0, (int)posX, (int)posY, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+  ::SetWindowPos((HWND)m_hWnd, 0, (int)posX, (int)posY, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 
 void Impl_Window::SetRect(int64_t posX, int64_t posY, int64_t width, int64_t height)
 {
-  ::SetWindowPos((HWND)m_pHandle, 0, (int)posX, (int)posY, (int)width, (int)height, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+  ::SetWindowPos((HWND)m_hWnd, 0, (int)posX, (int)posY, (int)width, (int)height, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 
 const char* Impl_Window::GetTitle()
 {
-  int len = ::GetWindowTextLength((HWND)m_pHandle) + 1;
+  int len = ::GetWindowTextLength((HWND)m_hWnd) + 1;
   flDelete[] m_wndTitleBuffer;
   m_wndTitleBuffer = flNew char[len];
   memset(m_wndTitleBuffer, 0, len);
-  ::GetWindowText((HWND)m_pHandle, m_wndTitleBuffer, len);
+  ::GetWindowText((HWND)m_hWnd, m_wndTitleBuffer, len);
   return m_wndTitleBuffer;
 }
 
@@ -266,7 +276,7 @@ Window::FocusFlags Impl_Window::GetFocusFlags() const
 
 Window::Flags Impl_Window::GetFlags() const
 {
-  HWND hWnd = (HWND)m_pHandle;
+  HWND hWnd = (HWND)m_hWnd;
   Window::Flags flags = Window::Flag_None;
   flags = flags | (::IsWindowVisible(hWnd) ? Window::Flag_Visible   : Window::Flag_None);
   flags = flags | (::IsZoomed(hWnd)        ? Window::Flag_Maximized : Window::Flag_None);
@@ -277,7 +287,7 @@ Window::Flags Impl_Window::GetFlags() const
 void Impl_Window::GetRect(int64_t *pPosX, int64_t *pPosY, int64_t *pWidth, int64_t *pHeight) const
 {
   RECT rect = { 0 };
-  ::GetWindowRect((HWND)m_pHandle, &rect);
+  ::GetWindowRect((HWND)m_hWnd, &rect);
 
   if (pPosX)   *pPosX   = rect.left;
   if (pPosY)   *pPosY   = rect.top;
@@ -342,6 +352,73 @@ static LRESULT CALLBACK _flWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
   return ::DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-bool flEngine::Platform::Impl_Window::IsEventSource(const Event *pEvent) const { return pEvent->nativeEvent.hWnd == m_pHandle; }
+bool Impl_Window::IsEventSource(const Event *pEvent) const
+{
+  return pEvent->nativeEvent.hWnd == m_hWnd;
+}
+
+void* Impl_Window::GetNativeHandle() const
+{
+  return m_hWnd;
+}
+
+void Impl_Window::SetPixelFormat(Graphics::PixelFormat pixelFmt, Graphics::PixelComponentType pixelComponentType, Graphics::DepthFormat depthFmt)
+{
+  const char *title = GetTitle();
+  Window::Flags flags = GetFlags();
+
+  if (m_pixelFormatSet)
+  { // If the pixel format has already been set, we need to recreate the window.
+    Destroy();
+    Create(title, flags, ::GetModuleHandle(NULL));
+  }
+
+  m_pixelFormatSet = true;
+
+  PIXELFORMATDESCRIPTOR pfd = { 0 };
+
+  int componentWidth = 0;
+  switch (pixelComponentType)
+  {
+  case Graphics::PCT_Float16: componentWidth = 16; break;
+  case Graphics::PCT_Float32: componentWidth = 32; break;
+  case Graphics::PCT_UInt8:   componentWidth = 8;  break;
+  case Graphics::PCT_UInt16:  componentWidth = 16; break;
+  case Graphics::PCT_UInt32:  componentWidth = 32; break;
+  case Graphics::PCT_Int8:    componentWidth = 8;  break;
+  case Graphics::PCT_Int16:   componentWidth = 16; break;
+  case Graphics::PCT_Int32:   componentWidth = 32; break;
+  case Graphics::PCT_UNorm8:  componentWidth = 8;  break;
+  case Graphics::PCT_UNorm16: componentWidth = 16; break;
+  default:                    componentWidth = 8; break;
+  }
+
+  pfd.cRedBits = pfd.cGreenBits = pfd.cBlueBits = componentWidth;
+  pfd.iPixelType = PFD_TYPE_RGBA;
+
+  switch (depthFmt)
+  {
+    // Depth-only formats
+  case Graphics::DF_Float16: pfd.cDepthBits = 16; break;
+  case Graphics::DF_Float24: pfd.cDepthBits = 24; break;
+  case Graphics::DF_Float32: pfd.cDepthBits = 32; break;
+
+    // Stencil formats
+  case Graphics::DF_Float24Stencil8:
+    pfd.cDepthBits = 24;
+    pfd.cStencilBits = 8;
+    break;
+  case Graphics::DF_Float32Stencil8:
+    pfd.cDepthBits = 32;
+    pfd.cStencilBits = 8;
+    break;
+  }
+
+  // Find and set the appropriate format
+  HDC hDC = GetDC((HWND)m_hWnd);
+  int formatDescriptor = ChoosePixelFormat(hDC, &pfd);
+  ::SetPixelFormat(hDC, formatDescriptor, &pfd);
+  ReleaseDC((HWND)m_hWnd, hDC);
+}
 
 #endif

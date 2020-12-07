@@ -4,6 +4,7 @@
 #include "flPImpl.h"
 #include "input/flInputs.h"
 #include "platform/flEvent.h"
+#include "graphics/flPixelFormat.h"
 
 namespace flEngine
 {
@@ -223,18 +224,30 @@ namespace flEngine
       Input::Keyboard* GetKeyboard() const;
 
       /**
-      * @brief Get the mouse input interface for this window.
-      *
-      * @return The Mouse interface
-      */
+       * @brief Get the mouse input interface for this window.
+       *
+       * @return The Mouse interface
+       */
       Input::Mouse* GetMouse() const;
 
       /**
-      * @brief Test if this window is the source of the given event.
-      *
-      * @return True if this window is the source of the event.
-      */
+       * @brief Test if this window is the source of the given event.
+       *
+       * @return True if this window is the source of the event.
+       */
       bool IsEventSource(const Event *pEvent) const;
+
+      /**
+       * @brief Get the native OS handle for this window.
+       *
+       * @return The OS handle.
+       */
+      void* GetNativeHandle() const;
+
+      /**
+       * @brief Set the windows pixel format.
+       */
+      void SetPixelFormat(Graphics::PixelFormat pixelFmt, Graphics::PixelComponentType pixelComponentType, Graphics::DepthFormat depthFmt);
     };
 
     flBITWISE_ENUM_OPERATORS(Window::FocusFlags);

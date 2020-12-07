@@ -47,7 +47,14 @@ namespace flEngine
 
       bool IsEventSource(const Event *pEvent) const;
 
+      void* GetNativeHandle() const;
+
+      void SetPixelFormat(Graphics::PixelFormat pixelFmt, Graphics::PixelComponentType pixelComponentType, Graphics::DepthFormat depthFmt);
+
     protected:
+      void Create(const char *title, Window::Flags flags, void *hInstance);
+      void Destroy();
+
       EventQueue m_events;
       bool m_receivedEvents[Platform::Event_Count] = { 0 };
 
@@ -69,8 +76,11 @@ namespace flEngine
         int64_t exStyle = 0;
       } m_windowedState;
 
+      bool m_pixelFormatSet = false;
       char *m_wndTitleBuffer = nullptr;
-      void *m_pHandle = nullptr;
+
+      void *m_hInstance = nullptr;
+      void *m_hWnd = nullptr;
 #endif
     };
   }

@@ -2,6 +2,7 @@
 #define fl_Graphics_VertexBuffer_h__
 
 #include "flHardwareBuffer.h"
+#include "flAPI.h"
 
 namespace flEngine
 {

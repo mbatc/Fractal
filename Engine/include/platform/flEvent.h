@@ -26,37 +26,38 @@ namespace flEngine
     enum EventID : int64_t
     {
       // System Events
-      E_Sys_Quit,         ///< A request to quit the application 
-      E_Sys_ThemeChanged, ///< The system theme was changed
+      E_Sys_Quit,           ///< A request to quit the application 
+      E_Sys_ThemeChanged,   ///< The system theme was changed
 
       // Window Events
-      E_Wnd_Create,       ///< The window is being created
-      E_Wnd_Close,        ///< A request to close a window
-      E_Wnd_Destroy,      ///< The window is being destroyed
-      E_Wnd_DpiChanged,   ///< DPI context has changed
-      E_Wnd_Moving,       ///< Window is being moved
-      E_Wnd_Sizing,       ///< Window is being resized
-      E_Wnd_Show,         ///< Window is about to be hidden/shown
-      E_Wnd_StyleChanged, ///< The windows style was modified
-      E_Wnd_RectUpdated,  ///< The windows position or size has been modified
-      E_Wnd_Activate,     ///< The a windows keyboard focus has changed
+      E_Wnd_Create,         ///< The window is being created
+      E_Wnd_Close,          ///< A request to close a window
+      E_Wnd_Destroy,        ///< The window is being destroyed
+      E_Wnd_DpiChanged,     ///< DPI context has changed
+      E_Wnd_Moving,         ///< Window is being moved
+      E_Wnd_Sizing,         ///< Window is being resized
+      E_Wnd_Show,           ///< Window is about to be hidden/shown
+      E_Wnd_StyleChanged,   ///< The windows style was modified
+      E_Wnd_RectUpdated,    ///< The windows position or size has been modified
+      E_Wnd_Activate,       ///< The a windows keyboard focus has changed
+      E_Wnd_SetPixelFormat, ///< The windows pixel format has been set.
 
       // Keyboard Events
-      E_Kbd_KeyState,     ///< A keys state has changed
-      E_Kbd_ASCII,        ///< Receive the character code of a pressed key (ASCII)
-      E_Kbd_Unicode,      ///< Receive the character code of a pressed key (unicode)
-      E_Kbd_KillFocus,    ///< Keyboard focus was lost
-      E_Kbd_SetFocus,     ///< Keyboard focus was gained
+      E_Kbd_KeyState,       ///< A keys state has changed
+      E_Kbd_ASCII,          ///< Receive the character code of a pressed key (ASCII)
+      E_Kbd_Unicode,        ///< Receive the character code of a pressed key (unicode)
+      E_Kbd_KillFocus,      ///< Keyboard focus was lost
+      E_Kbd_SetFocus,       ///< Keyboard focus was gained
 
       // Mouse Events
-      E_Mse_State,        ///< A mouse buttons state has changed
-      E_Mse_Move,         ///< The mouse pointer was moved
-      E_Mse_Scroll,       ///< The mouse wheel was scrolled
+      E_Mse_State,          ///< A mouse buttons state has changed
+      E_Mse_Move,           ///< The mouse pointer was moved
+      E_Mse_Scroll,         ///< The mouse wheel was scrolled
 
       // Custom User Events
-      E_Usr_Custom,       ///< Start value for custom events. Custom events should be greater than this value
+      E_Usr_Custom,         ///< Start value for custom events. Custom events should be greater than this value
 
-      Event_Count,        ///< The number of supported events
+      Event_Count,          ///< The number of supported events
     };
 
     /**
@@ -161,6 +162,13 @@ namespace flEngine
           bool isActive;       ///< Is the window focused
           bool mouseActivated; ///< Is activated via a mouse interaction
         } wndActive; ///< Window focus changed event data
+
+        struct WndSetPixelFmt
+        {
+          int64_t pixelFormat;
+          int64_t pixelComponentType;
+          int64_t depthFormat;
+        } wndSetPixelFmt;
 
         struct KbdState
         {
