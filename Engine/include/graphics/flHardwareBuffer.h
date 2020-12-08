@@ -21,7 +21,7 @@ namespace flEngine
       /**
        * @brief Create a hardware buffer.
        */
-      HardwareBuffer(AccessFlags flags, int64_t initialSize, void *pInitialData = nullptr);
+      // HardwareBuffer(AccessFlags flags, int64_t initialSize, void *pInitialData = nullptr);
 
       /**
        * @brief Resize the buffer.

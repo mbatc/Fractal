@@ -1,5 +1,5 @@
-#ifndef flPixelFormat_h__
-#define flPixelFormat_h__
+#ifndef fl_Graphics_PixelFormat_h__
+#define fl_Graphics_PixelFormat_h__
 
 namespace flEngine
 {

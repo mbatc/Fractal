@@ -3,16 +3,20 @@
 
 using namespace flEngine;
 using namespace flEngine::Graphics;
-using namespace flEngine::Platform;
 
-void Impl_GLWindowRenderTarget::Construct(flIN Platform::Window *pWindow, flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat)
+void Impl_GLWindowRenderTarget::Construct(flIN Platform::Window *pWindow, flIN RenderTargetOptions *pOptions)
 {
   m_pWindow = pWindow;
-  SetFormat(colourFormat, pixelComponentType, depthFormat);
+  SetFormat(pOptions);
 }
 
-bool Impl_GLWindowRenderTarget::SetFormat(flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat)
+bool Impl_GLWindowRenderTarget::SetFormat(flIN RenderTargetOptions *pOptions)
 {
-  m_pWindow->SetPixelFormat(colourFormat, pixelComponentType, depthFormat);
+  m_pWindow->SetPixelFormat(pOptions);
   return true;
+}
+
+Platform::Window* Impl_GLWindowRenderTarget::GetWindow() const
+{
+  return m_pWindow;
 }

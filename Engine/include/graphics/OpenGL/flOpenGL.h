@@ -2,7 +2,6 @@
 #define fl_Graphics_OpenGL_h__
 
 #include "../flAPI.h"
-#include "../../platform/flWindow.h"
 
 namespace flEngine
 {
@@ -15,28 +14,28 @@ namespace flEngine
       flPIMPL_DEF(OpenGL);
 
     protected:
-      OpenGL(Platform::Window * pWindow);
+      OpenGL(flIN Platform::Window *pWindow);
 
     public:
       /**
        * @brief Create an OpenGL API instance.
        */
-      static OpenGL* Create(Platform::Window *pWindow);
+      static OpenGL* Create(flIN Platform::Window *pWindow);
 
       /**
        * @brief Set the active geometry to be rendered.
        */
-      virtual void SetGeometry(Geometry *pGeometry) override;
+      virtual void SetGeometry(flIN Geometry *pGeometry) override;
 
       /**
        * @brief Set the destination for the render.
        */
-      virtual void SetRenderTarget(RenderTarget *pRenderTarget) override;
+      virtual void SetRenderTarget(flIN RenderTarget *pRenderTarget) override;
 
       /**
        * @brief Set the GPU program to render.
        */
-      virtual void SetProgram(Program *pProgram) override;
+      virtual void SetProgram(flIN Program *pProgram) override;
 
       /**
       * @brief Get a pointer the the GPU's state interface.
@@ -48,7 +47,7 @@ namespace flEngine
        */
       virtual void Render() override;
 
-      virtual WindowRenderTarget* CreateWindowRenderTarget() override;
+      virtual WindowRenderTarget* CreateWindowRenderTarget(flIN Platform::Window *pWindow, flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat) override;
 
       virtual TextureRenderTarget* CreateTextureRenderTarget() override;
 

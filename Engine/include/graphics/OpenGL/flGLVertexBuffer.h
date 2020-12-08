@@ -7,8 +7,12 @@ namespace flEngine
 {
   namespace Graphics
   {
+    class flPIMPL_CLASS(GLVertexBuffer);
+
     class flEXPORT GLVertexBuffer : public VertexBuffer
     {
+      flPIMPL_DEF(GLVertexBuffer);
+
     public:
       static GLVertexBuffer* Create();
 

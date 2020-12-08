@@ -11,16 +11,16 @@ namespace flEngine
     class PixelBuffer;
 
     class flPIMPL_CLASS(GLWindowRenderTarget);
-
+    
     class flEXPORT GLWindowRenderTarget : public WindowRenderTarget
     {
       flPIMPL_DEF(GLWindowRenderTarget);
 
     protected:
-      GLWindowRenderTarget(flIN Platform::Window *pWindow, flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat);
+      GLWindowRenderTarget(flIN Platform::Window *pWindow, flIN RenderTargetOptions *pOptions);
 
     public:
-      static GLWindowRenderTarget* Create(flIN Platform::Window *pWindow, flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat);
+      static GLWindowRenderTarget* Create(flIN Platform::Window *pWindow, flIN RenderTargetOptions *pOptions);
 
       /**
        * @brief Get the window associated with this render target.
@@ -30,7 +30,7 @@ namespace flEngine
       /**
       * @brief Set the format of the render target.
       */
-      virtual bool SetFormat(flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat) override;
+      virtual bool SetFormat(flIN RenderTargetOptions *pOptions) override;
     };
   }
 }

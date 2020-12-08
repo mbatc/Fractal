@@ -8,6 +8,8 @@
 
 namespace flEngine
 {
+  namespace Graphics { class WindowRenderTarget; }
+
   namespace Platform
   {
     class Impl_Window;
@@ -243,11 +245,6 @@ namespace flEngine
        * @return The OS handle.
        */
       void* GetNativeHandle() const;
-
-      /**
-       * @brief Set the windows pixel format.
-       */
-      void SetPixelFormat(Graphics::PixelFormat pixelFmt, Graphics::PixelComponentType pixelComponentType, Graphics::DepthFormat depthFmt);
     };
 
     flBITWISE_ENUM_OPERATORS(Window::FocusFlags);

@@ -2,9 +2,12 @@
 #define fl_Graphics_API_h__
 
 #include "../threads/flThreadQueue.h"
+#include "flPixelFormat.h"
 
 namespace flEngine
 {
+  namespace Platform { class Window; }
+
   namespace Graphics
   {
     class Geometry;
@@ -50,7 +53,7 @@ namespace flEngine
        */
       virtual void Render() = 0;
 
-      virtual WindowRenderTarget* CreateWindowRenderTarget() = 0;
+      virtual WindowRenderTarget* CreateWindowRenderTarget(flIN Platform::Window *pWindow, flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat) = 0;
 
       virtual TextureRenderTarget* CreateTextureRenderTarget() = 0;
       
@@ -64,8 +67,6 @@ namespace flEngine
       
       virtual Program* CreateProgram() = 0;
     };
-
-    Threads::ThreadQueue renderThread;
   }
 }
 

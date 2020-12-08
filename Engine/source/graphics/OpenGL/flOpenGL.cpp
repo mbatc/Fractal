@@ -7,13 +7,21 @@
 #include "graphics/OpenGL/flGLWindowRenderTarget.h"
 #include "graphics/OpenGL/flGLTextureRenderTarget.h"
 
+using namespace flEngine;
 using namespace flEngine::Graphics;
+
+flPIMPL_IMPL(OpenGL)
 
 #define flIMPL flPIMPL(OpenGL)
 
-WindowRenderTarget* OpenGL::CreateWindowRenderTarget()
+void OpenGL::Render()
 {
-  return GLWindowRenderTarget::Create();
+  flIMPL->Render();
+}
+
+WindowRenderTarget* OpenGL::CreateWindowRenderTarget(flIN Platform::Window *pWindow, flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat)
+{
+  return GLWindowRenderTarget::Create(pWindow, colourFormat, pixelComponentType, depthFormat);
 }
 
 TextureRenderTarget* OpenGL::CreateTextureRenderTarget()
@@ -46,12 +54,32 @@ Program* OpenGL::CreateProgram()
   return GLProgram::Create();
 }
 
-OpenGL::OpenGL(Platform::Window *pWindow)
+OpenGL::OpenGL(flIN Platform::Window *pWindow)
 {
   flIMPL->Construct(pWindow);
 }
 
-OpenGL* OpenGL::Create(Platform::Window *pWindow)
+OpenGL* OpenGL::Create(flIN Platform::Window *pWindow)
 {
   return flNew OpenGL(pWindow);
+}
+
+void OpenGL::SetGeometry(flIN Geometry *pGeometry)
+{
+  return flIMPL->SetGeometry(pGeometry);
+}
+
+void OpenGL::SetRenderTarget(flIN RenderTarget *pRenderTarget)
+{
+  return flIMPL->SetRenderTarget(pRenderTarget);
+}
+
+void OpenGL::SetProgram(flIN Program *pProgram)
+{
+  return flIMPL->SetProgram(pProgram);
+}
+
+DeviceState* OpenGL::GetState()
+{
+  return flIMPL->GetState();
 }

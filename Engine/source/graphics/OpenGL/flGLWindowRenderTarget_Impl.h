@@ -12,11 +12,13 @@ namespace flEngine
     class Impl_GLWindowRenderTarget : public WindowRenderTarget
     {
     public:
-      void Construct(flIN Platform::Window *pWindow, flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat);
-      bool SetFormat(flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat);
+      void Construct(flIN Platform::Window *pWindow, flIN RenderTargetOptions *pOptions);
+      bool SetFormat(flIN RenderTargetOptions *pOptions);
+
+      Platform::Window* GetWindow() const;
 
     protected:
-      Window *m_pWindow = nullptr;
+      Platform::Window *m_pWindow = nullptr;
 
 #if flUSING(flPLATFORM_WINDOWS)
       void* m_hDC = nullptr;

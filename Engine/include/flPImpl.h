@@ -19,6 +19,7 @@
  * destruct the internal data.
  */
 #define flPIMPL_DEF(Class)\
+  friend flPIMPL_CLASS(Class);\
 public:                                                  \
   ~Class();                                              \
 private:                                                 \

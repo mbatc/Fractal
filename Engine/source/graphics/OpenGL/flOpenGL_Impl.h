@@ -25,6 +25,11 @@ namespace flEngine
     protected:
       GLDeviceState *m_pState = nullptr;
 
+      // Active bindings
+      Program      *m_pProgram      = nullptr;
+      Geometry     *m_pGeometry     = nullptr;
+      RenderTarget *m_pRenderTarget = nullptr;
+
 #if flUSING(flPLATFORM_WINDOWS)
       void *m_pGLRC = nullptr;
 #endif

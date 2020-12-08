@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <mutex>
 
+using namespace flEngine;
 using namespace flEngine::Input;
 using namespace flEngine::Platform;
 

@@ -1,6 +1,6 @@
-#include "platform/flWindow.h"
-#include "threads/flThreads.h"
 #include "flEngine.h"
+#include "graphics/OpenGL/flOpenGL.h"
+
 #include <stdio.h>
 
 using namespace flEngine;
@@ -13,6 +13,8 @@ int main(char **argv, int argc)
   // Create a window
   Window window("Has Inputs", Window::Flag_Visible, Window::DM_Windowed);
   Window window2("No Inputs", Window::Flag_Visible, Window::DM_Windowed);
+
+  Graphics::API *pOpenGL = Graphics::OpenGL::Create(&window);
 
   // Get window input interfaces
   Input::Mouse *pMouse       = window.GetMouse();

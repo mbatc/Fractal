@@ -9,14 +9,26 @@ namespace flEngine
   namespace Graphics
   {
     class PixelBuffer;
-    
+
+    struct RenderTargetOptions
+    {
+      // Pixel format
+      PixelFormat colourFormat;
+      DepthFormat depthFormat;
+      PixelComponentType pixelComponentType;
+
+      // Multi sampling
+      int64_t sampleCount;
+      int64_t sampleQuality;
+    };
+
     class flEXPORT RenderTarget : public Interface
     {
     public:
       /**
        * @brief Set the format of the render target.
        */
-      virtual bool SetFormat(flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat) = 0;
+      virtual bool SetFormat(flIN RenderTargetOptions *pOptions) = 0;
     };
   }
 }
