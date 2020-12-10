@@ -14,13 +14,13 @@ namespace flEngine
       flPIMPL_DEF(OpenGL);
 
     protected:
-      OpenGL(flIN Platform::Window *pWindow);
+      OpenGL(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions);
 
     public:
       /**
        * @brief Create an OpenGL API instance.
        */
-      static OpenGL* Create(flIN Platform::Window *pWindow);
+      static OpenGL* Create(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions = nullptr);
 
       /**
        * @brief Set the active geometry to be rendered.
@@ -47,7 +47,7 @@ namespace flEngine
        */
       virtual void Render() override;
 
-      virtual WindowRenderTarget* CreateWindowRenderTarget(flIN Platform::Window *pWindow, flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat) override;
+      virtual WindowRenderTarget* CreateWindowRenderTarget(flIN Platform::Window *pWindow, flIN RenderTargetOptions *pOptions) override;
 
       virtual TextureRenderTarget* CreateTextureRenderTarget() override;
 

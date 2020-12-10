@@ -4,44 +4,102 @@
 #if flUSING(flPLATFORM_WINDOWS)
 
 #include <windows.h>
-#include "GL/GL.h"
 #include "GL/glew.h"
 #include "GL/wglew.h"
+#include "GL/GL.h"
 
 using namespace flEngine;
 using namespace flEngine::Graphics;
 
-void Impl_OpenGL::Construct(Platform::Window *pWindow)
+#include "atString.h"
+
+static PIXELFORMATDESCRIPTOR _defaultPfd = {
+  sizeof(PIXELFORMATDESCRIPTOR),
+  1,
+  PFD_DRAW_TO_WINDOW,
+  PFD_TYPE_RGBA,
+  32,
+  8, 0, 8, 0, 8, 0,
+  0, 0, 0, 0, 0,
+  24, 8,
+  0,
+  0,
+  0,
+  PFD_MAIN_PLANE,
+  0,
+  0
+};
+
+static const RenderTargetOptions _defaultOptions;
+
+PFNWGLCHOOSEPIXELFORMATARBPROC    flEngine_glChoosePixelFormatARB = nullptr;
+PFNWGLCREATECONTEXTATTRIBSARBPROC flEngine_glCreateContextAttribsARB = nullptr;
+
+// The currently bound render context
+HDC   flEngine_GL_hCurrentDC   = 0;
+HGLRC flEngine_GL_hCurrentGLRC = 0;
+
+static void GLAPIENTRY _ErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
-  RenderTargetOptions options;
-  options.colourFormat =PF_RGBA;
-  options.pixelComponentType = PCT_UInt8;
-  options.depthFormat = DF_Float24Stencil8;
+  userParam, length;
+  atString assertion = "OpenGL Error (type: " + atString((int64_t)type) + ", severity: " + atString((int64_t)severity) + ", id: " + atString((int64_t)id) + ")\n\n" + message;
+  printf((assertion + "\n").c_str());
+  atRelAssert(type != GL_DEBUG_TYPE_ERROR, assertion);
+}
 
-  GLWindowRenderTarget *pWndRenderTarget = GLWindowRenderTarget::Create(pWindow, &options);
+void Impl_OpenGL::Construct(Platform::Window *pWindow, const RenderTargetOptions *pOptions)
+{
+  if (!pOptions)
+    pOptions = &_defaultOptions;
 
-  HWND hWnd = (HWND)pWindow->GetNativeHandle();
-  HDC hDC = GetDC(hWnd);
-  wglChoosePixelFormatARB();
-  wglGetPixelFormatAttribivARB(hDC, );
-  HGLRC hTempGLRC = wglCreateContext(hDC);
+  // Create a temporary window to make our fake GL context
+  Platform::Window tempWindow("tmp", Platform::Window::Flag_None, Platform::Window::DM_Windowed);
+  HWND hTempWnd       = (HWND)tempWindow.GetNativeHandle();
+  HDC hTempDC         = GetDC(hTempWnd);
+  int tempPixelFormat = ChoosePixelFormat(hTempDC, &_defaultPfd);
+  SetPixelFormat(hTempDC, tempPixelFormat, &_defaultPfd);
+  HGLRC hTempGLRC = wglCreateContext(hTempDC);
 
-  int attributes[] = {
-    WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
-    WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
-    WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
-    WGL_PIXEL_TYPE_ARB, WGL_TYPE_RGBA_ARB,
-    WGL_COLOR_BITS_ARB, 32,
-    WGL_DEPTH_BITS_ARB, 24,
-    WGL_STENCIL_BITS_ARB, 8,
-    WGL_SAMPLE_BUFFERS_ARB, 1, // Number of buffers (must be 1 at time of writing)
-    WGL_SAMPLES_ARB, 4,        // Number of samples
+  wglMakeCurrent(hTempDC, hTempGLRC);
+
+  flEngine_glChoosePixelFormatARB    = reinterpret_cast<PFNWGLCHOOSEPIXELFORMATARBPROC>(wglGetProcAddress("wglChoosePixelFormatARB"));
+  flEngine_glCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>(wglGetProcAddress("wglCreateContextAttribsARB"));
+
+  const int major_min = 4;
+  const int minor_min = 5;
+  int contextAttribs[] = {
+    WGL_CONTEXT_MAJOR_VERSION_ARB, major_min,
+    WGL_CONTEXT_MINOR_VERSION_ARB, minor_min,
+    WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
     0
   };
+  
+  // Create the render target for the actual window
+  GLWindowRenderTarget *pWndRenderTarget = GLWindowRenderTarget::Create(pWindow, pOptions);
+  HWND  hWnd  = (HWND)tempWindow.GetNativeHandle();
+  HDC   hDC   = (HDC)pWndRenderTarget->GetNativeHandle();
+  HGLRC hGLRC = flEngine_glCreateContextAttribsARB(hDC, nullptr, contextAttribs);
 
-  // wglCreateContextAttribsARB();
+  // Destroy the temporary context
+  wglMakeCurrent(nullptr, nullptr);
+  wglDeleteContext(hTempGLRC);
+  ReleaseDC(hTempWnd, hTempDC);
 
-  // pWndRenderTarget->DecRef();
+  // Make the new context current
+  if (hGLRC)
+  {
+    wglMakeCurrent(hDC, hGLRC);
+    wglewInit();
+    glewInit();
+
+    flEngine_GL_hCurrentDC   = hDC;
+    flEngine_GL_hCurrentGLRC = hGLRC;
+  }
+
+#ifdef _DEBUG // Enable error logging in debug
+  glEnable(GL_DEBUG_OUTPUT);
+  glDebugMessageCallback(_ErrorMessageCallback, 0);
+#endif
 }
 
 #endif

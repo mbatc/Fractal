@@ -15,6 +15,7 @@ public:
   _WindowMouseServer(Window *pWindow)
   {
     m_events.SetFilter(Platform::E_Type_Mouse);
+
     m_events.SetFilter(
       [](Platform::Event *pEvent, void *pUserData)
       {
@@ -197,7 +198,7 @@ void* Window::GetNativeHandle() const
   return flIMPL->GetNativeHandle();
 }
 
-void Window::SetPixelFormat(Graphics::PixelFormat pixelFmt, Graphics::PixelComponentType pixelComponentType, Graphics::DepthFormat depthFmt)
+Graphics::WindowRenderTarget* Window::GetRenderTarget() const
 {
-  flIMPL->SetPixelFormat(pixelFmt, pixelComponentType, depthFmt);
+  return flIMPL->GetRenderTarget();
 }

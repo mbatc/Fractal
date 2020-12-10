@@ -12,7 +12,7 @@ namespace flEngine
     class Impl_OpenGL
     {
     public:
-      void Construct(Platform::Window *pWindow);
+      void Construct(Platform::Window *pWindow, const RenderTargetOptions *pOptions);
 
       void SetGeometry(Geometry *pGeometry);
       void SetRenderTarget(RenderTarget *pRenderTarget);

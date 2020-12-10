@@ -17,20 +17,50 @@ namespace flEngine
       flPIMPL_DEF(GLWindowRenderTarget);
 
     protected:
-      GLWindowRenderTarget(flIN Platform::Window *pWindow, flIN RenderTargetOptions *pOptions);
+      GLWindowRenderTarget(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions);
 
     public:
-      static GLWindowRenderTarget* Create(flIN Platform::Window *pWindow, flIN RenderTargetOptions *pOptions);
+      static GLWindowRenderTarget* Create(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions);
 
       /**
        * @brief Get the window associated with this render target.
        */
-      Platform::Window* GetWindow() const;
+      virtual Platform::Window* GetWindow() const override;
 
       /**
       * @brief Set the format of the render target.
       */
-      virtual bool SetFormat(flIN RenderTargetOptions *pOptions) override;
+      virtual bool SetFormat(flIN const RenderTargetOptions *pOptions) override;
+
+      /**
+      * @brief Clear this RenderTarget
+      */
+      virtual void Clear(flIN const Util::Colour &colour = 0, flIN const float &depth = 1, flIN const int32_t &stencil = 0) override;
+
+      /**
+      * @brief Clear the depth component of this RenderTarget
+      */
+      virtual void ClearDepth(flIN const float &depth = 1.0f) override;
+
+      /**
+      * @brief Clear the colour component of this RenderTarget
+      */
+      virtual void ClearColour(flIN const Util::Colour &colour = 0) override;
+
+      /**
+      * @brief Clear the stencil component of this RenderTarget
+      */
+      virtual void ClearStencil(flIN const int32_t &colour = 0) override;
+
+      /**
+      * @brief Present the back buffer to the window.
+      */
+      virtual void Swap() override;
+
+      /**
+       * @brief Get the native handle to the Device Context
+       */
+      virtual void* GetNativeHandle() const override;
     };
   }
 }

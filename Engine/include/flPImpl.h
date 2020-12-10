@@ -22,6 +22,7 @@
   friend flPIMPL_CLASS(Class);\
 public:                                                  \
   ~Class();                                              \
+  flPIMPL_CLASS(Class)* GetImpl() const;                 \
 private:                                                 \
   static flPIMPL_CLASS(Class)* __CreateImpl();           \
   flPIMPL_CLASS(Class)* flPIMPL(Class) = __CreateImpl();
@@ -40,6 +41,7 @@ private:                                                 \
 #define flPIMPL_IMPL(Class)\
 template<typename T> inline T __remove_ptr(T *p) { return *p; }\
 Class::~Class() { flDelete flPIMPL(Class); }\
+flPIMPL_CLASS(Class)* Class::GetImpl() const { return flPIMPL(Class); }\
 decltype(Class::flPIMPL(Class)) Class::__CreateImpl() { return flNew decltype(__remove_ptr(Class::flPIMPL(Class))); }
 
 #define flPIMPL_IMPL_COPY(Class) Class& Class::operator=(const Class &rhs) { *flPIMPL(Class) = *rhs.flPIMPL(Class); return *this; }

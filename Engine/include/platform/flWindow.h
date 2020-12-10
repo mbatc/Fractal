@@ -53,7 +53,8 @@ namespace flEngine
         Flag_Borderless = 1 << 2, ///< The window has a border
         Flag_Minimized  = 1 << 3, ///< The window is minimized
         Flag_Maximized  = 1 << 4, ///< The window is maximized
-        Flag_Count      = 5       ///< Number of window flags
+        Flag_Count      = 5,       ///< Number of window flags
+        Flag_Default    = Flag_Visible | Flag_Resizable, ///< The default window flags
       };
 
       /**
@@ -245,6 +246,13 @@ namespace flEngine
        * @return The OS handle.
        */
       void* GetNativeHandle() const;
+
+      /**
+       * @brief Get the Hardware render target for this window.
+       *
+       * @return A pointer to a WindowRenderTarget for this window.
+       */
+      Graphics::WindowRenderTarget* GetRenderTarget() const;
     };
 
     flBITWISE_ENUM_OPERATORS(Window::FocusFlags);

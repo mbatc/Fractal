@@ -49,12 +49,15 @@ namespace flEngine
 
       void* GetNativeHandle() const;
 
-      void SetPixelFormat(Graphics::PixelFormat pixelFmt, Graphics::PixelComponentType pixelComponentType, Graphics::DepthFormat depthFmt);
+      Graphics::WindowRenderTarget* GetRenderTarget() const;
 
-    protected:
+      bool BindRenderTarget(Graphics::WindowRenderTarget *pTarget);
+      void UnbindRenderTarget();
+
       void Create(const char *title, Window::Flags flags, void *hInstance);
       void Destroy();
 
+    protected:
       EventQueue m_events;
       bool m_receivedEvents[Platform::Event_Count] = { 0 };
 
@@ -63,6 +66,8 @@ namespace flEngine
 
       Input::Keyboard m_keyboard;
       Input::Mouse m_mouse;
+
+      Graphics::WindowRenderTarget *m_pRenderTarget = nullptr;
 
 #if flUSING(flPLATFORM_WINDOWS)
       struct

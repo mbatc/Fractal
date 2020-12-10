@@ -5,6 +5,8 @@
 
 namespace flEngine
 {
+  namespace Platform { class Window; }
+
   namespace Graphics
   {
     class PixelBuffer;
@@ -13,6 +15,20 @@ namespace flEngine
     class flEXPORT WindowRenderTarget : public RenderTarget
     {
     public:
+      /**
+      * @brief Get the window associated with this render target.
+      */
+      virtual Platform::Window* GetWindow() const = 0;
+
+      /**
+       * @brief Present the back buffer to the window.
+       */
+      virtual void Swap() = 0;
+
+      /**
+       * @brief Get the native handle to the Device Context
+       */
+      virtual void* GetNativeHandle() const = 0;
     };
   }
 }

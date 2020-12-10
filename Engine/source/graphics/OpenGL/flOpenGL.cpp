@@ -19,9 +19,9 @@ void OpenGL::Render()
   flIMPL->Render();
 }
 
-WindowRenderTarget* OpenGL::CreateWindowRenderTarget(flIN Platform::Window *pWindow, flIN PixelFormat colourFormat, flIN PixelComponentType pixelComponentType, flIN DepthFormat depthFormat)
+WindowRenderTarget* OpenGL::CreateWindowRenderTarget(flIN Platform::Window *pWindow, flIN RenderTargetOptions *pOptions)
 {
-  return GLWindowRenderTarget::Create(pWindow, colourFormat, pixelComponentType, depthFormat);
+  return GLWindowRenderTarget::Create(pWindow, pOptions);
 }
 
 TextureRenderTarget* OpenGL::CreateTextureRenderTarget()
@@ -54,14 +54,14 @@ Program* OpenGL::CreateProgram()
   return GLProgram::Create();
 }
 
-OpenGL::OpenGL(flIN Platform::Window *pWindow)
+OpenGL::OpenGL(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions)
 {
-  flIMPL->Construct(pWindow);
+  flIMPL->Construct(pWindow, pOptions);
 }
 
-OpenGL* OpenGL::Create(flIN Platform::Window *pWindow)
+OpenGL* OpenGL::Create(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions)
 {
-  return flNew OpenGL(pWindow);
+  return flNew OpenGL(pWindow, pOptions);
 }
 
 void OpenGL::SetGeometry(flIN Geometry *pGeometry)

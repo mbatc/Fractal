@@ -12,7 +12,6 @@ int main(char **argv, int argc)
 {
   // Create a window
   Window window("Has Inputs", Window::Flag_Visible, Window::DM_Windowed);
-  Window window2("No Inputs", Window::Flag_Visible, Window::DM_Windowed);
 
   Graphics::API *pOpenGL = Graphics::OpenGL::Create(&window);
 
@@ -53,6 +52,9 @@ int main(char **argv, int argc)
       printf("Global L down\n");
     if (globalKbd.GetKeyReleased(Input::KC_L))
       printf("Global L released\n");
+
+    window.GetRenderTarget()->Clear(0xFF000000);
+    window.GetRenderTarget()->Swap();
   }
 
   return 0;

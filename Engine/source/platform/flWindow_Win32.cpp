@@ -2,7 +2,9 @@
 
 #if flUSING(flPLATFORM_WINDOWS)
 
+#include "graphics/flWindowRenderTarget.h"
 #include "platform/flEventQueue.h"
+#include "threads/flThreads.h"
 #include "platform/flEvent.h"
 #include "atString.h"
 #include <windows.h>
@@ -86,6 +88,9 @@ Impl_Window::~Impl_Window()
 {
   Destroy();
 
+  while (!ReceivedEvent(E_Wnd_Destroy, false))
+    Threads::Sleep(1);
+
   _windowInitLock.lock();
 
   if (--_windowInitCount == 0)
@@ -105,16 +110,16 @@ void Impl_Window::Create(const char *title, Window::Flags flags, void *hInstance
   // Create the window on the System event thread
   struct CreateData
   {
-    void **ppHandle;
-    const char *title;
+    void        **ppHandle;
+    const char   *title;
     Window::Flags flags;
-    HINSTANCE hInstance;
+    HINSTANCE     hInstance;
   };
 
   CreateData createData;
-  createData.ppHandle = &m_hWnd;
-  createData.title = title;
-  createData.flags = flags;
+  createData.ppHandle  = &m_hWnd;
+  createData.title     = title;
+  createData.flags     = flags;
   createData.hInstance = (HINSTANCE)hInstance;
 
   // Create the window
@@ -136,15 +141,15 @@ void Impl_Window::Create(const char *title, Window::Flags flags, void *hInstance
 
     int show = SW_HIDE;
 
+    ::UpdateWindow((HWND)*pCreateData->ppHandle);
     if ((pCreateData->flags & Window::Flag_Visible) > 0)
-      ::UpdateWindow((HWND)*pCreateData->ppHandle);
-
-    ::ShowWindow((HWND)*pCreateData->ppHandle, SW_SHOW);
+      ::ShowWindow((HWND)*pCreateData->ppHandle, SW_SHOW);
 
     return 0ll;
   }, &createData, &pCreateTask);
 
-  pCreateTask->Wait();   // Wait for the task to complete
+  // Wait for the task to complete
+  pCreateTask->Wait();
   pCreateTask->DecRef();
 }
 
@@ -363,63 +368,26 @@ void* Impl_Window::GetNativeHandle() const
   return m_hWnd;
 }
 
-void Impl_Window::SetPixelFormat(Graphics::PixelFormat pixelFmt, Graphics::PixelComponentType pixelComponentType, Graphics::DepthFormat depthFmt)
+Graphics::WindowRenderTarget* flEngine::Platform::Impl_Window::GetRenderTarget() const
 {
-  const char *title = GetTitle();
-  Window::Flags flags = GetFlags();
+  return m_pRenderTarget;
+}
 
-  if (m_pixelFormatSet)
-  { // If the pixel format has already been set, we need to recreate the window.
-    Destroy();
-    Create(title, flags, ::GetModuleHandle(NULL));
-  }
+bool flEngine::Platform::Impl_Window::BindRenderTarget(Graphics::WindowRenderTarget *pTarget)
+{
+  if (m_pRenderTarget)
+    return false;
 
-  m_pixelFormatSet = true;
+  pTarget->IncRef();
+  m_pRenderTarget = pTarget;
+  return true;
+}
 
-  PIXELFORMATDESCRIPTOR pfd = { 0 };
-
-  int componentWidth = 0;
-  switch (pixelComponentType)
-  {
-  case Graphics::PCT_Float16: componentWidth = 16; break;
-  case Graphics::PCT_Float32: componentWidth = 32; break;
-  case Graphics::PCT_UInt8:   componentWidth = 8;  break;
-  case Graphics::PCT_UInt16:  componentWidth = 16; break;
-  case Graphics::PCT_UInt32:  componentWidth = 32; break;
-  case Graphics::PCT_Int8:    componentWidth = 8;  break;
-  case Graphics::PCT_Int16:   componentWidth = 16; break;
-  case Graphics::PCT_Int32:   componentWidth = 32; break;
-  case Graphics::PCT_UNorm8:  componentWidth = 8;  break;
-  case Graphics::PCT_UNorm16: componentWidth = 16; break;
-  default:                    componentWidth = 8; break;
-  }
-
-  pfd.cRedBits = pfd.cGreenBits = pfd.cBlueBits = componentWidth;
-  pfd.iPixelType = PFD_TYPE_RGBA;
-
-  switch (depthFmt)
-  {
-    // Depth-only formats
-  case Graphics::DF_Float16: pfd.cDepthBits = 16; break;
-  case Graphics::DF_Float24: pfd.cDepthBits = 24; break;
-  case Graphics::DF_Float32: pfd.cDepthBits = 32; break;
-
-    // Stencil formats
-  case Graphics::DF_Float24Stencil8:
-    pfd.cDepthBits = 24;
-    pfd.cStencilBits = 8;
-    break;
-  case Graphics::DF_Float32Stencil8:
-    pfd.cDepthBits = 32;
-    pfd.cStencilBits = 8;
-    break;
-  }
-
-  // Find and set the appropriate format
-  HDC hDC = GetDC((HWND)m_hWnd);
-  int formatDescriptor = ChoosePixelFormat(hDC, &pfd);
-  ::SetPixelFormat(hDC, formatDescriptor, &pfd);
-  ReleaseDC((HWND)m_hWnd, hDC);
+void flEngine::Platform::Impl_Window::UnbindRenderTarget()
+{
+  if (m_pRenderTarget)
+    m_pRenderTarget->DecRef();
+  m_pRenderTarget = nullptr;
 }
 
 #endif

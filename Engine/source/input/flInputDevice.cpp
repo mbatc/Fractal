@@ -63,6 +63,9 @@ namespace flEngine
       ~flPIMPL_CLASS(InputDevice)()
       {
         _devices.erase(m_deviceID);
+
+        if (m_pServer)
+          m_pServer->DecRef();
       }
 
       int64_t            m_deviceID = -1;
