@@ -41,8 +41,14 @@ bool Impl_GLWindowRenderTarget::SetFormat(flIN const RenderTargetOptions *pOptio
   HWND hWnd = (HWND)m_pWindow->GetNativeHandle();
   HDC hDC = GetDC(hWnd);
 
+  static const RenderTargetOptions defaultOptions;
+
+  if (!pOptions)
+    pOptions = &defaultOptions;
+
   int componentWidth = 0;
   bool floatPixel = false;
+
   switch (pOptions->pixelComponentType)
   {
   case Graphics::PCT_Float16:

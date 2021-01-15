@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <type_traits>
 #include "../flConfig.h"
+#include "../math/flMath.h"
 
 #define flCOLOUR_MASK_RED(x)     (0x000000FF & uint32_t(x))
 #define flCOLOUR_MASK_GREEN(x)   (0x0000FF00 & uint32_t(x))
@@ -26,18 +27,43 @@ namespace flEngine
   {
     typedef uint32_t ColourU32;
 
+    enum
+    {
+      ColourU32_Black = 0xFF000000,
+      ColourU32_White = 0xFFFFFFFF,
+      ColourU32_Red = 0xFF0000FF,
+      ColourU32_Green = 0xFF00FF00,
+      ColourU32_Blue = 0xFFFF0000,
+    };
+
     class flEXPORT Colour
     {
     public:
-      Colour(const ColourU32 &val = 0xFF000000);
+      Colour(float r, float g, float b, float a = 1.0f);
+      Colour(const Colour &o);
+      Colour(const ColourU32 &val = ColourU32_White);
+
+      Colour& operator=(const Colour &rhs);
+      bool operator==(const Colour &rhs) const;
+      bool operator!=(const Colour &rhs) const;
 
       operator ColourU32() const;
-
+      operator Math::Vec4F() const;
       ColourU32 ToU32() const;
 
       // Get a component of the Colour
       float& operator[](int idx);
       const float& operator[](int idx) const;
+
+      Colour operator+(const float &rhs) const;
+      Colour operator-(const float &rhs) const;
+      Colour operator/(const float &rhs) const;
+      Colour operator*(const float &rhs) const;
+
+      Colour operator+(const Colour &rhs) const;
+      Colour operator-(const Colour &rhs) const;
+      Colour operator/(const Colour &rhs) const;
+      Colour operator*(const Colour &rhs) const;
 
       union
       {

@@ -46,13 +46,13 @@ namespace flEngine
       virtual void ClearDepth(flIN const float &depth = 1.0f) = 0;
 
       /**
-      * @brief Clear the colour component of this RenderTarget
-      */
+       * @brief Clear the colour component of this RenderTarget
+       */
       virtual void ClearColour(flIN const Util::Colour &colour = 0) = 0;
 
       /**
-      * @brief Clear the stencil component of this RenderTarget
-      */
+       * @brief Clear the stencil component of this RenderTarget
+       */
       virtual void ClearStencil(flIN const int32_t &colour = 0) = 0;
     };
   }

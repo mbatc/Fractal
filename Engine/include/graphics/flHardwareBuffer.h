@@ -9,9 +9,9 @@ namespace flEngine
   {
     enum AccessFlags
     {
+      AF_None      = 0,
       AF_Read      = 1 << 0,
       AF_Write     = 1 << 1,
-      AF_Static    = 1 << 2,
       AF_ReadWrite = (int64_t)AF_Read | AF_Write,
     };
 
@@ -26,17 +26,17 @@ namespace flEngine
       /**
        * @brief Resize the buffer.
        */
-      virtual bool Resize(int64_t size) = 0;
+      virtual bool Resize(flIN int64_t size, flIN bool discardData) = 0;
 
       /**
        * @brief Set the buffer the data.
        */
-      virtual bool Set(void *pData, int64_t size) = 0;
+      virtual bool Set(flIN void *pData, flIN int64_t size) = 0;
 
       /**
        * @brief Read data from the buffer.
        */
-      virtual bool Get(void *pBuffer, int64_t length, int64_t offset = 0) = 0;
+      virtual bool Get(flOUT void *pBuffer, flIN int64_t length = -1, flIN int64_t offset = 0) = 0;
 
       /**
        * @brief Apply any changes made to the buffer.
@@ -58,12 +58,17 @@ namespace flEngine
        *
        * @return A pointer to the buffer.
        */
-      virtual void* Map(flIN AccessFlags flags) = 0;
+      virtual void* Map(flIN AccessFlags flags, flIN int64_t length = -1, flIN int64_t offset = 0) = 0;
 
       /**
        * @brief Unmap the buffer from client memory.
        */
       virtual bool Unmap() = 0;
+
+      /**
+       * 
+       */
+      virtual void* GetNativeResource() = 0;
     };
 
     flBITWISE_ENUM_OPERATORS(AccessFlags);

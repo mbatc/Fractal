@@ -82,24 +82,24 @@ float Mouse::GetScrollVDelta() const
   return GetAnalog(MA_VScroll)->GetDelta();
 }
 
-flVec2F Mouse::GetPosition() const
+Vec2F Mouse::GetPosition() const
 {
-  return flVec2F(GetX(), GetY());
+  return Vec2F(GetX(), GetY());
 }
 
-flVec2F Mouse::GetPositionDelta() const
+Vec2F Mouse::GetPositionDelta() const
 {
-  return flVec2F(GetXDelta(), GetYDelta());
+  return Vec2F(GetXDelta(), GetYDelta());
 }
 
-flVec2F Mouse::GetScroll() const
+Vec2F Mouse::GetScroll() const
 {
-  return flVec2F(GetScrollH(), GetScrollV());
+  return Vec2F(GetScrollH(), GetScrollV());
 }
 
-flVec2F Mouse::GetScrollDelta() const
+Vec2F Mouse::GetScrollDelta() const
 {
-  return flVec2F(GetScrollHDelta(), GetScrollVDelta());
+  return Vec2F(GetScrollHDelta(), GetScrollVDelta());
 }
 
 void Mouse::EventHandler(flIN Platform::Event *pEvent, flIN void *pUserData)

@@ -29,7 +29,6 @@
 #include "graphics/flProgram.h"
 #include "graphics/flGeometry.h"
 #include "graphics/flHardwareBuffer.h"
-#include "graphics/flPixelBuffer.h"
 #include "graphics/flIndexBuffer.h"
 #include "graphics/flVertexBuffer.h"
 #include "graphics/flUniformBuffer.h"

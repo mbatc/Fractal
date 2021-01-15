@@ -46,10 +46,10 @@ decltype(Class::flPIMPL(Class)) Class::__CreateImpl() { return flNew decltype(__
 
 #define flPIMPL_IMPL_COPY(Class) Class& Class::operator=(const Class &rhs) { *flPIMPL(Class) = *rhs.flPIMPL(Class); return *this; }
 
-#define flPIMPL_IMPL_MOVE(Class) Class& Class::operator=(Class &&rhs) \
+#define flPIMPL_IMPL_MOVE(Class)\
 Class& Class::operator=(Class &&rhs)                                  \
 {                                                                     \
-  flPIMPL_NAME(Class) *pTemp = flPIMPL(Class);                        \
+  flPIMPL_CLASS(Class) *pTemp = flPIMPL(Class);                       \
   flPIMPL(Class) = rhs.flPIMPL(Class);                                \
   rhs.flPIMPL(Class) = pTemp;                                         \
   return *this;                                                       \

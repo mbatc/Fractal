@@ -10,7 +10,6 @@ namespace flEngine
     class flEXPORT IndexBuffer : public HardwareBuffer
     {
     public:
-
     };
   }
 }

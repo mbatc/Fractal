@@ -8,27 +8,27 @@ namespace flEngine
 {
   namespace Math
   {
-    typedef flEXPORT tmlVector2<int32_t>   flVec2I;
-    typedef flEXPORT tmlVector3<int32_t>   flVec3I;
-    typedef flEXPORT tmlVector4<int32_t>   flVec4I;
+    typedef flEXPORT tmlVector2<int32_t>   Vec2I;
+    typedef flEXPORT tmlVector3<int32_t>   Vec3I;
+    typedef flEXPORT tmlVector4<int32_t>   Vec4I;
 
-    typedef flEXPORT tmlVector2<int64_t>   flVec2I64;
-    typedef flEXPORT tmlVector3<int64_t>   flVec3I64;
-    typedef flEXPORT tmlVector4<int64_t>   flVec4I64;
+    typedef flEXPORT tmlVector2<int64_t>   Vec2I64;
+    typedef flEXPORT tmlVector3<int64_t>   Vec3I64;
+    typedef flEXPORT tmlVector4<int64_t>   Vec4I64;
 
-    typedef flEXPORT tmlVector2<float>     flVec2F;
-    typedef flEXPORT tmlVector3<float>     flVec3F;
-    typedef flEXPORT tmlVector4<float>     flVec4F;
+    typedef flEXPORT tmlVector2<float>     Vec2F;
+    typedef flEXPORT tmlVector3<float>     Vec3F;
+    typedef flEXPORT tmlVector4<float>     Vec4F;
 
-    typedef flEXPORT tmlVector2<double>    flVec2D;
-    typedef flEXPORT tmlVector3<double>    flVec3D;
-    typedef flEXPORT tmlVector4<double>    flVec4D;
+    typedef flEXPORT tmlVector2<double>    Vec2D;
+    typedef flEXPORT tmlVector3<double>    Vec3D;
+    typedef flEXPORT tmlVector4<double>    Vec4D;
 
-    typedef flEXPORT tmlMatrix4<double>    flMat4D;
-    typedef flEXPORT tmlMatrix4<float>     flMat4F;
+    typedef flEXPORT tmlMatrix4<double>    Mat4D;
+    typedef flEXPORT tmlMatrix4<float>     Mat4F;
 
-    typedef flEXPORT tmlQuaternion<double> flQuatD;
-    typedef flEXPORT tmlQuaternion<float>  flQuatF;
+    typedef flEXPORT tmlQuaternion<double> QuatD;
+    typedef flEXPORT tmlQuaternion<float>  QuatF;
   }
 }
 

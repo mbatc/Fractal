@@ -1,8 +1,9 @@
 #include "flOpenGL_Impl.h"
-#include "graphics\OpenGL\flGLWindowRenderTarget.h"
 
 #if flUSING(flPLATFORM_WINDOWS)
 
+#include "graphics\OpenGL\flGLWindowRenderTarget.h"
+#include "atString.h"
 #include <windows.h>
 #include "GL/glew.h"
 #include "GL/wglew.h"
@@ -10,8 +11,6 @@
 
 using namespace flEngine;
 using namespace flEngine::Graphics;
-
-#include "atString.h"
 
 static PIXELFORMATDESCRIPTOR _defaultPfd = {
   sizeof(PIXELFORMATDESCRIPTOR),
@@ -30,8 +29,6 @@ static PIXELFORMATDESCRIPTOR _defaultPfd = {
   0
 };
 
-static const RenderTargetOptions _defaultOptions;
-
 PFNWGLCHOOSEPIXELFORMATARBPROC    flEngine_glChoosePixelFormatARB = nullptr;
 PFNWGLCREATECONTEXTATTRIBSARBPROC flEngine_glCreateContextAttribsARB = nullptr;
 
@@ -49,17 +46,15 @@ static void GLAPIENTRY _ErrorMessageCallback(GLenum source, GLenum type, GLuint 
 
 void Impl_OpenGL::Construct(Platform::Window *pWindow, const RenderTargetOptions *pOptions)
 {
-  if (!pOptions)
-    pOptions = &_defaultOptions;
-
   // Create a temporary window to make our fake GL context
   Platform::Window tempWindow("tmp", Platform::Window::Flag_None, Platform::Window::DM_Windowed);
+
   HWND hTempWnd       = (HWND)tempWindow.GetNativeHandle();
   HDC hTempDC         = GetDC(hTempWnd);
   int tempPixelFormat = ChoosePixelFormat(hTempDC, &_defaultPfd);
+
   SetPixelFormat(hTempDC, tempPixelFormat, &_defaultPfd);
   HGLRC hTempGLRC = wglCreateContext(hTempDC);
-
   wglMakeCurrent(hTempDC, hTempGLRC);
 
   flEngine_glChoosePixelFormatARB    = reinterpret_cast<PFNWGLCHOOSEPIXELFORMATARBPROC>(wglGetProcAddress("wglChoosePixelFormatARB"));

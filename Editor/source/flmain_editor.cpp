@@ -12,11 +12,15 @@ int main(char **argv, int argc)
 {
   // Create a window
   Window window("Has Inputs", Window::Flag_Visible, Window::DM_Windowed);
-
+  Window window2("Has Inputs", Window::Flag_Visible, Window::DM_Windowed);
+  
   Graphics::API *pOpenGL = Graphics::OpenGL::Create(&window);
 
+  Graphics::WindowRenderTarget *pFirstTarget = window.GetRenderTarget();
+  Graphics::WindowRenderTarget *pSecondTarget = pOpenGL->CreateWindowRenderTarget(&window2, nullptr);
+
   // Get window input interfaces
-  Input::Mouse *pMouse       = window.GetMouse();
+  Input::Mouse    *pMouse    = window.GetMouse();
   Input::Keyboard *pKeyboard = window.GetKeyboard();
 
   Input::Mouse globalMouse;
@@ -53,8 +57,11 @@ int main(char **argv, int argc)
     if (globalKbd.GetKeyReleased(Input::KC_L))
       printf("Global L released\n");
 
-    window.GetRenderTarget()->Clear(0xFF000000);
-    window.GetRenderTarget()->Swap();
+    pFirstTarget->Clear(0xFF0000FF);
+    pFirstTarget->Swap();
+
+    pSecondTarget->Clear(0xFF00FF00);
+    pSecondTarget->Swap();
   }
 
   return 0;
