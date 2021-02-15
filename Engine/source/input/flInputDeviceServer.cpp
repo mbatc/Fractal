@@ -1,6 +1,6 @@
 #include "input/flInputDeviceServer.h"
 #include "threads/flThreads.h"
-#include "atVector.h"
+#include "ctVector.h"
 #include <time.h>
 
 struct _flButtonEvent
@@ -25,8 +25,8 @@ namespace flEngine
     class flPIMPL_CLASS(InputDeviceServer)
     {
     public:
-      atVector<_flButtonEvent> m_buttonEvents;
-      atVector<_flAnalogEvent> m_analogEvents;
+      ctVector<_flButtonEvent> m_buttonEvents;
+      ctVector<_flAnalogEvent> m_analogEvents;
       Threads::RecursiveMutex  m_lock;
     };
   }

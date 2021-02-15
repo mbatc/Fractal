@@ -23,6 +23,8 @@ protected:
   Platform::EventQueue m_events;
 };
 
+static Platform::Window* _pActiveWindow = nullptr;
+
 Mouse::Mouse()
   : InputDevice(MB_Count + MB_ExtendedCount, MA_Count, _GlobalMouseServer::Create())
 {}
@@ -120,8 +122,8 @@ void Mouse::EventHandler(flIN Platform::Event *pEvent, flIN void *pUserData)
     break;
 
   case Platform::E_Mse_Move:
-    pServer->SendEvent(Input::MA_XPos, (float)pEvent->mseMove.x);
-    pServer->SendEvent(Input::MA_YPos, (float)pEvent->mseMove.y);
+    pServer->SendEvent(Input::MA_XPos, (float)pEvent->mseMove.screenX);
+    pServer->SendEvent(Input::MA_YPos, (float)pEvent->mseMove.screenY);
     break;
   }
 }

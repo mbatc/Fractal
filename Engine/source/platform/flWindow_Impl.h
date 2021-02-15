@@ -13,7 +13,7 @@ namespace flEngine
     public:
       ~Impl_Window();
 
-      void Construct(const char *title, Window::Flags flags, Window::DisplayMode displayMode, Input::InputDeviceServer *pKeyboardServer, Input::InputDeviceServer *pMouseServer);
+      void Construct(Window *pWindow, const char *title, Window::Flags flags, Window::DisplayMode displayMode, Input::InputDeviceServer *pKeyboardServer, Input::InputDeviceServer *pMouseServer);
 
       void SetTitle(const char *title);
       void SetDisplayMode(Window::DisplayMode mode);
@@ -54,14 +54,15 @@ namespace flEngine
       bool BindRenderTarget(Graphics::WindowRenderTarget *pTarget);
       void UnbindRenderTarget();
 
-      void Create(const char *title, Window::Flags flags, void *hInstance);
+      void Create(Window *pWindow, const char *title, Window::Flags flags, void *hInstance);
       void Destroy();
+
+      static Window *GetFocusedWindow(Window::FocusFlags focusFlags);
 
     protected:
       EventQueue m_events;
       bool m_receivedEvents[Platform::Event_Count] = { 0 };
 
-      Window::FocusFlags m_focus = Window::FF_None;
       Window::DisplayMode m_displayMode = Window::DM_Windowed;
 
       Input::Keyboard m_keyboard;

@@ -38,8 +38,17 @@ int main(char **argv, int argc)
     if (pKeyboard->GetKeyReleased(Input::KC_L))
       printf("Window L released\n");
 
-    if (pMouse->GetPressed(Input::MB_Left))
-      printf("%f, %f\n", pMouse->GetX(), pMouse->GetY());
+    if (globalMouse.GetPressed(Input::MB_Left))
+    {
+      Window *pWindow = Window::GetFocusedWindow(Window::FF_Mouse);
+      if (pWindow)
+      {
+        Input::Mouse *pFocusedMouse = pWindow->GetMouse();
+        printf("Window [0x%X]: %f, %f\n", (int64_t)pWindow, pFocusedMouse->GetX(), pFocusedMouse->GetY());
+      }
+
+      printf("Screen: %f, %f\n", globalMouse.GetX(), globalMouse.GetY());
+    }
 
     float vScroll = pMouse->GetScrollV();
     float hScroll = pMouse->GetScrollH();

@@ -2,7 +2,6 @@
 #include "graphics/OpenGL/flGLGeometry.h"
 #include "graphics/OpenGL/flGLIndexBuffer.h"
 #include "graphics/OpenGL/flGLVertexBuffer.h"
-#include "graphics/OpenGL/flGLPixelBuffer.h"
 #include "graphics/OpenGL/flGLProgram.h"
 #include "graphics/OpenGL/flGLWindowRenderTarget.h"
 #include "graphics/OpenGL/flGLTextureRenderTarget.h"
@@ -34,19 +33,14 @@ Geometry* OpenGL::CreateGeometry()
   return GLGeometry::Create();
 }
 
-IndexBuffer* OpenGL::CreateIndexBuffer()
+IndexBuffer* OpenGL::CreateIndexBuffer(flIN AccessFlags accessFlags)
 {
-  return GLIndexBuffer::Create();
+  return GLIndexBuffer::Create(accessFlags);
 }
 
-VertexBuffer* OpenGL::CreateVertexBuffer()
+VertexBuffer* OpenGL::CreateVertexBuffer(flIN AccessFlags accessFlags)
 {
-  return GLVertexBuffer::Create();
-}
-
-PixelBuffer* OpenGL::CreatePixelBuffer()
-{
-  return GLPixelBuffer::Create();
+  return GLVertexBuffer::Create(accessFlags);
 }
 
 Program* OpenGL::CreateProgram()

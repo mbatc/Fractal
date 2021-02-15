@@ -27,7 +27,7 @@ namespace flEngine
   {
     typedef uint32_t ColourU32;
 
-    enum
+    enum : uint32_t
     {
       ColourU32_Black = 0xFF000000,
       ColourU32_White = 0xFFFFFFFF,

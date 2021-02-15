@@ -3,7 +3,7 @@
 #if flUSING(flPLATFORM_WINDOWS)
 
 #include "graphics\OpenGL\flGLWindowRenderTarget.h"
-#include "atString.h"
+#include "ctString.h"
 #include <windows.h>
 #include "GL/glew.h"
 #include "GL/wglew.h"
@@ -39,9 +39,9 @@ HGLRC flEngine_GL_hCurrentGLRC = 0;
 static void GLAPIENTRY _ErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
   userParam, length;
-  atString assertion = "OpenGL Error (type: " + atString((int64_t)type) + ", severity: " + atString((int64_t)severity) + ", id: " + atString((int64_t)id) + ")\n\n" + message;
+  ctString assertion = "OpenGL Error (type: " + ctString((int64_t)type) + ", severity: " + ctString((int64_t)severity) + ", id: " + ctString((int64_t)id) + ")\n\n" + message;
   printf((assertion + "\n").c_str());
-  atRelAssert(type != GL_DEBUG_TYPE_ERROR, assertion);
+  ctRelAssert(type != GL_DEBUG_TYPE_ERROR, assertion);
 }
 
 void Impl_OpenGL::Construct(Platform::Window *pWindow, const RenderTargetOptions *pOptions)

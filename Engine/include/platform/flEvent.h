@@ -7,6 +7,8 @@ namespace flEngine
 {
   namespace Platform
   {
+    class Window;
+
     /**
      * @brief List of event type groupings.
      */
@@ -72,7 +74,7 @@ namespace flEngine
     struct flEXPORT Event
     {
       /**
-       * @brief Get the event ID
+       * @brief The event ID
        *
        * The ID of the event. This value will correspond to Event ID's are group together based on the system that sent
        * the event (e.g. Window, Input, etc). Theses groups are defined by EventType.
@@ -80,12 +82,20 @@ namespace flEngine
       int64_t id;
 
       /**
-       * @brief Get the event type
+       * @brief The event type
        *
        * The Type of the event. Event types  are group together based on the system that sen
        * the event (e.g. Window, Input, etc)
        */
       int64_t type;
+
+      /**
+       * @brief The target window for this event.
+       * 
+       * This is a pointer to the fractal window instance that this event corresponds to.
+       * To access the native OS window handle, check the 'nativeEvent' member.
+       */
+      Window *pWindow;
 
       union
       {
@@ -192,13 +202,15 @@ namespace flEngine
         struct MseState
         {
           int64_t button; ///< The index of the button pressed
-          bool isDown;    ///< Is the button down
+          bool isDown;   ///< Is the button down
         } mseState; ///< Mouse button state event data
 
         struct MseMove
         {
-          int64_t x; ///< The x position of the mouse
-          int64_t y; ///< The y position of the mouse
+          int64_t screenX; ///< The x position of the mouse in desktop coordinates
+          int64_t screenY; ///< The y position of the mouse in desktop coordinates
+          int64_t wndX;    ///< The x position of the mouse relative the to upper left corner of the captured window
+          int64_t wndY;    ///< The y position of the mouse relative the to upper left corner of the captured window
         } mseMove; ///< Mouse moved event data
 
         struct MseScroll

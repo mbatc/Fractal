@@ -2,7 +2,6 @@
 #define fl_Graphics_API_h__
 
 #include "../threads/flThreadQueue.h"
-#include "flRenderTarget.h"
 #include "flPixelFormat.h"
 
 namespace flEngine
@@ -20,11 +19,8 @@ namespace flEngine
     class DeviceState;
     class WindowRenderTarget;
     class TextureRenderTarget;
-
-    struct flEXPORT APIConfig
-    {
-      int64_t multisampleCount;
-    };
+    struct RenderTargetOptions;
+    enum AccessFlags;
 
     class flEXPORT API : public Interface
     {
@@ -60,12 +56,10 @@ namespace flEngine
       
       virtual Geometry* CreateGeometry() = 0;
       
-      virtual IndexBuffer* CreateIndexBuffer() = 0;
-      
-      virtual VertexBuffer* CreateVertexBuffer() = 0;
-      
-      virtual PixelBuffer* CreatePixelBuffer() = 0;
-      
+      virtual IndexBuffer* CreateIndexBuffer(flIN AccessFlags accessFlags) = 0;
+
+      virtual VertexBuffer* CreateVertexBuffer(flIN AccessFlags accessFlags) = 0;
+
       virtual Program* CreateProgram() = 0;
     };
   }

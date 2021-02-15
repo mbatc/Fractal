@@ -3,7 +3,7 @@
 #if flUSING(flPLATFORM_WINDOWS)
 
 #include <windows.h>
-#include "atVector.h"
+#include "ctVector.h"
 #include "GL/glew.h"
 #include "GL/wglew.h"
 #include "GL/GL.h"
@@ -30,7 +30,7 @@ void Impl_GLWindowRenderTarget::Construct(flIN Platform::Window *pWindow, flIN c
   SetFormat(pOptions);
 }
 
-void _AddAttribute(atVector<int> *pAttributes, const int &attrib, const int &val)
+void _AddAttribute(ctVector<int> *pAttributes, const int &attrib, const int &val)
 {
   pAttributes->push_back(attrib);
   pAttributes->push_back(val);
@@ -100,7 +100,7 @@ bool Impl_GLWindowRenderTarget::SetFormat(flIN const RenderTargetOptions *pOptio
   }
 
   // Get the attribute list
-  atVector<int> attribList;
+  ctVector<int> attribList;
   _AddAttribute(&attribList, WGL_DRAW_TO_WINDOW_ARB, GL_TRUE);
   _AddAttribute(&attribList, WGL_SUPPORT_OPENGL_ARB, GL_TRUE);
   _AddAttribute(&attribList, WGL_DOUBLE_BUFFER_ARB,  GL_TRUE);
@@ -139,7 +139,7 @@ bool Impl_GLWindowRenderTarget::SetFormat(flIN const RenderTargetOptions *pOptio
 
     // Recreate the window
     m_pWindow->GetImpl()->Destroy();
-    m_pWindow->GetImpl()->Create(title, flags, GetModuleHandle(NULL));
+    m_pWindow->GetImpl()->Create(m_pWindow, title, flags, GetModuleHandle(NULL));
   }
 
   PIXELFORMATDESCRIPTOR pfd = { 0 };

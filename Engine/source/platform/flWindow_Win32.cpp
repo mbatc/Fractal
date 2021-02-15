@@ -6,7 +6,8 @@
 #include "platform/flEventQueue.h"
 #include "threads/flThreads.h"
 #include "platform/flEvent.h"
-#include "atString.h"
+#include "ctHashMap.h"
+#include "ctString.h"
 #include <windows.h>
 #include <mutex>
 
@@ -18,10 +19,14 @@ LRESULT CALLBACK _flWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 static std::mutex _windowInitLock;
 static int64_t _windowInitCount = 0;
-static atString _windowClsName = "FractalEngine_WindowClass";
+static ctString _windowClsName = "FractalEngine_WindowClass";
 static ATOM _atom = 0;
+static ctHashMap<void*, Window*> _windowLookup;
+static Window *_pHoveredWindow = nullptr;
 
-void Impl_Window::Construct(const char *title, Window::Flags flags, Window::DisplayMode displayMode, InputDeviceServer *pKeyboardServer, InputDeviceServer *pMouseServer)
+static Window *_GetWindowFromHandle(HWND hWnd);
+
+void Impl_Window::Construct(Window *pWindow, const char *title, Window::Flags flags, Window::DisplayMode displayMode, InputDeviceServer *pKeyboardServer, InputDeviceServer *pMouseServer)
 {
   // Set input device servers
   m_keyboard.SetServer(pKeyboardServer);
@@ -44,17 +49,9 @@ void Impl_Window::Construct(const char *title, Window::Flags flags, Window::Disp
     {
     case E_Wnd_Activate:
       if (pEvent->wndActive.isActive)
-        pWnd->m_focus = Window::FF_Keyboard | Window::FF_Mouse | Window::FF_Grabbed;
-      else
-        pWnd->m_focus = Window::FF_None;
-      break;
-
-    case E_Kbd_SetFocus:
-      pWnd->m_focus = pWnd->m_focus | Window::FF_Keyboard;
-      break;
-
-    case E_Kbd_KillFocus:
-      pWnd->m_focus = pWnd->m_focus & ~Window::FF_Keyboard;
+        _pHoveredWindow = pEvent->pWindow;
+      else if (_pHoveredWindow == pEvent->pWindow)
+        _pHoveredWindow = nullptr;
       break;
     }
   }, this);
@@ -81,7 +78,7 @@ void Impl_Window::Construct(const char *title, Window::Flags flags, Window::Disp
   }
   _windowInitLock.unlock();
 
-  Create(title, flags, hInstance);
+  Create(pWindow, title, flags, hInstance);
 }
 
 Impl_Window::~Impl_Window()
@@ -103,13 +100,14 @@ Impl_Window::~Impl_Window()
   _windowInitLock.unlock();
 }
 
-void Impl_Window::Create(const char *title, Window::Flags flags, void *hInstance)
+void Impl_Window::Create(Window *pWindow, const char *title, Window::Flags flags, void *hInstance)
 {
   Util::Task *pCreateTask = nullptr;
 
   // Create the window on the System event thread
   struct CreateData
   {
+    Window       *pWindow;
     void        **ppHandle;
     const char   *title;
     Window::Flags flags;
@@ -117,6 +115,7 @@ void Impl_Window::Create(const char *title, Window::Flags flags, void *hInstance
   };
 
   CreateData createData;
+  createData.pWindow   = pWindow;
   createData.ppHandle  = &m_hWnd;
   createData.title     = title;
   createData.flags     = flags;
@@ -139,12 +138,13 @@ void Impl_Window::Create(const char *title, Window::Flags flags, void *hInstance
       pCreateData->hInstance,
       0);
 
+    _windowLookup.Add(*pCreateData->ppHandle, pCreateData->pWindow);
+
     int show = SW_HIDE;
 
     ::UpdateWindow((HWND)*pCreateData->ppHandle);
     if ((pCreateData->flags & Window::Flag_Visible) > 0)
       ::ShowWindow((HWND)*pCreateData->ppHandle, SW_SHOW);
-
     return 0ll;
   }, &createData, &pCreateTask);
 
@@ -160,8 +160,31 @@ void Impl_Window::Destroy()
 
   EventQueue::GetEventThread()->Add([](void *pHandle) {
     ::DestroyWindow((HWND)pHandle);
+    _windowLookup.Remove(pHandle);
     return 0ll;
   }, m_hWnd);
+}
+
+Window* Impl_Window::GetFocusedWindow(Window::FocusFlags focusFlags)
+{
+  HWND capturedWindow = ::GetCapture();
+  HWND focusedWindow = ::GetFocus();
+
+  Window *pKeyboardWnd = _GetWindowFromHandle(focusedWindow);
+  Window *pMouseWnd = nullptr;
+
+  if (capturedWindow == 0)
+    pMouseWnd = _pHoveredWindow;
+  else
+    pMouseWnd = _GetWindowFromHandle(capturedWindow);
+
+
+  bool keyboard = (focusFlags & Window::FF_Keyboard) > 0;
+  bool mouse = (focusFlags & Window::FF_Mouse) > 0;
+  if (keyboard && mouse) return pKeyboardWnd == pMouseWnd ? pKeyboardWnd : nullptr;
+  else if (keyboard)     return pKeyboardWnd;
+  else if (mouse)        return pMouseWnd;
+  return nullptr;
 }
 
 void Impl_Window::SetTitle(const char *title)
@@ -240,9 +263,6 @@ void Impl_Window::SetFocus(Window::FocusFlags flags, bool focused)
     else
       ::ReleaseCapture();
   }
-
-  if (focused) m_focus = m_focus | flags;
-  else         m_focus = m_focus & ~flags;
 }
 
 void Impl_Window::SetSize(int64_t width, int64_t height)
@@ -277,7 +297,12 @@ Window::DisplayMode Impl_Window::GetDisplayMode() const
 
 Window::FocusFlags Impl_Window::GetFocusFlags() const
 {
-  return m_focus;
+  Window *pKeyboard = GetFocusedWindow(Window::FF_Keyboard);
+  Window *pMouse = GetFocusedWindow(Window::FF_Mouse);
+  Window::FocusFlags flags = Window::FF_None;
+  if (pKeyboard && pKeyboard->pImplWindow == this) flags = flags | Window::FF_Keyboard;
+  if (pMouse && pMouse->pImplWindow == this)       flags = flags | Window::FF_Keyboard;
+  return flags;
 }
 
 Window::Flags Impl_Window::GetFlags() const
@@ -350,6 +375,9 @@ static LRESULT CALLBACK _flWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
   Event evnt;
   Event_Create(&evnt, &nativeEvent);
 
+  Window **ppWindow = _windowLookup.TryGet(hwnd);
+  evnt.pWindow = ppWindow ? *ppWindow : nullptr;
+
   EventQueue::PostGlobalEvent(&evnt);
 
   if (evnt.id == E_Wnd_Close)
@@ -388,6 +416,32 @@ void flEngine::Platform::Impl_Window::UnbindRenderTarget()
   if (m_pRenderTarget)
     m_pRenderTarget->DecRef();
   m_pRenderTarget = nullptr;
+}
+
+static Window *_GetWindowFromHandle(HWND hWnd)
+{
+  struct TaskData
+  {
+    HWND hWnd;
+    Window *pWindow;
+  };
+
+  TaskData tskData = { 0 };
+  tskData.hWnd = hWnd;
+  Util::Task *pTask = nullptr;
+
+  EventQueue::GetEventThread()->Add([](void *pUserData){
+    TaskData *pData = (TaskData*)pUserData;
+    Window **ppWindow = _windowLookup.TryGet(pData->hWnd);
+    if (ppWindow)
+      pData->pWindow = *ppWindow;
+    return 0ll;
+  }, &tskData, &pTask);
+
+  pTask->Wait();
+  pTask->DecRef();
+
+  return tskData.pWindow;
 }
 
 #endif

@@ -180,8 +180,15 @@ void flCCONV flEngine::Platform::Event_Create(flOUT Event *pEvent, flIN NativeEv
   {
     pEvent->type = E_Type_Mouse;
     pEvent->id   = E_Mse_Move;
-    pEvent->mseMove.x = GET_X_LPARAM(pNativeEvent->lParam);
-    pEvent->mseMove.y = GET_Y_LPARAM(pNativeEvent->lParam);
+    pEvent->mseMove.wndX = GET_X_LPARAM(pNativeEvent->lParam);
+    pEvent->mseMove.wndY = GET_Y_LPARAM(pNativeEvent->lParam);
+
+    POINT pnt;
+    pnt.x = (LONG)pEvent->mseMove.wndX;
+    pnt.y = (LONG)pEvent->mseMove.wndY;
+    ClientToScreen((HWND)pEvent->nativeEvent.hWnd, &pnt);
+    pEvent->mseMove.screenX = pnt.x;
+    pEvent->mseMove.screenY = pnt.y;
   } break;
 
   case WM_LBUTTONDOWN:  mouseDown = MB_Left; break;

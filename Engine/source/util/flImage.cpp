@@ -1,18 +1,18 @@
 #include "util/flImage.h"
-#include "atVector.h"
+#include "ctVector.h"
 
 using namespace flEngine;
 
-static Util::ColourU32 _SampleNearest(float u, float v, const atVector<Util::ColourU32> &pixels, const int64_t &w, const int64_t &h)
+static Util::ColourU32 _SampleNearest(float u, float v, const ctVector<Util::ColourU32> &pixels, const int64_t &w, const int64_t &h)
 {
-  return pixels[(int64_t)(uv.x * w + 0.5f) + (int64_t)(uv.y * h + 0.5f) * w];
+  return pixels[(int64_t)((double)u * w + 0.5) + (int64_t)((double)v * h + 0.5) * w];
 }
 
-static Util::ColourU32 _SampleBilinear(float u, float v, const atVector<Util::ColourU32> &pixels, const int64_t &w, const int64_t &h)
+static Util::ColourU32 _SampleBilinear(float u, float v, const ctVector<Util::ColourU32> &pixels, const int64_t &w, const int64_t &h)
 {
   Math::Vec2F uv(u, v);
-  int64_t x = (int64_t)(uv.x * w) % w;
-  int64_t y = (int64_t)(uv.y * h) % h;
+  int64_t x = (int64_t)((double)uv.x * w) % w;
+  int64_t y = (int64_t)((double)uv.y * h) % h;
   int64_t x2 = (x + 1) % w;
   int64_t y2 = (y + 1) % h;
 
@@ -38,30 +38,30 @@ namespace flEngine
     public:
       void Construct(flIN const char *path)
       {
-
+        ctUnused(path);
       }
 
       void Construct(flIN const Colour *pPixels, flIN const Math::Vec2I *pSize)
       {
-        m_pixels.reserve(pSize->x * pSize->y);
-        for (const Colour &col : atIterate(pPixels, pSize->x * pSize->y))
+        m_pixels.reserve((int64_t)pSize->x * pSize->y);
+        for (const Colour &col : ctIterate(pPixels, pSize->x * pSize->y))
           m_pixels.push_back(col);
       }
 
       void Construct(flIN const ColourU32 *pPixels, flIN const Math::Vec2I *pSize)
       {
-        m_pixels.insert(0, pPixels, pPixels + pSize->x * pSize->y);
+        m_pixels.insert(0, pPixels, pPixels + (int64_t)pSize->x * pSize->y);
       }
 
       void Construct(flIN const Math::Vec2I *pSize, flIN ColourU32 initialColour = ColourU32_Black)
       {
-        m_pixels.resize(pSize->x * pSize->y, initialColour);
+        m_pixels.resize((int64_t)pSize->x * pSize->y, initialColour);
       }
 
       void Resize(flIN const Math::Vec2I *pSize, flIN const SampleType sampleType)
       {
-        atVector<ColourU32> newPixels;
-        newPixels.resize(pSize->x * pSize->y);
+        ctVector<ColourU32> newPixels;
+        newPixels.resize((int64_t)pSize->x * pSize->y);
         Math::Vec2F uv = 0;
         Math::Vec2F uvStep = 1.0f / Math::Vec2F(*pSize);
         for (int64_t y = 0; y < pSize->y; ++y, uv.y += uvStep.y)
@@ -79,6 +79,8 @@ namespace flEngine
         case ST_Nearest: return _SampleNearest(pUV->x, pUV->y, m_pixels, m_size.x, m_size.y);
         case ST_Bilinear: return _SampleBilinear(pUV->x, pUV->y, m_pixels, m_size.x, m_size.y);
         }
+
+        return ColourU32_Black;
       }
 
       ColourU32* GetPixels() { return m_pixels.data(); }
@@ -87,7 +89,7 @@ namespace flEngine
       Math::Vec2I GetSize() const { return m_size; }
 
       Math::Vec2I         m_size;
-      atVector<ColourU32> m_pixels;
+      ctVector<ColourU32> m_pixels;
     };
   }
 }

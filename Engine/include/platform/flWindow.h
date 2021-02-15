@@ -253,6 +253,15 @@ namespace flEngine
        * @return A pointer to a WindowRenderTarget for this window.
        */
       Graphics::WindowRenderTarget* GetRenderTarget() const;
+
+      /**
+       * @brief Get a pointer to the window that has focus.
+       * 
+       * @param [in] focusFlags Flags specifying the type of focus to check
+       * 
+       * @return A pointer to the Window that has focus
+       */
+      static Window* GetFocusedWindow(flIN FocusFlags focusFlags);
     };
 
     flBITWISE_ENUM_OPERATORS(Window::FocusFlags);

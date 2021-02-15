@@ -2,6 +2,12 @@
 	path = atLib
 	url = https://github.com/mbatc/atLib.git
 
-[submodule "tml"]
-	path = tml
-	url = https://github.com/mbatc/template-math-library.git
+[submodule "ctools"]
+	path = ctools
+	url = https://github.com/mbatc/ctools.git
+[submodule "3rdParty/stb"]
+	path = 3rdParty/stb
+	url = https://github.com/nothings/stb.git
+[submodule "3rdParty/nanosvg"]
+	path = 3rdParty/nanosvg
+	url = https://github.com/memononen/nanosvg.git

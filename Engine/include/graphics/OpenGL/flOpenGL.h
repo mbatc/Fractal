@@ -53,11 +53,9 @@ namespace flEngine
 
       virtual Geometry* CreateGeometry() override;
 
-      virtual IndexBuffer* CreateIndexBuffer() override;
+      virtual IndexBuffer* CreateIndexBuffer(flIN AccessFlags accessFlags) override;
 
-      virtual VertexBuffer* CreateVertexBuffer() override;
-
-      virtual PixelBuffer* CreatePixelBuffer() override;
+      virtual VertexBuffer* CreateVertexBuffer(flIN AccessFlags accessFlags) override;
 
       virtual Program* CreateProgram() override;
     };

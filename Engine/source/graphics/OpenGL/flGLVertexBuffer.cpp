@@ -133,7 +133,7 @@ namespace flEngine
 
       void* GetNativeResource()
       {
-        return (void*)m_bufferID;
+        return (void*)(uint64_t)m_bufferID;
       }
 
     protected:
