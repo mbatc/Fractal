@@ -15,12 +15,6 @@
 #define flCCONV _cdecl
 #endif
 
-#define flNew new
-#define flDelete delete
-#define flAlloc(size) malloc(size)
-#define flAllocT(type, count) (type*)malloc(sizeof(type) * count)
-#define flFree(pMem) (free(pMem), pMem = nullptr)
-
 #define flPLATFORM_WINDOWS 0
 #define flPLATFORM_LINUX 0
 

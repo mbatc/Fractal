@@ -1,6 +1,8 @@
 #ifndef fl_PImpl_h__
 #define fl_PImpl_h__
 
+#include "flMemory.h"
+
 /**
  * Implementation typename for a class
  */

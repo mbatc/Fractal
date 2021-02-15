@@ -8,17 +8,17 @@ namespace flEngine
 {
   namespace Graphics
   {
-    enum WrapMode
+    enum class WrapMode
     {
-      WM_Repeat,
-      WM_Mirror,
-      WM_ClampToEdge,
+      Repeat,
+      Mirror,
+      ClampToEdge,
     };
 
-    enum FilterMode
+    enum class FilterMode
     {
-      FM_Linear,
-      FM_Nearest,
+      Linear,
+      Nearest,
     };
 
     class flEXPORT Sampler : public Interface

@@ -14,11 +14,11 @@ namespace flEngine
     struct RenderTargetOptions
     {
       // Colour format
-      PixelComponentType pixelComponentType = PCT_UInt8;
-      PixelFormat colourFormat = PF_RGBA;
+      PixelComponentType pixelComponentType = PixelComponentType::UInt8;
+      PixelFormat colourFormat = PixelFormat::RGBA;
 
       // Depth Format
-      DepthFormat depthFormat = DF_Float24Stencil8;
+      DepthFormat depthFormat = DepthFormat::Float24Stencil8;
 
       // Multi sampling
       int64_t sampleCount = 1;

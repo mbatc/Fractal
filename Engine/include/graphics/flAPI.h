@@ -2,6 +2,7 @@
 #define fl_Graphics_API_h__
 
 #include "../threads/flThreadQueue.h"
+#include "../math/flMath.h"
 #include "flPixelFormat.h"
 
 namespace flEngine
@@ -19,7 +20,11 @@ namespace flEngine
     class DeviceState;
     class WindowRenderTarget;
     class TextureRenderTarget;
+    class Texture2D;
+
+    struct PixelBufferDesc;
     struct RenderTargetOptions;
+
     enum AccessFlags;
 
     class flEXPORT API : public Interface
@@ -50,6 +55,14 @@ namespace flEngine
        */
       virtual void Render() = 0;
 
+      /**
+       * @brief Create a graphics render target for a window.
+       *
+       * @param [in] pWindow  A pointer to the Window to associate the render target with.
+       * @param [in] pOptions The properties of the WindowRenderTarget to create.
+       *
+       * @return A pointer to a WindowRenderTarget instance.
+       */
       virtual WindowRenderTarget* CreateWindowRenderTarget(flIN Platform::Window *pWindow, flIN RenderTargetOptions *pOptions) = 0;
 
       virtual TextureRenderTarget* CreateTextureRenderTarget() = 0;
@@ -61,6 +74,8 @@ namespace flEngine
       virtual VertexBuffer* CreateVertexBuffer(flIN AccessFlags accessFlags) = 0;
 
       virtual Program* CreateProgram() = 0;
+
+      // virtual Texture2D* CreateTexture2D(flIN Math::Vec2I size, flIN PixelBufferDesc *pTextureFormat) = 0;
     };
   }
 }

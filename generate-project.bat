@@ -8,8 +8,6 @@ set /p opt="Selection: "
 
 :PARSE_OPT
 
-echo %opt%
-
 IF %opt%==1 (
   call "setup\win\GenerateProject-vs2015.bat"
   goto VALID_OPT

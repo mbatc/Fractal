@@ -14,9 +14,9 @@ namespace flEngine
         GLenum glFeature = GL_NONE;
         switch (feature)
         {
-        case DF_Blend:       glFeature = GL_BLEND;        break;
-        case DF_DepthTest:   glFeature = GL_DEPTH_TEST;   break;
-        case DF_StencilTest: glFeature = GL_STENCIL_TEST; break;
+        case DeviceFeature::Blend:       glFeature = GL_BLEND;        break;
+        case DeviceFeature::DepthTest:   glFeature = GL_DEPTH_TEST;   break;
+        case DeviceFeature::StencilTest: glFeature = GL_STENCIL_TEST; break;
         }
 
         GLboolean value;
@@ -29,9 +29,9 @@ namespace flEngine
         GLenum glFeature = GL_NONE;
         switch (feature)
         {
-        case DF_Blend:       glFeature = GL_BLEND;        break;
-        case DF_DepthTest:   glFeature = GL_DEPTH_TEST;   break;
-        case DF_StencilTest: glFeature = GL_STENCIL_TEST; break;
+        case DeviceFeature::Blend:       glFeature = GL_BLEND;        break;
+        case DeviceFeature::DepthTest:   glFeature = GL_DEPTH_TEST;   break;
+        case DeviceFeature::StencilTest: glFeature = GL_STENCIL_TEST; break;
         }
 
         if (glFeature == GL_NONE)
