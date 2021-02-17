@@ -7,12 +7,12 @@ namespace flEngine
 {
   namespace Graphics
   {
-    enum class AccessFlags
+    enum AccessFlags
     {
-      None = 0,
-      Read = 1 << 0,
-      Write = 1 << 1,
-      ReadWrite = (int64_t)Read | Write,
+      AccessFlag_None = 0,
+      AccessFlag_Read = 1 << 0,
+      AccessFlag_Write = 1 << 1,
+      AccessFlag_ReadWrite = (int64_t)AccessFlag_Read | AccessFlag_Write,
     };
 
     class flEXPORT HardwareBuffer : public Interface

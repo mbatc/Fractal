@@ -2,6 +2,7 @@
 #define fl_Graphics_Texture_h__
 
 #include "../flInterface.h"
+#include "../math/flMath.h"
 #include "flPixelFormat.h"
 
 namespace flEngine

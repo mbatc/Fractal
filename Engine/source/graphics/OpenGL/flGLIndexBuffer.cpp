@@ -21,7 +21,7 @@ namespace flEngine
 
       bool Resize(int64_t size, bool discardData)
       {
-        void *pMapped = Map(AF_Read);
+        void *pMapped = Map(AccessFlag_Read);
         if (!pMapped)
           return false;
 
@@ -50,7 +50,7 @@ namespace flEngine
 
       bool Get(void* pBuffer, int64_t length, int64_t offset)
       {
-        void *pMapped = Map(AF_Read, length, offset);
+        void *pMapped = Map(AccessFlag_Read, length, offset);
         if (!pMapped)
           return false; // Buffer is already mapped in an incompatible way.
 
@@ -93,8 +93,8 @@ namespace flEngine
         }
 
         GLenum glAccess = 0;
-        if ((flags & AF_Read) > 0)  glAccess |= GL_MAP_READ_BIT;
-        if ((flags & AF_Write) > 0) glAccess |= GL_MAP_WRITE_BIT;
+        if ((flags & AccessFlag_Read) > 0)  glAccess |= GL_MAP_READ_BIT;
+        if ((flags & AccessFlag_Write) > 0) glAccess |= GL_MAP_WRITE_BIT;
         if (glAccess == 0)
           return nullptr;
 

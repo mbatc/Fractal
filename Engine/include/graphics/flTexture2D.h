@@ -11,7 +11,6 @@ namespace flEngine
     class flEXPORT Texture2D : public Texture
     {
     public:
-
     };
   }
 }

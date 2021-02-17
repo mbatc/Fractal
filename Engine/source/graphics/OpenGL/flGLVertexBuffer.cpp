@@ -21,7 +21,7 @@ namespace flEngine
 
       bool Resize(int64_t size, bool discardData)
       {
-        void *pMapped = Map(AF_Read);
+        void *pMapped = Map(AccessFlag_Read);
         if (!pMapped)
           return false;
 
@@ -48,7 +48,7 @@ namespace flEngine
 
       bool Get(void* pBuffer, int64_t length, int64_t offset)
       {
-        void *pMapped = Map(AF_Read, length, offset);
+        void *pMapped = Map(AccessFlag_Read, length, offset);
         if (!pMapped)
           return false; // Buffer is already mapped in an incompatible way.
 
@@ -91,8 +91,8 @@ namespace flEngine
         }
 
         GLenum glAccess = 0;
-        if ((flags & AF_Read) > 0)  glAccess |= GL_MAP_READ_BIT;
-        if ((flags & AF_Write) > 0) glAccess |= GL_MAP_WRITE_BIT;
+        if ((flags & AccessFlag_Read) > 0)  glAccess |= GL_MAP_READ_BIT;
+        if ((flags & AccessFlag_Write) > 0) glAccess |= GL_MAP_WRITE_BIT;
         if (glAccess == 0)
           return nullptr;
 
@@ -140,13 +140,13 @@ namespace flEngine
       int64_t m_size = 0;
       uint32_t m_bufferID = 0;
       GLenum m_glAccessFlags = 0;
-      AccessFlags m_accessFlags = AF_None;
+      AccessFlags m_accessFlags = AccessFlag_None;
 
       // Description of the mapped client memory
       void       *m_pMappedPtr = nullptr;
       int64_t     m_mappedOffset = 0;
       int64_t     m_mappedLength = 0;
-      AccessFlags m_mappedFlags = AF_None;
+      AccessFlags m_mappedFlags = AccessFlag_None;
 
       // The number of calls to Map() where a valid pointer was returned.
       // Unmap should be called this many times.
