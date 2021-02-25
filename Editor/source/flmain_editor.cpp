@@ -23,7 +23,7 @@ int main(char **argv, int argc)
   Input::Mouse    *pMouse    = window.GetMouse();
   Input::Keyboard *pKeyboard = window.GetKeyboard();
 
-  Input::Mouse globalMouse;
+  Input::Mouse    globalMouse;
   Input::Keyboard globalKbd;
 
   while (!window.ReceivedEvent(E_Wnd_Close)) // Check if the window has requested a close

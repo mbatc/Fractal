@@ -25,12 +25,18 @@ namespace flEngine
      * @param [in] pBuffer A pointer to the buffer to be freed.
      */
     flEXPORT void Free(flIN void *pBuffer);
+
+    /**
+     * @brief Attempt to reallocate a buffer.
+     */
+    flEXPORT void* Realloc(flIN flOUT void *pBuffer, flIN int64_t size);
   }
 }
 
 #define flNew new
 #define flDelete delete
 #define flAlloc(size) flEngine::Memory::Alloc(size)
+#define flRealloc(pMem, size) flEngine::Memory::Realloc(pMem, size)
 #define flAllocT(type, count) (type*)flAlloc(sizeof(type) * count)
 #define flFree(pMem) (flEngine::Memory::Free(pMem), pMem = nullptr)
 

@@ -16,7 +16,7 @@ end
 
 workspace "Fractal"
   configurations {"Debug", "Release" }
-  startproject "atEngine"
+  startproject "FractalEditor"
 
   -- Setup global properties for the Debug configuration
   filter { "configurations:Debug" }

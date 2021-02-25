@@ -1,21 +1,20 @@
-#include "graphics/OpenGL/flGLVertexBuffer.h"
-#include "GL/glew.h"
-#include "GL/wglew.h"
-#include "GL/GL.h"
+#include "graphics/OpenGL/flGLHardwareBuffer.h"
+#include "flGLUtil.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
-    class Impl_GLVertexBuffer
+    class Impl_GLHardwareBuffer
     {
     public:
-      ~Impl_GLVertexBuffer() { glDeleteBuffers(1, &m_bufferID); }
+      ~Impl_GLHardwareBuffer() { glDeleteBuffers(1, &m_bufferID); }
 
-      void Construct(flIN AccessFlags accessFlags)
+      void Construct(flIN BufferBinding binding, flIN AccessFlags accessFlags)
       {
         glCreateBuffers(1, &m_bufferID);
         m_accessFlags = accessFlags;
+        m_binding = binding;
         m_glAccessFlags = GL_STATIC_DRAW;
       }
 
@@ -39,9 +38,9 @@ namespace flEngine
 
       bool Set(void* pData, int64_t size)
       {
-        glBindBuffer(GL_ARRAY_BUFFER, m_bufferID);
-        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)size, pData, m_glAccessFlags);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_COPY_WRITE_BUFFER, m_bufferID);
+        glBufferData(GL_COPY_WRITE_BUFFER, (GLsizeiptr)size, pData, m_glAccessFlags);
+        glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
         m_size = size;
         return true;
       }
@@ -57,14 +56,14 @@ namespace flEngine
         return true;
       }
 
-      bool Update()
-      {
-        return true;
-      }
-
       int64_t GetSize()
       {
         return m_size;
+      }
+
+      BufferBinding GetBinding()
+      {
+        return m_binding;
       }
 
       AccessFlags GetAccessFlags()
@@ -96,9 +95,9 @@ namespace flEngine
         if (glAccess == 0)
           return nullptr;
 
-        glBindBuffer(GL_ARRAY_BUFFER, m_bufferID);
-        m_pMappedPtr = glMapBufferRange(GL_ARRAY_BUFFER, offset, mappedLength, glAccess);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_COPY_WRITE_BUFFER, m_bufferID);
+        m_pMappedPtr = glMapBufferRange(GL_COPY_WRITE_BUFFER, offset, mappedLength, glAccess);
+        glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
 
         if (!m_pMappedPtr)
           return nullptr;
@@ -123,9 +122,9 @@ namespace flEngine
         if (--m_mappedCount > 0)
           return true;
 
-        glBindBuffer(GL_ARRAY_BUFFER, m_bufferID);
-        glUnmapBuffer(GL_ARRAY_BUFFER);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_COPY_WRITE_BUFFER, m_bufferID);
+        glUnmapBuffer(GL_COPY_WRITE_BUFFER);
+        glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
 
         m_pMappedPtr = nullptr;
         return true;
@@ -139,8 +138,10 @@ namespace flEngine
     protected:
       int64_t m_size = 0;
       uint32_t m_bufferID = 0;
+
       GLenum m_glAccessFlags = 0;
       AccessFlags m_accessFlags = AccessFlag_None;
+      BufferBinding m_binding = BufferBinding_Unknown;
 
       // Description of the mapped client memory
       void       *m_pMappedPtr = nullptr;
@@ -159,60 +160,65 @@ namespace flEngine
 using namespace flEngine;
 using namespace flEngine::Graphics;
 
-flPIMPL_IMPL(GLVertexBuffer);
-#define flIMPL flPIMPL(GLVertexBuffer)
+flPIMPL_IMPL(GLHardwareBuffer);
+#define flIMPL flPIMPL(GLHardwareBuffer)
 
-GLVertexBuffer* GLVertexBuffer::Create(flIN AccessFlags accessFlags)
+GLHardwareBuffer* GLHardwareBuffer::Create(flIN BufferBinding binding, flIN AccessFlags accessFlags)
 {
-  return flNew GLVertexBuffer(accessFlags);
+  return flNew GLHardwareBuffer(binding, accessFlags);
 }
 
-GLVertexBuffer::GLVertexBuffer(flIN AccessFlags accessFlags)
+GLHardwareBuffer::GLHardwareBuffer(flIN BufferBinding binding, flIN AccessFlags accessFlags)
 {
-  flIMPL->Construct(accessFlags);
+  flIMPL->Construct(binding, accessFlags);
 }
 
-bool GLVertexBuffer::Resize(flIN int64_t size, flIN bool discardData)
+bool GLHardwareBuffer::Resize(flIN int64_t size, flIN bool discardData)
 {
   return flIMPL->Resize(size, discardData);
 }
 
-bool GLVertexBuffer::Set(flIN void *pData, flIN int64_t size)
+bool GLHardwareBuffer::Set(flIN void *pData, flIN int64_t size)
 {
   return flIMPL->Set(pData, size);
 }
 
-bool GLVertexBuffer::Get(flOUT void* pBuffer, flIN int64_t length, flIN int64_t offset)
+bool GLHardwareBuffer::Get(flOUT void* pBuffer, flIN int64_t length, flIN int64_t offset)
 {
   return flIMPL->Get(pBuffer, length, offset);
 }
 
-bool GLVertexBuffer::Update()
+bool GLHardwareBuffer::Update()
 {
   return flIMPL->Update();
 }
 
-int64_t GLVertexBuffer::GetSize()
+int64_t GLHardwareBuffer::GetSize()
 {
   return flIMPL->GetSize();
 }
 
-AccessFlags GLVertexBuffer::GetAccessFlags()
+AccessFlags GLHardwareBuffer::GetAccessFlags()
 {
   return flIMPL->GetAccessFlags();
 }
 
-void* GLVertexBuffer::Map(flIN AccessFlags flags, flIN int64_t length, flIN int64_t offset)
+BufferBinding GLHardwareBuffer::GetBinding()
+{
+  return flIMPL->GetBinding();
+}
+
+void* GLHardwareBuffer::Map(flIN AccessFlags flags, flIN int64_t length, flIN int64_t offset)
 {
   return flIMPL->Map(flags, length, offset);
 }
 
-bool GLVertexBuffer::Unmap()
+bool GLHardwareBuffer::Unmap()
 {
   return flIMPL->Unmap();
 }
 
-void* GLVertexBuffer::GetNativeResource()
+void* GLHardwareBuffer::GetNativeResource()
 {
   return flIMPL->GetNativeResource();
 }

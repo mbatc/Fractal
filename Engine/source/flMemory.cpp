@@ -12,3 +12,8 @@ flEXPORT void flEngine::Memory::Free(flIN void *pBuffer)
 {
   return free(pBuffer);
 }
+
+flEXPORT void* flEngine::Memory::Realloc(flIN flOUT void *pBuffer, flIN int64_t size)
+{
+  return realloc(pBuffer, size);
+}

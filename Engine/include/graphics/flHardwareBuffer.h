@@ -2,27 +2,15 @@
 #define fl_Graphics_HardwareBuffer_h__
 
 #include "../flInterface.h"
+#include "flBufferDetails.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
-    enum AccessFlags
-    {
-      AccessFlag_None = 0,
-      AccessFlag_Read = 1 << 0,
-      AccessFlag_Write = 1 << 1,
-      AccessFlag_ReadWrite = (int64_t)AccessFlag_Read | AccessFlag_Write,
-    };
-
     class flEXPORT HardwareBuffer : public Interface
     {
     public:
-      /**
-       * @brief Create a hardware buffer.
-       */
-      // HardwareBuffer(AccessFlags flags, int64_t initialSize, void *pInitialData = nullptr);
-
       /**
        * @brief Resize the buffer.
        */
@@ -39,19 +27,19 @@ namespace flEngine
       virtual bool Get(flOUT void *pBuffer, flIN int64_t length = -1, flIN int64_t offset = 0) = 0;
 
       /**
-       * @brief Apply any changes made to the buffer.
-       */
-      virtual bool Update() = 0;
-
-      /**
        * @brief Get the size of the buffer.
        */
       virtual int64_t GetSize() = 0;
 
       /**
-       * @brief GEt the access flags for this buffer.
+       * @brief Get the access flags for this buffer.
        */
       virtual AccessFlags GetAccessFlags() = 0;
+
+      /**
+       * @brief Get the binding for this HardwareBuffer.
+       */
+      virtual BufferBinding GetBinding() = 0;
 
       /**
        * @brief Map the buffer to client memory.

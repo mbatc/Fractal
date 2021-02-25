@@ -12,12 +12,12 @@ namespace flEngine
     /**
      * @brief An enumeration containing supported pixel types.
      */
-    enum class PixelBufferType
+    enum PixelBufferType
     {
-      Unknown = -1, ///< An unknown pixel buffer type.
-      Colour,       ///< Indicates a pixel buffer containing Colour data.
-      Depth,        ///< Indicates a pixel buffer containing Depth data.
-      Count,        ///< The number of pixel buffer types.
+      PixelBufferType_Unknown = -1, ///< An unknown pixel buffer type.
+      PixelBufferType_Colour,       ///< Indicates a pixel buffer containing Colour data.
+      PixelBufferType_Depth,        ///< Indicates a pixel buffer containing Depth data.
+      PixelBufferType_Count,        ///< The number of pixel buffer types.
     };
 
     /**
@@ -37,14 +37,19 @@ namespace flEngine
         {
           PixelFormat format;      ///< The format of the pixel components.
           PixelComponentType type; ///< The type of each component in the pixels.
-        } colour; ///< Data describing a colour pixel buffer. (used if type == PBT_Colour).
+        } colourDesc; ///< Data describing a colour pixel buffer. (used if type == PBT_Colour).
 
         struct DepthDesc
         {
           DepthFormat format; ///< The format of the depth data.
-        } depth; ///< Data describing a depth pixel buffer. (used if type == PBT_Depth).
+        } depthDesc; ///< Data describing a depth pixel buffer. (used if type == PBT_Depth).
       };
     };
+
+    flEXPORT int64_t GetPixelStride(flIN PixelBufferDesc *pDesc);
+
+    flEXPORT void CreatePixelBufferDesc(flOUT PixelBufferDesc *pDesc, flIN DepthFormat format, flIN int64_t width, flIN int64_t height, flIN int64_t depth = 1);
+    flEXPORT void CreatePixelBufferDesc(flOUT PixelBufferDesc *pDesc, flIN PixelFormat format, flIN PixelComponentType type, flIN int64_t width, flIN int64_t height, flIN int64_t depth = 1);
 
     class flEXPORT Texture : public Interface
     {
@@ -59,7 +64,7 @@ namespace flEngine
        *
        * @return Returns true if the pixel data was set without errors, otherwise returns false.
        */
-      virtual bool Set(flIN void *pPixels, flIN PixelBufferDesc *pBufferDesc, flIN int64_t mipMap = 0) = 0;
+      virtual bool Set(flIN void *pPixels, flIN const PixelBufferDesc *pBufferDesc, flIN int64_t mipMap = 0) = 0;
 
       /**
        * @brief Set the pixel data for this texture.
@@ -73,7 +78,7 @@ namespace flEngine
        *
        * @return Returns true if the pixel data was set without errors, otherwise returns false.
        */
-      virtual bool Set(flIN void *pPixels, flIN PixelBufferDesc *pBufferDesc, flIN Math::Vec3I offset = Math::Vec3I::zero(), flIN int64_t mipMap = 0) = 0;
+      virtual bool Set(flIN void *pPixels, flIN const PixelBufferDesc *pBufferDesc, flIN int64_t widthOffset = 0, flIN int64_t heightOffset = 0, flIN int64_t depthOffset = 0, flIN int64_t mipMap = 0) = 0;
 
       /**
        * @brief Download the textures pixel data into client memory.
@@ -116,7 +121,7 @@ namespace flEngine
        *
        * @return The number of mip-map layers.
        */
-      virtual int64_t GetMimMapCount() const = 0;
+      virtual int64_t GetMipMapCount() const = 0;
 
       /**
        * @brief Get the width of the texture.
@@ -151,7 +156,12 @@ namespace flEngine
       *
       * @return The PixelBufferDesc for this texture.
       */
-      virtual PixelBufferDesc* GetPixelBufferDesc() const = 0;
+      virtual const PixelBufferDesc* GetPixelBufferDesc() const = 0;
+
+      /**
+       * @brief Get the native resource associated with this texture.
+       */
+      virtual void* GetNativeResource() = 0;
     };
   }
 }

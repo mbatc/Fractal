@@ -1,30 +1,38 @@
 #include "util/flImage.h"
 #include "ctVector.h"
 
-using namespace flEngine;
+#define STB_IMAGE_IMPLEMENTATION
+#define STBI_MALLOC(sz)           flAlloc(sz)
+#define STBI_REALLOC(p,newsz)     flRealloc(p,newsz)
+#define STBI_FREE(p)              flFree(p)
+#include "stb/stb_image.h"
 
-static Util::ColourU32 _SampleNearest(float u, float v, const ctVector<Util::ColourU32> &pixels, const int64_t &w, const int64_t &h)
+using namespace flEngine;
+using namespace flEngine::Math;
+using namespace flEngine::Util;
+
+static ColourU32 _SampleNearest(float u, float v, const ctVector<ColourU32> &pixels, const int64_t &w, const int64_t &h)
 {
   return pixels[(int64_t)((double)u * w + 0.5) + (int64_t)((double)v * h + 0.5) * w];
 }
 
-static Util::ColourU32 _SampleBilinear(float u, float v, const ctVector<Util::ColourU32> &pixels, const int64_t &w, const int64_t &h)
+static ColourU32 _SampleBilinear(float u, float v, const ctVector<ColourU32> &pixels, const int64_t &w, const int64_t &h)
 {
-  Math::Vec2F uv(u, v);
+  Vec2F uv(u, v);
   int64_t x = (int64_t)((double)uv.x * w) % w;
   int64_t y = (int64_t)((double)uv.y * h) % h;
   int64_t x2 = (x + 1) % w;
   int64_t y2 = (y + 1) % h;
 
-  Math::Vec2F _min = Math::Vec2F{ (float)x / (float)w, (float)y / (float)h };
-  Math::Vec2F _max = Math::Vec2F{ (float)(x + 1) / (float)w, (float)(y + 1) / (float)h };
-  Math::Vec2F _lower = (_max - uv) / (_max - _min);
-  Math::Vec2F _upper = (uv - _min) / (_max - _min);
+  Vec2F _min = Vec2F{ (float)x / (float)w, (float)y / (float)h };
+  Vec2F _max = Vec2F{ (float)(x + 1) / (float)w, (float)(y + 1) / (float)h };
+  Vec2F _lower = (_max - uv) / (_max - _min);
+  Vec2F _upper = (uv - _min) / (_max - _min);
 
-  Util::Colour a = Util::Colour(pixels[x + y * w])   * (1.f - _lower.x) * (1.f - _lower.y);
-  Util::Colour b = Util::Colour(pixels[x + y2 * w])  * (1.f - _lower.x) * (1.f - _upper.y);
-  Util::Colour c = Util::Colour(pixels[x2 + y * w])  * (1.f - _upper.x) * (1.f - _lower.y);
-  Util::Colour d = Util::Colour(pixels[x2 + y2 * w]) * (1.f - _upper.x) * (1.f - _upper.y);
+  Colour a = Colour(pixels[x + y * w])   * (1.f - _lower.x) * (1.f - _lower.y);
+  Colour b = Colour(pixels[x + y2 * w])  * (1.f - _lower.x) * (1.f - _upper.y);
+  Colour c = Colour(pixels[x2 + y * w])  * (1.f - _upper.x) * (1.f - _lower.y);
+  Colour d = Colour(pixels[x2 + y2 * w]) * (1.f - _upper.x) * (1.f - _upper.y);
 
   return a + b + c + d;
 }
@@ -41,45 +49,69 @@ namespace flEngine
         ctUnused(path);
       }
 
-      void Construct(flIN const Colour *pPixels, flIN const Math::Vec2I *pSize)
+      void Construct(flIN const void *pFileData, flIN int64_t fileLen)
       {
-        m_pixels.reserve((int64_t)pSize->x * pSize->y);
-        for (const Colour &col : ctIterate(pPixels, pSize->x * pSize->y))
+        int x, y, ncomp;
+        uint8_t *pPixels = stbi_load_from_memory((uint8_t*)pFileData, fileLen, &x, &y, &ncomp, 4);
+        if (!pPixels)
+          return;
+        m_pixels.set_data((ColourU32*)pPixels, x * y, x * y);
+      }
+
+      void Construct(flIN const Colour *pPixels, flIN const Math::Vec2I &size)
+      {
+        m_pixels.reserve((int64_t)size.x * size.y);
+        for (const Colour &col : ctIterate(pPixels, size.x * size.y))
           m_pixels.push_back(col);
       }
 
-      void Construct(flIN const ColourU32 *pPixels, flIN const Math::Vec2I *pSize)
+      void Construct(flIN const ColourU32 *pPixels, flIN const Math::Vec2I &size)
       {
-        m_pixels.insert(0, pPixels, pPixels + (int64_t)pSize->x * pSize->y);
+        m_pixels.insert(0, pPixels, pPixels + (int64_t)size.x * size.y);
       }
 
-      void Construct(flIN const Math::Vec2I *pSize, flIN ColourU32 initialColour = ColourU32_Black)
+      void Construct(flIN const Math::Vec2I &size, flIN ColourU32 initialColour = ColourU32_Black)
       {
-        m_pixels.resize((int64_t)pSize->x * pSize->y, initialColour);
+        m_pixels.resize((int64_t)size.x * size.y, initialColour);
       }
 
-      void Resize(flIN const Math::Vec2I *pSize, flIN const SampleType sampleType)
+      void SetData(flIN ColourU32 *pPixels, flIN int64_t width, flIN int64_t height)
+      {
+        int64_t len = width * height;
+        m_pixels.set_data(pPixels, len, len);
+        m_size = { width, height };
+      }
+
+      ColourU32* TakeData(flOUT int64_t *pWidth = nullptr, flOUT int64_t *pHeight = nullptr)
+      {
+        ColourU32 *pData = m_pixels.take_data();
+        if (pWidth)  *pWidth  = m_size.x;
+        if (pHeight) *pHeight = m_size.y;
+        m_size = { 0 };
+        return pData;
+      }
+
+      void Resize(flIN const Math::Vec2I &size, flIN const SampleType sampleType)
       {
         ctVector<ColourU32> newPixels;
-        newPixels.resize((int64_t)pSize->x * pSize->y);
-        Math::Vec2F uv = 0;
-        Math::Vec2F uvStep = 1.0f / Math::Vec2F(*pSize);
-        for (int64_t y = 0; y < pSize->y; ++y, uv.y += uvStep.y)
-          for (int64_t x = 0; x < pSize->x; ++x, uv.x += uvStep.x)
-            newPixels[x + y * m_size.x] = Sample(&uv, sampleType);
+        newPixels.resize((int64_t)size.x * size.y);
+        Vec2F uv = 0;
+        Vec2F uvStep = 1.0f / Vec2F(size);
+        for (int64_t y = 0; y < size.y; ++y, uv.y += uvStep.y)
+          for (int64_t x = 0; x < size.x; ++x, uv.x += uvStep.x)
+            newPixels[x + y * m_size.x] = Sample(uv, sampleType);
 
-        m_size = *pSize;
+        m_size = size;
         std::swap(m_pixels, newPixels);
       }
 
-      ColourU32 Sample(flIN const Math::Vec2F *pUV, flIN const SampleType sampleType) const
+      ColourU32 Sample(flIN const Math::Vec2F &uv, flIN const SampleType sampleType) const
       {
         switch (sampleType)
         {
-        case ST_Nearest: return _SampleNearest(pUV->x, pUV->y, m_pixels, m_size.x, m_size.y);
-        case ST_Bilinear: return _SampleBilinear(pUV->x, pUV->y, m_pixels, m_size.x, m_size.y);
+        case SampleType_Nearest:  return _SampleNearest(uv.x, uv.y, m_pixels, m_size.x, m_size.y);
+        case SampleType_Bilinear: return _SampleBilinear(uv.x, uv.y, m_pixels, m_size.x, m_size.y);
         }
-
         return ColourU32_Black;
       }
 
@@ -107,29 +139,44 @@ Image::Image(flIN const char *path)
   flIMPL->Construct(path);
 }
 
-Image::Image(flIN const Colour *pPixels, flIN const Math::Vec2I *pSize)
+Image::Image(flIN const void *pFileData, flIN int64_t fileLen)
 {
-  flIMPL->Construct(pPixels, pSize);
+  flIMPL->Construct(pFileData, fileLen);
 }
 
-Image::Image(flIN const ColourU32 *pPixels, flIN const Math::Vec2I *pSize)
+Image::Image(flIN const Colour *pPixels, flIN int64_t width, flIN int64_t height)
 {
-  flIMPL->Construct(pPixels, pSize);
+  flIMPL->Construct(pPixels, Vec2I(width, height));
 }
 
-Image::Image(flIN const Math::Vec2I *pSize, flIN ColourU32 initialColour)
+Image::Image(flIN const ColourU32 *pPixels, flIN int64_t width, flIN int64_t height)
 {
-  flIMPL->Construct(pSize, initialColour);
+  flIMPL->Construct(pPixels, Vec2I(width, height));
 }
 
-void Image::Resize(flIN const Math::Vec2I *pSize, flIN const SampleType sampleType)
+Image::Image(flIN int64_t width, flIN int64_t height, flIN ColourU32 initialColour)
 {
-  flIMPL->Construct(pSize, sampleType);
+  flIMPL->Construct(Vec2I(width, height), initialColour);
 }
 
-ColourU32 Image::Sample(flIN const Math::Vec2F *pUV, flIN const SampleType sampleType) const
+void Image::SetData(flIN ColourU32 *pPixels, flIN int64_t width, flIN int64_t height)
 {
-  return flIMPL->Sample(pUV, sampleType);
+  flIMPL->SetData();
+}
+
+ColourU32* Image::TakeData(flOUT int64_t *pWidth, flOUT int64_t *pHeight)
+{
+  return flIMPL->SetData(pWidth, pHeight);
+}
+
+void Image::Resize(flIN int64_t width, flIN int64_t height, flIN const SampleType sampleType)
+{
+  flIMPL->Construct(Vec2I(width, height), sampleType);
+}
+
+ColourU32 Image::Sample(flIN float u, flIN float v, flIN const SampleType sampleType) const
+{
+  return flIMPL->Sample(Vec2F(u, v), sampleType);
 }
 
 ColourU32* Image::GetPixels()
@@ -142,7 +189,13 @@ const ColourU32* Image::GetPixels() const
   return flIMPL->GetPixels();
 }
 
-Math::Vec2I Image::GetSize() const
+int64_t Image::GetWidth() const
 {
-  return flIMPL->GetSize();
+  return flIMPL->GetSize().x;
 }
+
+int64_t Image::GetHeight() const
+{
+  return flIMPL->GetSize().y;
+}
+

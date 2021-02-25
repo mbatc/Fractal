@@ -1,8 +1,8 @@
 #include "flOpenGL_Impl.h"
+#include "graphics/OpenGL/flGLTexture2D.h"
 #include "graphics/OpenGL/flGLGeometry.h"
-#include "graphics/OpenGL/flGLIndexBuffer.h"
-#include "graphics/OpenGL/flGLVertexBuffer.h"
 #include "graphics/OpenGL/flGLProgram.h"
+#include "graphics/OpenGL/flGLHardwareBuffer.h"
 #include "graphics/OpenGL/flGLWindowRenderTarget.h"
 #include "graphics/OpenGL/flGLTextureRenderTarget.h"
 
@@ -33,19 +33,24 @@ Geometry* OpenGL::CreateGeometry()
   return GLGeometry::Create();
 }
 
-IndexBuffer* OpenGL::CreateIndexBuffer(flIN AccessFlags accessFlags)
+HardwareBuffer* OpenGL::CreateBuffer(flIN BufferBinding binding, flIN AccessFlags accessFlags)
 {
-  return GLIndexBuffer::Create(accessFlags);
-}
-
-VertexBuffer* OpenGL::CreateVertexBuffer(flIN AccessFlags accessFlags)
-{
-  return GLVertexBuffer::Create(accessFlags);
+  return GLHardwareBuffer::Create(binding, accessFlags);
 }
 
 Program* OpenGL::CreateProgram()
 {
   return GLProgram::Create();
+}
+
+Texture2D* CreateTexture2D(flIN DepthFormat depthFormat)
+{
+  return GLTexture2D::Create(depthFormat);
+}
+
+Texture2D* CreateTexture2D(flIN PixelFormat pixelFormat, flIN PixelComponentType type)
+{
+  return GLTexture2D::Create(pixelFormat, type);
 }
 
 OpenGL::OpenGL(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions)

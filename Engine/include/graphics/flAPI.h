@@ -3,7 +3,9 @@
 
 #include "../threads/flThreadQueue.h"
 #include "../math/flMath.h"
+
 #include "flPixelFormat.h"
+#include "flBufferDetails.h"
 
 namespace flEngine
 {
@@ -11,21 +13,17 @@ namespace flEngine
 
   namespace Graphics
   {
-    class Geometry;
-    class Program;
-    class RenderTarget;
-    class IndexBuffer;
-    class VertexBuffer;
-    class PixelBuffer;
     class DeviceState;
+    class HardwareBuffer;
+    class Texture2D;
+    class Geometry;
+    class RenderTarget;
     class WindowRenderTarget;
     class TextureRenderTarget;
-    class Texture2D;
+    class Program;
 
     struct PixelBufferDesc;
     struct RenderTargetOptions;
-
-    enum AccessFlags;
 
     class flEXPORT API : public Interface
     {
@@ -69,13 +67,13 @@ namespace flEngine
       
       virtual Geometry* CreateGeometry() = 0;
       
-      virtual IndexBuffer* CreateIndexBuffer(flIN AccessFlags accessFlags) = 0;
-
-      virtual VertexBuffer* CreateVertexBuffer(flIN AccessFlags accessFlags) = 0;
+      virtual HardwareBuffer* CreateBuffer(flIN BufferBinding type, flIN AccessFlags accessFlags) = 0;
 
       virtual Program* CreateProgram() = 0;
 
-      // virtual Texture2D* CreateTexture2D(flIN Math::Vec2I size, flIN PixelBufferDesc *pTextureFormat) = 0;
+      virtual Texture2D* CreateTexture2D(flIN DepthFormat depthFormat) = 0;
+
+      virtual Texture2D* CreateTexture2D(flIN PixelFormat pixelFormat, flIN PixelComponentType type) = 0;
     };
   }
 }

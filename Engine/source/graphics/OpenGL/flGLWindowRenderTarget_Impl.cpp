@@ -51,32 +51,32 @@ bool Impl_GLWindowRenderTarget::SetFormat(flIN const RenderTargetOptions *pOptio
 
   switch (pOptions->pixelComponentType)
   {
-  case Graphics::PixelComponentType::Float16:
+  case Graphics::PixelComponentType_Float16:
     componentWidth = 16;
     floatPixel = true;
     break;
-  case Graphics::PixelComponentType::Float32:
+  case Graphics::PixelComponentType_Float32:
     componentWidth = 32;
     floatPixel = true;
     break;
-  case Graphics::PixelComponentType::UInt8:   componentWidth = 8;  break;
-  case Graphics::PixelComponentType::UInt16:  componentWidth = 16; break;
-  case Graphics::PixelComponentType::UInt32:  componentWidth = 32; break;
-  case Graphics::PixelComponentType::Int8:    componentWidth = 8;  break;
-  case Graphics::PixelComponentType::Int16:   componentWidth = 16; break;
-  case Graphics::PixelComponentType::Int32:   componentWidth = 32; break;
-  case Graphics::PixelComponentType::UNorm8:  componentWidth = 8;  break;
-  case Graphics::PixelComponentType::UNorm16: componentWidth = 16; break;
+  case Graphics::PixelComponentType_UInt8:   componentWidth = 8;  break;
+  case Graphics::PixelComponentType_UInt16:  componentWidth = 16; break;
+  case Graphics::PixelComponentType_UInt32:  componentWidth = 32; break;
+  case Graphics::PixelComponentType_Int8:    componentWidth = 8;  break;
+  case Graphics::PixelComponentType_Int16:   componentWidth = 16; break;
+  case Graphics::PixelComponentType_Int32:   componentWidth = 32; break;
+  case Graphics::PixelComponentType_UNorm8:  componentWidth = 8;  break;
+  case Graphics::PixelComponentType_UNorm16: componentWidth = 16; break;
   default:                    componentWidth = 8; break;
   }
 
   int64_t numComponents = 0;
   switch (pOptions->colourFormat)
   {
-  case PixelFormat::Red:  numComponents = 1; break;
-  case PixelFormat::RG:   numComponents = 2; break;
-  case PixelFormat::RGB:  numComponents = 3; break;
-  case PixelFormat::RGBA: numComponents = 4; break;
+  case PixelFormat_Red:  numComponents = 1; break;
+  case PixelFormat_RG:   numComponents = 2; break;
+  case PixelFormat_RGB:  numComponents = 3; break;
+  case PixelFormat_RGBA: numComponents = 4; break;
   }
 
   int64_t numDepthBits = 0;
@@ -84,16 +84,16 @@ bool Impl_GLWindowRenderTarget::SetFormat(flIN const RenderTargetOptions *pOptio
   switch (pOptions->depthFormat)
   {
     // Depth-only formats
-  case Graphics::DepthFormat::Float16: numDepthBits = 16; break;
-  case Graphics::DepthFormat::Float24: numDepthBits = 24; break;
-  case Graphics::DepthFormat::Float32: numDepthBits = 32; break;
+  case Graphics::DepthFormat_Float16: numDepthBits = 16; break;
+  case Graphics::DepthFormat_Float24: numDepthBits = 24; break;
+  case Graphics::DepthFormat_Float32: numDepthBits = 32; break;
 
     // Stencil formats
-  case Graphics::DepthFormat::Float24Stencil8:
+  case Graphics::DepthFormat_Float24Stencil8:
     numDepthBits = 24;
     numStencilBits = 8;
     break;
-  case Graphics::DepthFormat::Float32Stencil8:
+  case Graphics::DepthFormat_Float32Stencil8:
     numDepthBits = 32;
     numStencilBits = 8;
     break;

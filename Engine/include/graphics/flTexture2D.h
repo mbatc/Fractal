@@ -6,11 +6,14 @@
 
 namespace flEngine
 {
+  namespace Util { class Image; }
   namespace Graphics
   {
     class flEXPORT Texture2D : public Texture
     {
     public:
+      bool SetFromImage(flIN Util::Image *pImage);
+      bool DownloadImage(flOUT Util::Image *pImage);
     };
   }
 }
