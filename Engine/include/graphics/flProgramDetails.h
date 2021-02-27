@@ -16,6 +16,15 @@ namespace flEngine
       ProgramStage_Compute,
       ProgramStage_Count
     };
+
+    enum DrawMode
+    {
+      DrawMode_Lines,
+      DrawMode_Points,
+      DrawMode_Triangles,
+      DrawMode_Patches,
+      DrawMode_Count,
+    };
   }
 }
 

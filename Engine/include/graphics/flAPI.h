@@ -6,6 +6,7 @@
 
 #include "flPixelFormat.h"
 #include "flBufferDetails.h"
+#include "flProgramDetails.h"
 
 namespace flEngine
 {
@@ -31,17 +32,17 @@ namespace flEngine
       /**
        * @brief Set the active geometry to be rendered.
        */
-      virtual void SetGeometry(Geometry *pGeometry) = 0;
-
-      /**
-       * @brief Set the destination for the render.
-       */
-      virtual void SetRenderTarget(RenderTarget *pRenderTarget) = 0;
+      virtual void SetGeometry(flIN Geometry *pGeometry, flIN int64_t indexBuffer = 0) = 0;
 
       /**
        * @brief Set the GPU program to render.
        */
-      virtual void SetProgram(Program *pProgram) = 0;
+      virtual void SetProgram(flIN Program *pProgram) = 0;
+
+      /**
+       * @brief Set the destination for the render.
+       */
+      virtual void SetRenderTarget(flIN RenderTarget *pRenderTarget) = 0;
 
       /**
       * @brief Get a pointer the the GPU's state interface.
