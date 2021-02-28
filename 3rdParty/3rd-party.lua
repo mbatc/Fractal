@@ -13,9 +13,13 @@ includedirs { third_party_prefix }
 includedirs { nanosvg_dir .. "nanosvg/src" }
 includedirs { glew_dir .. "include/" }
 includedirs { ctools_module_dir .. "common/include" }
+includedirs { ctools_module_dir .. "common/include/**" }
 includedirs { ctools_module_dir .. "math/include" }
+includedirs { ctools_module_dir .. "math/include/**" }
 includedirs { ctools_module_dir .. "data/include" }
-includedirs { ctools_module_dir .. "platform/include" }
+includedirs { ctools_module_dir .. "data/include/**" }
+includedirs { ctools_module_dir .. "platform/inclu de" }
+includedirs { ctools_module_dir .. "platform/include/**" }
 
 libdirs { glew_dir .. "lib/Release/x64/" }
 

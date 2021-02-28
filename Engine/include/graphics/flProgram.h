@@ -8,43 +8,58 @@ namespace flEngine
 {
   namespace Graphics
   {
+    class Sampler;
+    class Texture;
+    class Geometry;
+    class HardwareBuffer;
+
     class Program : public Interface
     {
     public:
       /**
        * @brief Set a shader stage from source.
        */
-      bool SetShader(flIN const char *source, flIN ProgramStage stage);
+      virtual void SetShader(flIN const char *source, flIN ProgramStage stage) = 0;
 
       /**
        * @brief Set a shader stage from a file.
        */
-      bool SetShaderFromFile(flIN const char *path, flIN ProgramStage stage);
+      virtual void SetShaderFromFile(flIN const char *path, flIN ProgramStage stage) = 0;
 
       /**
        * @brief Compile and link the shader program.
        */
-      bool Compile();
+      virtual bool Compile() = 0;
+
+      /**
+       * @brief Reload the shader.
+       */
+      virtual bool Reload() = 0;
 
       /**
        * @brief Set uniform data using a Uniform Buffer
        */
-      void SetUniformBuffer(flIN const char *name, flIN HardwareBuffer *pBuffer);
+      virtual void SetUniformBuffer(flIN const char *name, flIN HardwareBuffer *pBuffer) = 0;
 
       /**
        * @brief Set a texture in the shader
        */
-      void SetTexture(flIN const char *name, flIN Texture *pTexture);
+      virtual void SetTexture(flIN const char *name, flIN Texture *pTexture) = 0;
 
       /**
        * @brief Set a texture in the shader
        */
-      void SetSampler(flIN const char *name, flIN Texture *pTexture);
+      virtual void SetSampler(flIN const char *name, flIN Sampler *pTexture) = 0;
 
       /**
        * @brief Set the geometry to render for this shader
        */
-      void SetGeometry(flIN Geometry *pGeometry);
+      virtual void SetGeometry(flIN Geometry *pGeometry) = 0;
+
+      /**
+       * @brief Get the native resource for the underlying graphics API.
+       */
+      virtual void *GetNativeResource() = 0;
     };
   }
 }
