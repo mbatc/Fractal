@@ -188,11 +188,6 @@ bool GLHardwareBuffer::Get(flOUT void* pBuffer, flIN int64_t length, flIN int64_
   return flIMPL->Get(pBuffer, length, offset);
 }
 
-bool GLHardwareBuffer::Update()
-{
-  return flIMPL->Update();
-}
-
 int64_t GLHardwareBuffer::GetSize()
 {
   return flIMPL->GetSize();

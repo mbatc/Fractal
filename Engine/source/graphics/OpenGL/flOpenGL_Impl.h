@@ -14,13 +14,13 @@ namespace flEngine
     public:
       void Construct(Platform::Window *pWindow, const RenderTargetOptions *pOptions);
 
-      void SetGeometry(Geometry *pGeometry);
+      void SetGeometry(Geometry *pGeometry, int64_t indexBuffer);
       void SetRenderTarget(RenderTarget *pRenderTarget);
       void SetProgram(Program *pProgram);
 
       DeviceState* GetState();
 
-      void Render();
+      void Render(DrawMode drawMode, bool indexed, uint64_t elementOffset, uint64_t elementCount);
 
     protected:
       GLDeviceState *m_pState = nullptr;
@@ -29,7 +29,7 @@ namespace flEngine
       Program      *m_pProgram      = nullptr;
       Geometry     *m_pGeometry     = nullptr;
       RenderTarget *m_pRenderTarget = nullptr;
-
+      int64_t       m_indexBuffer   = -1;
 #if flUSING(flPLATFORM_WINDOWS)
       void *m_pGLRC = nullptr;
 #endif

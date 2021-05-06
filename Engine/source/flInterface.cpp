@@ -10,7 +10,7 @@ Interface::~Interface() {}
 
 void Interface::DecRef()
 {
-  if (--m_refCount == 0)
+  if (this != nullptr && --m_refCount == 0)
     Destroy();
 }
 
@@ -21,10 +21,11 @@ void Interface::Destroy()
 
 void flEngine::Interface::IncRef()
 {
-  ++m_refCount;
+  if (this != nullptr)
+    ++m_refCount;
 }
 
 int64_t Interface::GetReferenceCount() const
 {
-  return m_refCount;
+  return this != nullptr ? m_refCount : 0;
 }

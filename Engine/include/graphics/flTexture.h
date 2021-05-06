@@ -78,7 +78,7 @@ namespace flEngine
        *
        * @return Returns true if the pixel data was set without errors, otherwise returns false.
        */
-      virtual bool Set(flIN void *pPixels, flIN const PixelBufferDesc *pBufferDesc, flIN int64_t widthOffset = 0, flIN int64_t heightOffset = 0, flIN int64_t depthOffset = 0, flIN int64_t mipMap = 0) = 0;
+      virtual bool Set(flIN void *pPixels, flIN const PixelBufferDesc *pBufferDesc, flIN int64_t widthOffset, flIN int64_t heightOffset, flIN int64_t depthOffset = 0, flIN int64_t mipMap = 0) = 0;
 
       /**
        * @brief Download the textures pixel data into client memory.

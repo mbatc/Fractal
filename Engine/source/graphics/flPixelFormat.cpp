@@ -17,6 +17,7 @@ flEXPORT int64_t flEngine::Graphics::GetPixelComponentSize(flIN PixelComponentTy
   case PixelComponentType_Float16: return 2;
   case PixelComponentType_Float32: return 4;
   }
+  return PixelComponentType_Unknown;
 }
 
 flEXPORT int64_t flEngine::Graphics::GetPixelComponentCount(flIN PixelFormat type)
@@ -28,7 +29,7 @@ flEXPORT int64_t flEngine::Graphics::GetPixelComponentCount(flIN PixelFormat typ
   case PixelFormat_RGB:  return 3;
   case PixelFormat_RGBA: return 4;
   }
-  return 0;
+  return PixelFormat_Unknown;
 }
 
 flEXPORT int64_t flEngine::Graphics::GetDepthFormatSize(flIN DepthFormat type)
@@ -41,5 +42,6 @@ flEXPORT int64_t flEngine::Graphics::GetDepthFormatSize(flIN DepthFormat type)
   case DepthFormat_Float24Stencil8: return 4;
   case DepthFormat_Float32Stencil8: return 5;
   }
+  return DepthFormat_Unknown;
 }
 

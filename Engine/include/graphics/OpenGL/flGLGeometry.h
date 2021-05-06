@@ -16,12 +16,16 @@ namespace flEngine
     public:
       static GLGeometry* Create();
 
-      void SetLayout() override;
-      void AddVertexBuffer(VertexBuffer *pBuffer) override;
-      void AddIndexBuffer(IndexBuffer *pBuffer) override;
+      void AddVertexBuffer(flIN int64_t id, flIN VertexBuffer *pBuffer) override;
+      void AddIndexBuffer(flIN IndexBuffer *pBuffer) override;
 
-      VertexBuffer* GetVertexBuffer() override;
-      IndexBuffer* GetIndexBuffer() override;
+      int64_t GetVertexBufferCount() override;
+      int64_t GetVertexBufferID(flIN int64_t index) override;
+      int64_t GetIndexBufferCount() override;
+
+      VertexBuffer* GetVertexBufferByID(flIN int64_t id) override;
+      VertexBuffer* GetVertexBuffer(flIN int64_t index) override;
+      IndexBuffer* GetIndexBuffer(flIN int64_t index) override;
     };
   }
 }

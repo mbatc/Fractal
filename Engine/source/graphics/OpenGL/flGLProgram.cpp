@@ -159,11 +159,6 @@ namespace flEngine
 
       }
 
-      void SetGeometry(flIN Geometry *pGeometry)
-      {
-
-      }
-
       void *GetNativeResource()
       {
         return (void *)int64_t(m_programID);
@@ -217,7 +212,7 @@ namespace flEngine
           return false; // TODO: Report no source available
 
         const char *src = pShader->src.c_str();
-        int length = pShader->src.length();
+        int length = (int)pShader->src.length();
 
         // Attach the shader source
         glShaderSource(pShader->glID, 1, &src, &length);
@@ -269,25 +264,28 @@ namespace flEngine
         nameBuffer.resize(ctMax(nameBuffer.size(), maxNameLen + 1));
         glGetProgramiv(m_programID, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &maxNameLen);
         nameBuffer.resize(ctMax(nameBuffer.size(), maxNameLen + 1));
-        maxNameLen = nameBuffer.size() - 1;
+        maxNameLen = (int32_t)nameBuffer.size() - 1;
 
         int32_t len = 0; int32_t size = 0; uint32_t type = 0;
-        for (int64_t attrib = 0; attrib < attributeCount; ++attrib)
+        for (int32_t attrib = 0; attrib < attributeCount; ++attrib)
         {
           glGetActiveAttrib(m_programID, attrib, maxNameLen, &len, &size, &type, nameBuffer.data());
-          GLUtil::GetType(type);
         }
 
-        for (int64_t uniform = 0; uniform < uniformCount; ++uniform)
+        for (int32_t uniform = 0; uniform < uniformCount; ++uniform)
         {
           glGetActiveUniform(m_programID, uniform, maxNameLen, &len, &size, &type, nameBuffer.data());
 
         }
 ;
-        for (int64_t block = 0; block < uniformBlockCount; ++block)
+        for (int32_t block = 0; block < uniformBlockCount; ++block)
         {
-          glGetActiveUniformBlockName(m_programID, block, maxNameLen, &len, nameBuffer.data());
-          glGetActiveUniformBlockiv(m_programID, block, maxNameLen, &len, );
+          int32_t blockSize = 0; int32_t numUniforms = 0; ctVector<int32_t> uniformIndices;
+          glGetActiveUniformBlockName(m_programID, (int)block, maxNameLen, &len, nameBuffer.data());
+          glGetActiveUniformBlockiv(m_programID, block, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+          glGetActiveUniformBlockiv(m_programID, block, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &blockSize);
+          uniformIndices.resize(numUniforms);
+          glGetActiveUniformBlockiv(m_programID, block, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, uniformIndices.data());
         }
       }
 
@@ -343,11 +341,6 @@ void GLProgram::SetTexture(flIN const char *name, flIN Texture *pTexture)
 void GLProgram::SetSampler(flIN const char *name, flIN Sampler *pSampler)
 {
   flIMPL->SetSampler(name, pSampler);
-}
-
-void GLProgram::SetGeometry(flIN Geometry *pGeometry)
-{
-  flIMPL->SetGeometry(pGeometry);
 }
 
 void* GLProgram::GetNativeResource()

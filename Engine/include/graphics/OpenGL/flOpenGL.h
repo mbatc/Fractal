@@ -25,7 +25,7 @@ namespace flEngine
       /**
        * @brief Set the active geometry to be rendered.
        */
-      virtual void SetGeometry(flIN Geometry *pGeometry) override;
+      virtual void SetGeometry(flIN Geometry *pGeometry, flIN int64_t indexBuffer) override;
 
       /**
        * @brief Set the destination for the render.
@@ -45,7 +45,7 @@ namespace flEngine
       /**
        * @brief Execute a render command.
        */
-      virtual void Render() override;
+      virtual void Render(flIN DrawMode drawMode, flIN bool indexed, flIN uint64_t elementOffset = 0, flIN uint64_t elementCount = INT64_MAX) override;
 
       virtual WindowRenderTarget* CreateWindowRenderTarget(flIN Platform::Window *pWindow, flIN RenderTargetOptions *pOptions) override;
 

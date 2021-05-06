@@ -23,7 +23,6 @@ namespace flEngine
       void SetUniformBuffer(flIN const char *name, flIN HardwareBuffer *pBuffer) override;
       void SetTexture(flIN const char *name, flIN Texture *pTexture) override;
       void SetSampler(flIN const char *name, flIN Sampler *pSampler) override;
-      void SetGeometry(flIN Geometry *pGeometry) override;
 
       void* GetNativeResource() override;
     };

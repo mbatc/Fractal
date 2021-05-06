@@ -1,4 +1,8 @@
 #include "graphics/OpenGL/flGLGeometry.h"
+#include "graphics/flVertexBuffer.h"
+#include "graphics/flIndexBuffer.h"
+#include "ctVector.h"
+#include "flRef.h"
 
 namespace flEngine
 {
@@ -6,6 +10,10 @@ namespace flEngine
   {
     class Impl_GLGeometry
     {
+    public:
+      ctVector<int64_t>           m_vertexBufferIDs;
+      ctVector<Ref<VertexBuffer>> m_vertexBuffers;
+      ctVector<Ref<IndexBuffer>>  m_indexBuffers;
     };
   }
 }
@@ -17,29 +25,48 @@ flPIMPL_IMPL(GLGeometry)
 
 #define flIMPL flPIMPL(GLGeometry)
 
-GLGeometry * GLGeometry::Create()
+GLGeometry* GLGeometry::Create() { return flNew GLGeometry; }
+
+void GLGeometry::AddVertexBuffer(flIN int64_t id, flIN VertexBuffer *pBuffer)
 {
-  return nullptr;
+  if (GetVertexBufferByID(id) != nullptr)
+    return; // TODO: Report Error
+
+  flIMPL->m_vertexBufferIDs.push_back(id);
+  flIMPL->m_vertexBuffers.emplace_back(pBuffer);
 }
 
-void GLGeometry::SetLayout()
+void GLGeometry::AddIndexBuffer(flIN IndexBuffer *pBuffer)
 {
+  flIMPL->m_indexBuffers.emplace_back(pBuffer);
 }
 
-void GLGeometry::AddVertexBuffer(VertexBuffer * pBuffer)
+int64_t GLGeometry::GetVertexBufferCount()
 {
+  return flIMPL->m_vertexBuffers.size();
 }
 
-void GLGeometry::AddIndexBuffer(IndexBuffer * pBuffer)
+int64_t GLGeometry::GetVertexBufferID(flIN int64_t index)
 {
+  return flIMPL->m_vertexBufferIDs[index];
 }
 
-VertexBuffer * GLGeometry::GetVertexBuffer()
+int64_t GLGeometry::GetIndexBufferCount()
 {
-  return nullptr;
+  return flIMPL->m_indexBuffers.size();
 }
 
-IndexBuffer * GLGeometry::GetIndexBuffer()
+VertexBuffer* GLGeometry::GetVertexBufferByID(flIN int64_t id)
 {
-  return nullptr;
+  return GetVertexBuffer(ctIndexOf(flIMPL->m_vertexBufferIDs.begin(), flIMPL->m_vertexBufferIDs.end(), id));
+}
+
+VertexBuffer* GLGeometry::GetVertexBuffer(flIN int64_t index)
+{
+  return flIMPL->m_vertexBuffers[index];
+}
+
+IndexBuffer* GLGeometry::GetIndexBuffer(flIN int64_t index)
+{
+  return flIMPL->m_indexBuffers[index];
 }

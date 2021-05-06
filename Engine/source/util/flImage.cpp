@@ -52,7 +52,7 @@ namespace flEngine
       void Construct(flIN const void *pFileData, flIN int64_t fileLen)
       {
         int x, y, ncomp;
-        uint8_t *pPixels = stbi_load_from_memory((uint8_t*)pFileData, fileLen, &x, &y, &ncomp, 4);
+        uint8_t *pPixels = stbi_load_from_memory((uint8_t*)pFileData, (int)fileLen, &x, &y, &ncomp, 4);
         if (!pPixels)
           return;
         m_pixels.set_data((ColourU32*)pPixels, x * y, x * y);
@@ -161,12 +161,12 @@ Image::Image(flIN int64_t width, flIN int64_t height, flIN ColourU32 initialColo
 
 void Image::SetData(flIN ColourU32 *pPixels, flIN int64_t width, flIN int64_t height)
 {
-  flIMPL->SetData();
+  flIMPL->SetData(pPixels, width, height);
 }
 
 ColourU32* Image::TakeData(flOUT int64_t *pWidth, flOUT int64_t *pHeight)
 {
-  return flIMPL->SetData(pWidth, pHeight);
+  return flIMPL->TakeData(pWidth, pHeight);
 }
 
 void Image::Resize(flIN int64_t width, flIN int64_t height, flIN const SampleType sampleType)

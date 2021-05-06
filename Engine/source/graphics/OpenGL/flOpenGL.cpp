@@ -13,9 +13,9 @@ flPIMPL_IMPL(OpenGL)
 
 #define flIMPL flPIMPL(OpenGL)
 
-void OpenGL::Render()
+void OpenGL::Render(flIN DrawMode drawMode, flIN bool indexed, flIN uint64_t elementOffset, flIN uint64_t elementCount)
 {
-  flIMPL->Render();
+  flIMPL->Render(drawMode, indexed, elementCount, elementCount);
 }
 
 WindowRenderTarget* OpenGL::CreateWindowRenderTarget(flIN Platform::Window *pWindow, flIN RenderTargetOptions *pOptions)
@@ -43,6 +43,16 @@ Program* OpenGL::CreateProgram()
   return GLProgram::Create();
 }
 
+Texture2D* OpenGL::CreateTexture2D(flIN DepthFormat depthFormat)
+{
+  return GLTexture2D::Create(depthFormat);
+}
+
+Texture2D* OpenGL::CreateTexture2D(flIN PixelFormat pixelFormat, flIN PixelComponentType type)
+{
+  return GLTexture2D::Create(pixelFormat, type);
+}
+
 Texture2D* CreateTexture2D(flIN DepthFormat depthFormat)
 {
   return GLTexture2D::Create(depthFormat);
@@ -63,9 +73,9 @@ OpenGL* OpenGL::Create(flIN Platform::Window *pWindow, flIN const RenderTargetOp
   return flNew OpenGL(pWindow, pOptions);
 }
 
-void OpenGL::SetGeometry(flIN Geometry *pGeometry)
+void OpenGL::SetGeometry(flIN Geometry *pGeometry, flIN int64_t indexBuffer)
 {
-  return flIMPL->SetGeometry(pGeometry);
+  return flIMPL->SetGeometry(pGeometry, indexBuffer);
 }
 
 void OpenGL::SetRenderTarget(flIN RenderTarget *pRenderTarget)

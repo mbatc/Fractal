@@ -40,7 +40,7 @@ namespace flEngine
           return false;
 
         glBindTexture(GL_TEXTURE_2D, m_texID);
-        glTexImage2D(GL_TEXTURE_2D, (GLint)mipMap, glInternalFmt, pBufferDesc->width, pBufferDesc->height, 0, fmt, type, pPixels);
+        glTexImage2D(GL_TEXTURE_2D, (GLint)mipMap, glInternalFmt, (GLsizei)pBufferDesc->width, (GLsizei)pBufferDesc->height, 0, fmt, type, pPixels);
         glBindTexture(GL_TEXTURE_2D, 0);
         return true;
       }
@@ -52,7 +52,7 @@ namespace flEngine
           return false;
 
         glBindTexture(GL_TEXTURE_2D, m_texID);
-        glTexSubImage2D(GL_TEXTURE_2D, (GLint)mipMap, offset.x, offset.y, pBufferDesc->width, pBufferDesc->height, fmt, type, pPixels);
+        glTexSubImage2D(GL_TEXTURE_2D, (GLint)mipMap, offset.x, offset.y, (GLsizei)pBufferDesc->width, (GLsizei)pBufferDesc->height, fmt, type, pPixels);
         glBindTexture(GL_TEXTURE_2D, 0);
         return true;
       }
@@ -152,7 +152,7 @@ namespace flEngine
         else if (m_type == PixelBufferType_Depth)
         {
           if (pInternal) *pInternal = GLUtil::ToPixelFormat(m_internalDepthFormat);
-          if (pFmt)      *pFmt = GLUtil::ToPixelFormat(pBufferDesc->depthDesc.format);
+          if (pFmt)      *pFmt      = GLUtil::ToPixelFormat(pBufferDesc->depthDesc.format);
           if (pType)     *pType     = GLUtil::ToPixelDataType(pBufferDesc->depthDesc.format);
         }
         else
@@ -177,11 +177,11 @@ namespace flEngine
   }
 }
 
-flPIMPL_IMPL(GLTexture2D)
-#define flIMPL flPIMPL(GLTexture2D)
-
 using namespace flEngine;
 using namespace flEngine::Graphics;
+
+flPIMPL_IMPL(GLTexture2D)
+#define flIMPL flPIMPL(GLTexture2D)
 
 GLTexture2D::GLTexture2D(flIN PixelFormat pixelFormat, flIN PixelComponentType type)
 {
