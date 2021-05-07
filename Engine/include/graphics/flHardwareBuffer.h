@@ -29,17 +29,17 @@ namespace flEngine
       /**
        * @brief Get the size of the buffer.
        */
-      virtual int64_t GetSize() = 0;
+      virtual int64_t GetSize() const = 0;
 
       /**
        * @brief Get the access flags for this buffer.
        */
-      virtual AccessFlags GetAccessFlags() = 0;
+      virtual AccessFlags GetAccessFlags() const = 0;
 
       /**
        * @brief Get the binding for this HardwareBuffer.
        */
-      virtual BufferBinding GetBinding() = 0;
+      virtual BufferBinding GetBinding() const = 0;
 
       /**
        * @brief Map the buffer to client memory.
@@ -54,9 +54,9 @@ namespace flEngine
       virtual bool Unmap() = 0;
 
       /**
-       * 
+       * @brief Get the native resource used by the underlying graphics API
        */
-      virtual void* GetNativeResource() = 0;
+      virtual void* GetNativeResource() const = 0;
     };
 
     flBITWISE_ENUM_OPERATORS(AccessFlags);

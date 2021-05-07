@@ -21,14 +21,13 @@ namespace flEngine
       virtual bool Resize(flIN int64_t size, flIN bool discardData) override;
       virtual bool Set(flIN void *pData, flIN int64_t size) override;
       virtual bool Get(flOUT void *pBuffer, flIN int64_t length = -1, flIN int64_t offset = 0) override;
-      virtual int64_t GetSize() override;
-      virtual AccessFlags GetAccessFlags() override;
-      virtual BufferBinding GetBinding() override;
+      virtual int64_t GetSize() const override;
+      virtual AccessFlags GetAccessFlags() const override;
+      virtual BufferBinding GetBinding() const override;
       virtual void* Map(flIN AccessFlags flags, flIN int64_t length = -1, flIN int64_t offset = 0) override;
       virtual bool Unmap() override;
-      virtual void* GetNativeResource() override;
+      virtual void* GetNativeResource() const override;
     };
-
   }
 }
 

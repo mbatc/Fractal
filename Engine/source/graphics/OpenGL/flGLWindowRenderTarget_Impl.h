@@ -24,6 +24,7 @@ namespace flEngine
       void ClearColour(flIN const Util::Colour &colour);
       void ClearStencil(flIN const int32_t &stencil);
       void Swap();
+      void Bind();
 
       void* GetNativeHandle() const;
 

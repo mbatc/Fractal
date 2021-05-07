@@ -2,7 +2,7 @@
 
 using namespace flEngine::Graphics;
 
-flEXPORT void CreatePixelBufferDesc(flOUT PixelBufferDesc *pDesc, flIN PixelFormat format, flIN PixelComponentType type, flIN int64_t width, flIN int64_t height, flIN int64_t depth)
+flEXPORT void flEngine::Graphics::CreatePixelBufferDesc(flOUT PixelBufferDesc *pDesc, flIN PixelFormat format, flIN PixelComponentType type, flIN int64_t width, flIN int64_t height, flIN int64_t depth)
 {
   pDesc->type = PixelBufferType_Colour;
   pDesc->colourDesc.format = format;
@@ -12,7 +12,7 @@ flEXPORT void CreatePixelBufferDesc(flOUT PixelBufferDesc *pDesc, flIN PixelForm
   pDesc->depth = depth;
 }
 
-flEXPORT void CreatePixelBufferDesc(flOUT PixelBufferDesc *pDesc, flIN DepthFormat format, flIN int64_t width, flIN int64_t height, flIN int64_t depth)
+flEXPORT void flEngine::Graphics::CreatePixelBufferDesc(flOUT PixelBufferDesc *pDesc, flIN DepthFormat format, flIN int64_t width, flIN int64_t height, flIN int64_t depth)
 {
   pDesc->type = PixelBufferType_Depth;
   pDesc->depthDesc.format = format;
@@ -21,7 +21,7 @@ flEXPORT void CreatePixelBufferDesc(flOUT PixelBufferDesc *pDesc, flIN DepthForm
   pDesc->depth = depth;
 }
 
-flEXPORT int64_t GetPixelStride(flIN PixelBufferDesc *pDesc)
+flEXPORT int64_t flEngine::Graphics::GetPixelStride(flIN PixelBufferDesc *pDesc)
 {
   if (pDesc->type == PixelBufferType_Depth)
     return GetDepthFormatSize(pDesc->depthDesc.format);

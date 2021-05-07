@@ -36,24 +36,29 @@ namespace flEngine
       virtual bool SetFormat(flIN const RenderTargetOptions *pOptions) = 0;
 
       /**
-       * @brief Clear this RenderTarget
+       * @brief Clear this RenderTarget.
        */
       virtual void Clear(flIN const Util::Colour &colour = 0, flIN const float &depth = 1, flIN const int32_t &stencil = 0) = 0;
 
       /**
-       * @brief Clear the depth component of this RenderTarget
+       * @brief Clear the depth component of this RenderTarget.
        */
       virtual void ClearDepth(flIN const float &depth = 1.0f) = 0;
 
       /**
-       * @brief Clear the colour component of this RenderTarget
+       * @brief Clear the colour component of this RenderTarget.
        */
       virtual void ClearColour(flIN const Util::Colour &colour = 0) = 0;
 
       /**
-       * @brief Clear the stencil component of this RenderTarget
+       * @brief Clear the stencil component of this RenderTarget.
        */
       virtual void ClearStencil(flIN const int32_t &colour = 0) = 0;
+
+      /**
+       * @brief Make this the active render target.
+       */
+      virtual void Bind() = 0;
     };
   }
 }

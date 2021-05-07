@@ -55,6 +55,10 @@ namespace flEngine
 
       virtual HardwareBuffer* CreateBuffer(flIN BufferBinding binding, flIN AccessFlags accessFlags) override;
 
+      virtual IndexBuffer* CreateIndexBuffer(flIN BufferBinding binding, flIN AccessFlags accessFlags) override;
+
+      virtual VertexBuffer* CreateVertexBuffer(flIN BufferBinding binding, flIN AccessFlags accessFlags) override;
+
       virtual Program* CreateProgram() override;
 
       virtual Texture2D* CreateTexture2D(flIN DepthFormat depthFormat) override;

@@ -35,6 +35,10 @@ namespace flEngine
     inline constexpr Type TypeOf(float)    { return Type_Float32; }
     inline constexpr Type TypeOf(double)   { return Type_Float64; }
     inline constexpr Type TypeOf(...)      { return Type_Unknown; }
+
+    flEXPORT int64_t SizeOf(flIN Type type);
+
+    flEXPORT char const * NameOfType(flIN Type type);
   }
 }
 

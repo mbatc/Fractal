@@ -6,6 +6,9 @@
 #include "GL/wglew.h"
 #include "GL/GL.h"
 
+#define flNativeToGLID(nativeResource) ((uint32_t)(uint64_t)nativeResource)
+#define flNativeFromGLID(nativeResource) ((void*)(uint64_t)nativeResource)
+
 namespace flEngine
 {
   namespace Util { enum Type; }

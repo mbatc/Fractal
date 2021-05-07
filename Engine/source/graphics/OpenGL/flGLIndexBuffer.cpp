@@ -15,31 +15,34 @@ namespace flEngine
 using namespace flEngine;
 using namespace flEngine::Graphics;
 
+flPIMPL_IMPL(GLIndexBuffer);
+
+IndexBuffer* GLIndexBuffer::Create(flIN int64_t indexCount, void* pData)
+{
+  return nullptr;
+}
+
 void GLIndexBuffer::Resize(flIN int64_t indexCount)
 {
-
+  // HardwareBuffer::Resize(indexCount * GetElementSize(), true);
 }
 
-void GLIndexBuffer::SetIndices(flIN uint32_t* pValues, flIN int64_t count)
+void GLIndexBuffer::SetIndices(flIN uint32_t *pValues, flIN int64_t count)
 {
-
+  GLHardwareBuffer::Set(pValues, count * GetElementSize());
 }
 
-void GLIndexBuffer::GetIndexCount()
+int64_t GLIndexBuffer::GetIndexCount() const
 {
-
+  return GLHardwareBuffer::GetSize() / GetElementSize();
 }
 
-void GLIndexBuffer::SetIndex(flIN int64_t index, flIN uint32_t value)
+Util::Type GLIndexBuffer::GetIndexType() const
 {
-
+  return Util::Type_UInt32;
 }
 
-uint32_t GLIndexBuffer::GetIndex(flIN int64_t index)
+int64_t GLIndexBuffer::GetElementSize() const
 {
-
-}
-
-Util::Type GLIndexBuffer::GetIndexType()
-{
+  return Util::SizeOf(GetIndexType());
 }

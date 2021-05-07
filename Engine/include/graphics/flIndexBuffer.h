@@ -13,10 +13,9 @@ namespace flEngine
     public:
       virtual void Resize(flIN int64_t indexCount) = 0;
       virtual void SetIndices(flIN uint32_t* pValues, flIN int64_t count) = 0;
-      virtual void GetIndexCount() = 0;
-      virtual void SetIndex(flIN int64_t index, flIN uint32_t value) = 0;
-      virtual uint32_t GetIndex(flIN int64_t index) = 0;
-      virtual Util::Type GetIndexType() = 0;
+      virtual int64_t GetIndexCount() const = 0;
+      virtual Util::Type GetIndexType() const = 0;
+      virtual int64_t GetElementSize() const = 0;
     };
   }
 }

@@ -2,6 +2,7 @@
 #define fl_Graphics_OpenGL_Impl_h__
 
 #include "graphics/OpenGL/flOpenGL.h"
+#include "flRef.h"
 
 namespace flEngine
 {
@@ -26,9 +27,9 @@ namespace flEngine
       GLDeviceState *m_pState = nullptr;
 
       // Active bindings
-      Program      *m_pProgram      = nullptr;
-      Geometry     *m_pGeometry     = nullptr;
-      RenderTarget *m_pRenderTarget = nullptr;
+      Ref<Program>      m_pProgram      = nullptr;
+      Ref<Geometry>     m_pGeometry     = nullptr;
+      Ref<RenderTarget> m_pRenderTarget = nullptr;
       int64_t       m_indexBuffer   = -1;
 #if flUSING(flPLATFORM_WINDOWS)
       void *m_pGLRC = nullptr;

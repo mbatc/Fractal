@@ -41,4 +41,6 @@ flBITWISE_ENUM_OPERATOR(type, | )\
 flBITWISE_ENUM_OPERATOR(type, & )\
 inline type operator~(const type &a) { return (type)(~(int64_t)a); }
 
+#define flHasFlag(bitfield, flag) bool((bitfield & flag) != 0)
+
 #endif // flConfig_h__

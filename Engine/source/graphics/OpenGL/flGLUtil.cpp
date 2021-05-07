@@ -19,6 +19,7 @@ ProgramStage GLUtil::GetProgramStage(flIN uint32_t shader)
   case GL_TESS_EVALUATION_SHADER: return ProgramStage_TessEval;
   case GL_COMPUTE_SHADER:         return ProgramStage_Compute;
   }
+
   return ProgramStage_Unknown;
 }
 
@@ -33,6 +34,7 @@ DepthFormat GLUtil::GetDepthFormat(flIN uint32_t depthFormat)
   case GL_DEPTH24_STENCIL8:      return DepthFormat_Float24Stencil8;
   case GL_DEPTH32F_STENCIL8_NV:  return DepthFormat_Float32Stencil8;
   }
+
   return DepthFormat_Unknown;
 }
 
@@ -185,16 +187,34 @@ PixelComponentType GLUtil::GetPixelComponentType(flIN uint32_t format)
 
 AccessFlags GLUtil::GetAccessFlags(flIN uint32_t accessFlags)
 {
+  AccessFlags flags = AccessFlag_None;
+  if (flHasFlag(accessFlags, GL_MAP_READ_BIT))  flags = AccessFlags(flags | AccessFlag_Read);
+  if (flHasFlag(accessFlags, GL_MAP_WRITE_BIT)) flags = AccessFlags(flags | AccessFlag_Write);
+  return flags;
 }
 
 BufferBinding GLUtil::GetBufferBinding(flIN uint32_t bufferBinding)
 {
+  switch (bufferBinding)
+  {
+  case GL_ELEMENT_ARRAY_BUFFER: return BufferBinding_Indices;
+  case GL_ARRAY_BUFFER:         return BufferBinding_Vertices;
+  case GL_UNIFORM_BUFFER:       return BufferBinding_Uniforms;
+  }
 
+  return BufferBinding_Unknown;
 }
 
 BufferUsage GLUtil::GetBufferUsage(flIN uint32_t bufferBinding)
 {
+  switch (bufferBinding)
+  {
+  case GL_STATIC_DRAW:  return BufferUsage_Immutable;
+  case GL_DYNAMIC_DRAW: return BufferUsage_Dynamic;
+  case GL_STREAM_DRAW:  return BufferUsage_Staging;
+  }
 
+  return BufferUsage_Default;
 }
 
 Type GLUtil::GetType(flIN uint32_t dataType)
@@ -210,11 +230,23 @@ Type GLUtil::GetType(flIN uint32_t dataType)
   case GL_FLOAT:          return Type_Float32;
   case GL_DOUBLE:         return Type_Float64;
   }
+
+  return Type_Unknown;
 }
 
 uint32_t GLUtil::ToShaderType(flIN ProgramStage stage)
 {
+  switch (stage)
+  {
+  case ProgramStage_Compute:     return GL_COMPUTE_SHADER;
+  case ProgramStage_Fragment:    return GL_FRAGMENT_SHADER;
+  case ProgramStage_Geometry:    return GL_GEOMETRY_SHADER;
+  case ProgramStage_Vertex:      return GL_VERTEX_SHADER;
+  case ProgramStage_TessControl: return GL_TESS_CONTROL_SHADER;
+  case ProgramStage_TessEval:    return GL_TESS_EVALUATION_SHADER;
+  }
 
+  return GL_NONE;
 }
 
 uint32_t GLUtil::ToPixelFormat(flIN PixelFormat pixelFormat)
@@ -226,6 +258,8 @@ uint32_t GLUtil::ToPixelFormat(flIN PixelFormat pixelFormat)
   case PixelFormat_RGB:  return GL_RGB;
   case PixelFormat_RGBA: return GL_RGBA;
   }
+
+  return GL_NONE;
 }
 
 uint32_t GLUtil::ToPixelFormat(flIN DepthFormat depthFormat)
@@ -238,6 +272,8 @@ uint32_t GLUtil::ToPixelFormat(flIN DepthFormat depthFormat)
   case DepthFormat_Float32:         return GL_DEPTH_COMPONENT;
   case DepthFormat_Float32Stencil8: return GL_DEPTH32F_STENCIL8;
   }
+
+  return GL_NONE;
 }
 
 #define SWITCH_COMPONENT_TYPE(val, comp)\
@@ -270,6 +306,7 @@ uint32_t GLUtil::ToPixelFormatSized(flIN PixelFormat pixelFormat, flIN PixelComp
   case PixelFormat_RGBA:
     SWITCH_COMPONENT_TYPE(pixelComponentType, RGBA)
   }
+
   return GL_NONE;
 }
 
@@ -283,6 +320,7 @@ uint32_t GLUtil::ToPixelDataType(flIN DepthFormat depthFormat)
   case DepthFormat_Float32:         return GL_FLOAT;
   case DepthFormat_Float32Stencil8: return GL_FLOAT;
   }
+
   return GL_NONE;
 }
 
@@ -303,25 +341,57 @@ uint32_t GLUtil::ToPixelDataType(flIN PixelComponentType pixelComponentType)
   case PixelComponentType_Float16: return GL_HALF_FLOAT;
   case PixelComponentType_Float32: return GL_FLOAT;
   }
+
   return GL_NONE;
 }
 
 uint32_t GLUtil::ToAccessFlags(flIN AccessFlags stage)
 {
-
+  uint32_t glFlags = 0;
+  if (flHasFlag(stage, AccessFlag_Read))  glFlags &= GL_MAP_READ_BIT;
+  if (flHasFlag(stage, AccessFlag_Write)) glFlags &= GL_MAP_WRITE_BIT;
+  return glFlags;
 }
 
 uint32_t GLUtil::ToBufferBinding(flIN BufferBinding stage)
 {
+  switch (stage)
+  {
+  case BufferBinding_Indices:  return GL_ELEMENT_ARRAY_BUFFER;
+  case BufferBinding_Vertices: return GL_ARRAY_BUFFER;
+  case BufferBinding_Uniforms: return GL_UNIFORM_BUFFER;
+  }
 
+  return GL_NONE;
 }
 
 uint32_t GLUtil::ToDataType(flIN Util::Type stage)
 {
+  switch (stage)
+  {
+  case Type_Int8:    return GL_BYTE;
+  case Type_Int16:   return GL_SHORT;
+  case Type_Int32:   return GL_INT;
+  case Type_UInt8:   return GL_UNSIGNED_BYTE;
+  case Type_UInt16:  return GL_UNSIGNED_SHORT;
+  case Type_UInt32:  return GL_UNSIGNED_INT;
+  case Type_Bool:    return GL_BOOL;
+  case Type_Float32: return GL_FLOAT;
+  case Type_Float64: return GL_DOUBLE;
+  }
 
+  return GL_NONE;
 }
 
 uint32_t GLUtil::ToBufferUsage(flIN BufferUsage stage)
 {
+  switch (stage)
+  {
+  case BufferUsage_Default:   // Fall-through
+  case BufferUsage_Dynamic:   return GL_DYNAMIC_DRAW;
+  case BufferUsage_Staging:   return GL_STREAM_DRAW;
+  case BufferUsage_Immutable: return GL_STATIC_DRAW;
+  }
 
+  return GL_NONE;
 }

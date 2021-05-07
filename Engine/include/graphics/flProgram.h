@@ -52,11 +52,6 @@ namespace flEngine
       virtual void SetSampler(flIN const char *name, flIN Sampler *pTexture) = 0;
 
       /**
-       * @brief Set the geometry to render for this shader
-       */
-      virtual void SetGeometry(flIN Geometry *pGeometry) = 0;
-
-      /**
        * @brief Get the native resource for the underlying graphics API.
        */
       virtual void *GetNativeResource() = 0;

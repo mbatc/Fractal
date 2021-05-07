@@ -16,7 +16,7 @@ using namespace flEngine::Graphics;
 extern HDC   flEngine_GL_hCurrentDC;
 extern HGLRC flEngine_GL_hCurrentGLRC;
 
-flEngine::Graphics::Impl_GLWindowRenderTarget::~Impl_GLWindowRenderTarget()
+Impl_GLWindowRenderTarget::~Impl_GLWindowRenderTarget()
 {
   ReleaseDC((HWND)m_pWindow->GetNativeHandle(), (HDC)m_hDC);
 }
@@ -26,7 +26,7 @@ void Impl_GLWindowRenderTarget::Construct(flIN Platform::Window *pWindow, flIN c
   m_pWindow = pWindow;
   if (!m_pWindow || m_pWindow->GetRenderTarget() == this)
     return;
-  m_pWindow->GetImpl()->BindRenderTarget(this);
+  m_pWindow->Impl()->BindRenderTarget(this);
   SetFormat(pOptions);
 }
 
@@ -138,8 +138,8 @@ bool Impl_GLWindowRenderTarget::SetFormat(flIN const RenderTargetOptions *pOptio
     Platform::Window::Flags flags = m_pWindow->GetFlags();
 
     // Recreate the window
-    m_pWindow->GetImpl()->Destroy();
-    m_pWindow->GetImpl()->Create(m_pWindow, title, flags, GetModuleHandle(NULL));
+    m_pWindow->Impl()->Destroy();
+    m_pWindow->Impl()->Create(m_pWindow, title, flags, GetModuleHandle(NULL));
   }
 
   PIXELFORMATDESCRIPTOR pfd = { 0 };
@@ -192,7 +192,12 @@ void Impl_GLWindowRenderTarget::Swap()
     printf("Swap Buffers Failed\n");
 }
 
-void* flEngine::Graphics::Impl_GLWindowRenderTarget::GetNativeHandle() const
+void Impl_GLWindowRenderTarget::Bind()
+{
+  MakeCurrent();
+}
+
+void* Impl_GLWindowRenderTarget::GetNativeHandle() const
 {
   return m_hDC;
 }

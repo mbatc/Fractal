@@ -22,6 +22,9 @@ namespace flEngine
       virtual void AddVertexBuffer(flIN int64_t id, flIN VertexBuffer *pBuffer) = 0;
       virtual void AddIndexBuffer(flIN IndexBuffer *pBuffer) = 0;
 
+      virtual void RemoveVertexBuffer(flIN int64_t index) = 0;
+      virtual void RemoveIndexBuffer(flIN int64_t index) = 0;
+
       virtual int64_t GetVertexBufferCount() = 0;
       virtual int64_t GetVertexBufferID(flIN int64_t index) = 0;
       virtual int64_t GetIndexBufferCount() = 0;
@@ -29,6 +32,10 @@ namespace flEngine
       virtual IndexBuffer* GetIndexBuffer(flIN int64_t index) = 0;
       virtual VertexBuffer* GetVertexBuffer(flIN int64_t index) = 0;
       virtual VertexBuffer* GetVertexBufferByID(flIN int64_t id) = 0;
+
+      virtual void Bind(flIN int64_t indexBuffer = 0) = 0;
+
+      virtual void* GetNativeResource() = 0;
     };
   }
 }

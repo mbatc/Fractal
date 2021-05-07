@@ -28,13 +28,13 @@ namespace flEngine
 
     Ref& operator=(Ref const& o)
     {
-      Set(o.Get());
+      Set(o.m_pInterface);
       return *this;
     }
 
     Ref& operator=(Ref&& o)
     {
-      Set(o.Get());
+      Set(o.m_pInterface);
       o.Set(nullptr);
       return *this;
     }

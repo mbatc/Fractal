@@ -61,6 +61,11 @@ namespace flEngine
        * @brief Get the native handle to the Device Context
        */
       virtual void* GetNativeHandle() const override;
+
+      /**
+       * @brief Make this the active render target.
+       */
+      virtual void Bind() override;
     };
   }
 }

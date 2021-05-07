@@ -188,17 +188,17 @@ bool GLHardwareBuffer::Get(flOUT void* pBuffer, flIN int64_t length, flIN int64_
   return flIMPL->Get(pBuffer, length, offset);
 }
 
-int64_t GLHardwareBuffer::GetSize()
+int64_t GLHardwareBuffer::GetSize() const
 {
   return flIMPL->GetSize();
 }
 
-AccessFlags GLHardwareBuffer::GetAccessFlags()
+AccessFlags GLHardwareBuffer::GetAccessFlags() const
 {
   return flIMPL->GetAccessFlags();
 }
 
-BufferBinding GLHardwareBuffer::GetBinding()
+BufferBinding GLHardwareBuffer::GetBinding() const
 {
   return flIMPL->GetBinding();
 }
@@ -213,7 +213,7 @@ bool GLHardwareBuffer::Unmap()
   return flIMPL->Unmap();
 }
 
-void* GLHardwareBuffer::GetNativeResource()
+void* GLHardwareBuffer::GetNativeResource() const
 {
   return flIMPL->GetNativeResource();
 }

@@ -91,6 +91,7 @@ namespace flEngine
       bool GenerateMipMaps()
       {
         glGenerateMipmap(m_texID);
+        return true;
       }
 
       bool HasMipmaps() const
@@ -181,16 +182,15 @@ using namespace flEngine;
 using namespace flEngine::Graphics;
 
 flPIMPL_IMPL(GLTexture2D)
-#define flIMPL flPIMPL(GLTexture2D)
 
 GLTexture2D::GLTexture2D(flIN PixelFormat pixelFormat, flIN PixelComponentType type)
 {
-  flIMPL->Construct(pixelFormat, type);
+  Impl()->Construct(pixelFormat, type);
 }
 
 GLTexture2D::GLTexture2D(flIN DepthFormat depthFormat)
 {
-  flIMPL->Construct(depthFormat);
+  Impl()->Construct(depthFormat);
 }
 
 Texture2D* GLTexture2D::Create(flIN PixelFormat pixelFormat, flIN PixelComponentType type)
@@ -205,60 +205,60 @@ Texture2D* GLTexture2D::Create(flIN DepthFormat depthFormat)
 
 bool GLTexture2D::Set(flIN void *pPixels, flIN const PixelBufferDesc *pBufferDesc, flIN int64_t mipMap /*= 0*/)
 {
-  return flIMPL->Set(pPixels, pBufferDesc, mipMap);
+  return Impl()->Set(pPixels, pBufferDesc, mipMap);
 }
 
 bool GLTexture2D::Download(flOUT void **ppPixels, flIN flOUT PixelBufferDesc *pBufferDesc, flIN int64_t mipMap /*= 0*/)
 {
-  return flIMPL->Download(ppPixels, pBufferDesc, mipMap);
+  return Impl()->Download(ppPixels, pBufferDesc, mipMap);
 }
 
 bool GLTexture2D::GenerateMipMaps()
 {
-  return flIMPL->GenerateMipMaps();
+  return Impl()->GenerateMipMaps();
 }
 
 bool GLTexture2D::HasMipmaps() const
 {
-  return flIMPL->HasMipmaps();
+  return Impl()->HasMipmaps();
 }
 
 int64_t GLTexture2D::GetMipMapCount() const
 {
-  return flIMPL->GetMimMapCount();
+  return Impl()->GetMimMapCount();
 }
 
 int64_t GLTexture2D::GetWidth(flIN int64_t mipMap /*= 0*/) const
 {
-  return flIMPL->GetWidth(mipMap);
+  return Impl()->GetWidth(mipMap);
 }
 
 int64_t GLTexture2D::GetHeight(flIN int64_t mipMap /*= 0*/) const
 {
-  return flIMPL->GetHeight(mipMap);
+  return Impl()->GetHeight(mipMap);
 }
 
 int64_t GLTexture2D::GetDepth(flIN int64_t mipMap /*= 0*/) const
 {
-  return flIMPL->GetDepth(mipMap);
+  return Impl()->GetDepth(mipMap);
 }
 
 PixelBufferType GLTexture2D::GetPixelBufferType() const
 {
-  return flIMPL->GetPixelBufferType();
+  return Impl()->GetPixelBufferType();
 }
 
 const PixelBufferDesc *GLTexture2D::GetPixelBufferDesc() const
 {
-  return flIMPL->GetPixelBufferDesc();
+  return Impl()->GetPixelBufferDesc();
 }
 
 void* GLTexture2D::GetNativeResource()
 {
-  return flIMPL->GetNativeResource();
+  return Impl()->GetNativeResource();
 }
 
 bool GLTexture2D::Set(flIN void *pPixels, flIN const PixelBufferDesc *pBufferDesc, flIN int64_t widthOffset, flIN int64_t heightOffset, flIN int64_t depthOffset, flIN int64_t mipMap /*= 0*/)
 {
-  return flIMPL->Set(pPixels, pBufferDesc, { widthOffset, heightOffset, depthOffset }, mipMap);
+  return Impl()->Set(pPixels, pBufferDesc, { widthOffset, heightOffset, depthOffset }, mipMap);
 }
