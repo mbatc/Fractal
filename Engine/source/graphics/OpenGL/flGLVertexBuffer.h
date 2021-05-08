@@ -10,7 +10,7 @@ namespace flEngine
   {
     class HardwareBuffer;
 
-    class flEXPORT GLVertexBuffer : public VertexBuffer
+    class GLVertexBuffer : public VertexBuffer
     {
       friend class OpenGL;
 
@@ -26,7 +26,7 @@ namespace flEngine
       virtual HardwareBuffer const* GetBuffer() const override;
 
     private:
-      Type    m_primitiveType = Type_Unknown;
+      Util::Type m_primitiveType = Util::Type_Unknown;
       int64_t m_primitiveWidth = 0;
       int64_t m_elementSize = 0;
       Ref<HardwareBuffer> m_pBuffer = nullptr;

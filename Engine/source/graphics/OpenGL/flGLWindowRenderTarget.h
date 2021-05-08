@@ -10,62 +10,71 @@ namespace flEngine
   {
     class PixelBuffer;
 
-    class flPIMPL_CLASS(GLWindowRenderTarget);
-    
-    class flEXPORT GLWindowRenderTarget : public WindowRenderTarget
+    class GLWindowRenderTarget : public WindowRenderTarget
     {
-      flPIMPL_DEF(GLWindowRenderTarget);
-
     protected:
       GLWindowRenderTarget(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions);
 
     public:
-      static GLWindowRenderTarget* Create(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions);
+      ~GLWindowRenderTarget();
+
+      static WindowRenderTarget* Create(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions);
 
       /**
        * @brief Get the window associated with this render target.
        */
-      virtual Platform::Window* GetWindow() const override;
+      Platform::Window* GetWindow() const override;
 
       /**
       * @brief Set the format of the render target.
       */
-      virtual bool SetFormat(flIN const RenderTargetOptions *pOptions) override;
+      bool SetFormat(flIN RenderTargetOptions const * pOptions) override;
 
       /**
       * @brief Clear this RenderTarget
       */
-      virtual void Clear(flIN const Util::Colour &colour = 0, flIN const float &depth = 1, flIN const int32_t &stencil = 0) override;
+      void Clear(flIN Util::Colour colour = 0, flIN float depth = 1, flIN int32_t stencil = 0) override;
 
       /**
       * @brief Clear the depth component of this RenderTarget
       */
-      virtual void ClearDepth(flIN const float &depth = 1.0f) override;
+      void ClearDepth(flIN float depth = 1.0f) override;
 
       /**
       * @brief Clear the colour component of this RenderTarget
       */
-      virtual void ClearColour(flIN const Util::Colour &colour = 0) override;
+      void ClearColour(flIN Util::Colour colour = 0) override;
 
       /**
       * @brief Clear the stencil component of this RenderTarget
       */
-      virtual void ClearStencil(flIN const int32_t &colour = 0) override;
+      void ClearStencil(flIN int32_t colour = 0) override;
 
       /**
       * @brief Present the back buffer to the window.
       */
-      virtual void Swap() override;
+      void Swap() override;
 
       /**
        * @brief Get the native handle to the Device Context
        */
-      virtual void* GetNativeHandle() const override;
+      void* GetNativeHandle() const override;
 
       /**
        * @brief Make this the active render target.
        */
-      virtual void Bind() override;
+      void Bind() override;
+
+    private:
+      void MakeCurrent();
+
+      Platform::Window *m_pWindow = nullptr;
+
+#if flUSING(flPLATFORM_WINDOWS)
+      void *m_hDC = nullptr;
+      bool m_pixelFormatSet = false;
+      RenderTargetOptions m_currentOptions;
+#endif
     };
   }
 }

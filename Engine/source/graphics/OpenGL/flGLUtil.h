@@ -23,7 +23,7 @@ namespace flEngine
     enum DepthFormat;
     enum ProgramStage;
 
-    class flEXPORT GLUtil
+    class GLUtil
     {
     public:
       GLUtil() = delete;

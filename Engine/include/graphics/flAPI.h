@@ -3,7 +3,7 @@
 
 #include "../threads/flThreadQueue.h"
 #include "../math/flMath.h"
-
+#include "../util/flType.h"
 #include "flPixelFormat.h"
 #include "flBufferDetails.h"
 #include "flProgramDetails.h"
@@ -28,12 +28,40 @@ namespace flEngine
     struct PixelBufferDesc;
     struct RenderTargetOptions;
 
+    class API;
+
+    class flEXPORT APIFactory : public Interface
+    {
+    public:
+      virtual char const * GetIdentifier() const = 0;
+      virtual API * Create(Platform::Window *pWindow, RenderTargetOptions *pOptions) = 0;
+    };
+
     class flEXPORT API : public Interface
     {
     public:
-      static bool Register(char const * identifier, APIFactory* pFactory);
+      /**
+       * @brief Register a Graphics API implementation with the engine.
+       * 
+       * @param [in] identifier A unique identifier for the implementation.
+       * @param [in] APIFactory A factory object that will create instances of the implementation.
+       */
+      static bool RegisterAPI(flIN APIFactory * pFactory);
+
+      /**
+       * @brief Get the number of APIs registered.
+       */
       static int64_t GetAPICount();
-      static char const* GetAPIIdentifier();
+
+      /**
+       * @brief Get the string identifier for a graphics API.
+       */
+      static char const* GetAPIIdentifier(flIN int64_t index);
+
+      /**
+       * @brief Create a graphics API using it's string identifier
+       */
+      static API * Create(char const *apiIdentifier, Platform::Window *pWindow, RenderTargetOptions *pOptions = nullptr);
 
       /**
        * @brief Set the active geometry to be rendered.

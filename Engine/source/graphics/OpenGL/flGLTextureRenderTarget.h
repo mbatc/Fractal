@@ -9,7 +9,7 @@ namespace flEngine
   {
     class PixelBuffer;
 
-    class flEXPORT GLTextureRenderTarget : public TextureRenderTarget
+    class GLTextureRenderTarget : public TextureRenderTarget
     {
       GLTextureRenderTarget();
 

@@ -8,7 +8,9 @@ namespace flEngine
 {
   namespace Graphics
   {
-    class flEXPORT OpenGL : public API
+    class GLDeviceState;
+
+    class OpenGL : public API
     {
       OpenGL(Platform::Window *pWindow, const RenderTargetOptions *pOptions);
 
@@ -30,6 +32,8 @@ namespace flEngine
       Program* CreateProgram() override;
       Texture2D* CreateTexture2D(DepthFormat depthFormat) override;
       Texture2D* CreateTexture2D(PixelFormat pixelFormat, PixelComponentType type) override;
+
+      static bool RegisterAPI();
 
     private:
       GLDeviceState* m_pState = nullptr;

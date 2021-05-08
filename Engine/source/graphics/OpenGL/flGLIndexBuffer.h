@@ -10,7 +10,7 @@ namespace flEngine
   {
     class HardwareBuffer;
 
-    class flEXPORT GLIndexBuffer : public IndexBuffer
+    class GLIndexBuffer : public IndexBuffer
     {
       friend class OpenGL;
 

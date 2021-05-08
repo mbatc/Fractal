@@ -2,18 +2,22 @@
 #define fl_Graphics_GLGeometry_h__
 
 #include "graphics/flGeometry.h"
+#include "ctVector.h"
+#include "flRef.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
-    class flPIMPL_CLASS(GLGeometry);
+    class VertexBuffer;
+    class IndexBuffer;
 
-    class flEXPORT GLGeometry : public Geometry
+    class GLGeometry : public Geometry
     {
-      flPIMPL_DEF(GLGeometry);
-
+      GLGeometry();
     public:
+      ~GLGeometry();
+
       static GLGeometry* Create();
 
       void AddVertexBuffer(flIN int64_t id, flIN VertexBuffer *pBuffer) override;
@@ -28,11 +32,20 @@ namespace flEngine
 
       VertexBuffer* GetVertexBufferByID(flIN int64_t id) override;
       VertexBuffer* GetVertexBuffer(flIN int64_t index) override;
-      IndexBuffer*  GetIndexBuffer(flIN int64_t index) override;
+      IndexBuffer* GetIndexBuffer(flIN int64_t index) override;
 
       void Bind(flIN int64_t indexBuffer) override;
 
       void* GetNativeResource() override;
+
+    private:
+      uint32_t m_vao = 0;
+      bool m_rebindVBOs = true;
+      int64_t m_numVBOsBounds = 0;
+
+      ctVector<int64_t>           m_vertexBufferIDs;
+      ctVector<Ref<VertexBuffer>> m_vertexBuffers;
+      ctVector<Ref<IndexBuffer>>  m_indexBuffers;
     };
   }
 }

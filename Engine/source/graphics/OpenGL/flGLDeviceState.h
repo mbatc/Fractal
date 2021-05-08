@@ -7,26 +7,22 @@ namespace flEngine
 {
   namespace Graphics
   {
-    class flPIMPL_CLASS(GLDeviceState);
-
-    class flEXPORT GLDeviceState : public DeviceState
+    class GLDeviceState : public DeviceState
     {
-      flPIMPL_DEF(GLDeviceState);
-
     public:
       static GLDeviceState* Create();
 
-      bool GetFeatureEnabled(flIN DeviceFeature feature) override;
-      void SetFeatureEnabled(flIN DeviceFeature feature, flIN bool enabled) override;
+      bool GetFeatureEnabled(DeviceFeature feature) override;
+      void SetFeatureEnabled(DeviceFeature feature, bool enabled) override;
 
-      void SetViewport(flIN int64_t x, flIN int64_t y, flIN int64_t width, flIN int64_t height) override;
-      void GetViewport(flOUT int64_t *pX = nullptr, flOUT int64_t *pY = nullptr, flOUT int64_t *pWidth = nullptr, flOUT int64_t *pHeight = nullptr) override;
+      void SetViewport(int64_t x, int64_t y, int64_t width, int64_t height) override;
+      void GetViewport(int64_t *pX = nullptr, int64_t *pY = nullptr, int64_t *pWidth = nullptr, int64_t *pHeight = nullptr) override;
 
-      void SetScissorRect(flIN int64_t x, flIN int64_t y, flIN int64_t width, flIN int64_t height) override;
-      void GetScissorRect(flOUT int64_t *pX = nullptr, flOUT int64_t *pY = nullptr, flOUT int64_t *pWidth = nullptr, flOUT int64_t *pHeight = nullptr) override;
+      void SetScissorRect(int64_t x, int64_t y, int64_t width, int64_t height) override;
+      void GetScissorRect(int64_t *pX = nullptr, int64_t *pY = nullptr, int64_t *pWidth = nullptr, int64_t *pHeight = nullptr) override;
 
-      void SetDepthRange(flIN float minDepth, flIN float maxDepth) override;
-      void GetDepthRange(flOUT float *pMinDepth, flOUT float *pMaxDepth) override;
+      void SetDepthRange(float minDepth, float maxDepth) override;
+      void GetDepthRange(float *pMinDepth, float *pMaxDepth) override;
     };
   }
 }

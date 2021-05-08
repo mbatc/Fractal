@@ -14,7 +14,7 @@ namespace flEngine
       GetBuffer()->Set(pInitialData, elementCount * m_elementSize);
     }
 
-    VertexBuffer* GLVertexBuffer::Create(HardwareBuffer * pBuffer, Util::Type primitiveType, int64_t primitiveWidth, int64_t elementCount = 0, void const * pInitialData)
+    VertexBuffer* GLVertexBuffer::Create(HardwareBuffer * pBuffer, Util::Type primitiveType, int64_t primitiveWidth, int64_t elementCount, void const * pInitialData)
     {
       return flNew GLVertexBuffer(pBuffer, primitiveType, primitiveWidth, elementCount, pInitialData);
     }
@@ -26,17 +26,17 @@ namespace flEngine
       m_primitiveWidth = primitiveWidth;
     }
 
-    int64_t GLVertexBuffer::GetElementCount()
+    int64_t GLVertexBuffer::GetElementCount() const
     {
       return m_elementSize == 0 ? GetBuffer()->GetSize() / m_elementSize : 0;
     }
 
-    Util::Type GLVertexBuffer::GetPrimitiveType()
+    Util::Type GLVertexBuffer::GetPrimitiveType() const
     {
       return m_primitiveType;
     }
 
-    int64_t GLVertexBuffer::GetPrimitiveWidth()
+    int64_t GLVertexBuffer::GetPrimitiveWidth() const
     {
       return m_primitiveWidth;
     }

@@ -36,4 +36,12 @@
 #include "graphics/flWindowRenderTarget.h"
 #include "graphics/flTextureRenderTarget.h"
 
+namespace flEngine
+{
+  /**
+   * @brief Initialize Fractals core systems.
+   */
+  bool flEXPORT Initialize();
+}
+
 #endif // fl_Engine_h__

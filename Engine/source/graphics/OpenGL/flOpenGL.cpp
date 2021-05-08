@@ -14,9 +14,6 @@ namespace flEngine
 {
   namespace Graphics
   {
-    using namespace flEngine;
-    using namespace flEngine::Graphics;
-
     void OpenGL::SetGeometry(Geometry * pGeometry, int64_t indexBuffer)
     {
       m_pGeometry = pGeometry;
@@ -139,6 +136,28 @@ namespace flEngine
     Texture2D* CreateTexture2D(PixelFormat pixelFormat, PixelComponentType type)
     {
       return GLTexture2D::Create(pixelFormat, type);
+    }
+
+    class GLAPIFactory : public APIFactory
+    {
+    public:
+      char const * GetIdentifier() const override
+      {
+        return "OpenGL";
+      }
+
+      API *Create(Platform::Window *pWindow, RenderTargetOptions *pOptions) override
+      {
+        return OpenGL::Create(pWindow, pOptions);
+      }
+    };
+
+    bool OpenGL::RegisterAPI()
+    {
+      GLAPIFactory *pFactory = new GLAPIFactory();
+      bool success = API::RegisterAPI(pFactory);
+      pFactory->DecRef();
+      return success;
     }
   }
 }

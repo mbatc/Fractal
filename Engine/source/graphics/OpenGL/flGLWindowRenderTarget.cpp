@@ -1,62 +1,46 @@
 #include "graphics\OpenGL\flGLWindowRenderTarget.h"
-#include "flGLWindowRenderTarget_Impl.h"
+#include "flGLUtil.h"
 
-using namespace flEngine;
-using namespace flEngine::Graphics;
-
-flPIMPL_IMPL(GLWindowRenderTarget)
-
-GLWindowRenderTarget::GLWindowRenderTarget(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions)
+namespace flEngine
 {
-  Impl()->Construct(pWindow, pOptions);
-}
+  namespace Graphics
+  {
+    WindowRenderTarget *GLWindowRenderTarget::Create(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions)
+    {
+      return flNew GLWindowRenderTarget(pWindow, pOptions);
+    }
 
-Platform::Window * flEngine::Graphics::GLWindowRenderTarget::GetWindow() const
-{
-  return Impl()->GetWindow();
-}
+    void GLWindowRenderTarget::Clear(flIN Util::Colour colour, flIN float depth, flIN int32_t stencil)
+    {
+      ClearColour(colour);
+      ClearDepth(depth);
+      ClearStencil(stencil);
+    }
 
-bool GLWindowRenderTarget::SetFormat(flIN const RenderTargetOptions *pOptions)
-{
-  return Impl()->SetFormat(pOptions);
-}
+    void GLWindowRenderTarget::ClearDepth(flIN float depth)
+    {
+      MakeCurrent();
+      glClearDepth(depth);
+      glClear(GL_DEPTH_BUFFER_BIT);
+    }
 
-void GLWindowRenderTarget::Clear(flIN const Util::Colour &colour, flIN const float &depth, flIN const int32_t &stencil)
-{
-  return Impl()->Clear(colour, depth, stencil);
-}
+    void GLWindowRenderTarget::ClearColour(flIN Util::Colour colour)
+    {
+      MakeCurrent();
+      glClearColor(colour.r, colour.g, colour.b, colour.a);
+      glClear(GL_COLOR_BUFFER_BIT);
+    }
 
-void GLWindowRenderTarget::ClearDepth(flIN const float &depth)
-{
-  return Impl()->ClearDepth(depth);
-}
+    void GLWindowRenderTarget::ClearStencil(flIN int32_t stencil)
+    {
+      MakeCurrent();
+      glClearStencil(stencil);
+      glClear(GL_STENCIL_BUFFER_BIT);
+    }
 
-void GLWindowRenderTarget::ClearColour(flIN const Util::Colour &colour)
-{
-  return Impl()->ClearColour(colour);
-}
-
-void GLWindowRenderTarget::ClearStencil(flIN const int32_t &colour)
-{
-  return Impl()->ClearStencil(colour);
-}
-
-void GLWindowRenderTarget::Swap()
-{
-  return Impl()->Swap();
-}
-
-void* GLWindowRenderTarget::GetNativeHandle() const
-{
-  return Impl()->GetNativeHandle();
-}
-
-void GLWindowRenderTarget::Bind()
-{
-  return Impl()->Bind();
-}
-
-GLWindowRenderTarget* GLWindowRenderTarget::Create(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions)
-{
-  return flNew GLWindowRenderTarget(pWindow, pOptions);
+    void GLWindowRenderTarget::Bind()
+    {
+      MakeCurrent();
+    }
+  }
 }

@@ -7,7 +7,7 @@ namespace flEngine
 {
   namespace Graphics
   {
-    class flEXPORT GLHardwareBuffer : public HardwareBuffer
+    class GLHardwareBuffer : public HardwareBuffer
     {
       GLHardwareBuffer(BufferBinding binding, AccessFlags flags);
 
@@ -28,7 +28,7 @@ namespace flEngine
       int64_t m_size = 0;
       uint32_t m_bufferID = 0;
 
-      GLenum m_glAccessFlags = 0;
+      uint32_t m_glAccessFlags = 0;
       AccessFlags m_accessFlags = AccessFlag_None;
       BufferBinding m_binding = BufferBinding_Unknown;
 

@@ -70,7 +70,7 @@ OpenGL::OpenGL(Platform::Window *pWindow, const RenderTargetOptions *pOptions)
   };
   
   // Create the render target for the actual window
-  GLWindowRenderTarget *pWndRenderTarget = GLWindowRenderTarget::Create(pWindow, pOptions);
+  WindowRenderTarget *pWndRenderTarget = GLWindowRenderTarget::Create(pWindow, pOptions);
   HWND  hWnd  = (HWND)tempWindow.GetNativeHandle();
   HDC   hDC   = (HDC)pWndRenderTarget->GetNativeHandle();
   HGLRC hGLRC = flEngine_glCreateContextAttribsARB(hDC, nullptr, contextAttribs);
