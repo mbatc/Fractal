@@ -39,6 +39,8 @@ namespace flEngine
     flEXPORT int64_t SizeOf(flIN Type type);
 
     flEXPORT char const * NameOfType(flIN Type type);
+
+    flEXPORT void ConvertPrimitive(void *pDest, Type destType, void const *pSrc, Type srcType, int64_t count);
   }
 }
 

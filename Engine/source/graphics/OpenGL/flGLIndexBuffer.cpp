@@ -37,12 +37,12 @@ namespace flEngine
 
     HardwareBuffer * GLIndexBuffer::GetBuffer()
     {
-      return m_pBuffer;
+      return m_pBuffer.Get();
     }
 
     HardwareBuffer const * GLIndexBuffer::GetBuffer() const
     {
-      return m_pBuffer;
+      return m_pBuffer.Get();
     }
   }
 }

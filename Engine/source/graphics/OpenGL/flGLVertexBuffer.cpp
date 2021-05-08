@@ -43,12 +43,12 @@ namespace flEngine
 
     HardwareBuffer* GLVertexBuffer::GetBuffer()
     {
-      return m_pBuffer;
+      return m_pBuffer.Get();
     }
 
     HardwareBuffer const * GLVertexBuffer::GetBuffer() const
     {
-      return m_pBuffer;
+      return m_pBuffer.Get();
     }
 
   }

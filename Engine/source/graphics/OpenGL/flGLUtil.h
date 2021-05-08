@@ -28,15 +28,15 @@ namespace flEngine
     public:
       GLUtil() = delete;
 
-      static bool GetPixelFormat(flIN uint32_t format, flOUT PixelFormat *pFormat, flOUT PixelComponentType *pComponentType);
-      static PixelFormat  GetPixelFormat(flIN uint32_t pixelFormat);
-      static DepthFormat  GetDepthFormat(flIN uint32_t format);
       static PixelComponentType GetPixelComponentType(flIN uint32_t format);
-      static ProgramStage GetProgramStage(flIN uint32_t shader);
-      static AccessFlags  GetAccessFlags(flIN uint32_t accessFlags);
+      static bool          GetPixelFormat(flIN uint32_t format, flOUT PixelFormat *pFormat, flOUT PixelComponentType *pComponentType);
+      static PixelFormat   GetPixelFormat(flIN uint32_t pixelFormat);
+      static DepthFormat   GetDepthFormat(flIN uint32_t format);
+      static ProgramStage  GetProgramStage(flIN uint32_t shader);
+      static AccessFlags   GetAccessFlags(flIN uint32_t accessFlags);
       static BufferBinding GetBufferBinding(flIN uint32_t bufferBinding);
-      static BufferUsage GetBufferUsage(flIN uint32_t bufferBinding);
-      static Util::Type GetType(flIN uint32_t dataType);
+      static BufferUsage   GetBufferUsage(flIN uint32_t bufferBinding);
+      static Util::Type    GetType(flIN uint32_t dataType, flOUT int64_t *pWidth, flOUT int64_t *pHeight);
 
       static uint32_t ToShaderType(flIN ProgramStage stage);
       static uint32_t ToPixelFormat(flIN PixelFormat depthFormat);
@@ -47,7 +47,7 @@ namespace flEngine
       static uint32_t ToAccessFlags(flIN AccessFlags accessFlag);
       static uint32_t ToBufferBinding(flIN BufferBinding binding);
       static uint32_t ToBufferUsage(flIN BufferUsage stage);
-      static uint32_t ToDataType(flIN Util::Type dataType);
+      static uint32_t ToDataType(flIN Util::Type dataType, flOUT int64_t width = 1, flOUT int64_t height = 1);
     };
   }
 }

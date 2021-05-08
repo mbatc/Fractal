@@ -2,6 +2,7 @@
 #define fl_Graphics_Program_h__
 
 #include "../flInterface.h"
+#include "../util/flType.h"
 #include "flProgramDetails.h"
 
 namespace flEngine
@@ -37,19 +38,59 @@ namespace flEngine
       virtual bool Reload() = 0;
 
       /**
-       * @brief Set uniform data using a Uniform Buffer
+       * @brief Upload the specified inputs to the GPU
+       */
+      virtual void ApplyInputs() = 0;
+
+      /**
+       * @brief Set the value of a uniform in the shader.
+       */
+      virtual void SetUniform(const char * name, void const *pValue, Util::Type valueType, int64_t valueCount) = 0;
+
+      /**
+       * @brief Set uniform data using a Uniform Buffer.
        */
       virtual void SetUniformBuffer(flIN const char *name, flIN HardwareBuffer *pBuffer) = 0;
 
       /**
        * @brief Set a texture in the shader
        */
-      virtual void SetTexture(flIN const char *name, flIN Texture *pTexture) = 0;
+      virtual void SetSampler(flIN const char *name, flIN Texture *pTexture) = 0;
 
       /**
-       * @brief Set a texture in the shader
+       * @brief Set a texture in the shader.
        */
       virtual void SetSampler(flIN const char *name, flIN Sampler *pTexture) = 0;
+
+      /**
+       * 
+       */
+      virtual int64_t GetUniformCount() const = 0;
+
+      /**
+       *
+       */
+      virtual int64_t GetUniformBlockCount() const = 0;
+
+      /**
+       *
+       */
+      virtual int64_t GetSamplerCount() const = 0;
+
+      /**
+       *
+       */
+      virtual char const * GetUniformName(flIN int64_t index) const = 0;
+
+      /**
+       *
+       */
+      virtual char const * GetUniformBufferName(flIN int64_t index) const = 0;
+
+      /**
+       *
+       */
+      virtual char const * GetSamplerName(flIN int64_t index) const = 0;
 
       /**
        * @brief Get the native resource for the underlying graphics API.

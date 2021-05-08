@@ -1,349 +1,422 @@
-#include "graphics/OpenGL/flGLProgram.h"
+#include "graphics/flHardwareBuffer.h"
+#include "graphics/flTexture.h"
+#include "graphics/flSampler.h"
+#include "flGLProgram.h"
 #include "util/flType.h"
 #include "ctFilename.h"
 #include "flGLUtil.h"
 #include "ctFile.h"
 
-using namespace flEngine;
-
-enum ResourceType
-{
-  ResourceType_Unknown = -1,
-  ResourceType_Uniform,
-  ResourceType_Texture,
-  ResourceType_Attribute,
-  ResourceType_UniformBlock,
-  ResourceType_Count,
-};
-
-class ProgramUniform
-{
-public:
-  ProgramUniform(int64_t uniformIndex);
-
-  void Set(void *pResource);
-  bool Bind();
-  bool Reflect();
-};
-
-class ProgramTexture
-{
-public:
-  ProgramTexture(int64_t texIndex);
-
-  void Set(void *pResource);
-  bool Bind();
-  bool Reflect();
-};
-
-class ProgramUniformBlock
-{
-public:
-  ProgramUniformBlock(int64_t blockIndex);
-
-  void Set(void *pResource);
-  bool Bind();
-  bool Reflect();
-};
-
-class ProgramAttribute
-{
-public:
-  void Set(void *pResource);
-  bool Bind();
-  bool Reflect();
-};
-
 namespace flEngine
 {
   namespace Graphics
   {
-    class Impl_GLProgram
+    class Uniform : public Interface
     {
-      struct Shader
+      Uniform(ctVector<uint8_t> *pCache, ctVector<uint8_t> *pActiveState, Util::Type dataType, int64_t width, int64_t height, int64_t offset = -1)
       {
-        ctFilename file = "";
-        ctString   src = "";
-        uint32_t   glID = 0;
+        // Set the uniform properties
+        m_width = width;
+        m_height = height;
+        m_primCount = width * height;
+        m_dataType = dataType;
 
-        bool isActive = false;
-        bool isLinked = false;
-      };
+        // Calculate the size of the uniforms in bytes
+        m_size = m_width * m_height * Util::SizeOf(m_dataType);
+
+        // Set the offset
+        m_offset = offset;
+
+        // If no offset is specified, append this uniform the back of the uniform data buffer
+        if (m_offset == -1)
+          m_offset = pCache->size();
+
+        // Ensure there is enough space in the cache for this uniform
+        pCache->resize(m_offset + GetSize());
+        pActiveState->resize(pCache->size());
+
+        m_pUniformCache = pCache;
+        m_pActiveState = pActiveState;
+      }
 
     public:
-      Impl_GLProgram()
+      static Uniform * Create(ctVector<uint8_t> *pCache, ctVector<uint8_t> *pActiveState, Util::Type dataType, int64_t width, int64_t height, int64_t offset = -1)
       {
-        m_programID = glCreateProgram();
+        return flNew Uniform(pCache, pActiveState, dataType, width, height, offset);
       }
 
-      ~Impl_GLProgram()
+      int64_t GetSize() const
       {
-        for (int64_t i = 0; i < ProgramStage_Count; ++i)
-          ClearShader(&m_shaders[i]);
-        glDeleteProgram(m_programID);
-        m_programID = 0;
+        return m_size;
       }
 
-      void SetShader(flIN const char *source, flIN ProgramStage stage)
+      int64_t GetWidth() const
       {
-        SetShader(stage, source, nullptr);
+        return m_width;
       }
 
-      void SetShaderFromFile(flIN const char *path, flIN ProgramStage stage)
+      int64_t GetHeight() const
       {
-        SetShader(stage, nullptr, path);
+        return m_height;
       }
 
-      bool Reload()
+      Util::Type GetType() const
       {
-        for (int64_t stage = 0; stage < ProgramStage_Count; ++stage)
-          DeleteShader(&m_shaders[stage]);
-
-        m_compiled = false;
-
-        return Compile();
+        return m_dataType;
       }
 
-      bool Compile()
+      bool HasChanged() const
       {
-        if (m_compiled)
-          return true;
+        return memcmp(CachePtr(), ActivePtr(), GetSize()) == 0;
+      }
 
-        bool success = true;
-        for (int64_t stage = 0; stage < ProgramStage_Count; ++stage)
-          if (m_shaders[stage].isActive)
-            success &= CompileShader(&m_shaders[stage]);
+      void Set(void const *pValue, Util::Type valueType, int64_t count)
+      {
+        Util::ConvertPrimitive(CachePtr(), m_dataType, pValue, valueType, min(count, m_primCount));
+      }
 
-        if (!success) // Compiling shaders failed
-          return false;
+      void * CachePtr() const
+      {
+        return m_pUniformCache->data() + m_offset;
+      }
 
-        int status = 0;
-        glLinkProgram(m_programID);
-        glGetProgramiv(m_programID, GL_LINK_STATUS, &status);
-        if (status == GL_FALSE)
-        {
-          int logLen = 0;
-          ctVector<char> logBuffer;
-          logBuffer.resize(logLen + 1, 0);
+      void * ActivePtr() const
+      {
+        return m_pActiveState->data() + m_offset;
+      }
 
-          // Get the length of the compilation log
-          glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &logLen);
+    private:
+      Util::Type m_dataType = Util::Type_Unknown;
+      int64_t    m_width = 0;
+      int64_t    m_height = 0;
+      int64_t    m_size = 0;
+      int64_t    m_primCount = 0;
+      int64_t    m_offset = -1;
+      ctVector<uint8_t> *m_pUniformCache = nullptr;
+      ctVector<uint8_t> *m_pActiveState  = nullptr;
+    };
 
-          // Get the compilation log
-          glGetProgramInfoLog(m_programID, logLen, &logLen, logBuffer.data());
+    GLProgram::GLProgram()
+    {
+      m_programID = glCreateProgram();
+    }
 
-          // TODO: Report in error compilation log
+    GLProgram::~GLProgram()
+    {
+      for (int64_t i = 0; i < ProgramStage_Count; ++i)
+        ClearShader(&m_shaders[i]);
+      glDeleteProgram(m_programID);
+      m_programID = 0;
+    }
 
-          return false; // TODO: Report GL error
-        }
+    GLProgram *GLProgram::Create()
+    {
+      return flNew GLProgram;
+    }
 
-        // Get shader details
-        Reflect();
+    void GLProgram::ApplyInputs()
+    {
+      for (Resource &uniform : m_resources[ResourceType_Uniform])
+      {
 
-        m_compiled = true;
+      }
+    }
+
+    void GLProgram::SetShader(const char *source, ProgramStage stage)
+    {
+      SetShader(stage, source, nullptr);
+    }
+
+    void GLProgram::SetShaderFromFile(const char *path, ProgramStage stage)
+    {
+      SetShader(stage, nullptr, path);
+    }
+
+    bool GLProgram::Reload()
+    {
+      for (int64_t stage = 0; stage < ProgramStage_Count; ++stage)
+        DeleteShader(&m_shaders[stage]);
+
+      m_compiled = false;
+
+      return Compile();
+    }
+
+    bool GLProgram::Compile()
+    {
+      if (m_compiled)
         return true;
-      }
 
-      void SetUniformBuffer(flIN const char *name, flIN HardwareBuffer *pBuffer)
+      bool success = true;
+      for (int64_t stage = 0; stage < ProgramStage_Count; ++stage)
+        if (m_shaders[stage].isActive)
+          success &= CompileShader(&m_shaders[stage]);
+
+      if (!success) // Compiling shaders failed
+        return false;
+
+      int status = 0;
+      glLinkProgram(m_programID);
+      glGetProgramiv(m_programID, GL_LINK_STATUS, &status);
+      if (status == GL_FALSE)
       {
+        int logLen = 0;
+        ctVector<char> logBuffer;
+        logBuffer.resize(logLen + 1, 0);
 
+        // Get the length of the compilation log
+        glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &logLen);
+
+        // Get the compilation log
+        glGetProgramInfoLog(m_programID, logLen, &logLen, logBuffer.data());
+
+        // TODO: Report in error compilation log
+
+        return false; // TODO: Report GL error
       }
 
-      void SetTexture(flIN const char *name, flIN Texture *pTexture)
+      // Get shader details
+      Reflect();
+
+      m_compiled = true;
+      return true;
+    }
+
+    void GLProgram::SetUniformBuffer(const char * name, HardwareBuffer *pBuffer)
+    {
+      Resource *pBlock = GetResource(ResourceType_UniformBlock, name);
+      if (pBlock)
+        pBlock->pResource = pBuffer;
+    }
+
+    void GLProgram::SetUniform(const char * name, void const *pValue, Util::Type valueType, int64_t valueCount)
+    {
+      Resource *pResource = GetResource(ResourceType_Uniform, name);
+      if (pResource)
       {
-
+        Ref<Uniform> pUniform = (Uniform*)pResource->pResource.Get();
+        pUniform->Set(pValue, valueType, valueCount);
       }
+    }
 
-      void SetSampler(flIN const char *name, flIN Sampler *pTexture)
+    void GLProgram::SetSampler(const char * name, Texture *pTexture)
+    {
+      Resource *pResource = GetResource(ResourceType_Sampler, name);
+      if (pResource)
       {
-
+        pResource->isSampler = false;
+        pResource->pResource = pTexture;
       }
+    }
 
-      void *GetNativeResource()
+    void GLProgram::SetSampler(const char * name, Sampler *pSampler)
+    {
+      Resource *pResource = GetResource(ResourceType_Sampler, name);
+      if (pResource)
       {
-        return (void *)int64_t(m_programID);
+        pResource->isSampler = true;
+        pResource->pResource = pSampler;
       }
+    }
 
-    protected:
-      void DeleteShader(Shader *pShader)
-      {
-        if (pShader->glID != 0)
-        {
-          if (pShader->isLinked)
-            glDetachShader(m_programID, pShader->glID);
-          glDeleteShader(pShader->glID);
-        }
+    int64_t GLProgram::GetUniformCount() const
+    {
+      return m_resources[ResourceType_Uniform].size();
+    }
 
-        pShader->isLinked = false;
-        pShader->glID = 0;
-      }
+    int64_t GLProgram::GetSamplerCount() const
+    {
+      return m_resources[ResourceType_Sampler].size();
+    }
 
-      void ClearShader(Shader *pShader)
-      {
-        DeleteShader(pShader);
-        *pShader = Shader();
-      }
+    int64_t GLProgram::GetUniformBlockCount() const
+    {
+      return m_resources[ResourceType_UniformBlock].size();
+    }
 
-      void SetShader(ProgramStage stage, const char *src, const char *file)
-      {
-        // Delete the old shader
-        ClearShader(&m_shaders[stage]);
+    char const * GLProgram::GetUniformName(int64_t index) const
+    {
+      return m_resources[ResourceType_Uniform][index].name;
+    }
 
-        // Set the source
-        if (file) m_shaders[stage].file = file;
-        if (src) m_shaders[stage].src = src;
-        m_shaders[stage].isActive = true;
-      }
+    char const * GLProgram::GetUniformBufferName(int64_t index) const
+    {
+      return m_resources[ResourceType_UniformBlock][index].name;
+    }
 
-      bool CompileShader(Shader *pShader)
+    char const * GLProgram::GetSamplerName(int64_t index) const
+    {
+      return m_resources[ResourceType_Sampler][index].name;
+    }
+
+    void * GLProgram::GetNativeResource()
+    {
+      return flNativeFromGLID(m_programID);
+    }
+
+    GLProgram::Resource * GLProgram::GetResource(ResourceType const & type, char const * name)
+    {
+      for (Resource &resource : m_resources[type])
+        if (resource.name == name)
+          return &resource;
+      return nullptr;
+    }
+
+    GLProgram::Resource * GLProgram::AddResource(ResourceType const &type, char const * name)
+    {
+      for (Resource &resource : m_resources[type])
+        if (resource.name == name)
+          return &resource;
+
+      m_resources[type].emplace_back();
+      m_resources[type].back().name = name;
+      return &m_resources[type].back();
+    }
+
+    void GLProgram::SetResource(ResourceType const & type, char const * name, Ref<Interface> pResource)
+    {
+      Resource *pData = GetResource(type, name);
+      pData->pResource = pResource;
+    }
+
+    void GLProgram::DeleteShader(Shader *pShader)
+    {
+      if (pShader->glID != 0)
       {
         if (pShader->isLinked)
-          return true;
+          glDetachShader(m_programID, pShader->glID);
+        glDeleteShader(pShader->glID);
+      }
 
-        if (pShader->file.Path().length() > 0)
-        {
-          bool success = false;
-          pShader->src = ctFile::ReadText(pShader->file, &success);
-          if (!success)
-            return false; // TODO: Report failed to read file
-        }
+      pShader->isLinked = false;
+      pShader->glID = 0;
+    }
 
-        if (pShader->src.length() == 0)
-          return false; // TODO: Report no source available
+    void GLProgram::ClearShader(Shader * pShader)
+    {
+      DeleteShader(pShader);
+      *pShader = Shader();
+    }
 
-        const char *src = pShader->src.c_str();
-        int length = (int)pShader->src.length();
+    void GLProgram::SetShader(ProgramStage stage, const char *src, const char *file)
+    {
+      // Delete the old shader
+      ClearShader(&m_shaders[stage]);
 
-        // Attach the shader source
-        glShaderSource(pShader->glID, 1, &src, &length);
+      // Set the source
+      if (file) m_shaders[stage].file = file;
+      if (src) m_shaders[stage].src = src;
+      m_shaders[stage].isActive = true;
+    }
 
-        // Compile the shader
-        glCompileShader(pShader->glID);
-
-        // Check if the shader compiled successfully
-        int status = 0;
-        glGetShaderiv(pShader->glID, GL_COMPILE_STATUS, &status);
-        if (status == GL_FALSE)
-        { // GL error, report error
-          int logLen = 0;
-          ctVector<char> logBuffer;
-          logBuffer.resize(logLen + 1, 0);
-
-          // Get the length of the compilation log
-          glGetShaderiv(pShader->glID, GL_INFO_LOG_LENGTH, &logLen);
-
-          // Get the compilation log
-          glGetShaderInfoLog(pShader->glID, logLen, &logLen, logBuffer.data());
-
-          // TODO: Report in error compilation log
-          
-          return false; // TODO: Report GL error
-        }
-
-        glAttachShader(m_programID, pShader->glID);
-
-        pShader->isLinked = true;
-
+    bool GLProgram::CompileShader(Shader *pShader)
+    {
+      if (pShader->isLinked)
         return true;
-      }
 
-      void Reflect()
+      if (pShader->file.Path().length() > 0)
       {
-        int32_t uniformCount = 0;
-        int32_t attributeCount = 0;
-        int32_t uniformBlockCount = 0;
-        glGetProgramiv(m_programID, GL_ACTIVE_UNIFORMS, &uniformCount);
-        glGetProgramiv(m_programID, GL_ACTIVE_ATTRIBUTES, &attributeCount);
-        glGetProgramiv(m_programID, GL_ACTIVE_UNIFORM_BLOCKS, &uniformBlockCount);
+        bool success = false;
+        pShader->src = ctFile::ReadText(pShader->file, &success);
+        if (!success)
+          return false; // TODO: Report failed to read file
+      }
 
-        int32_t maxNameLen = 0;
-        ctVector<char> nameBuffer;
-        glGetProgramiv(m_programID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxNameLen);
-        nameBuffer.resize(ctMax(nameBuffer.size(), maxNameLen + 1));
-        glGetProgramiv(m_programID, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxNameLen);
-        nameBuffer.resize(ctMax(nameBuffer.size(), maxNameLen + 1));
-        glGetProgramiv(m_programID, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &maxNameLen);
-        nameBuffer.resize(ctMax(nameBuffer.size(), maxNameLen + 1));
-        maxNameLen = (int32_t)nameBuffer.size() - 1;
+      if (pShader->src.length() == 0)
+        return false; // TODO: Report no source available
 
-        int32_t len = 0; int32_t size = 0; uint32_t type = 0;
-        for (int32_t attrib = 0; attrib < attributeCount; ++attrib)
-        {
-          glGetActiveAttrib(m_programID, attrib, maxNameLen, &len, &size, &type, nameBuffer.data());
+      const char *src = pShader->src.c_str();
+      int length = (int)pShader->src.length();
+
+      // Attach the shader source
+      glShaderSource(pShader->glID, 1, &src, &length);
+
+      // Compile the shader
+      glCompileShader(pShader->glID);
+
+      // Check if the shader compiled successfully
+      int status = 0;
+      glGetShaderiv(pShader->glID, GL_COMPILE_STATUS, &status);
+      if (status == GL_FALSE)
+      { // GL error, report error
+        int logLen = 0;
+        ctVector<char> logBuffer;
+        logBuffer.resize(logLen + 1, 0);
+
+        // Get the length of the compilation log
+        glGetShaderiv(pShader->glID, GL_INFO_LOG_LENGTH, &logLen);
+
+        // Get the compilation log
+        glGetShaderInfoLog(pShader->glID, logLen, &logLen, logBuffer.data());
+
+        // TODO: Report in error compilation log
+
+        return false; // TODO: Report GL error
+      }
+
+      glAttachShader(m_programID, pShader->glID);
+
+      pShader->isLinked = true;
+
+      return true;
+    }
+
+    void GLProgram::Reflect()
+    {
+      int32_t uniformCount = 0;
+      int32_t attributeCount = 0;
+      int32_t uniformBlockCount = 0;
+      glGetProgramiv(m_programID, GL_ACTIVE_UNIFORMS, &uniformCount);
+      glGetProgramiv(m_programID, GL_ACTIVE_ATTRIBUTES, &attributeCount);
+      glGetProgramiv(m_programID, GL_ACTIVE_UNIFORM_BLOCKS, &uniformBlockCount);
+
+      int32_t maxNameLen = 0;
+      ctVector<char> nameBuffer;
+      glGetProgramiv(m_programID, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxNameLen);
+      nameBuffer.resize(ctMax(nameBuffer.size(), maxNameLen + 1));
+      glGetProgramiv(m_programID, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxNameLen);
+      nameBuffer.resize(ctMax(nameBuffer.size(), maxNameLen + 1));
+      glGetProgramiv(m_programID, GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH, &maxNameLen);
+      nameBuffer.resize(ctMax(nameBuffer.size(), maxNameLen + 1));
+      maxNameLen = (int32_t)nameBuffer.size() - 1;
+
+      int32_t len = 0; int32_t size = 0; uint32_t type = 0;
+
+      for (int32_t attrib = 0; attrib < attributeCount; ++attrib)
+      { // Query geometry inputs
+        glGetActiveAttrib(m_programID, attrib, maxNameLen, &len, &size, &type, nameBuffer.data());
+      }
+
+      for (int32_t uniform = 0; uniform < uniformCount; ++uniform)
+      {
+        glGetActiveUniform(m_programID, uniform, maxNameLen, &len, &size, &type, nameBuffer.data());
+
+        int64_t width;
+        int64_t height;
+        Util::Type type = GLUtil::GetType(type, &width, &height);
+        if (type != Util::Type_Unknown)
+        { // Uniform variable
+          Ref<Uniform> pUniform = Uniform::Create(&m_uniformCache, &m_uniformState, type, width, height);
+          Resource *pUniformResource = AddResource(ResourceType_Uniform, nameBuffer.data());
+          pUniformResource->pResource = pUniform.Get();
+          pUniformResource->location = glGetUniformLocation(m_programID, nameBuffer.data());
+          pUniform->DecRef();
         }
+        else
+        { // Possibly a texture/sampler
 
-        for (int32_t uniform = 0; uniform < uniformCount; ++uniform)
-        {
-          glGetActiveUniform(m_programID, uniform, maxNameLen, &len, &size, &type, nameBuffer.data());
-
-        }
-;
-        for (int32_t block = 0; block < uniformBlockCount; ++block)
-        {
-          int32_t blockSize = 0; int32_t numUniforms = 0; ctVector<int32_t> uniformIndices;
-          glGetActiveUniformBlockName(m_programID, (int)block, maxNameLen, &len, nameBuffer.data());
-          glGetActiveUniformBlockiv(m_programID, block, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
-          glGetActiveUniformBlockiv(m_programID, block, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &blockSize);
-          uniformIndices.resize(numUniforms);
-          glGetActiveUniformBlockiv(m_programID, block, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, uniformIndices.data());
         }
       }
 
-      Shader   m_shaders[ProgramStage_Count];
-      uint32_t m_programID = 0;
-      bool     m_compiled  = false;
-    };
+      for (int32_t block = 0; block < uniformBlockCount; ++block)
+      { // Query available uniform blocks
+        int32_t blockSize = 0; int32_t numUniforms = 0; ctVector<int32_t> uniformIndices;
+        glGetActiveUniformBlockName(m_programID, (int)block, maxNameLen, &len, nameBuffer.data());
+        glGetActiveUniformBlockiv(m_programID, block, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+        glGetActiveUniformBlockiv(m_programID, block, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &blockSize);
+        uniformIndices.resize(numUniforms);
+        glGetActiveUniformBlockiv(m_programID, block, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, uniformIndices.data());
+      }
+    }
   }
-
-  ctHashMap<ctString, void*> m_resources[ResourceType_Count];
-}
-
-using namespace flEngine::Graphics;
-
-flPIMPL_IMPL(GLProgram);
-#define flIMPL flPIMPL(GLProgram)
-
-GLProgram* GLProgram::Create()
-{
-  return flNew GLProgram;
-}
-
-void GLProgram::SetShader(flIN const char *source, flIN ProgramStage stage)
-{
-  return flIMPL->SetShader(source, stage);
-}
-
-void GLProgram::SetShaderFromFile(flIN const char *path, flIN ProgramStage stage)
-{
-  return flIMPL->SetShaderFromFile(path, stage);
-}
-
-bool GLProgram::Compile()
-{
-  return flIMPL->Compile();
-}
-
-bool GLProgram::Reload()
-{
-  return flIMPL->Reload();
-}
-
-void GLProgram::SetUniformBuffer(flIN const char *name, flIN HardwareBuffer *pBuffer)
-{
-  flIMPL->SetUniformBuffer(name, pBuffer);
-}
-
-void GLProgram::SetTexture(flIN const char *name, flIN Texture *pTexture)
-{
-  flIMPL->SetTexture(name, pTexture);
-}
-
-void GLProgram::SetSampler(flIN const char *name, flIN Sampler *pSampler)
-{
-  flIMPL->SetSampler(name, pSampler);
-}
-
-void* GLProgram::GetNativeResource()
-{
-  return flIMPL->GetNativeResource();
 }

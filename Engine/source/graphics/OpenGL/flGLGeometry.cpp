@@ -77,12 +77,12 @@ namespace flEngine
 
     VertexBuffer *GLGeometry::GetVertexBuffer(flIN int64_t index)
     {
-      return index >= 0 && index < GetVertexBufferCount() ? m_vertexBuffers[index] : nullptr;
+      return index >= 0 && index < GetVertexBufferCount() ? m_vertexBuffers[index].Get() : nullptr;
     }
 
     IndexBuffer *GLGeometry::GetIndexBuffer(flIN int64_t index)
     {
-      return index >= 0 && index < GetIndexBufferCount() ? m_indexBuffers[index] : nullptr;
+      return index >= 0 && index < GetIndexBufferCount() ? m_indexBuffers[index].Get() : nullptr;
     }
 
     void GLGeometry::Bind(flIN int64_t indexBuffer)

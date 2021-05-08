@@ -217,21 +217,54 @@ BufferUsage GLUtil::GetBufferUsage(flIN uint32_t bufferBinding)
   return BufferUsage_Default;
 }
 
-Type GLUtil::GetType(flIN uint32_t dataType)
+Type GLUtil::GetType(flIN uint32_t dataType, flOUT int64_t *pWidth, flOUT int64_t *pHeight)
 {
+  int64_t width  = 1;
+  int64_t height = 1;
+  Type    type   = Type_Unknown;
+
   switch (dataType)
   {
-  case GL_BYTE:           return Type_Int8;
-  case GL_SHORT:          return Type_Int16;
-  case GL_INT:            return Type_Int32;
-  case GL_UNSIGNED_BYTE:  return Type_UInt8;
-  case GL_UNSIGNED_SHORT: return Type_UInt16;
-  case GL_UNSIGNED_INT:   return Type_UInt32;
-  case GL_FLOAT:          return Type_Float32;
-  case GL_DOUBLE:         return Type_Float64;
+  case GL_FLOAT_VEC2:    width = 2;             type = Type_Float32; break;
+  case GL_FLOAT_VEC3:    width = 3;             type = Type_Float32; break;
+  case GL_FLOAT_VEC4:    width = 4;             type = Type_Float32; break;
+  case GL_FLOAT_MAT2:    width = 2; height = 2; type = Type_Float32; break;
+  case GL_FLOAT_MAT2x3:  width = 2; height = 3; type = Type_Float32; break;
+  case GL_FLOAT_MAT2x4:  width = 2; height = 4; type = Type_Float32; break;
+  case GL_FLOAT_MAT3x2:  width = 3; height = 2; type = Type_Float32; break;
+  case GL_FLOAT_MAT3:    width = 3; height = 3; type = Type_Float32; break;
+  case GL_FLOAT_MAT3x4:  width = 3; height = 4; type = Type_Float32; break;
+  case GL_FLOAT_MAT4x2:  width = 4; height = 2; type = Type_Float32; break;
+  case GL_FLOAT_MAT4x3:  width = 4; height = 3; type = Type_Float32; break;
+  case GL_FLOAT_MAT4:    width = 4; height = 4; type = Type_Float32; break;
+  case GL_FLOAT:                                type = Type_Float32; break;
+
+  case GL_DOUBLE_VEC2:   width = 2;             type = Type_Float64; break;
+  case GL_DOUBLE_VEC3:   width = 3;             type = Type_Float64; break;
+  case GL_DOUBLE_VEC4:   width = 4;             type = Type_Float64; break;
+  case GL_DOUBLE_MAT2:   width = 2; height = 2; type = Type_Float64; break;
+  case GL_DOUBLE_MAT2x3: width = 2; height = 3; type = Type_Float64; break;
+  case GL_DOUBLE_MAT2x4: width = 2; height = 4; type = Type_Float64; break;
+  case GL_DOUBLE_MAT3x2: width = 3; height = 2; type = Type_Float64; break;
+  case GL_DOUBLE_MAT3:   width = 3; height = 3; type = Type_Float64; break;
+  case GL_DOUBLE_MAT3x4: width = 3; height = 4; type = Type_Float64; break;
+  case GL_DOUBLE_MAT4x2: width = 4; height = 2; type = Type_Float64; break;
+  case GL_DOUBLE_MAT4x3: width = 4; height = 3; type = Type_Float64; break;
+  case GL_DOUBLE_MAT4:   width = 4; height = 4; type = Type_Float64; break;
+
+  case GL_BYTE:           type = Type_Int8;    break;
+  case GL_SHORT:          type = Type_Int16;   break;
+  case GL_INT:            type = Type_Int32;   break;
+  case GL_UNSIGNED_BYTE:  type = Type_UInt8;   break;
+  case GL_UNSIGNED_SHORT: type = Type_UInt16;  break;
+  case GL_UNSIGNED_INT:   type = Type_UInt32;  break;
+  case GL_DOUBLE:         type = Type_Float64; break;
   }
 
-  return Type_Unknown;
+  if (pWidth)  *pWidth = width;
+  if (pHeight) *pHeight = width;
+
+  return type;
 }
 
 uint32_t GLUtil::ToShaderType(flIN ProgramStage stage)
@@ -365,24 +398,6 @@ uint32_t GLUtil::ToBufferBinding(flIN BufferBinding stage)
   return GL_NONE;
 }
 
-uint32_t GLUtil::ToDataType(flIN Util::Type stage)
-{
-  switch (stage)
-  {
-  case Type_Int8:    return GL_BYTE;
-  case Type_Int16:   return GL_SHORT;
-  case Type_Int32:   return GL_INT;
-  case Type_UInt8:   return GL_UNSIGNED_BYTE;
-  case Type_UInt16:  return GL_UNSIGNED_SHORT;
-  case Type_UInt32:  return GL_UNSIGNED_INT;
-  case Type_Bool:    return GL_BOOL;
-  case Type_Float32: return GL_FLOAT;
-  case Type_Float64: return GL_DOUBLE;
-  }
-
-  return GL_NONE;
-}
-
 uint32_t GLUtil::ToBufferUsage(flIN BufferUsage stage)
 {
   switch (stage)
@@ -391,6 +406,104 @@ uint32_t GLUtil::ToBufferUsage(flIN BufferUsage stage)
   case BufferUsage_Dynamic:   return GL_DYNAMIC_DRAW;
   case BufferUsage_Staging:   return GL_STREAM_DRAW;
   case BufferUsage_Immutable: return GL_STATIC_DRAW;
+  }
+
+  return GL_NONE;
+}
+
+uint32_t GLUtil::ToDataType(flIN Util::Type dataType, flOUT int64_t width, flOUT int64_t height)
+{
+  switch (dataType)
+  {
+  case Type_Int8:    return width != 1 || height != 1 ? GL_NONE : GL_BYTE;
+  case Type_Int16:   return width != 1 || height != 1 ? GL_NONE : GL_SHORT;
+  case Type_Int32:   return width != 1 || height != 1 ? GL_NONE : GL_INT;
+  case Type_UInt8:   return width != 1 || height != 1 ? GL_NONE : GL_UNSIGNED_BYTE;
+  case Type_UInt16:  return width != 1 || height != 1 ? GL_NONE : GL_UNSIGNED_SHORT;
+  case Type_UInt32:  return width != 1 || height != 1 ? GL_NONE : GL_UNSIGNED_INT;
+  case Type_Bool:    return width != 1 || height != 1 ? GL_NONE : GL_BOOL;
+  case Type_Float32:
+    switch (width)
+    {
+    case 1:
+      switch (height)
+      {
+      case 1: return GL_FLOAT;
+      case 2: return GL_FLOAT_VEC2;
+      case 3: return GL_FLOAT_VEC3;
+      case 4: return GL_FLOAT_VEC4;
+      }
+      break;
+    case 2:
+      switch (height)
+      {
+      case 1: return GL_FLOAT_VEC2;
+      case 2: return GL_FLOAT_MAT2;
+      case 3: return GL_FLOAT_MAT2x3;
+      case 4: return GL_FLOAT_MAT2x4;
+      }
+      break;
+    case 3:
+      switch (height)
+      {
+      case 1: return GL_FLOAT_VEC3;
+      case 2: return GL_FLOAT_MAT3x2;
+      case 3: return GL_FLOAT_MAT3;
+      case 4: return GL_FLOAT_MAT3x4;
+      }
+      break;
+    case 4:
+      switch (height)
+      {
+      case 1: return GL_FLOAT_VEC4;
+      case 2: return GL_FLOAT_MAT4x2;
+      case 3: return GL_FLOAT_MAT4x3;
+      case 4: return GL_FLOAT_MAT4;
+      }
+      break;
+    }
+    break;
+  case Type_Float64:
+    switch (width)
+    {
+    case 1:
+      switch (height)
+      {
+      case 1: return GL_DOUBLE;
+      case 2: return GL_DOUBLE_VEC2;
+      case 3: return GL_DOUBLE_VEC3;
+      case 4: return GL_DOUBLE_VEC4;
+      }
+      break;
+    case 2:
+      switch (height)
+      {
+      case 1: return GL_DOUBLE_VEC2;
+      case 2: return GL_DOUBLE_MAT2;
+      case 3: return GL_DOUBLE_MAT2x3;
+      case 4: return GL_DOUBLE_MAT2x4;
+      }
+      break;
+    case 3:
+      switch (height)
+      {
+      case 1: return GL_DOUBLE_VEC3;
+      case 2: return GL_DOUBLE_MAT3x2;
+      case 3: return GL_DOUBLE_MAT3;
+      case 4: return GL_DOUBLE_MAT3x4;
+      }
+      break;
+    case 4:
+      switch (height)
+      {
+      case 1: return GL_DOUBLE_VEC4;
+      case 2: return GL_DOUBLE_MAT4x2;
+      case 3: return GL_DOUBLE_MAT4x3;
+      case 4: return GL_DOUBLE_MAT4;
+      }
+      break;
+    }
+    break;
   }
 
   return GL_NONE;
