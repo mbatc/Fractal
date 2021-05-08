@@ -1,104 +1,144 @@
-#include "flOpenGL_Impl.h"
-#include "graphics/OpenGL/flGLTexture2D.h"
-#include "graphics/OpenGL/flGLGeometry.h"
-#include "graphics/OpenGL/flGLProgram.h"
-#include "graphics/OpenGL/flGLHardwareBuffer.h"
-#include "graphics/OpenGL/flGLWindowRenderTarget.h"
-#include "graphics/OpenGL/flGLTextureRenderTarget.h"
+#include "flOpenGL.h"
+#include "flGLUtil.h"
+#include "flGLProgram.h"
+#include "flGLGeometry.h"
+#include "flGLTexture2D.h"
+#include "flGLHardwareBuffer.h"
+#include "flGLVertexBuffer.h"
+#include "flGLIndexBuffer.h"
+#include "flGLTextureRenderTarget.h"
+#include "flGLWindowRenderTarget.h"
+#include "flGLDeviceState.h"
 
-using namespace flEngine;
-using namespace flEngine::Graphics;
-
-flPIMPL_IMPL(OpenGL)
-
-#define flIMPL flPIMPL(OpenGL)
-
-void OpenGL::Render(flIN DrawMode drawMode, flIN bool indexed, flIN uint64_t elementOffset, flIN uint64_t elementCount)
+namespace flEngine
 {
-  flIMPL->Render(drawMode, indexed, elementCount, elementCount);
-}
+  namespace Graphics
+  {
+    using namespace flEngine;
+    using namespace flEngine::Graphics;
 
-OpenGL::OpenGL(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions)
-{
-  flIMPL->Construct(pWindow, pOptions);
-}
+    void OpenGL::SetGeometry(Geometry * pGeometry, int64_t indexBuffer)
+    {
+      m_pGeometry = pGeometry;
+      m_indexBuffer = indexBuffer;
+    }
 
-OpenGL* OpenGL::Create(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions)
-{
-  return flNew OpenGL(pWindow, pOptions);
-}
+    void OpenGL::SetRenderTarget(RenderTarget * pRenderTarget)
+    {
+      bool updated = m_pRenderTarget != pRenderTarget;
+      m_pRenderTarget = pRenderTarget;
 
-void OpenGL::SetGeometry(flIN Geometry *pGeometry, flIN int64_t indexBuffer)
-{
-  return flIMPL->SetGeometry(pGeometry, indexBuffer);
-}
+      if (m_pRenderTarget)
+        m_pRenderTarget->Bind();
+    }
 
-void OpenGL::SetRenderTarget(flIN RenderTarget *pRenderTarget)
-{
-  return flIMPL->SetRenderTarget(pRenderTarget);
-}
+    void OpenGL::SetProgram(Program* pProgram)
+    {
+      bool updated = m_pProgram != pProgram;
+      m_pProgram = pProgram;
 
-void OpenGL::SetProgram(flIN Program *pProgram)
-{
-  return flIMPL->SetProgram(pProgram);
-}
+      if (m_pProgram && updated)
+        glUseProgram(flNativeToGLID(m_pProgram->GetNativeResource()));
 
-DeviceState* OpenGL::GetState()
-{
-  return flIMPL->GetState();
-}
+      if (!m_pProgram)
+        glUseProgram(0);
+    }
 
-WindowRenderTarget* OpenGL::CreateWindowRenderTarget(flIN Platform::Window* pWindow, flIN RenderTargetOptions* pOptions)
-{
-  return GLWindowRenderTarget::Create(pWindow, pOptions);
-}
+    DeviceState* OpenGL::GetState() { return m_pState; }
 
-TextureRenderTarget* OpenGL::CreateTextureRenderTarget()
-{
-  return GLTextureRenderTarget::Create();
-}
+    void OpenGL::Render(DrawMode drawMode, bool indexed, uint64_t elementOffset, uint64_t elementCount)
+    {
+      GLenum glDrawMode = GL_NONE;
+      switch (drawMode)
+      {
+      case DrawMode_Patches:       glDrawMode = GL_PATCHES; break;
+      case DrawMode_Points:        glDrawMode = GL_POINTS; break;
+      case DrawMode_Lines:         glDrawMode = GL_LINES; break;
+      case DrawMode_LineLoop:      glDrawMode = GL_LINE_LOOP; break;
+      case DrawMode_Triangles:     glDrawMode = GL_TRIANGLES; break;
+      case DrawMode_TriangleFan:   glDrawMode = GL_TRIANGLE_FAN; break;
+      case DrawMode_TriangleStrip: glDrawMode = GL_TRIANGLE_STRIP; break;
+      default: // TODO: Add some logging
+        return;
+      }
 
-Geometry* OpenGL::CreateGeometry()
-{
-  return GLGeometry::Create();
-}
+      VertexBuffer* pVertexBuffer = m_pGeometry->GetVertexBuffer(0);
+      IndexBuffer* pIndexBuffer = m_pGeometry->GetIndexBuffer(m_indexBuffer);
 
-HardwareBuffer* OpenGL::CreateBuffer(flIN BufferBinding binding, flIN AccessFlags accessFlags)
-{
-  return GLHardwareBuffer::Create(binding, accessFlags);
-}
+      GLenum glType = GL_NONE;
+      switch (pIndexBuffer->GetIndexType())
+      {
+      case Util::Type_UInt32: glType = GL_UNSIGNED_INT;   break;
+      case Util::Type_UInt16: glType = GL_UNSIGNED_SHORT; break;
+      case Util::Type_UInt8:  glType = GL_UNSIGNED_BYTE;  break;
+      }
 
-IndexBuffer* CreateIndexBuffer(flIN BufferBinding binding, flIN AccessFlags accessFlags)
-{
-  return GLIndexBuffer::Create(binding, accessFlags);
-}
+      if (indexed)
+        glDrawElements(glDrawMode, (GLsizei)elementCount, glType, (void*)elementOffset);
+      else
+        glDrawArrays(glDrawMode, (GLsizei)elementOffset, (GLsizei)elementCount);
+    }
+    OpenGL* OpenGL::Create(Platform::Window* pWindow, const RenderTargetOptions* pOptions)
+    {
+      return flNew OpenGL(pWindow, pOptions);
+    }
 
-VertexBuffer* CreateVertexBuffer(flIN BufferBinding binding, flIN AccessFlags accessFlags)
-{
-  return GLVertexBuffer::Create(binding, accessFlags);
-}
+    WindowRenderTarget* OpenGL::CreateWindowRenderTarget(Platform::Window* pWindow, RenderTargetOptions* pOptions)
+    {
+      return GLWindowRenderTarget::Create(pWindow, pOptions);
+    }
 
-Program* OpenGL::CreateProgram()
-{
-  return GLProgram::Create();
-}
+    TextureRenderTarget* OpenGL::CreateTextureRenderTarget()
+    {
+      return GLTextureRenderTarget::Create();
+    }
 
-Texture2D* OpenGL::CreateTexture2D(flIN DepthFormat depthFormat)
-{
-  return GLTexture2D::Create(depthFormat);
-}
+    Geometry* OpenGL::CreateGeometry()
+    {
+      return GLGeometry::Create();
+    }
 
-Texture2D* OpenGL::CreateTexture2D(flIN PixelFormat pixelFormat, flIN PixelComponentType type)
-{
-  return GLTexture2D::Create(pixelFormat, type);
-}
+    HardwareBuffer* OpenGL::CreateBuffer(BufferBinding binding, AccessFlags accessFlags)
+    {
+      return GLHardwareBuffer::Create(binding, accessFlags);
+    }
 
-Texture2D* CreateTexture2D(flIN DepthFormat depthFormat)
-{
-  return GLTexture2D::Create(depthFormat);
-}
+    IndexBuffer* OpenGL::CreateIndexBuffer(int64_t indexCount, uint32_t const* pValues)
+    {
+      return GLIndexBuffer::Create(indexCount, pValues);
+    }
 
-Texture2D* CreateTexture2D(flIN PixelFormat pixelFormat, flIN PixelComponentType type)
-{
-  return GLTexture2D::Create(pixelFormat, type);
+    VertexBuffer* OpenGL::CreateVertexBuffer(Util::Type primitiveType, int64_t primitiveWidth, int64_t elementCount, void const* pInitialData)
+    {
+      HardwareBuffer* pBuffer = CreateBuffer(BufferBinding_Vertices, AccessFlag_Write);
+      VertexBuffer* pVertexBuffer = GLVertexBuffer::Create(pBuffer, primitiveType, primitiveWidth, elementCount, pInitialData);
+      pBuffer->DecRef();
+      return pVertexBuffer;
+    }
+
+    Program* OpenGL::CreateProgram()
+    {
+      return GLProgram::Create();
+    }
+
+    Texture2D* OpenGL::CreateTexture2D(DepthFormat depthFormat)
+    {
+      return GLTexture2D::Create(depthFormat);
+    }
+
+    Texture2D* OpenGL::CreateTexture2D(PixelFormat pixelFormat, PixelComponentType type)
+    {
+      return GLTexture2D::Create(pixelFormat, type);
+    }
+
+    Texture2D* CreateTexture2D(DepthFormat depthFormat)
+    {
+      return GLTexture2D::Create(depthFormat);
+    }
+
+    Texture2D* CreateTexture2D(PixelFormat pixelFormat, PixelComponentType type)
+    {
+      return GLTexture2D::Create(pixelFormat, type);
+    }
+  }
 }

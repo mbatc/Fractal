@@ -1,4 +1,5 @@
 #include "graphics/OpenGL/flGLVertexBuffer.h"
+#include "graphics/flHardwareBuffer.h"
 
 using namespace flEngine::Util;
 
@@ -6,44 +7,49 @@ namespace flEngine
 {
   namespace Graphics
   {
-    class flPIMPL_CLASS(GLVertexBuffer)
+    GLVertexBuffer::GLVertexBuffer(HardwareBuffer *pBuffer, Util::Type primitiveType, int64_t primitiveWidth, int64_t elementCount, void const * pInitialData)
+      : m_pBuffer(pBuffer)
     {
-    public:
-      Type    primitiveType  = Type_Unknown;
-      int64_t primitiveWidth = 0;
-      int64_t elementSize    = 0;
-    };
+      SetFormat(primitiveType, primitiveWidth);
+      GetBuffer()->Set(pInitialData, elementCount * m_elementSize);
+    }
+
+    VertexBuffer* GLVertexBuffer::Create(HardwareBuffer * pBuffer, Util::Type primitiveType, int64_t primitiveWidth, int64_t elementCount = 0, void const * pInitialData)
+    {
+      return flNew GLVertexBuffer(pBuffer, primitiveType, primitiveWidth, elementCount, pInitialData);
+    }
+
+    void GLVertexBuffer::SetFormat(Util::Type primitiveType, int64_t primitiveWidth)
+    {
+      m_elementSize = Util::SizeOf(primitiveType) * primitiveWidth;
+      m_primitiveType = primitiveType;
+      m_primitiveWidth = primitiveWidth;
+    }
+
+    int64_t GLVertexBuffer::GetElementCount()
+    {
+      return m_elementSize == 0 ? GetBuffer()->GetSize() / m_elementSize : 0;
+    }
+
+    Util::Type GLVertexBuffer::GetPrimitiveType()
+    {
+      return m_primitiveType;
+    }
+
+    int64_t GLVertexBuffer::GetPrimitiveWidth()
+    {
+      return m_primitiveWidth;
+    }
+
+    HardwareBuffer* GLVertexBuffer::GetBuffer()
+    {
+      return m_pBuffer;
+    }
+
+    HardwareBuffer const * GLVertexBuffer::GetBuffer() const
+    {
+      return m_pBuffer;
+    }
+
   }
-}
-
-using namespace flEngine;
-using namespace flEngine::Graphics;
-
-flPIMPL_IMPL(GLVertexBuffer)
-
-VertexBuffer* GLVertexBuffer::Create(flIN Util::Type primitiveType, flIN int64_t primitiveWidth, void* pInitialData)
-{
-  return flNew GLVertexBuffer;
-}
-
-void GLVertexBuffer::SetFormat(flIN Util::Type primitiveType, flIN int64_t primitiveWidth)
-{
-  Impl()->elementSize    = Util::SizeOf(primitiveType) * primitiveWidth;
-  Impl()->primitiveType  = primitiveType;
-  Impl()->primitiveWidth = primitiveWidth;
-}
-
-int64_t GLVertexBuffer::GetElementCount()
-{
-  return Impl()->elementSize == 0 ? GLHardwareBuffer::GetSize() / Impl()->elementSize : 0;
-}
-
-Util::Type GLVertexBuffer::GetPrimitiveType()
-{
-  return Impl()->primitiveType;
-}
-
-int64_t GLVertexBuffer::GetPrimitiveWidth()
-{
-  return Impl()->primitiveWidth;
 }

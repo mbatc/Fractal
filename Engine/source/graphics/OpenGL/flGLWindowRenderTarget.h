@@ -1,8 +1,8 @@
 #ifndef fl_Graphics_GLWindowRenderTarget_h__
 #define fl_Graphics_GLWindowRenderTarget_h__
 
-#include "../flWindowRenderTarget.h"
-#include "../../platform/flWindow.h"
+#include "graphics/flWindowRenderTarget.h"
+#include "platform/flWindow.h"
 
 namespace flEngine
 {

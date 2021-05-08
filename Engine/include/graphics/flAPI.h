@@ -16,6 +16,8 @@ namespace flEngine
   {
     class DeviceState;
     class HardwareBuffer;
+    class VertexBuffer;
+    class IndexBuffer;
     class Texture2D;
     class Geometry;
     class RenderTarget;
@@ -29,6 +31,10 @@ namespace flEngine
     class flEXPORT API : public Interface
     {
     public:
+      static bool Register(char const * identifier, APIFactory* pFactory);
+      static int64_t GetAPICount();
+      static char const* GetAPIIdentifier();
+
       /**
        * @brief Set the active geometry to be rendered.
        *
@@ -85,6 +91,16 @@ namespace flEngine
        * @brief
        */
       virtual HardwareBuffer* CreateBuffer(flIN BufferBinding type, flIN AccessFlags accessFlags) = 0;
+
+      /**
+       * @brief 
+       */
+      virtual VertexBuffer* CreateVertexBuffer(flIN Util::Type primitiveType, flIN int64_t primitiveWidth, flIN int64_t elementCount, void const* pInitialData) = 0;
+
+      /**
+       * @brief
+       */
+      virtual IndexBuffer* CreateIndexBuffer(flIN int64_t indexCount, uint32_t const * pValues = nullptr) = 0;
 
       /**
        * @brief

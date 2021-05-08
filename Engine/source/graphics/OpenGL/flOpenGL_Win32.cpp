@@ -1,4 +1,4 @@
-#include "flOpenGL_Impl.h"
+#include "flOpenGL.h"
 
 #if flUSING(flPLATFORM_WINDOWS)
 
@@ -44,7 +44,7 @@ static void GLAPIENTRY _ErrorMessageCallback(GLenum source, GLenum type, GLuint 
   ctRelAssert(type != GL_DEBUG_TYPE_ERROR, assertion);
 }
 
-void Impl_OpenGL::Construct(Platform::Window *pWindow, const RenderTargetOptions *pOptions)
+OpenGL::OpenGL(Platform::Window *pWindow, const RenderTargetOptions *pOptions)
 {
   // Create a temporary window to make our fake GL context
   Platform::Window tempWindow("tmp", Platform::Window::Flag_None, Platform::Window::DM_Windowed);

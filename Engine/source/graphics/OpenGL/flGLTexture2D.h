@@ -1,7 +1,7 @@
 #ifndef flGLTexture2D_h__
 #define flGLTexture2D_h__
 
-#include "../flTexture2D.h"
+#include "graphics/flTexture2D.h"
 
 namespace flEngine
 {

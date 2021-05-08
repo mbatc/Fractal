@@ -1,7 +1,7 @@
 #ifndef fl_Graphics_GLGeometry_h__
 #define fl_Graphics_GLGeometry_h__
 
-#include "../flGeometry.h"
+#include "graphics/flGeometry.h"
 
 namespace flEngine
 {

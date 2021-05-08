@@ -19,12 +19,12 @@ namespace flEngine
       /**
        * @brief Set the buffer the data.
        */
-      virtual bool Set(flIN void *pData, flIN int64_t size) = 0;
+      virtual bool Set(flIN void const * pData, flIN int64_t size) = 0;
 
       /**
        * @brief Read data from the buffer.
        */
-      virtual bool Get(flOUT void *pBuffer, flIN int64_t length = -1, flIN int64_t offset = 0) = 0;
+      virtual bool Get(flOUT void * pBuffer, flIN int64_t length = -1, flIN int64_t offset = 0) = 0;
 
       /**
        * @brief Get the size of the buffer.

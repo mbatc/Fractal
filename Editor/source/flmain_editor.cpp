@@ -1,5 +1,4 @@
 #include "flEngine.h"
-#include "graphics/OpenGL/flOpenGL.h"
 
 #include <stdio.h>
 
@@ -14,7 +13,7 @@ int main(char **argv, int argc)
   Window window("Has Inputs", Window::Flag_Visible, Window::DM_Windowed);
   Window window2("Has Inputs", Window::Flag_Visible, Window::DM_Windowed);
   
-  Graphics::API *pOpenGL = Graphics::OpenGL::Create(&window);
+  Graphics::API *pOpenGL = API::Create(&window);
 
   Graphics::WindowRenderTarget *pFirstTarget = window.GetRenderTarget();
   Graphics::WindowRenderTarget *pSecondTarget = pOpenGL->CreateWindowRenderTarget(&window2, nullptr);

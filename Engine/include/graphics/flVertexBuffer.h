@@ -1,15 +1,16 @@
 #ifndef fl_Graphics_VertexBuffer_h__
 #define fl_Graphics_VertexBuffer_h__
 
-#include "OpenGL/flGLHardwareBuffer.h"
 #include "util/flType.h"
-#include "flAPI.h"
+#include "flInterface.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
-    class flEXPORT VertexBuffer : public HardwareBuffer
+    class HardwareBuffer;
+
+    class flEXPORT VertexBuffer : public Interface
     {
     public:
       /**
@@ -29,23 +30,32 @@ namespace flEngine
        * and the size of the format specified via SetFormat.
        * 
        * SetFormat must be called before using this function.
+       * 
+       * @return The number of elements in the vertex buffer.
        */
-      virtual int64_t GetElementCount() = 0;
+      virtual int64_t GetElementCount() const = 0;
 
       /**
        * @brief Get vertex buffers elements primitive type.
+       * 
+       * @return The primitive type of the vertex attribute.
        */
-      virtual Util::Type GetPrimitiveType() = 0;
+      virtual Util::Type GetPrimitiveType() const = 0;
 
       /**
        * @brief Get the number of primitive items per element.
+       *
+       * @return The primitive width of the vertex attribute.
        */
-      virtual int64_t GetPrimitiveWidth() = 0;
+      virtual int64_t GetPrimitiveWidth() const = 0;
 
       /**
        * @brief Get the hardware buffer that contains the data for this vertex buffer.
+       * 
+       * @return A pointer to the underlying HardwareBuffer.
        */
-      virtual HardwareBuffer* GetBuffer() const = 0;
+      virtual HardwareBuffer* GetBuffer() = 0;
+      virtual HardwareBuffer const* GetBuffer() const = 0;
     };
   }
 }

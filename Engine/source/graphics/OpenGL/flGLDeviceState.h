@@ -1,7 +1,7 @@
 #ifndef fl_Graphics_GLDeviceState_h__
 #define fl_Graphics_GLDeviceState_h__
 
-#include "../flDeviceState.h"
+#include "graphics/flDeviceState.h"
 
 namespace flEngine
 {

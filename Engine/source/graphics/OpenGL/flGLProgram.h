@@ -1,7 +1,7 @@
 #ifndef fl_Graphics_GLProgram_h__
 #define fl_Graphics_GLProgram_h__
 
-#include "../flProgram.h"
+#include "graphics/flProgram.h"
 
 namespace flEngine
 {
