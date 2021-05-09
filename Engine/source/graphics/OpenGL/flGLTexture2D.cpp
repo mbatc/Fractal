@@ -60,7 +60,7 @@ namespace flEngine
         return false;
 
       glBindTexture(GL_TEXTURE_2D, m_texID);
-      glTexImage2D(GL_TEXTURE_2D, (GLint)mipMap, GL_RGBA, (GLsizei)pBufferDesc->width, (GLsizei)pBufferDesc->height, 0, fmt, type, pPixels);
+      glTexImage2D(GL_TEXTURE_2D, (GLint)mipMap, glInternalFmt, (GLsizei)pBufferDesc->width, (GLsizei)pBufferDesc->height, 0, fmt, type, pPixels);
       glBindTexture(GL_TEXTURE_2D, 0);
       return true;
     }
@@ -74,7 +74,7 @@ namespace flEngine
         return false;
 
       glBindTexture(GL_TEXTURE_2D, m_texID);
-      glTexSubImage2D(GL_TEXTURE_2D, (GLint)mipMap, widthOffset, heightOffset, (GLsizei)pBufferDesc->width, (GLsizei)pBufferDesc->height, fmt, type, pPixels);
+      glTexSubImage2D(GL_TEXTURE_2D, (GLint)mipMap, (GLint)widthOffset, (GLint)heightOffset, (GLsizei)pBufferDesc->width, (GLsizei)pBufferDesc->height, fmt, type, pPixels);
       glBindTexture(GL_TEXTURE_2D, 0);
       return true;
     }
@@ -124,7 +124,7 @@ namespace flEngine
 
     int64_t GLTexture2D::GetMipMapCount() const
     {
-      return m_hasMipMaps ? int64_t(1 + floor(log2(ctMax(GetWidth(), GetHeight(), GetDepth())))) : 1;
+      return m_hasMipMaps ? int64_t(1 + floor(log2((double)ctMax(GetWidth(), GetHeight(), GetDepth())))) : 1;
     }
 
     int64_t GLTexture2D::GetWidth(int64_t mipMap) const
