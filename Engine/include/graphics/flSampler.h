@@ -8,17 +8,21 @@ namespace flEngine
 {
   namespace Graphics
   {
-    enum class WrapMode
+    enum WrapMode
     {
-      Repeat,
-      Mirror,
-      ClampToEdge,
+      WrapMode_Unknown = -1,
+      WrapMode_Repeat,
+      WrapMode_Mirror,
+      WrapMode_ClampToEdge,
+      WrapMode_Count,
     };
 
-    enum class FilterMode
+    enum FilterMode
     {
-      Linear,
-      Nearest,
+      FilterMode_Unknown = -1,
+      FilterMode_Linear,
+      FilterMode_Nearest,
+      FilterMode_Count,
     };
 
     class flEXPORT Sampler : public Interface
@@ -30,10 +34,10 @@ namespace flEngine
       virtual void SetWrapModeX(flIN WrapMode wrap) = 0;
       virtual void SetWrapModeY(flIN WrapMode wrap) = 0;
 
-      virtual void SetFilterMinMode(flIN FilterMode mode) = 0;
+      virtual void SetFilterMinMode(flIN FilterMode mode, flIN bool useMipmaps = false) = 0;
       virtual void SetFilterMagMode(flIN FilterMode mode) = 0;
 
-      virtual FilterMode GetFilterMinMode() const = 0;
+      virtual FilterMode GetFilterMinMode(bool *pUseMipmaps = nullptr) const = 0;
       virtual FilterMode GetFilterMagMode() const = 0;
 
       virtual void SetBorderColour(flIN Util::Colour *pColour) = 0;

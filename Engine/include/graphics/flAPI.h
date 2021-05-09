@@ -24,6 +24,7 @@ namespace flEngine
     class WindowRenderTarget;
     class TextureRenderTarget;
     class Program;
+    class Sampler;
 
     struct PixelBufferDesc;
     struct RenderTargetOptions;
@@ -144,6 +145,8 @@ namespace flEngine
        * @brief
        */
       virtual Texture2D* CreateTexture2D(flIN PixelFormat pixelFormat = PixelFormat_RGBA, flIN PixelComponentType type = PixelComponentType_UNorm8) = 0;
+
+      virtual Sampler *CreateSampler() = 0;
     };
   }
 }

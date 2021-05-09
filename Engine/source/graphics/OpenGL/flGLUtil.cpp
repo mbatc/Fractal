@@ -4,6 +4,7 @@
 #include "graphics/flProgramDetails.h"
 #include "graphics/flBufferDetails.h"
 #include "graphics/flTexture.h"
+#include "graphics/flSampler.h"
 
 using namespace flEngine;
 using namespace flEngine::Util;
@@ -118,30 +119,30 @@ PixelComponentType GLUtil::GetPixelComponentType(flIN uint32_t format)
   case GL_RG8_SNORM:      // Fall-through
   case GL_RGB8_SNORM:     // Fall-through
   case GL_RGBA8_SNORM:    return PixelComponentType_Norm8;
-                          
+
   case GL_R8I:            // Fall-through
   case GL_RG8I:           // Fall-through
   case GL_RGB8I:          // Fall-through
   case GL_RGBA8I:         // Fall-through
   case GL_BYTE:           return PixelComponentType_Int8;
-                          
+
   case GL_R16_SNORM:      // Fall-through
   case GL_RG16_SNORM:     // Fall-through
   case GL_RGB16_SNORM:    // Fall-through
   case GL_RGBA16_SNORM:   return PixelComponentType_Norm16;
-                          
+
   case GL_R16I:           // Fall-through
   case GL_RG16I:          // Fall-through
   case GL_RGB16I:         // Fall-through
   case GL_RGBA16I:        // Fall-through
   case GL_SHORT:          return PixelComponentType_Int16;
-                          
+
   case GL_R32I:           // Fall-through
   case GL_RG32I:          // Fall-through
   case GL_RGB32I:         // Fall-through
   case GL_RGBA32I:        // Fall-through
   case GL_INT:            return PixelComponentType_Int32;
-                          
+
   case GL_R8:             // Fall-through
   case GL_RG8:            // Fall-through
   case GL_RGB8:           // Fall-through
@@ -175,7 +176,7 @@ PixelComponentType GLUtil::GetPixelComponentType(flIN uint32_t format)
   case GL_RGB16F:         // Fall-through
   case GL_RGBA16F:        // Fall-through
   case GL_HALF_FLOAT:     return PixelComponentType_Float16;
-                          
+
   case GL_R32F:           // Fall-through
   case GL_RG32F:          // Fall-through
   case GL_RGB32F:         // Fall-through
@@ -220,9 +221,9 @@ BufferUsage GLUtil::GetBufferUsage(flIN uint32_t bufferBinding)
 
 Type GLUtil::GetType(flIN uint32_t dataType, flOUT int64_t *pWidth, flOUT int64_t *pHeight)
 {
-  int64_t width  = 1;
+  int64_t width = 1;
   int64_t height = 1;
-  Type    type   = Type_Unknown;
+  Type    type = Type_Unknown;
 
   switch (dataType)
   {
@@ -279,6 +280,37 @@ TextureType flEngine::Graphics::GLUtil::GetTextureType(flIN uint32_t glType)
   }
 
   return TextureType_Unknown;
+}
+
+WrapMode GLUtil::GetWrapMode(flIN uint32_t wrapMode)
+{
+  switch (wrapMode)
+  {
+  case GL_REPEAT:          return WrapMode_Repeat;
+  case GL_CLAMP:           return WrapMode_ClampToEdge;
+  case GL_MIRRORED_REPEAT: return WrapMode_Repeat;
+  }
+  return WrapMode();
+}
+
+FilterMode GLUtil::GetFilterMode(flIN uint32_t filterMode, bool *pMipMaps)
+{
+  bool       mipmaps = false;
+  FilterMode mode    = FilterMode_Unknown;
+
+  switch (filterMode)
+  {
+  case GL_LINEAR:                 mode = FilterMode_Linear;  mipmaps = false; break;
+  case GL_NEAREST:                mode = FilterMode_Nearest; mipmaps = false; break;
+  case GL_NEAREST_MIPMAP_LINEAR:  mode = FilterMode_Linear;  mipmaps = true;  break;
+  case GL_NEAREST_MIPMAP_NEAREST: mode = FilterMode_Nearest; mipmaps = true;  break;
+  case GL_LINEAR_MIPMAP_LINEAR:   mode = FilterMode_Linear;  mipmaps = true;  break;
+  case GL_LINEAR_MIPMAP_NEAREST:  mode = FilterMode_Nearest; mipmaps = true;  break;
+  }
+
+  if (pMipMaps) *pMipMaps = mipmaps;
+
+  return mode;
 }
 
 bool GLUtil::IsSamplerType(flIN uint32_t glType)
@@ -557,6 +589,40 @@ uint32_t GLUtil::ToDataType(flIN Util::Type dataType, flOUT int64_t width, flOUT
       break;
     }
     break;
+  }
+
+  return GL_NONE;
+}
+
+uint32_t GLUtil::ToWrapMode(flIN WrapMode wrapMode)
+{
+  switch (wrapMode)
+  {
+  case WrapMode_Mirror:      return GL_MIRRORED_REPEAT;
+  case WrapMode_Repeat:      return GL_REPEAT;
+  case WrapMode_ClampToEdge: return GL_CLAMP_TO_EDGE;
+  }
+
+  return GL_NONE;
+}
+
+uint32_t GLUtil::ToFilterMode(flIN FilterMode filterMode, bool mipmaps)
+{
+  if (mipmaps)
+  {
+    switch (filterMode)
+    {
+    case FilterMode_Linear:  return GL_LINEAR_MIPMAP_LINEAR;
+    case FilterMode_Nearest: return GL_LINEAR_MIPMAP_NEAREST;
+    }
+  }
+  else
+  {
+    switch (filterMode)
+    {
+    case FilterMode_Linear:  return GL_LINEAR;
+    case FilterMode_Nearest: return GL_NEAREST;
+    }
   }
 
   return GL_NONE;

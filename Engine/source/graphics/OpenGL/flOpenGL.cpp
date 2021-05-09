@@ -9,6 +9,7 @@
 #include "flGLTextureRenderTarget.h"
 #include "flGLWindowRenderTarget.h"
 #include "flGLDeviceState.h"
+#include "flGLSampler.h"
 
 namespace flEngine
 {
@@ -180,6 +181,11 @@ namespace flEngine
     Texture2D* OpenGL::CreateTexture2D(PixelFormat pixelFormat, PixelComponentType type)
     {
       return GLTexture2D::Create(pixelFormat, type);
+    }
+
+    Sampler *OpenGL::CreateSampler()
+    {
+      return GLSampler::Create();
     }
 
     Texture2D* CreateTexture2D(DepthFormat depthFormat)

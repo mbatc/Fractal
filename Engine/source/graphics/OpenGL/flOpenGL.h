@@ -33,6 +33,7 @@ namespace flEngine
       Program* CreateProgram() override;
       Texture2D* CreateTexture2D(DepthFormat depthFormat) override;
       Texture2D* CreateTexture2D(PixelFormat pixelFormat, PixelComponentType type) override;
+      Sampler* CreateSampler() override;
 
       static bool RegisterAPI();
 

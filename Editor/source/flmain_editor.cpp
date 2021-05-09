@@ -31,6 +31,10 @@ int main(char **argv, int argc)
   pTexture->SetFromImage(&image);
   pTexture->GenerateMipMaps();
 
+  Graphics::Sampler *pSampler = pGraphics->CreateSampler();
+  pSampler->SetWrapMode(Graphics::WrapMode_Mirror);
+  pSampler->SetFilterMinMode(Graphics::FilterMode_Linear, true);
+
   Graphics::Geometry* pGeometry = pGraphics->CreateGeometry();
   // Construct a simple cube
   {
@@ -48,13 +52,13 @@ int main(char **argv, int argc)
 
     // Set vertex data
     pPositions[0] = { -1, -1, -1 };  pColours[0] = { 1, 0, 0, 1 }; pTexcoords[0] = {0, 0};
-    pPositions[1] = { -1, -1,  1 };  pColours[1] = { 0, 1, 0, 1 }; pTexcoords[1] = {1, 0};
-    pPositions[2] = {  1, -1,  1 };  pColours[2] = { 0, 0, 1, 1 }; pTexcoords[2] = {1, 1};
-    pPositions[3] = {  1, -1, -1 };  pColours[3] = { 1, 0, 0, 1 }; pTexcoords[3] = {0, 1};
-    pPositions[4] = { -1,  1, -1 };  pColours[4] = { 0, 1, 0, 1 }; pTexcoords[4] = {1, 1};
-    pPositions[5] = { -1,  1,  1 };  pColours[5] = { 0, 0, 1, 1 }; pTexcoords[5] = {0, 1};
+    pPositions[1] = { -1, -1,  1 };  pColours[1] = { 0, 1, 0, 1 }; pTexcoords[1] = {2, 0};
+    pPositions[2] = {  1, -1,  1 };  pColours[2] = { 0, 0, 1, 1 }; pTexcoords[2] = {2, 2};
+    pPositions[3] = {  1, -1, -1 };  pColours[3] = { 1, 0, 0, 1 }; pTexcoords[3] = {0, 2};
+    pPositions[4] = { -1,  1, -1 };  pColours[4] = { 0, 1, 0, 1 }; pTexcoords[4] = {2, 2};
+    pPositions[5] = { -1,  1,  1 };  pColours[5] = { 0, 0, 1, 1 }; pTexcoords[5] = {0, 2};
     pPositions[6] = {  1,  1,  1 };  pColours[6] = { 1, 0, 0, 1 }; pTexcoords[6] = {0, 0};
-    pPositions[7] = {  1,  1, -1 };  pColours[7] = { 0, 1, 0, 1 }; pTexcoords[7] = {1, 0};
+    pPositions[7] = {  1,  1, -1 };  pColours[7] = { 0, 1, 0, 1 }; pTexcoords[7] = {2, 0};
 
     // Set index data
     // Bottom        // Front         // Left          // Back          // Right         // Top
@@ -124,6 +128,7 @@ int main(char **argv, int argc)
 
     pProgram->SetUniform("mvp", &mvp, Type_Float32, 16);
     pProgram->SetTexture("texture0", pTexture);
+    pProgram->SetSampler("texture0", pSampler);
 
     pGraphics->Render(Graphics::DrawMode_Triangles, true);
     pFirstTarget->Swap();
