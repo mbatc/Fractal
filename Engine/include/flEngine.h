@@ -9,6 +9,9 @@
 // Utility
 #include "util/flTask.h"
 #include "util/flTaskQueue.h"
+#include "util/flImage.h"
+#include "util/flColour.h"
+#include "util/flType.h"
 
 // Threading
 #include "threads/flThreads.h"
@@ -36,6 +39,8 @@
 #include "graphics/flRenderTarget.h"
 #include "graphics/flWindowRenderTarget.h"
 #include "graphics/flTextureRenderTarget.h"
+#include "graphics/flTexture.h"
+#include "graphics/flTexture2D.h"
 
 namespace flEngine
 {

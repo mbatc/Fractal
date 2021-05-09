@@ -121,7 +121,7 @@ namespace flEngine
 
           for (int64_t attrib = 0; attrib < GetVertexBufferCount(); ++attrib)
           {
-            uint32_t location = GLAttributeCache::GetLocation(m_vertexBufferNames[attrib].c_str());
+           int32_t location = GLAttributeCache::GetLocation(m_vertexBufferNames[attrib].c_str());
             if (location < 0)
               continue; // Attribute is not used by any shaders
 

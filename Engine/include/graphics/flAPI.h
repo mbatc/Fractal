@@ -143,7 +143,7 @@ namespace flEngine
       /**
        * @brief
        */
-      virtual Texture2D* CreateTexture2D(flIN PixelFormat pixelFormat, flIN PixelComponentType type) = 0;
+      virtual Texture2D* CreateTexture2D(flIN PixelFormat pixelFormat = PixelFormat_RGBA, flIN PixelComponentType type = PixelComponentType_UNorm8) = 0;
     };
   }
 }

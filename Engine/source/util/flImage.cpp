@@ -1,6 +1,8 @@
 #include "util/flImage.h"
 #include "ctVector.h"
+#include "ctFile.h"
 
+#define STBI_FAILURE_USERMSG
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_MALLOC(sz)           flAlloc(sz)
 #define STBI_REALLOC(p,newsz)     flRealloc(p,newsz)
@@ -46,7 +48,8 @@ namespace flEngine
     public:
       void Construct(flIN const char *path)
       {
-        ctUnused(path);
+        ctVector<uint8_t> data = ctFile::ReadFile(path);
+        Construct(data.data(), data.size());
       }
 
       void Construct(flIN const void *pFileData, flIN int64_t fileLen)
@@ -54,8 +57,12 @@ namespace flEngine
         int x, y, ncomp;
         uint8_t *pPixels = stbi_load_from_memory((uint8_t*)pFileData, (int)fileLen, &x, &y, &ncomp, 4);
         if (!pPixels)
+        {
+          printf("Failed to load image: %s\n", stbi_failure_reason());
           return;
-        m_pixels.set_data((ColourU32*)pPixels, x * y, x * y);
+        }
+
+        SetData((ColourU32 *)pPixels, x, y);
       }
 
       void Construct(flIN const Colour *pPixels, flIN const Math::Vec2I &size)
