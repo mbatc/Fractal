@@ -1,6 +1,8 @@
 #ifndef fl_PImpl_h__
 #define fl_PImpl_h__
 
+#include "flMemory.h"
+
 /**
  * Implementation typename for a class
  */
@@ -19,8 +21,11 @@
  * destruct the internal data.
  */
 #define flPIMPL_DEF(Class)\
+  friend flPIMPL_CLASS(Class);\
 public:                                                  \
   ~Class();                                              \
+  flPIMPL_CLASS(Class) * Impl();                         \
+  flPIMPL_CLASS(Class) const * Impl() const;             \
 private:                                                 \
   static flPIMPL_CLASS(Class)* __CreateImpl();           \
   flPIMPL_CLASS(Class)* flPIMPL(Class) = __CreateImpl();
@@ -33,20 +38,22 @@ private:                                                 \
  /**
   * @brief Define that implements the PImpl declared in a class.
   *
-  * This define can be used in a source file to implement a PImpl idiom definition. That was
+  * This define can be used in a source file to implement a PImpl idiom definition that was
   * created using the flPIMPL_DEF define.
   */
 #define flPIMPL_IMPL(Class)\
 template<typename T> inline T __remove_ptr(T *p) { return *p; }\
 Class::~Class() { flDelete flPIMPL(Class); }\
-decltype(Class::flPIMPL(Class)) Class::__CreateImpl() { return flNew decltype(__remove_ptr(Class::flPIMPL(Class))); }
+decltype(Class::flPIMPL(Class)) Class::__CreateImpl() { return flNew decltype(__remove_ptr(Class::flPIMPL(Class))); }\
+flPIMPL_CLASS(Class) * Class::Impl() { return flPIMPL(Class); }\
+flPIMPL_CLASS(Class) const * Class::Impl() const { return flPIMPL(Class); }
 
 #define flPIMPL_IMPL_COPY(Class) Class& Class::operator=(const Class &rhs) { *flPIMPL(Class) = *rhs.flPIMPL(Class); return *this; }
 
-#define flPIMPL_IMPL_MOVE(Class) Class& Class::operator=(Class &&rhs) \
+#define flPIMPL_IMPL_MOVE(Class)\
 Class& Class::operator=(Class &&rhs)                                  \
 {                                                                     \
-  flPIMPL_NAME(Class) *pTemp = flPIMPL(Class);                        \
+  flPIMPL_CLASS(Class) *pTemp = flPIMPL(Class);                       \
   flPIMPL(Class) = rhs.flPIMPL(Class);                                \
   rhs.flPIMPL(Class) = pTemp;                                         \
   return *this;                                                       \

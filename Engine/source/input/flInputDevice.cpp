@@ -1,13 +1,13 @@
 #include "input/flInputDevice.h"
-#include "atHashMap.h"
-#include "atVector.h"
-#include "atString.h"
-#include "atPool.h"
+#include "ctHashMap.h"
+#include "ctVector.h"
+#include "ctString.h"
+#include "ctPool.h"
 #include <time.h>
 
 using namespace flEngine::Input;
 
-static atPool<InputDevice*> _devices;
+static ctVector<InputDevice*> _devices;
 
 bool InputDevice::Button::IsPressed() const
 {
@@ -39,7 +39,7 @@ bool InputDevice::Analog::HasChanged() const
   return m_value != m_lastValue;
 }
 
-static atVector<atString> _emptyNames;
+static ctVector<ctString> _emptyNames;
 
 namespace flEngine
 {
@@ -56,21 +56,23 @@ namespace flEngine
 
         // Setup device and server
         m_pDevice = pDevice;
-        m_deviceID = _devices.Add(pDevice);
         m_pServer = pServer ? pServer : InputDeviceServer::Create();
+        _devices.push_back(pDevice);
       }
 
       ~flPIMPL_CLASS(InputDevice)()
       {
-        _devices.erase(m_deviceID);
+        _devices.erase(ctIndexOf(_devices.begin(), _devices.end(), m_pDevice));
+
+        if (m_pServer)
+          m_pServer->DecRef();
       }
 
-      int64_t            m_deviceID = -1;
       InputDevice       *m_pDevice  = nullptr;
       InputDeviceServer *m_pServer  = nullptr;
 
-      atVector<InputDevice::Button> m_buttons;
-      atVector<InputDevice::Analog> m_analogs;
+      ctVector<InputDevice::Button> m_buttons;
+      ctVector<InputDevice::Analog> m_analogs;
     };
   }
 }

@@ -7,6 +7,8 @@ namespace flEngine
 {
   namespace Platform
   {
+    class Window;
+
     /**
      * @brief List of event type groupings.
      */
@@ -26,37 +28,38 @@ namespace flEngine
     enum EventID : int64_t
     {
       // System Events
-      E_Sys_Quit,         ///< A request to quit the application 
-      E_Sys_ThemeChanged, ///< The system theme was changed
+      E_Sys_Quit,           ///< A request to quit the application 
+      E_Sys_ThemeChanged,   ///< The system theme was changed
 
       // Window Events
-      E_Wnd_Create,       ///< The window is being created
-      E_Wnd_Close,        ///< A request to close a window
-      E_Wnd_Destroy,      ///< The window is being destroyed
-      E_Wnd_DpiChanged,   ///< DPI context has changed
-      E_Wnd_Moving,       ///< Window is being moved
-      E_Wnd_Sizing,       ///< Window is being resized
-      E_Wnd_Show,         ///< Window is about to be hidden/shown
-      E_Wnd_StyleChanged, ///< The windows style was modified
-      E_Wnd_RectUpdated,  ///< The windows position or size has been modified
-      E_Wnd_Activate,     ///< The a windows keyboard focus has changed
+      E_Wnd_Create,         ///< The window is being created
+      E_Wnd_Close,          ///< A request to close a window
+      E_Wnd_Destroy,        ///< The window is being destroyed
+      E_Wnd_DpiChanged,     ///< DPI context has changed
+      E_Wnd_Moving,         ///< Window is being moved
+      E_Wnd_Sizing,         ///< Window is being resized
+      E_Wnd_Show,           ///< Window is about to be hidden/shown
+      E_Wnd_StyleChanged,   ///< The windows style was modified
+      E_Wnd_RectUpdated,    ///< The windows position or size has been modified
+      E_Wnd_Activate,       ///< The a windows keyboard focus has changed
+      E_Wnd_SetPixelFormat, ///< The windows pixel format has been set.
 
       // Keyboard Events
-      E_Kbd_KeyState,     ///< A keys state has changed
-      E_Kbd_ASCII,        ///< Receive the character code of a pressed key (ASCII)
-      E_Kbd_Unicode,      ///< Receive the character code of a pressed key (unicode)
-      E_Kbd_KillFocus,    ///< Keyboard focus was lost
-      E_Kbd_SetFocus,     ///< Keyboard focus was gained
+      E_Kbd_KeyState,       ///< A keys state has changed
+      E_Kbd_ASCII,          ///< Receive the character code of a pressed key (ASCII)
+      E_Kbd_Unicode,        ///< Receive the character code of a pressed key (unicode)
+      E_Kbd_KillFocus,      ///< Keyboard focus was lost
+      E_Kbd_SetFocus,       ///< Keyboard focus was gained
 
       // Mouse Events
-      E_Mse_State,        ///< A mouse buttons state has changed
-      E_Mse_Move,         ///< The mouse pointer was moved
-      E_Mse_Scroll,       ///< The mouse wheel was scrolled
+      E_Mse_State,          ///< A mouse buttons state has changed
+      E_Mse_Move,           ///< The mouse pointer was moved
+      E_Mse_Scroll,         ///< The mouse wheel was scrolled
 
       // Custom User Events
-      E_Usr_Custom,       ///< Start value for custom events. Custom events should be greater than this value
+      E_Usr_Custom,         ///< Start value for custom events. Custom events should be greater than this value
 
-      Event_Count,        ///< The number of supported events
+      Event_Count,          ///< The number of supported events
     };
 
     /**
@@ -71,7 +74,7 @@ namespace flEngine
     struct flEXPORT Event
     {
       /**
-       * @brief Get the event ID
+       * @brief The event ID
        *
        * The ID of the event. This value will correspond to Event ID's are group together based on the system that sent
        * the event (e.g. Window, Input, etc). Theses groups are defined by EventType.
@@ -79,12 +82,20 @@ namespace flEngine
       int64_t id;
 
       /**
-       * @brief Get the event type
+       * @brief The event type
        *
        * The Type of the event. Event types  are group together based on the system that sen
        * the event (e.g. Window, Input, etc)
        */
       int64_t type;
+
+      /**
+       * @brief The target window for this event.
+       * 
+       * This is a pointer to the fractal window instance that this event corresponds to.
+       * To access the native OS window handle, check the 'nativeEvent' member.
+       */
+      Window *pWindow;
 
       union
       {
@@ -162,6 +173,13 @@ namespace flEngine
           bool mouseActivated; ///< Is activated via a mouse interaction
         } wndActive; ///< Window focus changed event data
 
+        struct WndSetPixelFmt
+        {
+          int64_t pixelFormat;
+          int64_t pixelComponentType;
+          int64_t depthFormat;
+        } wndSetPixelFmt;
+
         struct KbdState
         {
           int64_t keyCode; ///< The id of the key pressed
@@ -184,13 +202,15 @@ namespace flEngine
         struct MseState
         {
           int64_t button; ///< The index of the button pressed
-          bool isDown;    ///< Is the button down
+          bool isDown;   ///< Is the button down
         } mseState; ///< Mouse button state event data
 
         struct MseMove
         {
-          int64_t x; ///< The x position of the mouse
-          int64_t y; ///< The y position of the mouse
+          int64_t screenX; ///< The x position of the mouse in desktop coordinates
+          int64_t screenY; ///< The y position of the mouse in desktop coordinates
+          int64_t wndX;    ///< The x position of the mouse relative the to upper left corner of the captured window
+          int64_t wndY;    ///< The y position of the mouse relative the to upper left corner of the captured window
         } mseMove; ///< Mouse moved event data
 
         struct MseScroll

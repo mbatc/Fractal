@@ -15,12 +15,6 @@
 #define flCCONV _cdecl
 #endif
 
-#define flNew new
-#define flDelete delete
-#define flAlloc(size) malloc(size)
-#define flAllocT(type, count) (type*)malloc(sizeof(type) * count)
-#define flFree(pMem) (free(pMem), pMem = nullptr)
-
 #define flPLATFORM_WINDOWS 0
 #define flPLATFORM_LINUX 0
 
@@ -46,5 +40,7 @@ inline type operator op (const type &a, const type &b) { return (type)((int64_t)
 flBITWISE_ENUM_OPERATOR(type, | )\
 flBITWISE_ENUM_OPERATOR(type, & )\
 inline type operator~(const type &a) { return (type)(~(int64_t)a); }
+
+#define flHasFlag(bitfield, flag) bool((bitfield & flag) != 0)
 
 #endif // flConfig_h__

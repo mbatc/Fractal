@@ -1,5 +1,5 @@
 #include "platform/flEventQueue.h"
-#include "atPool.h"
+#include "ctPool.h"
 #include <mutex>
 
 using namespace flEngine;
@@ -9,7 +9,7 @@ using namespace flEngine::Platform;
 
 class flEngine::Platform::Impl_EventQueue;
 
-static atPool<Impl_EventQueue*> _eventQueues;
+static ctPool<Impl_EventQueue*> _eventQueues;
 static std::mutex _eventQueueLock;
 
 namespace flEngine
@@ -112,7 +112,7 @@ namespace flEngine
       int64_t m_queueID = -1;
 
       // Event data
-      atVector<Event> m_events;
+      ctVector<Event> m_events;
       Event m_lastEvent = { 0 };
       bool m_hasLastEvent = false;
 

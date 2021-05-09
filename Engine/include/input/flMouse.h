@@ -146,14 +146,14 @@ namespace flEngine
        *
        * @return The x,y position.
        */
-      Math::flVec2F GetPosition() const;
+      Math::Vec2F GetPosition() const;
 
       /**
       * @brief Get the change in x,y position of the mouse cursor.
       *
       * @return The change in x,y position.
       */
-      Math::flVec2F GetPositionDelta() const;
+      Math::Vec2F GetPositionDelta() const;
 
       /**
       * @brief Get the horizontal and vertical scroll of the mouse wheel.
@@ -161,13 +161,13 @@ namespace flEngine
       * @return The horizontal and vertical scroll.
       */
 
-      Math::flVec2F GetScroll() const;
+      Math::Vec2F GetScroll() const;
       /**
       * @brief Get the change in horizontal and vertical scroll of the mouse wheel.
       *
       * @return The change in horizontal and vertical scroll.
       */
-      Math::flVec2F GetScrollDelta() const;
+      Math::Vec2F GetScrollDelta() const;
 
       /**
        * @brief The default Mouse event handler.

@@ -15,6 +15,7 @@ public:
   _WindowMouseServer(Window *pWindow)
   {
     m_events.SetFilter(Platform::E_Type_Mouse);
+
     m_events.SetFilter(
       [](Platform::Event *pEvent, void *pUserData)
       {
@@ -22,7 +23,23 @@ public:
       },
       pWindow);
 
-    m_events.SetEventCallback(&Mouse::EventHandler, this);
+    m_events.SetEventCallback(&_WindowMouseServer::EventHandler, this);
+  }
+
+  static void EventHandler(Event *pEvent, void *pUserData)
+  {
+    _WindowMouseServer *pServer = (_WindowMouseServer*)pUserData;
+    switch (pEvent->id)
+    {
+    case E_Mse_Move: // Handle mouse moves to get relative coordinates
+      pServer->SendEvent(Input::MA_XPos, (float)pEvent->mseMove.wndX);
+      pServer->SendEvent(Input::MA_YPos, (float)pEvent->mseMove.wndY);
+      break;
+
+    default: // Use default handler for other events
+      Mouse::EventHandler(pEvent, pUserData);
+      break;
+    }
   }
 
 protected:
@@ -81,7 +98,7 @@ Window::Window(flIN const char *title, flIN Flags flags, flIN DisplayMode displa
   _WindowKeyboardServer *pKeyboardServer = _WindowKeyboardServer::Create(this);
   _WindowMouseServer *pMouseServer = _WindowMouseServer::Create(this);
 
-  flIMPL->Construct(title, flags, displayMode, pKeyboardServer, pMouseServer);
+  flIMPL->Construct(this, title, flags, displayMode, pKeyboardServer, pMouseServer);
 
   pKeyboardServer->DecRef();
   pMouseServer->DecRef();
@@ -190,4 +207,19 @@ Input::Mouse* Window::GetMouse() const
 bool Window::IsEventSource(const Event *pEvent) const
 {
   return flIMPL->IsEventSource(pEvent);
+}
+
+void* Window::GetNativeHandle() const
+{
+  return flIMPL->GetNativeHandle();
+}
+
+Graphics::WindowRenderTarget* Window::GetRenderTarget() const
+{
+  return flIMPL->GetRenderTarget();
+}
+
+Window *Window::GetFocusedWindow(flIN FocusFlags focusFlags)
+{
+  return flPIMPL_CLASS(Window)::GetFocusedWindow(focusFlags);
 }

@@ -1,7 +1,7 @@
 #ifndef fl_Interface_h__
 #define fl_Interface_h__
 
-#include "flConfig.h"
+#include "flMemory.h"
 #include "flPImpl.h"
 
 namespace flEngine

@@ -2,12 +2,16 @@
 
 #if flUSING(flPLATFORM_WINDOWS)
 
+#include "graphics/flWindowRenderTarget.h"
 #include "platform/flEventQueue.h"
+#include "threads/flThreads.h"
 #include "platform/flEvent.h"
-#include "atString.h"
+#include "ctHashMap.h"
+#include "ctString.h"
 #include <windows.h>
 #include <mutex>
 
+using namespace flEngine;
 using namespace flEngine::Input;
 using namespace flEngine::Platform;
 
@@ -15,10 +19,14 @@ LRESULT CALLBACK _flWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 static std::mutex _windowInitLock;
 static int64_t _windowInitCount = 0;
-static atString _windowClsName = "FractalEngine_WindowClass";
+static ctString _windowClsName = "FractalEngine_WindowClass";
 static ATOM _atom = 0;
+static ctHashMap<void*, Window*> _windowLookup;
+static Window *_pHoveredWindow = nullptr;
 
-void Impl_Window::Construct(const char *title, Window::Flags flags, Window::DisplayMode displayMode, InputDeviceServer *pKeyboardServer, InputDeviceServer *pMouseServer)
+static Window *_GetWindowFromHandle(HWND hWnd);
+
+void Impl_Window::Construct(Window *pWindow, const char *title, Window::Flags flags, Window::DisplayMode displayMode, InputDeviceServer *pKeyboardServer, InputDeviceServer *pMouseServer)
 {
   // Set input device servers
   m_keyboard.SetServer(pKeyboardServer);
@@ -41,17 +49,9 @@ void Impl_Window::Construct(const char *title, Window::Flags flags, Window::Disp
     {
     case E_Wnd_Activate:
       if (pEvent->wndActive.isActive)
-        pWnd->m_focus = Window::FF_Keyboard | Window::FF_Mouse | Window::FF_Grabbed;
-      else
-        pWnd->m_focus = Window::FF_None;
-      break;
-
-    case E_Kbd_SetFocus:
-      pWnd->m_focus = pWnd->m_focus | Window::FF_Keyboard;
-      break;
-
-    case E_Kbd_KillFocus:
-      pWnd->m_focus = pWnd->m_focus & ~Window::FF_Keyboard;
+        _pHoveredWindow = pEvent->pWindow;
+      else if (_pHoveredWindow == pEvent->pWindow)
+        _pHoveredWindow = nullptr;
       break;
     }
   }, this);
@@ -78,22 +78,48 @@ void Impl_Window::Construct(const char *title, Window::Flags flags, Window::Disp
   }
   _windowInitLock.unlock();
 
+  Create(pWindow, title, flags, hInstance);
+}
+
+Impl_Window::~Impl_Window()
+{
+  Destroy();
+
+  while (!ReceivedEvent(E_Wnd_Destroy, false))
+    Threads::Sleep(1);
+
+  _windowInitLock.lock();
+
+  if (--_windowInitCount == 0)
+  {
+    EventQueue::GetEventThread()->Add([](void *) {
+      UnregisterClass(_windowClsName.c_str(), ::GetModuleHandle(NULL));
+      return 0ll;
+    });
+  }
+  _windowInitLock.unlock();
+}
+
+void Impl_Window::Create(Window *pWindow, const char *title, Window::Flags flags, void *hInstance)
+{
   Util::Task *pCreateTask = nullptr;
 
   // Create the window on the System event thread
   struct CreateData
   {
-    void **ppHandle;
-    const char *title;
+    Window       *pWindow;
+    void        **ppHandle;
+    const char   *title;
     Window::Flags flags;
-    HINSTANCE hInstance;
+    HINSTANCE     hInstance;
   };
 
   CreateData createData;
-  createData.ppHandle = &m_pHandle;
-  createData.title = title;
-  createData.flags = flags;
-  createData.hInstance = hInstance;
+  createData.pWindow   = pWindow;
+  createData.ppHandle  = &m_hWnd;
+  createData.title     = title;
+  createData.flags     = flags;
+  createData.hInstance = (HINSTANCE)hInstance;
 
   // Create the window
   EventQueue::GetEventThread()->Add([](void *pUserData) {
@@ -112,45 +138,58 @@ void Impl_Window::Construct(const char *title, Window::Flags flags, Window::Disp
       pCreateData->hInstance,
       0);
 
+    _windowLookup.Add(*pCreateData->ppHandle, pCreateData->pWindow);
+
     int show = SW_HIDE;
 
+    ::UpdateWindow((HWND)*pCreateData->ppHandle);
     if ((pCreateData->flags & Window::Flag_Visible) > 0)
-      ::UpdateWindow((HWND)*pCreateData->ppHandle);
-
-    ::ShowWindow((HWND)*pCreateData->ppHandle, SW_SHOW);
-
+      ::ShowWindow((HWND)*pCreateData->ppHandle, SW_SHOW);
     return 0ll;
   }, &createData, &pCreateTask);
 
-  pCreateTask->Wait();   // Wait for the task to complete
+  // Wait for the task to complete
+  pCreateTask->Wait();
   pCreateTask->DecRef();
 }
 
-Impl_Window::~Impl_Window()
+void Impl_Window::Destroy()
 {
-  if (m_pHandle)
-  {
-    EventQueue::GetEventThread()->Add([](void *pHandle) {
-      ::DestroyWindow((HWND)pHandle);
-      return 0ll;
-    }, m_pHandle);
-  }
+  if (!m_hWnd)
+    return;
 
-  _windowInitLock.lock();
+  EventQueue::GetEventThread()->Add([](void *pHandle) {
+    ::DestroyWindow((HWND)pHandle);
+    _windowLookup.Remove(pHandle);
+    return 0ll;
+  }, m_hWnd);
+}
 
-  if (--_windowInitCount == 0)
-  {
-    EventQueue::GetEventThread()->Add([](void *) {
-      UnregisterClass(_windowClsName.c_str(), ::GetModuleHandle(NULL));
-      return 0ll;
-    });
-  }
-  _windowInitLock.unlock();
+Window* Impl_Window::GetFocusedWindow(Window::FocusFlags focusFlags)
+{
+  HWND capturedWindow = ::GetCapture();
+  HWND focusedWindow = ::GetFocus();
+
+  Window *pKeyboardWnd = _GetWindowFromHandle(focusedWindow);
+  Window *pMouseWnd = nullptr;
+
+  if (capturedWindow == 0)
+    pMouseWnd = _pHoveredWindow;
+  else
+    pMouseWnd = _GetWindowFromHandle(capturedWindow);
+
+
+  bool keyboard = (focusFlags & Window::FF_Keyboard) > 0;
+  bool mouse = (focusFlags & Window::FF_Mouse) > 0;
+  if (keyboard && mouse) return pKeyboardWnd == pMouseWnd ? pKeyboardWnd : nullptr;
+  else if (keyboard)     return pKeyboardWnd;
+  else if (mouse)        return pMouseWnd;
+  return nullptr;
 }
 
 void Impl_Window::SetTitle(const char *title)
 {
-  ::SetWindowText((HWND)m_pHandle, title);
+  ::SetWindowText((HWND)m_hWnd, title);
 }
 
 void Impl_Window::SetDisplayMode(Window::DisplayMode mode)
@@ -158,7 +197,7 @@ void Impl_Window::SetDisplayMode(Window::DisplayMode mode)
   if (m_displayMode == mode)
     return;
 
-  HWND hWnd = (HWND)m_pHandle;
+  HWND hWnd = (HWND)m_hWnd;
   if (m_displayMode == Window::DM_Windowed)
   { // Store the windowed window state
     m_windowedState.maximized = (GetFlags() & Window::Flag_Maximized) > 0;
@@ -213,7 +252,7 @@ void Impl_Window::SetDisplayMode(Window::DisplayMode mode)
 
 void Impl_Window::SetFocus(Window::FocusFlags flags, bool focused)
 {
-  HWND hWnd = (HWND)m_pHandle;
+  HWND hWnd = (HWND)m_hWnd;
   if (flags & Window::FF_Mouse)
     ::SetFocus(focused ? hWnd : 0);
 
@@ -224,33 +263,30 @@ void Impl_Window::SetFocus(Window::FocusFlags flags, bool focused)
     else
       ::ReleaseCapture();
   }
-
-  if (focused) m_focus = m_focus | flags;
-  else         m_focus = m_focus & ~flags;
 }
 
 void Impl_Window::SetSize(int64_t width, int64_t height)
 {
-  ::SetWindowPos((HWND)m_pHandle, 0, 0, 0, (int)width, (int)height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+  ::SetWindowPos((HWND)m_hWnd, 0, 0, 0, (int)width, (int)height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 
 void Impl_Window::SetPosition(int64_t posX, int64_t posY)
 {
-  ::SetWindowPos((HWND)m_pHandle, 0, (int)posX, (int)posY, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+  ::SetWindowPos((HWND)m_hWnd, 0, (int)posX, (int)posY, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 
 void Impl_Window::SetRect(int64_t posX, int64_t posY, int64_t width, int64_t height)
 {
-  ::SetWindowPos((HWND)m_pHandle, 0, (int)posX, (int)posY, (int)width, (int)height, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+  ::SetWindowPos((HWND)m_hWnd, 0, (int)posX, (int)posY, (int)width, (int)height, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 
 const char* Impl_Window::GetTitle()
 {
-  int len = ::GetWindowTextLength((HWND)m_pHandle) + 1;
+  int len = ::GetWindowTextLength((HWND)m_hWnd) + 1;
   flDelete[] m_wndTitleBuffer;
   m_wndTitleBuffer = flNew char[len];
   memset(m_wndTitleBuffer, 0, len);
-  ::GetWindowText((HWND)m_pHandle, m_wndTitleBuffer, len);
+  ::GetWindowText((HWND)m_hWnd, m_wndTitleBuffer, len);
   return m_wndTitleBuffer;
 }
 
@@ -261,12 +297,17 @@ Window::DisplayMode Impl_Window::GetDisplayMode() const
 
 Window::FocusFlags Impl_Window::GetFocusFlags() const
 {
-  return m_focus;
+  Window *pKeyboard = GetFocusedWindow(Window::FF_Keyboard);
+  Window *pMouse = GetFocusedWindow(Window::FF_Mouse);
+  Window::FocusFlags flags = Window::FF_None;
+  if (pKeyboard && pKeyboard->pImplWindow == this) flags = flags | Window::FF_Keyboard;
+  if (pMouse && pMouse->pImplWindow == this)       flags = flags | Window::FF_Keyboard;
+  return flags;
 }
 
 Window::Flags Impl_Window::GetFlags() const
 {
-  HWND hWnd = (HWND)m_pHandle;
+  HWND hWnd = (HWND)m_hWnd;
   Window::Flags flags = Window::Flag_None;
   flags = flags | (::IsWindowVisible(hWnd) ? Window::Flag_Visible   : Window::Flag_None);
   flags = flags | (::IsZoomed(hWnd)        ? Window::Flag_Maximized : Window::Flag_None);
@@ -277,7 +318,7 @@ Window::Flags Impl_Window::GetFlags() const
 void Impl_Window::GetRect(int64_t *pPosX, int64_t *pPosY, int64_t *pWidth, int64_t *pHeight) const
 {
   RECT rect = { 0 };
-  ::GetWindowRect((HWND)m_pHandle, &rect);
+  ::GetWindowRect((HWND)m_hWnd, &rect);
 
   if (pPosX)   *pPosX   = rect.left;
   if (pPosY)   *pPosY   = rect.top;
@@ -334,6 +375,9 @@ static LRESULT CALLBACK _flWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
   Event evnt;
   Event_Create(&evnt, &nativeEvent);
 
+  Window **ppWindow = _windowLookup.TryGet(hwnd);
+  evnt.pWindow = ppWindow ? *ppWindow : nullptr;
+
   EventQueue::PostGlobalEvent(&evnt);
 
   if (evnt.id == E_Wnd_Close)
@@ -342,6 +386,62 @@ static LRESULT CALLBACK _flWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARA
   return ::DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
-bool flEngine::Platform::Impl_Window::IsEventSource(const Event *pEvent) const { return pEvent->nativeEvent.hWnd == m_pHandle; }
+bool Impl_Window::IsEventSource(const Event *pEvent) const
+{
+  return pEvent->nativeEvent.hWnd == m_hWnd;
+}
+
+void* Impl_Window::GetNativeHandle() const
+{
+  return m_hWnd;
+}
+
+Graphics::WindowRenderTarget* flEngine::Platform::Impl_Window::GetRenderTarget() const
+{
+  return m_pRenderTarget;
+}
+
+bool flEngine::Platform::Impl_Window::BindRenderTarget(Graphics::WindowRenderTarget *pTarget)
+{
+  if (m_pRenderTarget)
+    return false;
+
+  pTarget->IncRef();
+  m_pRenderTarget = pTarget;
+  return true;
+}
+
+void flEngine::Platform::Impl_Window::UnbindRenderTarget()
+{
+  if (m_pRenderTarget)
+    m_pRenderTarget->DecRef();
+  m_pRenderTarget = nullptr;
+}
+
+static Window *_GetWindowFromHandle(HWND hWnd)
+{
+  struct TaskData
+  {
+    HWND hWnd;
+    Window *pWindow;
+  };
+
+  TaskData tskData = { 0 };
+  tskData.hWnd = hWnd;
+  Util::Task *pTask = nullptr;
+
+  EventQueue::GetEventThread()->Add([](void *pUserData){
+    TaskData *pData = (TaskData*)pUserData;
+    Window **ppWindow = _windowLookup.TryGet(pData->hWnd);
+    if (ppWindow)
+      pData->pWindow = *ppWindow;
+    return 0ll;
+  }, &tskData, &pTask);
+
+  pTask->Wait();
+  pTask->DecRef();
+
+  return tskData.pWindow;
+}
 
 #endif

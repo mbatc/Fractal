@@ -4,9 +4,12 @@
 #include "flPImpl.h"
 #include "input/flInputs.h"
 #include "platform/flEvent.h"
+#include "graphics/flPixelFormat.h"
 
 namespace flEngine
 {
+  namespace Graphics { class WindowRenderTarget; }
+
   namespace Platform
   {
     class Impl_Window;
@@ -50,7 +53,8 @@ namespace flEngine
         Flag_Borderless = 1 << 2, ///< The window has a border
         Flag_Minimized  = 1 << 3, ///< The window is minimized
         Flag_Maximized  = 1 << 4, ///< The window is maximized
-        Flag_Count      = 5       ///< Number of window flags
+        Flag_Count      = 5,       ///< Number of window flags
+        Flag_Default    = Flag_Visible | Flag_Resizable, ///< The default window flags
       };
 
       /**
@@ -223,18 +227,41 @@ namespace flEngine
       Input::Keyboard* GetKeyboard() const;
 
       /**
-      * @brief Get the mouse input interface for this window.
-      *
-      * @return The Mouse interface
-      */
+       * @brief Get the mouse input interface for this window.
+       *
+       * @return The Mouse interface
+       */
       Input::Mouse* GetMouse() const;
 
       /**
-      * @brief Test if this window is the source of the given event.
-      *
-      * @return True if this window is the source of the event.
-      */
+       * @brief Test if this window is the source of the given event.
+       *
+       * @return True if this window is the source of the event.
+       */
       bool IsEventSource(const Event *pEvent) const;
+
+      /**
+       * @brief Get the native OS handle for this window.
+       *
+       * @return The OS handle.
+       */
+      void* GetNativeHandle() const;
+
+      /**
+       * @brief Get the Hardware render target for this window.
+       *
+       * @return A pointer to a WindowRenderTarget for this window.
+       */
+      Graphics::WindowRenderTarget* GetRenderTarget() const;
+
+      /**
+       * @brief Get a pointer to the window that has focus.
+       * 
+       * @param [in] focusFlags Flags specifying the type of focus to check
+       * 
+       * @return A pointer to the Window that has focus
+       */
+      static Window* GetFocusedWindow(flIN FocusFlags focusFlags);
     };
 
     flBITWISE_ENUM_OPERATORS(Window::FocusFlags);
