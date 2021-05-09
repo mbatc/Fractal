@@ -69,6 +69,11 @@ namespace flEngine
        * @brief Make this the active render target.
        */
       virtual void Bind() = 0;
+
+      /**
+       * @brief Get the native resource for 
+       */
+      virtual void * GetNativeResource() const = 0;
     };
   }
 }

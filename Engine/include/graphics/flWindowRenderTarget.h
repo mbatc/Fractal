@@ -28,7 +28,7 @@ namespace flEngine
       /**
        * @brief Get the native handle to the Device Context
        */
-      virtual void* GetNativeHandle() const = 0;
+      virtual void* GetNativeResource() const = 0;
     };
   }
 }

@@ -162,7 +162,7 @@ namespace flEngine
       return m_pWindow;
     }
 
-    void *GLWindowRenderTarget::GetNativeHandle() const
+    void *GLWindowRenderTarget::GetNativeResource() const
     {
       return m_hDC;
     }

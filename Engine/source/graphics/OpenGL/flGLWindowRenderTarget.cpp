@@ -10,6 +10,16 @@ namespace flEngine
       return flNew GLWindowRenderTarget(pWindow, pOptions);
     }
 
+    int64_t GLWindowRenderTarget::GetWidth() const
+    {
+      return GetWindow()->GetWidth();
+    }
+
+    int64_t GLWindowRenderTarget::GetHeight() const
+    {
+      return GetWindow()->GetHeight();
+    }
+
     void GLWindowRenderTarget::Clear(flIN Util::Colour colour, flIN float depth, flIN int32_t stencil)
     {
       ClearColour(colour);
@@ -41,6 +51,8 @@ namespace flEngine
     void GLWindowRenderTarget::Bind()
     {
       MakeCurrent();
+      glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     }
   }
 }

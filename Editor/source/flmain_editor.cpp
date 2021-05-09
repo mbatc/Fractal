@@ -87,7 +87,7 @@ int main(char **argv, int argc)
     printf("  Sampler: %s\n", pProgram->GetTextureName(i));
 
   for (int64_t i = 0; i < pProgram->GetAttributeCount(); ++i)
-    printf("  Attribute: %s", pProgram->GetAttributeName(i));
+    printf("  Attribute: %s\n", pProgram->GetAttributeName(i));
 
   // Get window input interfaces
   Input::Mouse    *pMouse    = window.GetMouse();
@@ -100,65 +100,33 @@ int main(char **argv, int argc)
 
   while (!window.ReceivedEvent(E_Wnd_Close)) // Check if the window has requested a close
   {
-    Mat4F modelMat = Mat4F::Translation({0, 0, -3}) * Mat4F::RotationY(clock() / 1000.0f);
-    Mat4F projection = Mat4F::Projection(window.GetWidth() / (float)window.GetHeight(), 60.0f * (float)ctPi / 180.0f, 0.01f, 1000.0f);
-
     Inputs::Update(); // Push input events
 
-    // Test for inputs
-    if (pKeyboard->GetKeyPressed(Input::KC_L))
-      printf("Window L pressed\n");
-    if (pKeyboard->GetKeyDown(Input::KC_L))
-      printf("Window L down\n");
-    if (pKeyboard->GetKeyReleased(Input::KC_L))
-      printf("Window L released\n");
+    Mat4F modelMat = Mat4F::Translation({0, 0, -3}) * Mat4F::RotationY(clock() / 1000.0f);
+    Mat4F projection = Mat4F::Projection(window.GetWidth() / (float)window.GetHeight(), 60.0f * (float)ctPi / 180.0f, 0.01f, 1000.0f);
+    Math::Mat4F mvp = projection * modelMat;
 
-    if (globalMouse.GetPressed(Input::MB_Left))
-    {
-      Window *pWindow = Window::GetFocusedWindow(Window::FF_Mouse);
-      if (pWindow)
-      {
-        Input::Mouse *pFocusedMouse = pWindow->GetMouse();
-        printf("Window [0x%X]: %f, %f\n", (int64_t)pWindow, pFocusedMouse->GetX(), pFocusedMouse->GetY());
-      }
-
-      printf("Screen: %f, %f\n", globalMouse.GetX(), globalMouse.GetY());
-    }
-
-    float vScroll = pMouse->GetScrollV();
-    float hScroll = pMouse->GetScrollH();
-
-    if (vScroll != 0)
-      printf("%f\n", vScroll);
-
-    if (hScroll != 0)
-      printf("%f\n", hScroll);
-
-    if (globalKbd.GetKeyPressed(Input::KC_L))
-      printf("Global L pressed\n");
-    if (globalKbd.GetKeyDown(Input::KC_L))
-      printf("Global L down\n");
-    if (globalKbd.GetKeyReleased(Input::KC_L))
-      printf("Global L released\n");
-
-    pFirstTarget->Clear(0xFF000000, 1.0f);
-
-    pGraphics->SetRenderTarget(pFirstTarget);
-    pState->SetViewport(0, 0, pFirstTarget->GetWidth(), pFirstTarget->GetHeight());
     pGraphics->SetGeometry(pGeometry);
     pGraphics->SetProgram(pProgram);
 
-    Math::Mat4F mvp = projection * modelMat;
+    // Draw to the first window
+    pFirstTarget->Clear(0xFF000000, 1.0f);
+    pGraphics->SetRenderTarget(pFirstTarget);
+    pState->SetViewport(0, 0, pFirstTarget->GetWidth(), pFirstTarget->GetHeight());
+
     pProgram->SetUniform("mvp", &mvp, Type_Float32, 16);
-
     pGraphics->Render(Graphics::DrawMode_Triangles, true);
-
     pFirstTarget->Swap();
 
-    // Draw to second window
-    pSecondTarget->Clear(0xFF00FF00);
+    // Draw to the second window
+    modelMat = Mat4F::Translation({ 0, 0, -3 }) * Mat4F::RotationY(-clock() / 1000.0f);
+    projection = Mat4F::Projection(window2.GetWidth() / (float)window2.GetHeight(), 60.0f * (float)ctPi / 180.0f, 0.01f, 1000.0f);
+    mvp = projection * modelMat;
+
+    pSecondTarget->Clear(0xFF00FF00, 1.0f);
     pGraphics->SetRenderTarget(pSecondTarget);
     pState->SetViewport(0, 0, pSecondTarget->GetWidth(), pSecondTarget->GetHeight());
+    pProgram->SetUniform("mvp", &mvp, Type_Float32, 16);
     pGraphics->Render(Graphics::DrawMode_Triangles, true);
     pSecondTarget->Swap();
   }
