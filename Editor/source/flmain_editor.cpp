@@ -25,18 +25,11 @@ int main(char **argv, int argc)
   pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag", Graphics::ProgramStage_Fragment);
   pProgram->SetShaderFromFile("../../Engine/assets/shader-library/transform.vert", Graphics::ProgramStage_Vertex);
 
-  Graphics::Texture2D *pTexture = pGraphics->CreateTexture2D(Graphics::PixelFormat_RGBA, Graphics::PixelComponentType_UInt8);
+  Graphics::Texture2D *pTexture = pGraphics->CreateTexture2D(Graphics::PixelFormat_RGBA, Graphics::PixelComponentType_UNorm8);
   // Image image("C:/Users/mickb/Pictures/test.jpg");
   Image image("../../Engine/assets/texture-library/albedo/test0.jpg");
   pTexture->SetFromImage(&image);
-
-  Graphics::Texture2D *pTexture2 = pGraphics->CreateTexture2D(Graphics::PixelFormat_RGBA, Graphics::PixelComponentType_UInt8);
-  // Image image("C:/Users/mickb/Pictures/test.jpg");
-  Image image2("../../Engine/assets/texture-library/albedo/test1.jpg");
-  pTexture2->SetFromImage(&image2);
-
   pTexture->GenerateMipMaps();
-  pTexture2->GenerateMipMaps();
 
   Graphics::Geometry* pGeometry = pGraphics->CreateGeometry();
   // Construct a simple cube
@@ -131,7 +124,6 @@ int main(char **argv, int argc)
 
     pProgram->SetUniform("mvp", &mvp, Type_Float32, 16);
     pProgram->SetTexture("texture0", pTexture);
-    pProgram->SetTexture("texture1", pTexture2);
 
     pGraphics->Render(Graphics::DrawMode_Triangles, true);
     pFirstTarget->Swap();
