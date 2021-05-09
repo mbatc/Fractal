@@ -120,6 +120,14 @@ namespace flEngine
 
     void GLProgram::ApplyInputs()
     {
+      if (!m_textureUnitsSet)
+      {
+        // Assign texture units
+        for (int64_t i = 0; i < GetTextureCount(); ++i)
+          glUniform1i(GetResource(ResourceType_Texture, i)->location, (GLint)i);
+        m_textureUnitsSet = true;
+      }
+
       // Update shader uniforms if needed
       for (Resource & uniformResource : m_resources[ResourceType_Uniform])
       {
@@ -218,64 +226,6 @@ namespace flEngine
       SetShader(stage, nullptr, path);
     }
 
-    bool GLProgram::Reload()
-    {
-      for (int64_t stage = 0; stage < ProgramStage_Count; ++stage)
-        DeleteShader(&m_shaders[stage]);
-
-      m_compiled = false;
-
-      return Compile();
-    }
-
-    bool GLProgram::Compile()
-    {
-      if (m_compiled)
-        return true;
-
-      bool success = true;
-      for (int64_t stage = 0; stage < ProgramStage_Count; ++stage)
-        if (m_shaders[stage].isActive)
-          success &= CompileShader(&m_shaders[stage], (ProgramStage)stage);
-
-      if (!success) // Compiling shaders failed
-        return false;
-
-      int status = 0;
-      glLinkProgram(m_programID);
-      glGetProgramiv(m_programID, GL_LINK_STATUS, &status);
-      if (status == GL_FALSE)
-      {
-        int logLen = 0;
-        ctVector<char> logBuffer;
-        logBuffer.resize(logLen + 1, 0);
-
-        // Get the length of the compilation log
-        glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &logLen);
-
-        // Get the compilation log
-        glGetProgramInfoLog(m_programID, logLen, &logLen, logBuffer.data());
-
-        // TODO: Report in error compilation log
-
-        return false; // TODO: Report GL error
-      }
-
-      // Get shader details
-      Reflect();
-
-      // Assign texture units
-      for (int64_t i = 0; i < GetTextureCount(); ++i)
-      {
-        Resource *pSamplerResource = GetResource(ResourceType_Sampler, i);
-        pSamplerResource->glType;
-        glUniform1i(pSamplerResource->location, (GLint)i);
-      }
-
-      m_compiled = true;
-      return true;
-    }
-
     void GLProgram::SetUniformBuffer(const char * name, HardwareBuffer *pBuffer)
     {
       Resource *pBlock = GetResource(ResourceType_UniformBlock, name);
@@ -314,7 +264,7 @@ namespace flEngine
 
     int64_t GLProgram::GetTextureCount() const
     {
-      return m_resources[ResourceType_Sampler].size();
+      return m_resources[ResourceType_Texture].size();
     }
 
     int64_t GLProgram::GetUniformBufferCount() const
@@ -410,6 +360,58 @@ namespace flEngine
       if (src)  m_shaders[stage].src  = src;
       if (file) m_shaders[stage].file = file;
       m_shaders[stage].isActive = true;
+    }
+
+    bool GLProgram::Reload()
+    {
+      for (int64_t stage = 0; stage < ProgramStage_Count; ++stage)
+        DeleteShader(&m_shaders[stage]);
+
+      m_compiled = false;
+      return Compile();
+    }
+
+    bool GLProgram::Compile()
+    {
+      if (m_compiled)
+        return true;
+
+      m_textureUnitsSet = false; // Reset texture unit flag if the shader is being recompiled
+
+      bool success = true;
+      for (int64_t stage = 0; stage < ProgramStage_Count; ++stage)
+        if (m_shaders[stage].isActive)
+          success &= CompileShader(&m_shaders[stage], (ProgramStage)stage);
+
+      if (!success) // Compiling shaders failed
+        return false;
+
+      int status = 0;
+      glLinkProgram(m_programID);
+      glGetProgramiv(m_programID, GL_LINK_STATUS, &status);
+      if (status == GL_FALSE)
+      {
+        int logLen = 0;
+        ctVector<char> logBuffer;
+        logBuffer.resize(logLen + 1, 0);
+
+        // Get the length of the compilation log
+        glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &logLen);
+
+        // Get the compilation log
+        glGetProgramInfoLog(m_programID, logLen, &logLen, logBuffer.data());
+
+        // TODO: Report in error compilation log
+        printf("Failed to link shader:\n%s\n", logBuffer.data());
+
+        return false; // TODO: Report GL error
+      }
+
+      // Get shader details
+      Reflect();
+
+      m_compiled = true;
+      return true;
     }
 
     bool GLProgram::CompileShader(Shader *pShader, ProgramStage programStage)
@@ -525,12 +527,12 @@ namespace flEngine
 
           pUniform->DecRef();
         }
-        else if (GLUtil::GetTextureType(type) != TextureType_Unknown)
+        else if (GLUtil::GetTextureType(glType) != TextureType_Unknown)
         { // Possibly a texture/sampler
           Resource* pSamplerResource = AddResource(ResourceType_Sampler, nameBuffer.data());
           Resource* pTextureResource = AddResource(ResourceType_Texture, nameBuffer.data());
           pSamplerResource->location = pTextureResource->location = glGetUniformLocation(m_programID, nameBuffer.data());
-          pSamplerResource->glType   = pTextureResource->glType = type;
+          pSamplerResource->glType   = pTextureResource->glType = glType;
         }
       }
 

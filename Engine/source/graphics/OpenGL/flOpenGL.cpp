@@ -56,7 +56,18 @@ namespace flEngine
       m_pProgram = pProgram;
 
       if (m_pProgram && updated)
+      {
+        // Make sure the shader is compiled
+        if (!m_pProgram->Compile())
+        { // Clear the program if the shader failed to compile
+          SetProgram(nullptr);
+          return;
+        }
+
+        // Bind the shader program
         glUseProgram(flNativeToGLID(m_pProgram->GetNativeResource()));
+
+      }
 
       if (!m_pProgram)
         glUseProgram(0);

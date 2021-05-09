@@ -86,6 +86,7 @@ namespace flEngine
       Shader   m_shaders[ProgramStage_Count];
       uint32_t m_programID = 0;
       bool     m_compiled = false;
+      bool     m_textureUnitsSet = false;
 
       ctVector<uint8_t>  m_uniformCache;
       ctVector<uint8_t>  m_uniformState;

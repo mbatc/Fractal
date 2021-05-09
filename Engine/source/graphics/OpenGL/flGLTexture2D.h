@@ -7,32 +7,45 @@ namespace flEngine
 {
   namespace Graphics
   {
-    class flPIMPL_CLASS(GLTexture2D);
-
     class GLTexture2D : public Texture2D
     {
-      flPIMPL_DEF(GLTexture2D);
-
-      GLTexture2D(flIN PixelFormat pixelFormat, flIN PixelComponentType type);
-      GLTexture2D(flIN DepthFormat depthFormat);
+      GLTexture2D();
+      GLTexture2D(PixelFormat pixelFormat, PixelComponentType type);
+      GLTexture2D(DepthFormat depthFormat);
 
     public:
-      static Texture2D* Create(flIN PixelFormat pixelFormat, flIN PixelComponentType type);
-      static Texture2D* Create(flIN DepthFormat depthFormat);
+      ~GLTexture2D();
 
-      virtual TextureType GetTextureType() const override;
-      virtual bool Set(flIN void *pPixels, flIN const PixelBufferDesc *pBufferDesc, flIN int64_t mipMap = 0) override;
-      virtual bool Set(flIN void *pPixels, flIN const PixelBufferDesc *pBufferDesc, flIN int64_t widthOffset = 0, flIN int64_t heightOffset = 0, flIN int64_t depthOffset = 0, flIN int64_t mipMap = 0) override;
-      virtual bool Download(flOUT void **ppPixels, flIN flOUT PixelBufferDesc *pBufferDesc, flIN int64_t mipMap = 0) override;
-      virtual bool GenerateMipMaps() override;
-      virtual bool HasMipmaps() const override;
-      virtual int64_t GetMipMapCount() const override;
-      virtual int64_t GetWidth(flIN int64_t mipMap = 0) const override;
-      virtual int64_t GetHeight(flIN int64_t mipMap = 0) const override;
-      virtual int64_t GetDepth(flIN int64_t mipMap = 0) const override;
-      virtual PixelBufferType GetPixelBufferType() const override;
-      virtual const PixelBufferDesc *GetPixelBufferDesc() const override;
-      virtual void* GetNativeResource() override;
+      static Texture2D* Create(PixelFormat pixelFormat, PixelComponentType type);
+      static Texture2D* Create(DepthFormat depthFormat);
+
+      TextureType GetTextureType() const override;
+      bool Set(void *pPixels, const PixelBufferDesc *pBufferDesc, int64_t mipMap = 0) override;
+      bool Set(void *pPixels, const PixelBufferDesc *pBufferDesc, int64_t widthOffset = 0, int64_t heightOffset = 0, int64_t depthOffset = 0, int64_t mipMap = 0) override;
+      bool Download(void **ppPixels, PixelBufferDesc *pBufferDesc, int64_t mipMap = 0) override;
+      bool GenerateMipMaps() override;
+      bool HasMipmaps() const override;
+      int64_t GetMipMapCount() const override;
+      int64_t GetWidth(int64_t mipMap = 0) const override;
+      int64_t GetHeight(int64_t mipMap = 0) const override;
+      int64_t GetDepth(int64_t mipMap = 0) const override;
+      PixelBufferType GetPixelBufferType() const override;
+      const PixelBufferDesc *GetPixelBufferDesc() const override;
+      void* GetNativeResource() override;
+
+    private:
+      bool GetGLFormat(const PixelBufferDesc *pBufferDesc, uint32_t *pInternal, uint32_t *pFmt, uint32_t *pType);
+
+      PixelBufferDesc m_desc;
+
+      PixelBufferType    m_type;
+      PixelFormat        m_internalPixelFormat;
+      PixelComponentType m_internalComponentType;
+      DepthFormat        m_internalDepthFormat;
+
+      uint32_t m_texID = 0;
+      bool m_hasMipMaps = false;
+      Math::Vec2I m_resolution = { -1, -1 };
     };
   }
 }
