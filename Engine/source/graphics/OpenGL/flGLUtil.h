@@ -5,6 +5,7 @@
 #include "GL/glew.h"
 #include "GL/wglew.h"
 #include "GL/GL.h"
+#include <graphics/flSampler.h>
 
 #define flNativeToGLID(nativeResource) ((uint32_t)(uint64_t)nativeResource)
 #define flNativeFromGLID(nativeResource) ((void*)(uint64_t)nativeResource)
@@ -23,6 +24,8 @@ namespace flEngine
     enum DepthFormat;
     enum ProgramStage;
     enum TextureType;
+    enum WrapMode;
+    enum FilterMode;
 
     class GLUtil
     {
@@ -39,6 +42,8 @@ namespace flEngine
       static BufferUsage   GetBufferUsage(flIN uint32_t bufferBinding);
       static Util::Type    GetType(flIN uint32_t dataType, flOUT int64_t *pWidth, flOUT int64_t *pHeight);
       static TextureType   GetTextureType(flIN uint32_t glType);
+      static WrapMode      GetWrapMode(flIN uint32_t wrapMode);
+      static FilterMode    GetFilterMode(flIN uint32_t filterMode, bool *pMipMaps = nullptr);
 
       static bool IsSamplerType(flIN uint32_t glType);
       static bool Is2DSampler(flIN uint32_t glType);
@@ -55,6 +60,8 @@ namespace flEngine
       static uint32_t ToBufferBinding(flIN BufferBinding binding);
       static uint32_t ToBufferUsage(flIN BufferUsage stage);
       static uint32_t ToDataType(flIN Util::Type dataType, flOUT int64_t width = 1, flOUT int64_t height = 1);
+      static uint32_t ToWrapMode(flIN WrapMode wrapMode);
+      static uint32_t ToFilterMode(flIN FilterMode filterMode, bool mipmaps = false);
     };
   }
 }
