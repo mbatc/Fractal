@@ -31,9 +31,19 @@ namespace flEngine
     {
     public:
       /**
-       * @brief Set the format of the render target.
+       * @brief Set the format of the RenderTarget.
        */
       virtual bool SetFormat(flIN RenderTargetOptions const * pOptions) = 0;
+
+      /**
+       * @brief Get the width of the RenderTarget in pixels.
+       */
+      virtual int64_t GetWidth() const = 0;
+
+      /**
+       * @brief Get the height of the RenderTarget in pixels.
+       */
+      virtual int64_t GetHeight() const = 0;
 
       /**
        * @brief Clear this RenderTarget.

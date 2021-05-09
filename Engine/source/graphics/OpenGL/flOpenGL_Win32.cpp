@@ -3,6 +3,7 @@
 #if flUSING(flPLATFORM_WINDOWS)
 
 #include "graphics\OpenGL\flGLWindowRenderTarget.h"
+#include "flGLDeviceState.h"
 #include "ctString.h"
 #include <windows.h>
 #include "GL/glew.h"
@@ -45,6 +46,7 @@ static void GLAPIENTRY _ErrorMessageCallback(GLenum source, GLenum type, GLuint 
 }
 
 OpenGL::OpenGL(Platform::Window *pWindow, const RenderTargetOptions *pOptions)
+  : m_pState(GLDeviceState::Create())
 {
   // Create a temporary window to make our fake GL context
   Platform::Window tempWindow("tmp", Platform::Window::Flag_None, Platform::Window::DM_Windowed);

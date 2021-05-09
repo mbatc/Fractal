@@ -16,7 +16,7 @@ namespace flEngine
   {
     void OpenGL::SetGeometry(Geometry* pGeometry, int64_t indexBuffer)
     {
-      bool updated = m_pGeometry != pGeometry;
+      bool updated = m_pGeometry != pGeometry || m_indexBuffer != indexBuffer;
       m_pGeometry = pGeometry;
       m_indexBuffer = indexBuffer;
 
@@ -26,9 +26,14 @@ namespace flEngine
         uint32_t vaoToBind = pVAOs[0];
 
         if (m_indexBuffer >= 0 && m_indexBuffer < m_pGeometry->GetIndexBufferCount())
-          vaoToBind = pVAOs[m_indexType];
+        {
+          vaoToBind = pVAOs[m_indexBuffer];
+          m_indexType = m_pGeometry->GetIndexBuffer(m_indexBuffer)->GetIndexType();
+        }
         else
+        {
           m_indexBuffer = -1;
+        }
         glBindVertexArray(vaoToBind);
       }
 

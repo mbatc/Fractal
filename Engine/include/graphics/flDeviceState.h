@@ -7,12 +7,12 @@ namespace flEngine
 {
   namespace Graphics
   {
-    enum class DeviceFeature
+    enum DeviceFeature
     {
-      DepthTest,
-      StencilTest,
-      Blend,
-      Count,
+      DeviceFeature_DepthTest,
+      DeviceFeature_StencilTest,
+      DeviceFeature_Blend,
+      DeviceFeature_Count,
     };
 
     /**
