@@ -1,4 +1,5 @@
 #include "util/flType.h"
+#include <string.h>
 
 namespace flEngine
 {
@@ -46,7 +47,10 @@ namespace flEngine
     template<typename To, typename From>
     void _Convert(void *pDest, void const *pSrc, int64_t count)
     {
-      *(To *)pDest = To(*(From const *)pSrc);
+      To* pTo = (To*)pDest;
+      From const * pFrom = (From const *)pSrc;
+      while (count-- > 0)
+        *(pTo++) =  To(*(pFrom++));
     }
 
     template<typename To>
@@ -70,6 +74,12 @@ namespace flEngine
 
     void ConvertPrimitive(void *pDest, Type destType, void const *pSrc, Type srcType, int64_t count)
     {
+      if (destType == srcType)
+      {
+        memcpy(pDest, pSrc, count * SizeOf(srcType));
+        return;
+      }
+
       switch (destType)
       {
       case Type_Bool:    // Fall-through

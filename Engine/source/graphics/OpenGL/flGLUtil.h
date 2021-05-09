@@ -22,6 +22,7 @@ namespace flEngine
     enum PixelFormat;
     enum DepthFormat;
     enum ProgramStage;
+    enum TextureType;
 
     class GLUtil
     {
@@ -37,6 +38,12 @@ namespace flEngine
       static BufferBinding GetBufferBinding(flIN uint32_t bufferBinding);
       static BufferUsage   GetBufferUsage(flIN uint32_t bufferBinding);
       static Util::Type    GetType(flIN uint32_t dataType, flOUT int64_t *pWidth, flOUT int64_t *pHeight);
+      static TextureType   GetTextureType(flIN uint32_t glType);
+
+      static bool IsSamplerType(flIN uint32_t glType);
+      static bool Is2DSampler(flIN uint32_t glType);
+      static bool Is3DSampler(flIN uint32_t glType);
+      static bool Is1DSampler(flIN uint32_t glType);
 
       static uint32_t ToShaderType(flIN ProgramStage stage);
       static uint32_t ToPixelFormat(flIN PixelFormat depthFormat);

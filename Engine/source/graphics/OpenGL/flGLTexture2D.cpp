@@ -203,6 +203,11 @@ Texture2D* GLTexture2D::Create(flIN DepthFormat depthFormat)
   return flNew GLTexture2D(depthFormat);
 }
 
+TextureType GLTexture2D::GetTextureType() const
+{
+  return TextureType_2D;
+}
+
 bool GLTexture2D::Set(flIN void *pPixels, flIN const PixelBufferDesc *pBufferDesc, flIN int64_t mipMap /*= 0*/)
 {
   return Impl()->Set(pPixels, pBufferDesc, mipMap);

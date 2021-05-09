@@ -5,9 +5,16 @@ namespace flEngine
 {
   namespace Graphics
   {
-    IndexBuffer* GLIndexBuffer::Create(int64_t indexCount, uint32_t const * pData)
+    GLIndexBuffer::GLIndexBuffer(HardwareBuffer* pBuffer, int64_t indexCount, uint32_t const* pValues)
+      : m_pBuffer(pBuffer)
     {
-      return flNew GLIndexBuffer;
+      if (indexCount > 0)
+        m_pBuffer->Set(pValues, indexCount * GetElementSize());
+    }
+
+    IndexBuffer* GLIndexBuffer::Create(HardwareBuffer* pBuffer, int64_t indexCount, uint32_t const * pData)
+    {
+      return flNew GLIndexBuffer(pBuffer, indexCount, pData);
     }
 
     void GLIndexBuffer::Resize(int64_t indexCount, bool discardData)

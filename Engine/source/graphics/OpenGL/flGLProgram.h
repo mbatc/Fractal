@@ -14,6 +14,7 @@ namespace flEngine
     {
       ResourceType_Unknown = -1,
       ResourceType_Uniform,
+      ResourceType_Texture,
       ResourceType_Sampler,
       ResourceType_Attribute,
       ResourceType_UniformBlock,
@@ -35,8 +36,8 @@ namespace flEngine
       struct Resource
       {
         ctString name;            // Name of the resource
-        uint32_t location;        // Location in the program
-        bool isSampler = false;   // Only used for texture resources
+        int32_t  location;        // Location in the program
+        uint32_t glType;
         Ref<Interface> pResource; // Reference to the resource data
       };
 
@@ -55,20 +56,23 @@ namespace flEngine
       bool Reload() override;
       void SetUniformBuffer(const char *name, HardwareBuffer *pBuffer) override;
       void SetUniform(const char *name, void const * pValue, Util::Type valueType, int64_t valueCount) override;
-      void SetSampler(const char *name, Texture *pTexture) override;
+      void SetTexture(const char *name, Texture *pTexture) override;
       void SetSampler(const char *name, Sampler *pSampler) override;
 
       int64_t GetUniformCount() const override;
-      int64_t GetSamplerCount() const override;
-      int64_t GetUniformBlockCount() const override;
+      int64_t GetTextureCount() const override;
+      int64_t GetUniformBufferCount() const override;
+      int64_t GetAttributeCount() const override;
 
       char const * GetUniformName(int64_t index) const override;
-      char const * GetSamplerName(int64_t index) const override;
+      char const * GetTextureName(int64_t index) const override;
       char const * GetUniformBufferName(int64_t index) const override;
-      
+      char const * GetAttributeName(int64_t index) const override;
+
       void * GetNativeResource() override;
 
     private:
+      Resource * GetResource(ResourceType const &type, int64_t index);
       Resource * GetResource(ResourceType const &type, char const * name);
       Resource * AddResource(ResourceType const &type, char const * name);
       void SetResource(ResourceType const & type, char const * name, Ref<Interface> pResource);
@@ -76,7 +80,7 @@ namespace flEngine
       void DeleteShader(Shader *pShader);
       void ClearShader(Shader *pShader);
       void SetShader(ProgramStage stage, const char *src, const char *file);
-      bool CompileShader(Shader *pShader);
+      bool CompileShader(Shader *pShader, ProgramStage programStage);
       void Reflect();
 
       Shader   m_shaders[ProgramStage_Count];

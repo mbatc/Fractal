@@ -27,6 +27,7 @@
 #include "graphics/flAPI.h"
 #include "graphics/flDeviceState.h"
 #include "graphics/flProgram.h"
+#include "graphics/flProgramDetails.h"
 #include "graphics/flGeometry.h"
 #include "graphics/flHardwareBuffer.h"
 #include "graphics/flIndexBuffer.h"

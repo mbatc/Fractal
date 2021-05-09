@@ -14,9 +14,11 @@ namespace flEngine
     {
       friend class OpenGL;
 
-      static IndexBuffer* Create(int64_t indexCount, uint32_t const* pValues = nullptr);
+      GLIndexBuffer(HardwareBuffer* pBuffer, int64_t indexCount, uint32_t const* pValues);
 
     public:
+      static IndexBuffer* Create(HardwareBuffer *pBuffer, int64_t indexCount = 0, uint32_t const* pValues = nullptr);
+      
       void Resize(int64_t indexCount, bool discardData) override;
       void SetIndices(uint32_t const * pValues, int64_t count, int64_t offset) override;
       int64_t GetIndexCount() const override;

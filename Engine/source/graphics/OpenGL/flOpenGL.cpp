@@ -14,13 +14,29 @@ namespace flEngine
 {
   namespace Graphics
   {
-    void OpenGL::SetGeometry(Geometry * pGeometry, int64_t indexBuffer)
+    void OpenGL::SetGeometry(Geometry* pGeometry, int64_t indexBuffer)
     {
+      bool updated = m_pGeometry != pGeometry;
       m_pGeometry = pGeometry;
       m_indexBuffer = indexBuffer;
+
+      if (m_pGeometry && updated)
+      {
+        uint32_t* pVAOs = (uint32_t*)m_pGeometry->GetNativeResource();
+        uint32_t vaoToBind = pVAOs[0];
+
+        if (m_indexBuffer >= 0 && m_indexBuffer < m_pGeometry->GetIndexBufferCount())
+          vaoToBind = pVAOs[m_indexType];
+        else
+          m_indexBuffer = -1;
+        glBindVertexArray(vaoToBind);
+      }
+
+      if (!m_pGeometry)
+        glBindVertexArray(0);
     }
 
-    void OpenGL::SetRenderTarget(RenderTarget * pRenderTarget)
+    void OpenGL::SetRenderTarget(RenderTarget* pRenderTarget)
     {
       bool updated = m_pRenderTarget != pRenderTarget;
       m_pRenderTarget = pRenderTarget;
@@ -45,6 +61,10 @@ namespace flEngine
 
     void OpenGL::Render(DrawMode drawMode, bool indexed, uint64_t elementOffset, uint64_t elementCount)
     {
+      if (m_pProgram  == nullptr) return; // TODO: Report error
+      if (m_pGeometry == nullptr) return; // TODO: Report error
+      if (m_pProgram  == nullptr) return; // TODO: Report error
+
       GLenum glDrawMode = GL_NONE;
       switch (drawMode)
       {
@@ -59,21 +79,36 @@ namespace flEngine
         return;
       }
 
-      VertexBuffer* pVertexBuffer = m_pGeometry->GetVertexBuffer(0);
-      IndexBuffer* pIndexBuffer = m_pGeometry->GetIndexBuffer(m_indexBuffer);
-
-      GLenum glType = GL_NONE;
-      switch (pIndexBuffer->GetIndexType())
-      {
-      case Util::Type_UInt32: glType = GL_UNSIGNED_INT;   break;
-      case Util::Type_UInt16: glType = GL_UNSIGNED_SHORT; break;
-      case Util::Type_UInt8:  glType = GL_UNSIGNED_BYTE;  break;
+      // Update the active geometry
+      if (m_pGeometry->Update())
+      { // If it was update, we need to rebind the correct VAO
+        Geometry* pPrev = m_pGeometry.Get();
+        m_pGeometry = nullptr;
+        SetGeometry(pPrev, m_indexBuffer);
       }
 
-      if (indexed)
+      m_pProgram->ApplyInputs();
+
+      if (indexed && m_indexBuffer != -1)
+      {
+        // Render using an index buffer
+        GLenum glType = GL_NONE;
+        switch (m_indexType)
+        {
+        case Util::Type_UInt32: glType = GL_UNSIGNED_INT;   break;
+        case Util::Type_UInt16: glType = GL_UNSIGNED_SHORT; break;
+        case Util::Type_UInt8:  glType = GL_UNSIGNED_BYTE;  break;
+        }
+
+        elementCount = ctMin(m_pGeometry->GetIndexCount(m_indexBuffer), elementCount);
         glDrawElements(glDrawMode, (GLsizei)elementCount, glType, (void*)elementOffset);
+      }
       else
+      {
+        // No index buffer, draw arrays directly
+        elementCount = ctMin(m_pGeometry->GetVertexCount(), elementCount);
         glDrawArrays(glDrawMode, (GLsizei)elementOffset, (GLsizei)elementCount);
+      }
     }
     OpenGL* OpenGL::Create(Platform::Window* pWindow, const RenderTargetOptions* pOptions)
     {
@@ -102,7 +137,10 @@ namespace flEngine
 
     IndexBuffer* OpenGL::CreateIndexBuffer(int64_t indexCount, uint32_t const* pValues)
     {
-      return GLIndexBuffer::Create(indexCount, pValues);
+      HardwareBuffer* pBuffer = CreateBuffer(BufferBinding_Indices, AccessFlag_Write);
+      IndexBuffer* pIndexBuffer = GLIndexBuffer::Create(pBuffer, indexCount, pValues);
+      pBuffer->DecRef();
+      return pIndexBuffer;
     }
 
     VertexBuffer* OpenGL::CreateVertexBuffer(Util::Type primitiveType, int64_t primitiveWidth, int64_t elementCount, void const* pInitialData)
@@ -141,12 +179,12 @@ namespace flEngine
     class GLAPIFactory : public APIFactory
     {
     public:
-      char const * GetIdentifier() const override
+      char const* GetIdentifier() const override
       {
         return "OpenGL";
       }
 
-      API *Create(Platform::Window *pWindow, RenderTargetOptions *pOptions) override
+      API* Create(Platform::Window* pWindow, RenderTargetOptions* pOptions) override
       {
         return OpenGL::Create(pWindow, pOptions);
       }
@@ -154,7 +192,7 @@ namespace flEngine
 
     bool OpenGL::RegisterAPI()
     {
-      GLAPIFactory *pFactory = new GLAPIFactory();
+      GLAPIFactory* pFactory = new GLAPIFactory();
       bool success = API::RegisterAPI(pFactory);
       pFactory->DecRef();
       return success;

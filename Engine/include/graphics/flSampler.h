@@ -38,6 +38,8 @@ namespace flEngine
 
       virtual void SetBorderColour(flIN Util::Colour *pColour) = 0;
       virtual void GetBorderColour(flOUT Util::Colour *pColour) const = 0;
+
+      virtual void * GetNativeResource() = 0;
     };
   }
 }

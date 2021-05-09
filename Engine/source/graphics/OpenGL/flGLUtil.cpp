@@ -3,6 +3,7 @@
 #include "graphics/flPixelFormat.h"
 #include "graphics/flProgramDetails.h"
 #include "graphics/flBufferDetails.h"
+#include "graphics/flTexture.h"
 
 using namespace flEngine;
 using namespace flEngine::Util;
@@ -265,6 +266,58 @@ Type GLUtil::GetType(flIN uint32_t dataType, flOUT int64_t *pWidth, flOUT int64_
   if (pHeight) *pHeight = width;
 
   return type;
+}
+
+TextureType flEngine::Graphics::GLUtil::GetTextureType(flIN uint32_t glType)
+{
+  switch (glType)
+  {
+  case GL_SAMPLER_1D_ARRAY:
+  case GL_SAMPLER_1D_ARRAY_SHADOW:
+  case GL_SAMPLER_2D_MULTISAMPLE:
+  case GL_SAMPLER_2D: return TextureType_2D;
+  }
+
+  return TextureType_Unknown;
+}
+
+bool GLUtil::IsSamplerType(flIN uint32_t glType)
+{
+  return Is1DSampler(glType) || Is2DSampler(glType) || Is3DSampler(glType);
+}
+
+bool GLUtil::Is1DSampler(flIN uint32_t glType)
+{
+  return glType == GL_SAMPLER_1D
+    || glType == GL_SAMPLER_1D_SHADOW
+    || glType == GL_INT_SAMPLER_1D
+    || glType == GL_UNSIGNED_INT_SAMPLER_1D;
+}
+
+bool GLUtil::Is2DSampler(flIN uint32_t glType)
+{
+  return glType == GL_SAMPLER_2D
+    || glType == GL_SAMPLER_2D_MULTISAMPLE
+    || glType == GL_SAMPLER_2D_SHADOW
+    || glType == GL_SAMPLER_1D_ARRAY
+    || glType == GL_SAMPLER_1D_ARRAY_SHADOW
+    || glType == GL_INT_SAMPLER_2D
+    || glType == GL_INT_SAMPLER_1D_ARRAY
+    || glType == GL_UNSIGNED_INT_SAMPLER_2D
+    || glType == GL_UNSIGNED_INT_SAMPLER_1D_ARRAY;
+}
+
+bool GLUtil::Is3DSampler(flIN uint32_t glType)
+{
+  return glType == GL_SAMPLER_3D
+    || glType == GL_INT_SAMPLER_3D
+    || glType == GL_UNSIGNED_INT_SAMPLER_3D
+    || glType == GL_SAMPLER_2D_ARRAY
+    || glType == GL_SAMPLER_2D_MULTISAMPLE_ARRAY
+    || glType == GL_INT_SAMPLER_2D_ARRAY
+    || glType == GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY
+    || glType == GL_UNSIGNED_INT_SAMPLER_2D_ARRAY
+    || glType == GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY;
 }
 
 uint32_t GLUtil::ToShaderType(flIN ProgramStage stage)

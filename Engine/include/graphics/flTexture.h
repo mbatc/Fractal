@@ -51,9 +51,21 @@ namespace flEngine
     flEXPORT void CreatePixelBufferDesc(flOUT PixelBufferDesc *pDesc, flIN DepthFormat format, flIN int64_t width, flIN int64_t height, flIN int64_t depth = 1);
     flEXPORT void CreatePixelBufferDesc(flOUT PixelBufferDesc *pDesc, flIN PixelFormat format, flIN PixelComponentType type, flIN int64_t width, flIN int64_t height, flIN int64_t depth = 1);
 
+    enum TextureType
+    {
+      TextureType_Unknown = -1,
+      TextureType_2D,
+      TextureType_Count,
+    };
+
     class flEXPORT Texture : public Interface
     {
     public:
+      /**
+       * @brief Get an enum indicating what type of texture this is.
+       */
+      virtual TextureType GetTextureType() const = 0;
+
       /**
        * @brief Set the pixel data for this texture.
        *

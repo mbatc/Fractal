@@ -2,7 +2,7 @@
 #define fl_Graphics_GLGeometry_h__
 
 #include "graphics/flGeometry.h"
-#include "ctVector.h"
+#include "ctString.h"
 #include "flRef.h"
 
 namespace flEngine
@@ -20,30 +20,34 @@ namespace flEngine
 
       static GLGeometry* Create();
 
-      void AddVertexBuffer(flIN int64_t id, flIN VertexBuffer *pBuffer) override;
+      void AddVertexBuffer(flIN char const *, flIN VertexBuffer *pBuffer) override;
       void AddIndexBuffer(flIN IndexBuffer *pBuffer) override;
 
       void RemoveVertexBuffer(flIN int64_t index) override;
       void RemoveIndexBuffer(flIN int64_t index) override;
 
       int64_t GetVertexBufferCount() override;
-      int64_t GetVertexBufferID(flIN int64_t index) override;
+      char const * GetVertexBufferName(flIN int64_t index) override;
       int64_t GetIndexBufferCount() override;
 
-      VertexBuffer* GetVertexBufferByID(flIN int64_t id) override;
+      VertexBuffer* GetVertexBuffer(flIN char const * name) override;
       VertexBuffer* GetVertexBuffer(flIN int64_t index) override;
       IndexBuffer* GetIndexBuffer(flIN int64_t index) override;
 
-      void Bind(flIN int64_t indexBuffer) override;
+      int64_t GetVertexCount() const override;
+      int64_t GetIndexCount(flIN int64_t indexBuffer) const override;
+
+      bool Update() override;
 
       void* GetNativeResource() override;
 
     private:
-      uint32_t m_vao = 0;
+      ctVector<uint32_t> m_vaos = 0;
       bool m_rebindVBOs = true;
       int64_t m_numVBOsBounds = 0;
+      int64_t m_attributeRound = 0;
 
-      ctVector<int64_t>           m_vertexBufferIDs;
+      ctVector<ctString>          m_vertexBufferNames;
       ctVector<Ref<VertexBuffer>> m_vertexBuffers;
       ctVector<Ref<IndexBuffer>>  m_indexBuffers;
     };

@@ -123,12 +123,12 @@ namespace flEngine
       /**
        * @brief 
        */
-      virtual VertexBuffer* CreateVertexBuffer(flIN Util::Type primitiveType, flIN int64_t primitiveWidth, flIN int64_t elementCount, void const* pInitialData) = 0;
+      virtual VertexBuffer* CreateVertexBuffer(flIN Util::Type primitiveType, flIN int64_t primitiveWidth, flIN int64_t elementCount = 0, void const* pInitialData = nullptr) = 0;
 
       /**
        * @brief
        */
-      virtual IndexBuffer* CreateIndexBuffer(flIN int64_t indexCount, uint32_t const * pValues = nullptr) = 0;
+      virtual IndexBuffer* CreateIndexBuffer(flIN int64_t indexCount = 0, uint32_t const * pValues = nullptr) = 0;
 
       /**
        * @brief
