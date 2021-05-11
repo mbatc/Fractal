@@ -43,12 +43,7 @@
 #include "graphics/flTexture2D.h"
 #include "graphics/flSampler.h"
 
-namespace flEngine
-{
-  /**
-   * @brief Initialize Fractals core systems.
-   */
-  bool flEXPORT Initialize();
-}
+// Application
+#include "flApplication.h"
 
 #endif // fl_Engine_h__
