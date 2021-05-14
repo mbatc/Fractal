@@ -1,7 +1,7 @@
 #include "flOpenGL.h"
 #include "flGLUtil.h"
 #include "flGLProgram.h"
-#include "flGLGeometry.h"
+#include "flGLVertexArray.h"
 #include "flGLTexture2D.h"
 #include "flGLHardwareBuffer.h"
 #include "flGLVertexBuffer.h"
@@ -15,7 +15,7 @@ namespace flEngine
 {
   namespace Graphics
   {
-    void OpenGL::SetGeometry(Geometry* pGeometry, int64_t indexBuffer)
+    void OpenGL::SetGeometry(VertexArray* pGeometry, int64_t indexBuffer)
     {
       bool updated = m_pGeometry != pGeometry || m_indexBuffer != indexBuffer;
       m_pGeometry = pGeometry;
@@ -40,15 +40,6 @@ namespace flEngine
 
       if (!m_pGeometry)
         glBindVertexArray(0);
-    }
-
-    void OpenGL::SetRenderTarget(RenderTarget* pRenderTarget)
-    {
-      bool updated = m_pRenderTarget != pRenderTarget;
-      m_pRenderTarget = pRenderTarget;
-
-      if (m_pRenderTarget)
-        m_pRenderTarget->Bind();
     }
 
     void OpenGL::SetProgram(Program* pProgram)
@@ -96,14 +87,6 @@ namespace flEngine
         return;
       }
 
-      // Update the active geometry
-      if (m_pGeometry->Update())
-      { // If it was update, we need to rebind the correct VAO
-        Geometry* pPrev = m_pGeometry.Get();
-        m_pGeometry = nullptr;
-        SetGeometry(pPrev, m_indexBuffer);
-      }
-
       m_pProgram->ApplyInputs();
 
       if (indexed && m_indexBuffer != -1)
@@ -117,7 +100,7 @@ namespace flEngine
         case Util::Type_UInt8:  glType = GL_UNSIGNED_BYTE;  break;
         }
 
-        elementCount = ctMin(m_pGeometry->GetIndexCount(m_indexBuffer), elementCount);
+        elementCount = ctMin(m_pGeometry->GetIndexCount(), elementCount);
         glDrawElements(glDrawMode, (GLsizei)elementCount, glType, (void*)elementOffset);
       }
       else
@@ -142,9 +125,9 @@ namespace flEngine
       return GLTextureRenderTarget::Create();
     }
 
-    Geometry* OpenGL::CreateGeometry()
+    VertexArray* OpenGL::CreateVertexArray()
     {
-      return GLGeometry::Create();
+      return GLVertexArray::Create();
     }
 
     HardwareBuffer* OpenGL::CreateBuffer(BufferBinding binding, AccessFlags accessFlags)

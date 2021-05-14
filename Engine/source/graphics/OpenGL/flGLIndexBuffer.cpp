@@ -1,5 +1,6 @@
 #include "graphics/OpenGL/flGLIndexBuffer.h"
 #include "graphics/flHardwareBuffer.h"
+#include "flGLUtil.h"
 
 namespace flEngine
 {
@@ -15,6 +16,16 @@ namespace flEngine
     IndexBuffer* GLIndexBuffer::Create(HardwareBuffer* pBuffer, int64_t indexCount, uint32_t const * pData)
     {
       return flNew GLIndexBuffer(pBuffer, indexCount, pData);
+    }
+
+    void GLIndexBuffer::Bind()
+    {
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, flNativeToGLID(m_pBuffer->GetNativeResource()));
+    }
+
+    void GLIndexBuffer::Unbind()
+    {
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     void GLIndexBuffer::Resize(int64_t indexCount, bool discardData)

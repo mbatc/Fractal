@@ -15,11 +15,6 @@ namespace flEngine
       return flNew GLTexture2D(depthFormat);
     }
 
-    TextureType GLTexture2D::GetTextureType() const
-    {
-      return TextureType_2D;
-    }
-
     GLTexture2D::GLTexture2D()
     {
       glGenTextures(1, &m_texID);
@@ -31,11 +26,6 @@ namespace flEngine
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glBindTexture(GL_TEXTURE_2D, 0);
-    }
-
-    GLTexture2D::~GLTexture2D()
-    {
-      glDeleteTextures(1, &m_texID);
     }
 
     GLTexture2D::GLTexture2D(PixelFormat pixelFormat, PixelComponentType type)
@@ -51,6 +41,26 @@ namespace flEngine
     {
       m_type = PixelBufferType_Depth;
       m_internalDepthFormat = depthFormat;
+    }
+
+    GLTexture2D::~GLTexture2D()
+    {
+      glDeleteTextures(1, &m_texID);
+    }
+
+    void GLTexture2D::Bind()
+    {
+      glBindTexture(GL_TEXTURE_2D, m_texID);
+    }
+
+    void GLTexture2D::Unbind()
+    {
+      glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    TextureType GLTexture2D::GetTextureType() const
+    {
+      return TextureType_2D;
     }
 
     bool GLTexture2D::Set(void *pPixels, const PixelBufferDesc *pBufferDesc, int64_t mipMap)

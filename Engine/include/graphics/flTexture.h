@@ -62,6 +62,16 @@ namespace flEngine
     {
     public:
       /**
+       * @brief Bind the texture to the graphics API context
+       */
+      virtual void Bind() = 0;
+
+      /**
+       * @brief Unbind the texture to the graphics API context
+       */
+      virtual void Unbind() = 0;
+
+      /**
        * @brief Get an enum indicating what type of texture this is.
        */
       virtual TextureType GetTextureType() const = 0;

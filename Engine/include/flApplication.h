@@ -5,6 +5,10 @@
 
 namespace flEngine
 {
+  namespace Platform {
+    struct Event;
+  }
+
   class flPIMPL_CLASS(Application);
 
   /**
@@ -29,6 +33,13 @@ namespace flEngine
     friend class FractalEntryHandler;
 
   public:
+    /**
+     * @brief This function indicates if the engine should close the application.
+     *
+     * You must implement this function to tell the engine when it needs to close.
+     **/
+    virtual bool IsRunning() = 0;
+
     /**
      * @brief Perform startup tasks.
      * 
@@ -75,6 +86,16 @@ namespace flEngine
     virtual void OnPostUpdate();
 
     /**
+     * @brief Handle an event.
+     * 
+     * This function is called when the application receives an event.
+     * 
+     * After the application has handled the event, return true to forward the Event
+     * to the applications subsystems, or false to block the Event.
+     */
+    virtual bool OnEvent(flIN Platform::Event* pEvent);
+
+    /**
      * @brief Perform post-render tasks.
      *
      * This function is called each frame after the main render step in the engine.
@@ -82,13 +103,6 @@ namespace flEngine
      * You can override this function to implement any extra functionality your application needs.
      **/
     virtual void OnPostRender();
-
-    /**
-     * @brief This function indicates if the engine should close the application.
-     * 
-     * You must implement this function to tell the engine when it needs to close.
-     **/
-    virtual bool IsRunning() = 0;
 
     /**
      * @brief Get the global Application instance.
@@ -100,9 +114,6 @@ namespace flEngine
 
   private:
     int Run(); // Application entry point
-
-    // The application instance
-    static Application* m_pApplication;
   };
 }
 

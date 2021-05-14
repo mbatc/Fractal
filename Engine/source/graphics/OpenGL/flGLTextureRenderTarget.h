@@ -25,7 +25,7 @@ namespace flEngine
       virtual void ClearDepth(flIN float depth = 1.0f) override;
       virtual void ClearColour(flIN Util::Colour colour = 0) override;
       virtual void ClearStencil(flIN int32_t colour = 0) override;
-      virtual void Bind() override;
+      virtual void Bind(bool read, bool draw) override;
       virtual void * GetNativeResource() const override;
 
     private:

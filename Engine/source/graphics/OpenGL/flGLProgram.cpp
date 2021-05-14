@@ -1,7 +1,6 @@
 #include "graphics/flHardwareBuffer.h"
 #include "graphics/flTexture.h"
 #include "graphics/flSampler.h"
-#include "flGLAttributeCache.h"
 #include "flGLProgram.h"
 #include "util/flType.h"
 #include "ctFilename.h"
@@ -12,94 +11,6 @@ namespace flEngine
 {
   namespace Graphics
   {
-    class Uniform : public Interface
-    {
-      Uniform(ctVector<uint8_t> *pCache, ctVector<uint8_t> *pActiveState, Util::Type dataType, int64_t width, int64_t height, int64_t offset = -1)
-      {
-        // Set the uniform properties
-        m_width = width;
-        m_height = height;
-        m_primCount = width * height;
-        m_dataType = dataType;
-
-        // Calculate the size of the uniforms in bytes
-        m_size = m_width * m_height * Util::SizeOf(m_dataType);
-
-        // Set the offset
-        m_offset = offset;
-
-        // If no offset is specified, append this uniform the back of the uniform data buffer
-        if (m_offset == -1)
-          m_offset = pCache->size();
-
-        // Ensure there is enough space in the cache for this uniform
-        pCache->resize(m_offset + GetSize());
-        pActiveState->resize(pCache->size());
-
-        m_pUniformCache = pCache;
-        m_pActiveState = pActiveState;
-      }
-
-    public:
-      static Uniform * Create(ctVector<uint8_t> *pCache, ctVector<uint8_t> *pActiveState, Util::Type dataType, int64_t width, int64_t height, int64_t offset = -1)
-      {
-        return flNew Uniform(pCache, pActiveState, dataType, width, height, offset);
-      }
-
-      int64_t GetSize() const
-      {
-        return m_size;
-      }
-
-      int64_t GetWidth() const
-      {
-        return m_width;
-      }
-
-      int64_t GetHeight() const
-      {
-        return m_height;
-      }
-
-      Util::Type GetType() const
-      {
-        return m_dataType;
-      }
-
-      bool HasChanged() const
-      {
-        return memcmp(CachePtr(), ActivePtr(), GetSize()) != 0;
-      }
-
-      void Set(void const *pValue, Util::Type valueType, int64_t count)
-      {
-        Util::ConvertPrimitive(CachePtr(), m_dataType, pValue, valueType, min(count, m_primCount));
-      }
-
-      void * CachePtr() const
-      {
-        return m_pUniformCache->data() + m_offset;
-      }
-
-      void * ActivePtr() const
-      {
-        return m_pActiveState->data() + m_offset;
-      }
-
-      template<typename T> T As()     const { return *AsPtr<T>(); }
-      template<typename T> T* AsPtr() const { return (T*)CachePtr(); }
-
-    private:
-      Util::Type m_dataType = Util::Type_Unknown;
-      int64_t    m_width = 0;
-      int64_t    m_height = 0;
-      int64_t    m_size = 0;
-      int64_t    m_primCount = 0;
-      int64_t    m_offset = -1;
-      ctVector<uint8_t> *m_pUniformCache = nullptr;
-      ctVector<uint8_t> *m_pActiveState  = nullptr;
-    };
-
     GLProgram::GLProgram()
     {
       m_programID = glCreateProgram();
@@ -118,102 +29,14 @@ namespace flEngine
       return flNew GLProgram;
     }
 
-    void GLProgram::ApplyInputs()
+    void GLProgram::Bind()
     {
-      if (!m_textureUnitsSet)
-      {
-        // Assign texture units
-        for (int64_t i = 0; i < GetTextureCount(); ++i)
-          glUniform1i(GetResource(ResourceType_Texture, i)->location, (GLint)i);
-        m_textureUnitsSet = true;
-      }
+      glUseProgram(m_programID);
+    }
 
-      // Update shader uniforms if needed
-      for (Resource & uniformResource : m_resources[ResourceType_Uniform])
-      {
-        Uniform* pUniform = (Uniform*)uniformResource.pResource.Get();
-        if (!pUniform->HasChanged())
-          continue;
-
-        uint32_t  l  = uniformResource.location;
-        float*    f  = pUniform->AsPtr<float>();
-        double*   d  = pUniform->AsPtr<double>();
-        int32_t*  i  = pUniform->AsPtr<int32_t>();
-        uint32_t* ui = pUniform->AsPtr<uint32_t>();
-
-        switch (uniformResource.glType)
-        {
-        case GL_INT:               glUniform1i(l,  i[0]); break;
-        case GL_BOOL:              glUniform1i(l,  i[0]); break;
-        case GL_FLOAT:             glUniform1f(l,  f[0]); break;
-        case GL_DOUBLE:            glUniform1d(l,  d[0]); break;
-        case GL_UNSIGNED_INT:      glUniform1ui(l, ui[0]); break;
-        case GL_INT_VEC2:          glUniform2i(l, i[0], i[1]); break;
-        case GL_INT_VEC3:          glUniform3i(l, i[0], i[1], i[2]); break;
-        case GL_INT_VEC4:          glUniform4i(l, i[0], i[1], i[2], i[3]); break;
-        case GL_BOOL_VEC2:         glUniform2i(l, i[0], i[1]); break;
-        case GL_BOOL_VEC3:         glUniform3i(l, i[0], i[1], i[2]); break;
-        case GL_BOOL_VEC4:         glUniform4i(l, i[0], i[1], i[2], i[3]); break;
-        case GL_FLOAT_VEC2:        glUniform2f(l, f[0], f[1]); break;
-        case GL_FLOAT_VEC3:        glUniform3f(l, f[0], f[1], f[2]); break;
-        case GL_FLOAT_VEC4:        glUniform4f(l, f[0], f[1], f[2], f[3]); break;
-        case GL_DOUBLE_VEC2:       glUniform2d(l, d[0], d[1]); break;
-        case GL_DOUBLE_VEC3:       glUniform3d(l, d[0], d[1], d[2]); break;
-        case GL_DOUBLE_VEC4:       glUniform4d(l, d[0], d[1], d[2], d[3]); break;
-        case GL_UNSIGNED_INT_VEC2: glUniform2i(l, ui[0], ui[1]); break;
-        case GL_UNSIGNED_INT_VEC3: glUniform3i(l, ui[0], ui[1], ui[2]); break;
-        case GL_UNSIGNED_INT_VEC4: glUniform4i(l, ui[0], ui[1], ui[2], ui[3]); break;
-        case GL_FLOAT_MAT2:        glUniformMatrix2fv(l, 1, GL_TRUE, f); break;
-        case GL_FLOAT_MAT3:        glUniformMatrix3fv(l, 1, GL_TRUE, f); break;
-        case GL_FLOAT_MAT4:        glUniformMatrix4fv(l, 1, GL_TRUE, f); break;
-        case GL_DOUBLE_MAT2:       glUniformMatrix2dv(l, 1, GL_TRUE, d); break;
-        case GL_DOUBLE_MAT3:       glUniformMatrix3dv(l, 1, GL_TRUE, d); break;
-        case GL_DOUBLE_MAT4:       glUniformMatrix4dv(l, 1, GL_TRUE, d); break;
-        default:
-          // Unsupported uniform type
-          // TODO: Report Error
-          break;
-        }
-      }
-
-      memcpy(m_uniformState.data(), m_uniformCache.data(), m_uniformCache.size());
-
-      for (Resource & uniformBlock : m_resources[ResourceType_UniformBlock])
-      {
-        uniformBlock;
-        // TODO: Implement uniform block support;
-      }
-
-      // Bind textures to texture units
-      int64_t textureUnit = 0;
-      for (Resource& textureResource : m_resources[ResourceType_Texture])
-      {
-        Texture* pTexture = (Texture*)textureResource.pResource.Get();
-        if (pTexture && pTexture->GetTextureType() == GLUtil::GetTextureType(textureResource.glType))
-        {
-          uint32_t glID = flNativeToGLID(pTexture->GetNativeResource());
-
-          switch (pTexture->GetTextureType())
-          { // A switch is used in anticipation of supporting more texture types
-          case TextureType_2D: glBindTexture(GL_TEXTURE_2D, glID); break;
-          }
-        }
-
-        ++textureUnit;
-      }
-
-      // Bind samplers to texture units
-      textureUnit = 0;
-      for (Resource &samplerResource : m_resources[ResourceType_Sampler])
-      {
-        glActiveTexture(GLenum(GL_TEXTURE0 + textureUnit));
-        Sampler * pSampler = (Sampler*)samplerResource.pResource.Get();
-        if (pSampler)
-          glBindSampler((GLuint)textureUnit, flNativeToGLID(pSampler->GetNativeResource()));
-        else
-          glBindSampler((GLuint)textureUnit, 0); // Use the default sampler
-        ++textureUnit;
-      }
+    void GLProgram::Unbind()
+    {
+      glUseProgram(0);
     }
 
     void GLProgram::SetShader(const char *source, ProgramStage stage)
@@ -226,45 +49,46 @@ namespace flEngine
       SetShader(stage, nullptr, path);
     }
 
-    void GLProgram::SetUniformBuffer(const char * name, HardwareBuffer *pBuffer)
+    void GLProgram::SetInt(const char* name, int value)
     {
-      Resource *pBlock = GetResource(ResourceType_UniformBlock, name);
-      if (pBlock)
-        pBlock->pResource = pBuffer;
+      glProgramUniform1i(m_programID, GetUniformLocation(name), value);
     }
 
-    void GLProgram::SetUniform(const char * name, void const *pValue, Util::Type valueType, int64_t valueCount)
+    void GLProgram::SetFloat(const char* name, float value)
     {
-      Resource *pResource = GetResource(ResourceType_Uniform, name);
-      if (pResource)
-      {
-        Ref<Uniform> pUniform = (Uniform*)pResource->pResource.Get();
-        pUniform->Set(pValue, valueType, valueCount);
-      }
+      glProgramUniform1f(m_programID, GetUniformLocation(name), value);
     }
 
-    void GLProgram::SetTexture(const char * name, Texture *pTexture)
+    void GLProgram::SetFloat2(const char* name, float const* pValues)
     {
-      Resource *pResource = GetResource(ResourceType_Texture, name);
-      if (pResource)
-        pResource->pResource = pTexture;
+      glProgramUniform2f(m_programID, GetUniformLocation(name), pValues[0], pValues[1]);
     }
 
-    void GLProgram::SetSampler(const char * name, Sampler *pSampler)
+    void GLProgram::SetFloat3(const char* name, float const* pValues)
     {
-      Resource *pResource = GetResource(ResourceType_Sampler, name);
-      if (pResource)
-        pResource->pResource = pSampler;
+      glProgramUniform3f(m_programID, GetUniformLocation(name), pValues[0], pValues[1], pValues[2]);
+    }
+
+    void GLProgram::SetFloat4(const char* name, float const* pValues)
+    {
+      glProgramUniform4f(m_programID, GetUniformLocation(name), pValues[0], pValues[1], pValues[2], pValues[3]);
+    }
+
+    void GLProgram::SetMat4(const char* name, float const* pValues)
+    {
+      glProgramUniformMatrix4fv(m_programID, GetUniformLocation(name), 1, GL_TRUE, pValues);
+    }
+
+    int GLProgram::GetInt(const char* name)
+    {
+      int value = 0;
+      glGetUniformiv(m_programID, GetUniformLocation(name), &value);
+      return value;
     }
 
     int64_t GLProgram::GetUniformCount() const
     {
       return m_resources[ResourceType_Uniform].size();
-    }
-
-    int64_t GLProgram::GetTextureCount() const
-    {
-      return m_resources[ResourceType_Texture].size();
     }
 
     int64_t GLProgram::GetUniformBufferCount() const
@@ -282,19 +106,45 @@ namespace flEngine
       return m_resources[ResourceType_Uniform][index].name;
     }
 
-    char const * GLProgram::GetUniformBufferName(int64_t index) const
+    char const* GLProgram::GetUniformBufferName(int64_t index) const
     {
       return m_resources[ResourceType_UniformBlock][index].name;
+    }
+
+    bool GLProgram::GetUniformDataType(int64_t index, Util::Type* pType, int64_t* pWidth) const
+    {
+      Resource const & uniform = m_resources[ResourceType_Uniform][index];
+      if (m_resources[ResourceType_Uniform][index].isSampler)
+        return false;
+
+      if (pType)  *pType = uniform.dataType.primitive;
+      if (pWidth) *pWidth = uniform.dataType.width;
+    }
+
+    bool GLProgram::GetUniformSamplerType(int64_t index, TextureType* pType) const
+    {
+      Resource const& uniform = m_resources[ResourceType_Uniform][index];
+      if (!m_resources[ResourceType_Uniform][index].isSampler)
+        return false;
+
+      if (pType)
+        *pType = uniform.samplerType;
+      return true;
+    }
+
+    int64_t GLProgram::GetUniformBlockIndex(int64_t index) const
+    {
+      return m_resources[ResourceType_Uniform][index].blockIndex;
+    }
+
+    int64_t GLProgram::GetUniformBlockOffset(int64_t index) const
+    {
+      return m_resources[ResourceType_Uniform][index].blockOffset;
     }
 
     char const* GLProgram::GetAttributeName(int64_t index) const
     {
       return m_resources[ResourceType_Attribute][index].name;
-    }
-
-    char const * GLProgram::GetTextureName(int64_t index) const
-    {
-      return m_resources[ResourceType_Sampler][index].name;
     }
 
     void * GLProgram::GetNativeResource()
@@ -326,10 +176,17 @@ namespace flEngine
       return &m_resources[type].back();
     }
 
-    void GLProgram::SetResource(ResourceType const & type, char const * name, Ref<Interface> pResource)
+    int32_t GLProgram::GetLocation(ResourceType const & type, char const* name) const
     {
-      Resource *pData = GetResource(type, name);
-      pData->pResource = pResource;
+      for (Resource const& resource : m_resources[type])
+        if (resource.name == name)
+          return resource.location;
+      return -1;
+    }
+
+    int32_t GLProgram::GetUniformLocation(char const * name) const
+    {
+      return GetLocation(ResourceType_Uniform, name);
     }
 
     void GLProgram::DeleteShader(Shader *pShader)
@@ -376,8 +233,6 @@ namespace flEngine
       if (m_compiled)
         return true;
 
-      m_textureUnitsSet = false; // Reset texture unit flag if the shader is being recompiled
-
       bool success = true;
       for (int64_t stage = 0; stage < ProgramStage_Count; ++stage)
         if (m_shaders[stage].isActive)
@@ -418,10 +273,6 @@ namespace flEngine
     {
       if (pShader->isLinked)
         return true;
-
-      // Apply cached attribute locations
-      for (ctString const& name : GLAttributeCache::GetNames())
-        glBindAttribLocation(m_programID, (GLuint)GLAttributeCache::GetLocation(name), name.c_str());
 
       if (pShader->file.Path().length() > 0)
       {
@@ -503,36 +354,41 @@ namespace flEngine
         glGetActiveAttrib(m_programID, attrib, maxNameLen, &len, &size, &glType, nameBuffer.data());
         Resource* pAttribResource  = AddResource(ResourceType_Attribute, nameBuffer.data());
         pAttribResource->location  = glGetAttribLocation(m_programID, nameBuffer.data());
-        pAttribResource->pResource = nullptr; // No resource
         pAttribResource->glType = glType;
 
-        GLAttributeCache::AddLocation(nameBuffer.data(), pAttribResource->location);
+        int64_t w, h;
+        pAttribResource->dataType.primitive = GLUtil::GetType(glType, &w, &h);
+        pAttribResource->dataType.width     = w * h;
       }
 
+      int32_t textureCount = 0;
       for (int32_t uniform = 0; uniform < uniformCount; ++uniform)
       {
         glGetActiveUniform(m_programID, uniform, maxNameLen, &len, &size, &glType, nameBuffer.data());
 
-        int64_t width;
-        int64_t height;
-        Util::Type type = GLUtil::GetType(glType, &width, &height);
+        Resource* pUniformResource = AddResource(ResourceType_Uniform, nameBuffer.data());
+        pUniformResource->location = glGetUniformLocation(m_programID, nameBuffer.data());
+        pUniformResource->glType = glType;
+
+        int64_t width, height;
+        Util::Type  type    = GLUtil::GetType(glType, &width, &height);
+        TextureType texType = GLUtil::GetTextureType(glType);
+        
         if (type != Util::Type_Unknown)
         { // Uniform variable
-          Ref<Uniform> pUniform = Uniform::Create(&m_uniformCache, &m_uniformState, type, width, height);
-          Resource *pUniformResource  = AddResource(ResourceType_Uniform, nameBuffer.data());
-
-          pUniformResource->pResource = pUniform.Get();
-          pUniformResource->location  = glGetUniformLocation(m_programID, nameBuffer.data());
-          pUniformResource->glType    = glType;
-
-          pUniform->DecRef();
+          pUniformResource->dataType.primitive = type;
+          pUniformResource->dataType.width     = width * height;
         }
-        else if (GLUtil::GetTextureType(glType) != TextureType_Unknown)
-        { // Possibly a texture/sampler
-          Resource* pSamplerResource = AddResource(ResourceType_Sampler, nameBuffer.data());
-          Resource* pTextureResource = AddResource(ResourceType_Texture, nameBuffer.data());
-          pSamplerResource->location = pTextureResource->location = glGetUniformLocation(m_programID, nameBuffer.data());
-          pSamplerResource->glType   = pTextureResource->glType = glType;
+        else if (texType != Util::Type_Unknown)
+        { // Texture sampler
+          pUniformResource->samplerType = texType;
+          pUniformResource->isSampler   = true;
+          // Assign a texture unit to this sampler
+          glUniform1i(pUniformResource->location, textureCount++);
+        }
+        else
+        { // Unrecognized data type
+          // TODO: Report this error
         }
       }
 
@@ -545,6 +401,21 @@ namespace flEngine
 
         uniformIndices.resize(numUniforms);
         glGetActiveUniformBlockiv(m_programID, block, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, uniformIndices.data());
+        for (int64_t i = 0; i < numUniforms; ++i)
+        {
+          GLuint uniformIndex = uniformIndices[i];
+          GLint blockIffset; GLint blockIndex;
+          glGetActiveUniformsiv(m_programID, 1, &uniformIndex, GL_UNIFORM_OFFSET, &blockIffset);
+          glGetActiveUniformsiv(m_programID, 1, &uniformIndex, GL_UNIFORM_BLOCK_INDEX, &blockIndex);
+          glGetActiveUniform(m_programID, uniformIndex, maxNameLen, &len, &size, &glType, nameBuffer.data());
+
+          Resource *pUniformResource    = GetResource(ResourceType_Uniform, nameBuffer.data());
+          pUniformResource->blockOffset = blockIffset;
+          pUniformResource->blockIndex  = blockIndex;
+          pUniformResource->location    = -1;
+        }
+
+        glUniformBlockBinding(m_programID, (uint32_t)block, (uint32_t)block);
       }
     }
   }

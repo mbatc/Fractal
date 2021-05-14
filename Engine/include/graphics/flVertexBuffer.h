@@ -10,18 +10,38 @@ namespace flEngine
   {
     class HardwareBuffer;
 
+    struct flEXPORT VertexElement
+    {
+      VertexElement(char const * name, Util::Type type, int64_t width);
+
+      char const * name;
+      Util::Type   type;
+      int64_t      width;
+      int64_t      offset;
+    };
+
     class flEXPORT VertexBuffer : public Interface
     {
     public:
       /**
+       * @brief Bind the VertexBuffer to the the graphics API context
+       */
+      virtual void Bind() = 0;
+
+      /**
+       * @brief Unbind the VertexBuffer from the graphics API context
+       */
+      virtual void Unbind() = 0;
+
+      /**
        * @brief Set the format of the vertex buffer data.
-       * 
+       *
        * Use this function to specify the format of the data in the vertex buffer.
-       * 
+       *
        * @param [in] primitiveType  The data type of the primitives in the buffer.
        * @param [in] primitiveWidth The number of primitive items per vertex element.
        */
-      virtual void SetFormat(flIN Util::Type primitiveType, flIN int64_t primitiveWidth) = 0;
+      virtual void SetLayout(flIN VertexElement const* pElements, int64_t elementCount) = 0;
 
       /**
        * @brief Get the number of elements in the vertex buffer.
@@ -33,21 +53,22 @@ namespace flEngine
        * 
        * @return The number of elements in the vertex buffer.
        */
-      virtual int64_t GetElementCount() const = 0;
+      virtual int64_t GetVertexCount() const = 0;
 
       /**
-       * @brief Get vertex buffers elements primitive type.
-       * 
-       * @return The primitive type of the vertex attribute.
+       * @brief Get the number of bytes per vertex.
        */
-      virtual Util::Type GetPrimitiveType() const = 0;
+      virtual int64_t GetVertexStride() const = 0;
 
       /**
-       * @brief Get the number of primitive items per element.
-       *
-       * @return The primitive width of the vertex attribute.
+       * @brief Get the number of elements in the vertex layout.
        */
-      virtual int64_t GetPrimitiveWidth() const = 0;
+      virtual int64_t GetLayoutElementCount() const = 0;
+
+      /**
+       * @brief Get the description of an element in the vertex buffer.
+       */
+      virtual void GetLayoutElement(flIN int64_t index, flOUT VertexElement* pElement) const = 0;
 
       /**
        * @brief Get the hardware buffer that contains the data for this vertex buffer.
@@ -56,6 +77,13 @@ namespace flEngine
        */
       virtual HardwareBuffer* GetBuffer() = 0;
       virtual HardwareBuffer const* GetBuffer() const = 0;
+
+      /**
+       * @brief Set the vertex layout from an initializer list of VertexElement's.
+       */
+      inline void SetLayout(std::initializer_list<VertexElement> const& elements) {
+        SetLayout(elements.begin(), elements.size());
+      }
     };
   }
 }

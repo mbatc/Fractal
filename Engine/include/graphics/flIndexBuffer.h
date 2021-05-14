@@ -14,6 +14,16 @@ namespace flEngine
     {
     public:
       /**
+       * @brief Bind the VertexBuffer to the the graphics API context
+       */
+      virtual void Bind() = 0;
+
+      /**
+       * @brief Unbind the VertexBuffer from the graphics API context
+       */
+      virtual void Unbind() = 0;
+
+      /**
        * @brief Resize the index buffer.
        * 
        * @param [in] indexCount  The number of indices to allocate.

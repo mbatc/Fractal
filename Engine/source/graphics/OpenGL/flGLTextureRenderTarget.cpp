@@ -61,10 +61,12 @@ namespace flEngine
       glClearNamedFramebufferiv(m_fbo, GL_STENCIL, 0, &colour);
     }
 
-    void GLTextureRenderTarget::Bind()
+    void GLTextureRenderTarget::Bind(bool read, bool draw)
     {
-      glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fbo);
-      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
+      if (read)
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fbo);
+      if (draw)
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
     }
 
     void * GLTextureRenderTarget::GetNativeResource() const

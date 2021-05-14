@@ -18,7 +18,7 @@ namespace flEngine
     public:
       static OpenGL* Create(Platform::Window* pWindow, const RenderTargetOptions* pOptions = nullptr);
 
-      void SetGeometry(Geometry* pGeometry, int64_t indexBuffer) override;
+      void SetGeometry(VertexArray* pGeometry, int64_t indexBuffer) override;
       void SetRenderTarget(RenderTarget* pRenderTarget) override;
       void SetProgram(Program* pProgram) override;
 
@@ -26,7 +26,7 @@ namespace flEngine
       void Render(DrawMode drawMode, bool indexed, uint64_t elementOffset, uint64_t elementCount) override;
       WindowRenderTarget* CreateWindowRenderTarget(Platform::Window* pWindow, RenderTargetOptions* pOptions) override;
       TextureRenderTarget* CreateTextureRenderTarget() override;
-      Geometry* CreateGeometry() override;
+      VertexArray* CreateVertexArray() override;
       HardwareBuffer* CreateBuffer(BufferBinding binding, AccessFlags accessFlags) override;
       IndexBuffer* CreateIndexBuffer(int64_t indexCount, uint32_t const* pValues) override;
       VertexBuffer* CreateVertexBuffer(Util::Type primitiveType, int64_t primitiveWidth, int64_t elementCount, void const* pInitialData) override;
@@ -41,9 +41,9 @@ namespace flEngine
       GLDeviceState* m_pState = nullptr;
 
       // Active bindings
-      Ref<Program>      m_pProgram = nullptr;
-      Ref<Geometry>     m_pGeometry = nullptr;
-      Ref<RenderTarget> m_pRenderTarget = nullptr;
+      Ref<Program>      m_pProgram;
+      Ref<VertexArray>  m_pGeometry;
+      Ref<RenderTarget> m_pRenderTarget;
 
       int64_t       m_indexBuffer = -1;
       Util::Type    m_indexType   = Util::Type_Unknown;

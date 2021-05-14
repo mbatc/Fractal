@@ -2,6 +2,7 @@
 #define fl_Graphics_GLVertexBuffer_h__
 
 #include "graphics/flVertexBuffer.h"
+#include "ctString.h"
 #include "flRef.h"
 
 namespace flEngine
@@ -18,18 +19,30 @@ namespace flEngine
 
       static VertexBuffer* Create(HardwareBuffer *pBuffer, Util::Type primitiveType = Util::Type_Unknown, int64_t primitiveWidth = 0, int64_t elementCount = 0, void const * pInitialData = nullptr);
     public:
-      virtual void SetFormat(Util::Type primitiveType, int64_t primitiveWidth) override;
-      virtual Util::Type GetPrimitiveType() const override;
-      virtual int64_t GetPrimitiveWidth() const override;
-      virtual int64_t GetElementCount() const override;
-      virtual HardwareBuffer * GetBuffer() override;
+      virtual void Bind() override;
+      virtual void Unbind() override;
+      virtual void SetLayout(VertexElement const* pElements, int64_t elementCount) override;
+      virtual int64_t GetVertexCount() const override;
+      virtual int64_t GetVertexStride() const override;
+      virtual int64_t GetLayoutElementCount() const override;
+      virtual void GetLayoutElement(int64_t index, VertexElement* pElement) const override;
+
+      virtual HardwareBuffer* GetBuffer() override;
       virtual HardwareBuffer const* GetBuffer() const override;
 
     private:
-      Util::Type m_primitiveType = Util::Type_Unknown;
-      int64_t m_primitiveWidth = 0;
-      int64_t m_elementSize = 0;
-      Ref<HardwareBuffer> m_pBuffer = nullptr;
+      struct Element
+      {
+        ctString name;
+        Util::Type type;
+        int64_t width = 0;
+        int64_t offset = 0;
+      };
+
+      ctVector<Element> m_layout;
+      int64_t m_stride = 0;
+
+      Ref<HardwareBuffer> m_pBuffer;
     };
   }
 }

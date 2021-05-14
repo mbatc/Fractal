@@ -19,6 +19,9 @@ namespace flEngine
       static Texture2D* Create(PixelFormat pixelFormat, PixelComponentType type);
       static Texture2D* Create(DepthFormat depthFormat);
 
+      void Bind() override;
+      void Unbind() override;
+
       TextureType GetTextureType() const override;
       bool Set(void *pPixels, const PixelBufferDesc *pBufferDesc, int64_t mipMap = 0) override;
       bool Set(void *pPixels, const PixelBufferDesc *pBufferDesc, int64_t widthOffset = 0, int64_t heightOffset = 0, int64_t depthOffset = 0, int64_t mipMap = 0) override;

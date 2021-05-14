@@ -68,7 +68,7 @@ namespace flEngine
       /**
        * @brief Make this the active render target.
        */
-      virtual void Bind() = 0;
+      virtual void Bind(flIN bool read = true, flIN bool draw = true) = 0;
 
       /**
        * @brief Get the native resource for 
