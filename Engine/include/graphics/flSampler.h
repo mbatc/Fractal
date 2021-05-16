@@ -3,6 +3,7 @@
 
 #include "../flInterface.h"
 #include "../util/flColour.h"
+#include "flAPIResource.h"
 
 namespace flEngine
 {
@@ -25,9 +26,14 @@ namespace flEngine
       FilterMode_Count,
     };
 
-    class flEXPORT Sampler : public Interface
+    class flEXPORT Sampler : public APIResource
     {
+    protected:
+      Sampler(API *pAPI);
+
     public:
+      virtual void Bind(flIN int64_t textureUnit) = 0;
+
       virtual void SetWrapMode(flIN WrapMode wrap) = 0;
       virtual void GetWrapMode(flOUT WrapMode *pWrapX, flOUT WrapMode *pWrapY) const = 0;
 

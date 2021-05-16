@@ -20,7 +20,8 @@ namespace flEngine
 {
   namespace Graphics
   {
-    GLWindowRenderTarget::GLWindowRenderTarget(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions)
+    GLWindowRenderTarget::GLWindowRenderTarget(API *pAPI, flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions)
+      : WindowRenderTarget(pAPI)
     {
       m_pWindow = pWindow;
       if (!m_pWindow || m_pWindow->GetRenderTarget() == this)

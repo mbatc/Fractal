@@ -12,6 +12,7 @@
 #include "util/flImage.h"
 #include "util/flColour.h"
 #include "util/flType.h"
+#include "flRef.h"
 
 // Threading
 #include "threads/flThreads.h"
@@ -31,7 +32,7 @@
 #include "graphics/flDeviceState.h"
 #include "graphics/flProgram.h"
 #include "graphics/flProgramDetails.h"
-#include "graphics/flGeometry.h"
+#include "graphics/flVertexArray.h"
 #include "graphics/flHardwareBuffer.h"
 #include "graphics/flIndexBuffer.h"
 #include "graphics/flVertexBuffer.h"
@@ -42,6 +43,7 @@
 #include "graphics/flTexture.h"
 #include "graphics/flTexture2D.h"
 #include "graphics/flSampler.h"
+#include "graphics/flMaterial.h"
 
 // Application
 #include "flApplication.h"

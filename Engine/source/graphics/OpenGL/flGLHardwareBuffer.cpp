@@ -5,12 +5,13 @@ namespace flEngine
 {
   namespace Graphics
   {
-    GLHardwareBuffer* GLHardwareBuffer::Create(BufferBinding binding, AccessFlags accessFlags)
+    GLHardwareBuffer* GLHardwareBuffer::Create(API *pAPI, BufferBinding binding, AccessFlags accessFlags)
     {
-      return flNew GLHardwareBuffer(binding, accessFlags);
+      return flNew GLHardwareBuffer(pAPI, binding, accessFlags);
     }
 
-    GLHardwareBuffer::GLHardwareBuffer(BufferBinding binding, AccessFlags accessFlags)
+    GLHardwareBuffer::GLHardwareBuffer(API *pAPI, BufferBinding binding, AccessFlags accessFlags)
+      : HardwareBuffer(pAPI)
     {
       glCreateBuffers(1, &m_bufferID);
       m_accessFlags = accessFlags;

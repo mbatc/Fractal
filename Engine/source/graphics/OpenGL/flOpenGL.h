@@ -18,19 +18,20 @@ namespace flEngine
     public:
       static OpenGL* Create(Platform::Window* pWindow, const RenderTargetOptions* pOptions = nullptr);
 
-      void SetGeometry(Geometry* pGeometry, int64_t indexBuffer) override;
-      void SetRenderTarget(RenderTarget* pRenderTarget) override;
-      void SetProgram(Program* pProgram) override;
-
       DeviceState* GetState() override;
+
       void Render(DrawMode drawMode, bool indexed, uint64_t elementOffset, uint64_t elementCount) override;
+
       WindowRenderTarget* CreateWindowRenderTarget(Platform::Window* pWindow, RenderTargetOptions* pOptions) override;
       TextureRenderTarget* CreateTextureRenderTarget() override;
-      Geometry* CreateGeometry() override;
+      VertexArray* CreateVertexArray() override;
       HardwareBuffer* CreateBuffer(BufferBinding binding, AccessFlags accessFlags) override;
       IndexBuffer* CreateIndexBuffer(int64_t indexCount, uint32_t const* pValues) override;
-      VertexBuffer* CreateVertexBuffer(Util::Type primitiveType, int64_t primitiveWidth, int64_t elementCount, void const* pInitialData) override;
+      VertexBuffer* CreateVertexBuffer(int64_t size, void const* pInitialData) override;
+      UniformBuffer* CreateUniformBuffer(int64_t size, void const *pInitialData) override;
       Program* CreateProgram() override;
+      Material* CreateMaterial(flIN Program *pProgram, flIN char const *materialBlock = "Material") override;
+
       Texture2D* CreateTexture2D(DepthFormat depthFormat) override;
       Texture2D* CreateTexture2D(PixelFormat pixelFormat, PixelComponentType type) override;
       Sampler* CreateSampler() override;
@@ -40,13 +41,6 @@ namespace flEngine
     private:
       GLDeviceState* m_pState = nullptr;
 
-      // Active bindings
-      Ref<Program>      m_pProgram = nullptr;
-      Ref<Geometry>     m_pGeometry = nullptr;
-      Ref<RenderTarget> m_pRenderTarget = nullptr;
-
-      int64_t       m_indexBuffer = -1;
-      Util::Type    m_indexType   = Util::Type_Unknown;
 #if flUSING(flPLATFORM_WINDOWS)
       void* m_pGLRC = nullptr;
 #endif

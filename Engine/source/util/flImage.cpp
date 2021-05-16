@@ -130,79 +130,74 @@ namespace flEngine
       Math::Vec2I         m_size;
       ctVector<ColourU32> m_pixels;
     };
+
+    flPIMPL_IMPL(Image);
+    flPIMPL_IMPL_COPY(Image);
+    flPIMPL_IMPL_MOVE(Image);
+
+    Image::Image(flIN const char* path)
+    {
+      Impl()->Construct(path);
+    }
+
+    Image::Image(flIN const void* pFileData, flIN int64_t fileLen)
+    {
+      Impl()->Construct(pFileData, fileLen);
+    }
+
+    Image::Image(flIN const Colour* pPixels, flIN int64_t width, flIN int64_t height)
+    {
+      Impl()->Construct(pPixels, Vec2I(width, height));
+    }
+
+    Image::Image(flIN const ColourU32* pPixels, flIN int64_t width, flIN int64_t height)
+    {
+      Impl()->Construct(pPixels, Vec2I(width, height));
+    }
+
+    Image::Image(flIN int64_t width, flIN int64_t height, flIN ColourU32 initialColour)
+    {
+      Impl()->Construct(Vec2I(width, height), initialColour);
+    }
+
+    void Image::SetData(flIN ColourU32* pPixels, flIN int64_t width, flIN int64_t height)
+    {
+      Impl()->SetData(pPixels, width, height);
+    }
+
+    ColourU32* Image::TakeData(flOUT int64_t* pWidth, flOUT int64_t* pHeight)
+    {
+      return Impl()->TakeData(pWidth, pHeight);
+    }
+
+    void Image::Resize(flIN int64_t width, flIN int64_t height, flIN const SampleType sampleType)
+    {
+      Impl()->Construct(Vec2I(width, height), sampleType);
+    }
+
+    ColourU32 Image::Sample(flIN float u, flIN float v, flIN const SampleType sampleType) const
+    {
+      return Impl()->Sample(Vec2F(u, v), sampleType);
+    }
+
+    ColourU32* Image::GetPixels()
+    {
+      return Impl()->GetPixels();
+    }
+
+    const ColourU32* Image::GetPixels() const
+    {
+      return Impl()->GetPixels();
+    }
+
+    int64_t Image::GetWidth() const
+    {
+      return Impl()->GetSize().x;
+    }
+
+    int64_t Image::GetHeight() const
+    {
+      return Impl()->GetSize().y;
+    }
   }
 }
-
-using namespace flEngine::Util;
-
-flPIMPL_IMPL(Image)
-flPIMPL_IMPL_COPY(Image)
-flPIMPL_IMPL_MOVE(Image)
-
-#define flIMPL flPIMPL(Image)
-
-Image::Image(flIN const char *path)
-{
-  flIMPL->Construct(path);
-}
-
-Image::Image(flIN const void *pFileData, flIN int64_t fileLen)
-{
-  flIMPL->Construct(pFileData, fileLen);
-}
-
-Image::Image(flIN const Colour *pPixels, flIN int64_t width, flIN int64_t height)
-{
-  flIMPL->Construct(pPixels, Vec2I(width, height));
-}
-
-Image::Image(flIN const ColourU32 *pPixels, flIN int64_t width, flIN int64_t height)
-{
-  flIMPL->Construct(pPixels, Vec2I(width, height));
-}
-
-Image::Image(flIN int64_t width, flIN int64_t height, flIN ColourU32 initialColour)
-{
-  flIMPL->Construct(Vec2I(width, height), initialColour);
-}
-
-void Image::SetData(flIN ColourU32 *pPixels, flIN int64_t width, flIN int64_t height)
-{
-  flIMPL->SetData(pPixels, width, height);
-}
-
-ColourU32* Image::TakeData(flOUT int64_t *pWidth, flOUT int64_t *pHeight)
-{
-  return flIMPL->TakeData(pWidth, pHeight);
-}
-
-void Image::Resize(flIN int64_t width, flIN int64_t height, flIN const SampleType sampleType)
-{
-  flIMPL->Construct(Vec2I(width, height), sampleType);
-}
-
-ColourU32 Image::Sample(flIN float u, flIN float v, flIN const SampleType sampleType) const
-{
-  return flIMPL->Sample(Vec2F(u, v), sampleType);
-}
-
-ColourU32* Image::GetPixels()
-{
-  return flIMPL->GetPixels();
-}
-
-const ColourU32* Image::GetPixels() const
-{
-  return flIMPL->GetPixels();
-}
-
-int64_t Image::GetWidth() const
-{
-  return flIMPL->GetSize().x;
-}
-
-int64_t Image::GetHeight() const
-{
-  return flIMPL->GetSize().y;
-}
-

@@ -9,15 +9,18 @@ namespace flEngine
   {
     class GLTexture2D : public Texture2D
     {
-      GLTexture2D();
-      GLTexture2D(PixelFormat pixelFormat, PixelComponentType type);
-      GLTexture2D(DepthFormat depthFormat);
+      GLTexture2D(API *pAPI);
+      GLTexture2D(API *pAPI, PixelFormat pixelFormat, PixelComponentType type);
+      GLTexture2D(API *pAPI, DepthFormat depthFormat);
 
     public:
       ~GLTexture2D();
 
-      static Texture2D* Create(PixelFormat pixelFormat, PixelComponentType type);
-      static Texture2D* Create(DepthFormat depthFormat);
+      static Texture2D* Create(API *pAPI, PixelFormat pixelFormat, PixelComponentType type);
+      static Texture2D* Create(API *pAPI, DepthFormat depthFormat);
+
+      void Bind() override;
+      void Unbind() override;
 
       TextureType GetTextureType() const override;
       bool Set(void *pPixels, const PixelBufferDesc *pBufferDesc, int64_t mipMap = 0) override;

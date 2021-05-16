@@ -3,13 +3,19 @@
 
 #include "../flInterface.h"
 #include "flBufferDetails.h"
+#include "flAPIResource.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
-    class flEXPORT HardwareBuffer : public Interface
+    class API;
+
+    class flEXPORT HardwareBuffer : public APIResource
     {
+    protected:
+      HardwareBuffer(API *pAPI);
+
     public:
       /**
        * @brief Resize the buffer.

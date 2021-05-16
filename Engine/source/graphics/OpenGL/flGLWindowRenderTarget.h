@@ -13,12 +13,12 @@ namespace flEngine
     class GLWindowRenderTarget : public WindowRenderTarget
     {
     protected:
-      GLWindowRenderTarget(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions);
+      GLWindowRenderTarget(API *pAPI, flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions);
 
     public:
       ~GLWindowRenderTarget();
 
-      static WindowRenderTarget* Create(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions);
+      static WindowRenderTarget * Create(API *pAPI, flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions);
 
       Platform::Window* GetWindow() const override;
       bool SetFormat(flIN RenderTargetOptions const * pOptions) override;
@@ -31,7 +31,7 @@ namespace flEngine
       void ClearColour(flIN Util::Colour colour = 0) override;
       void ClearStencil(flIN int32_t colour = 0) override;
       void Swap() override;
-      void Bind() override;
+      void Bind(bool read, bool draw) override;
       void * GetNativeResource() const override;
 
     private:

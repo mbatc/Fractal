@@ -1,18 +1,42 @@
+#include "platform/flEventQueue.h"
 #include "flApplication.h"
 #include "flEngine.h"
 #include "flInit.h"
+#include <functional>
+
+typedef  void (*EventFunc)(flEngine::Platform::Event*, void*);
 
 namespace flEngine
 {
-  Application* Application::m_pApplication = nullptr;
+  // The main application instance
+  static Application* _pApplication = nullptr;
+
+  class Impl_Application;
 
   class flPIMPL_CLASS(Application)
   {
   public:
     flPIMPL_CLASS(Application)::flPIMPL_CLASS(Application)()
     {
+      // Initialize Fractal
       flEngine::Initialize();
+
+      m_pSystemEvents = flNew Platform::EventQueue;
+      m_pSystemEvents->SetEventCallback([](Platform::Event *pEvent, void *pUserData) {
+        ((Impl_Application*)pUserData)->HandleEvent(pEvent);
+      }, this);
     }
+
+    void HandleEvent(Platform::Event* pEvent)
+    {
+      if (m_pApp->OnEvent(pEvent))
+      {
+        // TODO: Forward the event
+      }
+    }
+
+    Platform::EventQueue* m_pSystemEvents = nullptr;
+    Application* m_pApp = nullptr;
   };
 
   flPIMPL_IMPL(Application);
@@ -26,18 +50,23 @@ namespace flEngine
   void Application::OnPostUpdate() {}
   void Application::OnPostRender() {}
   
-  Application& Application::Get() { return *m_pApplication; }
+  bool Application::OnEvent(flIN Platform::Event* pEvent) { ctUnused(pEvent); return true; }
+
+  Application& Application::Get() { return *_pApplication; }
 
   Application::Application()
   {
-    // TODO: Assert only 1 application created
-    m_pApplication = this;
+    _pApplication = this;
+
+    Impl()->m_pApp = this;
   }
 
   int Application::Run()
   {
     while (IsRunning())
     {
+      Inputs::Update(); // Push input events
+
       OnPreUpdate();
       OnPostUpdate();
 

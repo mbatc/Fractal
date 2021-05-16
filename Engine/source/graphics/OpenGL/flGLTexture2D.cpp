@@ -5,22 +5,18 @@ namespace flEngine
 {
   namespace Graphics
   {
-    Texture2D *GLTexture2D::Create(PixelFormat pixelFormat, PixelComponentType type)
+    Texture2D *GLTexture2D::Create(API *pAPI, PixelFormat pixelFormat, PixelComponentType type)
     {
-      return flNew GLTexture2D(pixelFormat, type);
+      return flNew GLTexture2D(pAPI, pixelFormat, type);
     }
 
-    Texture2D *GLTexture2D::Create(DepthFormat depthFormat)
+    Texture2D *GLTexture2D::Create(API *pAPI, DepthFormat depthFormat)
     {
-      return flNew GLTexture2D(depthFormat);
+      return flNew GLTexture2D(pAPI, depthFormat);
     }
 
-    TextureType GLTexture2D::GetTextureType() const
-    {
-      return TextureType_2D;
-    }
-
-    GLTexture2D::GLTexture2D()
+    GLTexture2D::GLTexture2D(API *pAPI)
+      : Texture2D(pAPI)
     {
       glGenTextures(1, &m_texID);
       glBindTexture(GL_TEXTURE_2D, m_texID);
@@ -33,24 +29,39 @@ namespace flEngine
       glBindTexture(GL_TEXTURE_2D, 0);
     }
 
-    GLTexture2D::~GLTexture2D()
-    {
-      glDeleteTextures(1, &m_texID);
-    }
-
-    GLTexture2D::GLTexture2D(PixelFormat pixelFormat, PixelComponentType type)
-      : GLTexture2D()
+    GLTexture2D::GLTexture2D(API *pAPI, PixelFormat pixelFormat, PixelComponentType type)
+      : GLTexture2D(pAPI)
     {
       m_type = PixelBufferType_Colour;
       m_internalPixelFormat = pixelFormat;
       m_internalComponentType = type;
     }
 
-    GLTexture2D::GLTexture2D(DepthFormat depthFormat)
-      : GLTexture2D()
+    GLTexture2D::GLTexture2D(API *pAPI, DepthFormat depthFormat)
+      : GLTexture2D(pAPI)
     {
       m_type = PixelBufferType_Depth;
       m_internalDepthFormat = depthFormat;
+    }
+
+    GLTexture2D::~GLTexture2D()
+    {
+      glDeleteTextures(1, &m_texID);
+    }
+
+    void GLTexture2D::Bind()
+    {
+      glBindTexture(GL_TEXTURE_2D, m_texID);
+    }
+
+    void GLTexture2D::Unbind()
+    {
+      glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    TextureType GLTexture2D::GetTextureType() const
+    {
+      return TextureType_2D;
     }
 
     bool GLTexture2D::Set(void *pPixels, const PixelBufferDesc *pBufferDesc, int64_t mipMap)

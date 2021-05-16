@@ -9,10 +9,10 @@ namespace flEngine
   {
     class GLHardwareBuffer : public HardwareBuffer
     {
-      GLHardwareBuffer(BufferBinding binding, AccessFlags flags);
+      GLHardwareBuffer(API *pAPI, BufferBinding binding, AccessFlags flags);
 
     public:
-      static GLHardwareBuffer* Create(BufferBinding binding, AccessFlags flags);
+      static GLHardwareBuffer* Create(API *pAPI, BufferBinding binding, AccessFlags flags);
 
       bool Resize(int64_t size, bool discardData) override;
       bool Set(void const * pData, int64_t size) override;

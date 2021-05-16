@@ -1,5 +1,7 @@
-#include "graphics/OpenGL/flGLVertexBuffer.h"
 #include "graphics/flHardwareBuffer.h"
+#include "graphics/flAPI.h"
+#include "flGLVertexBuffer.h"
+#include "flGLUtil.h"
 
 using namespace flEngine::Util;
 
@@ -7,38 +9,64 @@ namespace flEngine
 {
   namespace Graphics
   {
-    GLVertexBuffer::GLVertexBuffer(HardwareBuffer *pBuffer, Util::Type primitiveType, int64_t primitiveWidth, int64_t elementCount, void const * pInitialData)
-      : m_pBuffer(pBuffer)
+    GLVertexBuffer::GLVertexBuffer(API * pAPI, int64_t size, void const *pInitialData)
+      : VertexBuffer(pAPI)
     {
-      SetFormat(primitiveType, primitiveWidth);
-      GetBuffer()->Set(pInitialData, elementCount * m_elementSize);
+      m_pBuffer = MakeRef(GetAPI()->CreateBuffer(BufferBinding_Vertices, AccessFlag_Write), false);
+      m_pBuffer->Set(pInitialData, size);
     }
 
-    VertexBuffer* GLVertexBuffer::Create(HardwareBuffer * pBuffer, Util::Type primitiveType, int64_t primitiveWidth, int64_t elementCount, void const * pInitialData)
+    VertexBuffer* GLVertexBuffer::Create(API *pAPI, int64_t size, void const *pInitialData)
     {
-      return flNew GLVertexBuffer(pBuffer, primitiveType, primitiveWidth, elementCount, pInitialData);
+      return flNew GLVertexBuffer(pAPI, size, pInitialData);
     }
 
-    void GLVertexBuffer::SetFormat(Util::Type primitiveType, int64_t primitiveWidth)
+    void GLVertexBuffer::Bind()
     {
-      m_elementSize = Util::SizeOf(primitiveType) * primitiveWidth;
-      m_primitiveType = primitiveType;
-      m_primitiveWidth = primitiveWidth;
+      uint32_t vao = flNativeToGLID(GetBuffer()->GetNativeResource());
+      glBindBuffer(GL_ARRAY_BUFFER, vao);
     }
 
-    int64_t GLVertexBuffer::GetElementCount() const
+    void GLVertexBuffer::Unbind()
     {
-      return m_elementSize == 0 ? GetBuffer()->GetSize() / m_elementSize : 0;
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    Util::Type GLVertexBuffer::GetPrimitiveType() const
+    void GLVertexBuffer::SetLayout(VertexElement const * pElements, int64_t elementCount)
     {
-      return m_primitiveType;
+      m_layout.resize(elementCount);
+      m_stride = 0;
+      for (int64_t i = 0; i < elementCount; ++i)
+      {
+        m_layout[i].name   = pElements[i].name;
+        m_layout[i].type   = pElements[i].type;
+        m_layout[i].width  = pElements[i].width;
+        m_layout[i].offset = m_stride;
+        m_stride += Util::SizeOf(pElements[i].type) * pElements[i].width;
+      }
     }
 
-    int64_t GLVertexBuffer::GetPrimitiveWidth() const
+    int64_t GLVertexBuffer::GetVertexCount() const
     {
-      return m_primitiveWidth;
+      return GetBuffer()->GetSize() / GetVertexStride();
+    }
+
+    int64_t GLVertexBuffer::GetVertexStride() const
+    {
+      return m_stride;
+    }
+
+    int64_t GLVertexBuffer::GetLayoutElementCount() const
+    {
+      return m_layout.size();
+    }
+
+    void GLVertexBuffer::GetLayoutElement(int64_t index, VertexElement * pElement) const
+    {
+      Element const& elem = m_layout[index];
+      pElement->name = elem.name.c_str();
+      pElement->type = elem.type;
+      pElement->width = elem.width;
     }
 
     HardwareBuffer* GLVertexBuffer::GetBuffer()
@@ -46,10 +74,9 @@ namespace flEngine
       return m_pBuffer.Get();
     }
 
-    HardwareBuffer const * GLVertexBuffer::GetBuffer() const
+    HardwareBuffer const* GLVertexBuffer::GetBuffer() const
     {
       return m_pBuffer.Get();
     }
-
   }
 }

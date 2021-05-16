@@ -18,13 +18,16 @@ namespace flEngine
     class HardwareBuffer;
     class VertexBuffer;
     class IndexBuffer;
+    class UniformBuffer;
     class Texture2D;
-    class Geometry;
+    class VertexArray;
     class RenderTarget;
     class WindowRenderTarget;
     class TextureRenderTarget;
     class Program;
     class Sampler;
+    class Material;
+    class APIResource;
 
     struct PixelBufferDesc;
     struct RenderTargetOptions;
@@ -65,28 +68,6 @@ namespace flEngine
       static API * Create(char const *apiIdentifier, Platform::Window *pWindow, RenderTargetOptions *pOptions = nullptr);
 
       /**
-       * @brief Set the active geometry to be rendered.
-       *
-       * @param [in] pGeometry
-       * @param [in] indexBuffer
-       */
-      virtual void SetGeometry(flIN Geometry *pGeometry, flIN int64_t indexBuffer = 0) = 0;
-
-      /**
-       * @brief Set the GPU program to render.
-       *
-       * @param [in] pProgram
-       */
-      virtual void SetProgram(flIN Program *pProgram) = 0;
-
-      /**
-       * @brief Set the destination for the render.
-       * 
-       * @param [in] pRenderTarget
-       */
-      virtual void SetRenderTarget(flIN RenderTarget *pRenderTarget) = 0;
-
-      /**
       * @brief Get a pointer the the GPU's state interface.
       */
       virtual DeviceState* GetState() = 0;
@@ -114,7 +95,7 @@ namespace flEngine
       /**
        * @brief 
        */
-      virtual Geometry* CreateGeometry() = 0;
+      virtual VertexArray* CreateVertexArray() = 0;
 
       /**
        * @brief
@@ -124,7 +105,7 @@ namespace flEngine
       /**
        * @brief 
        */
-      virtual VertexBuffer* CreateVertexBuffer(flIN Util::Type primitiveType, flIN int64_t primitiveWidth, flIN int64_t elementCount = 0, void const* pInitialData = nullptr) = 0;
+      virtual VertexBuffer* CreateVertexBuffer(flIN int64_t size, flIN void const *pInitialData = nullptr) = 0;
 
       /**
        * @brief
@@ -134,7 +115,17 @@ namespace flEngine
       /**
        * @brief
        */
+      virtual UniformBuffer * CreateUniformBuffer(flIN int64_t size, flIN void const *pInitialData = nullptr) = 0;
+
+      /**
+       * @brief
+       */
       virtual Program* CreateProgram() = 0;
+
+      /**
+       * @brief
+       */
+      virtual Material * CreateMaterial(flIN Program *pProgram, flIN char const * materialBlock = "Material") = 0;
 
       /**
        * @brief
@@ -146,7 +137,10 @@ namespace flEngine
        */
       virtual Texture2D* CreateTexture2D(flIN PixelFormat pixelFormat = PixelFormat_RGBA, flIN PixelComponentType type = PixelComponentType_UNorm8) = 0;
 
-      virtual Sampler *CreateSampler() = 0;
+      /**
+       * @brief
+       */
+      virtual Sampler* CreateSampler() = 0;
     };
   }
 }

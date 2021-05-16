@@ -5,9 +5,9 @@ namespace flEngine
 {
   namespace Graphics
   {
-    WindowRenderTarget *GLWindowRenderTarget::Create(flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions)
+    WindowRenderTarget *GLWindowRenderTarget::Create(API *pAPI, flIN Platform::Window *pWindow, flIN const RenderTargetOptions *pOptions)
     {
-      return flNew GLWindowRenderTarget(pWindow, pOptions);
+      return flNew GLWindowRenderTarget(pAPI, pWindow, pOptions);
     }
 
     int64_t GLWindowRenderTarget::GetWidth() const
@@ -48,11 +48,11 @@ namespace flEngine
       glClear(GL_STENCIL_BUFFER_BIT);
     }
 
-    void GLWindowRenderTarget::Bind()
+    void GLWindowRenderTarget::Bind(bool read, bool draw)
     {
       MakeCurrent();
-      glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-      glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+      if (read) glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+      if (draw) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     }
   }
 }

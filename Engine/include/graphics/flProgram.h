@@ -1,22 +1,37 @@
 #ifndef fl_Graphics_Program_h__
 #define fl_Graphics_Program_h__
 
-#include "../flInterface.h"
 #include "../util/flType.h"
+#include "../math/flMath.h"
 #include "flProgramDetails.h"
+#include "flAPIResource.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
+    enum TextureType;
     class Sampler;
     class Texture;
-    class Geometry;
+    class VertexArray;
     class HardwareBuffer;
 
-    class Program : public Interface
+    class flEXPORT Program : public APIResource
     {
+    protected:
+      Program(API *pAPI);
+
     public:
+      /**
+       * @brief Bind the program to the graphics API context.
+       */
+      virtual void Bind() = 0;
+
+      /**
+       * @brief Unbind the program from the graphics API context.
+       */
+      virtual void Unbind() = 0;
+
       /**
        * @brief Set a shader stage from source.
        */
@@ -38,29 +53,39 @@ namespace flEngine
       virtual bool Reload() = 0;
 
       /**
-       * @brief Upload the specified inputs to the GPU
+       * @brief Set the value of an int input.
        */
-      virtual void ApplyInputs() = 0;
+      virtual void SetInt(const char * name, flIN int value) = 0;
 
       /**
-       * @brief Set the value of a uniform in the shader.
+       * @brief Set the value of a float input.
        */
-      virtual void SetUniform(const char * name, void const * pValue, Util::Type valueType, int64_t valueCount) = 0;
+      virtual void SetFloat(const char * name, flIN float value) = 0;
 
       /**
-       * @brief Set uniform data using a Uniform Buffer.
+       * @brief Set the value of a 2 component float input.
        */
-      virtual void SetUniformBuffer(flIN const char * name, flIN HardwareBuffer * pBuffer) = 0;
+      virtual void SetFloat2(const char * name, flIN float const * pValues) = 0;
 
       /**
-       * @brief Set a texture in the shader
+       * @brief Set the value of a 3 component float input.
        */
-      virtual void SetTexture(flIN const char * name, flIN Texture * pTexture) = 0;
+      virtual void SetFloat3(const char * name, flIN float const * pValues) = 0;
 
       /**
-       * @brief Set a texture in the shader.
+       * @brief Set the value of a 4 component float input.
        */
-      virtual void SetSampler(flIN const char * name, flIN Sampler * pTexture) = 0;
+      virtual void SetFloat4(const char * name, flIN float const * pValues) = 0;
+
+      /**
+       * @brief Set the value of a 4x4 float matrix input.
+       */
+      virtual void SetMat4(const char * name, flIN float const * pValues) = 0;
+
+      /**
+       * @brief Get the value of an int input in the shader.
+       */
+      virtual int GetInt(const char * name) = 0;
 
       /**
        * @brief Get the number of vertex attributes in the shader
@@ -78,11 +103,19 @@ namespace flEngine
       virtual int64_t GetUniformBufferCount() const = 0;
 
       /**
-       *@brief Get the number of samplers in the shader.
-       * 
-       * NOTE: In this case, Sampler is synonymous with Texture
+       * @brief Get the index of a uniform buffer
        */
-      virtual int64_t GetTextureCount() const = 0;
+      virtual int64_t FindAttribute(char const *name) const = 0;
+
+      /**
+       * @brief Get the index of a uniform buffer
+       */
+      virtual int64_t FindUniform(char const *name) const = 0;
+
+      /**
+       * @brief Get the index of a uniform buffer
+       */
+      virtual int64_t FindUniformBlock(char const *name) const = 0;
 
       /**
        * @brief Get the name of a vertex attribute.
@@ -100,14 +133,50 @@ namespace flEngine
       virtual char const * GetUniformBufferName(flIN int64_t index) const = 0;
 
       /**
-       * @breif Get the name of a sampler in the shader.
+       * @brief Get the data type of a uniform.
        */
-      virtual char const * GetTextureName(flIN int64_t index) const = 0;
+      virtual bool GetUniformDataType(flIN int64_t index, flOUT Util::Type *pType, flOUT int64_t *pWidth) const = 0;
+
+      /**
+       * @brief Get the sampler type of a uniform.
+       */
+      virtual bool GetUniformSamplerType(flIN int64_t index, flOUT TextureType* pType) const = 0;
+
+      /**
+       * @brief Get the size of a uniform block in bytes
+       */
+      virtual int64_t GetUniformBlockSize(flIN int64_t blockIndex) const = 0;
+
+      /**
+       * @brief Get the index of the uniform block that contains the uniform at 'index'
+       */
+      virtual int64_t GetUniformBlockIndex(flIN int64_t index) const = 0;
+
+      /**
+       * @brief Get a uniforms byte offset into the uniform block in belongs to.
+       */
+      virtual int64_t GetUniformBlockOffset(flIN int64_t index) const = 0;
 
       /**
        * @brief Get the native resource for the underlying graphics API.
        */
       virtual void * GetNativeResource() = 0;
+
+      inline void SetFloat2(char const * name, Math::Vec2F const & value) {
+        SetFloat2(name, value.begin());
+      }
+
+      inline void SetFloat3(char const * name, Math::Vec3F const & value) {
+        SetFloat3(name, value.begin());
+      }
+
+      inline void SetFloat4(char const * name, Math::Vec4F const & value) {
+        SetFloat4(name, value.begin());
+      }
+
+      inline void SetMat4(char const * name, Math::Mat4F const & value) {
+        SetMat4(name, value.m);
+      }
     };
   }
 }
