@@ -1,21 +1,23 @@
 #include "graphics/OpenGL/flGLIndexBuffer.h"
 #include "graphics/flHardwareBuffer.h"
+#include "graphics/flAPI.h"
 #include "flGLUtil.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
-    GLIndexBuffer::GLIndexBuffer(HardwareBuffer* pBuffer, int64_t indexCount, uint32_t const* pValues)
-      : m_pBuffer(pBuffer)
+    GLIndexBuffer::GLIndexBuffer(API *pAPI, int64_t indexCount, uint32_t const* pValues)
+      : IndexBuffer(pAPI)
     {
+      m_pBuffer = MakeRef(GetAPI()->CreateBuffer(BufferBinding_Indices, AccessFlag_Write), false);
       if (indexCount > 0)
         m_pBuffer->Set(pValues, indexCount * GetElementSize());
     }
 
-    IndexBuffer* GLIndexBuffer::Create(HardwareBuffer* pBuffer, int64_t indexCount, uint32_t const * pData)
+    IndexBuffer* GLIndexBuffer::Create(API *pAPI, int64_t indexCount, uint32_t const * pData)
     {
-      return flNew GLIndexBuffer(pBuffer, indexCount, pData);
+      return flNew GLIndexBuffer(pAPI, indexCount, pData);
     }
 
     void GLIndexBuffer::Bind()

@@ -56,12 +56,12 @@ namespace flEngine
         };
       };
 
-      GLProgram();
+      GLProgram(API *pAPI);
 
     public:
       ~GLProgram();
 
-      static GLProgram* Create();
+      static GLProgram* Create(API * pAPI);
 
       void Bind() override;
       void Unbind() override;
@@ -84,21 +84,33 @@ namespace flEngine
       int64_t GetUniformCount() const override;
       int64_t GetUniformBufferCount() const override;
 
+      int64_t FindAttribute(char const *name) const override;
+      int64_t FindUniform(char const *name) const override;
+      int64_t FindUniformBlock(char const *name) const override;
+
       char const* GetAttributeName(int64_t index) const override;
       char const* GetUniformName(int64_t index) const override;
       char const* GetUniformBufferName(int64_t index) const override;
 
       bool GetUniformDataType(int64_t index, Util::Type* pType, int64_t* pWidth) const override;
       bool GetUniformSamplerType(int64_t index, TextureType* pType) const override;
+      int64_t GetUniformBlockSize(int64_t blockIndex) const override;
       int64_t GetUniformBlockIndex(int64_t index) const override;
       int64_t GetUniformBlockOffset(int64_t index) const override;
 
       void * GetNativeResource() override;
 
     private:
-      Resource * GetResource(ResourceType const &type, int64_t index);
-      Resource * GetResource(ResourceType const &type, char const * name);
-      Resource * AddResource(ResourceType const &type, char const * name);
+      int64_t Find(ResourceType const & type, char const * name) const;
+      
+      Resource * GetResource(ResourceType const & type, int64_t index);
+      Resource const * GetResource(ResourceType const & type, int64_t index) const;
+
+      Resource * GetResource(ResourceType const &type, char const *name);
+      Resource const * GetResource(ResourceType const &type, char const *name) const;
+
+      Resource * AddResource(ResourceType const & type, char const * name);
+
       int32_t GetLocation(ResourceType const& type, char const* name) const;
       int32_t GetUniformLocation(char const* name) const;
 

@@ -3,21 +3,29 @@
 
 #include "flInterface.h"
 #include "math/flMath.h"
+#include "flAPIResource.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
+    class Texture;
     class Program;
+    class Sampler;
 
-    class flEXPORT Material : public Interface
+    class flEXPORT Material : public APIResource
     {
+    protected:
+      Material(API *pAPI);
+
     public:
+      virtual void Apply() = 0;
       virtual void Bind() = 0;
 
       virtual bool SetValue(flIN char const* name, flIN float value) = 0;
       virtual bool SetValue(flIN char const* name, flIN float const * pValues, flIN int64_t componentCount) = 0;
-      virtual bool SetTexture(flIN char const * name) = 0;
+      virtual bool SetTexture(flIN char const * name, flIN Texture *pTexture) = 0;
+      virtual bool SetSampler(char const *name, Sampler *pSampler) = 0;
 
       inline bool SetValue(char const* name, Math::Vec2F const& value) {
         return SetValue(name, value.begin(), 2);

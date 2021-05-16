@@ -3,15 +3,20 @@
 
 #include "util/flType.h"
 #include "flInterface.h"
+#include "flAPIResource.h"
+#include <initializer_list>
 
 namespace flEngine
 {
   namespace Graphics
   {
     class HardwareBuffer;
+    class API;
 
     struct flEXPORT VertexElement
     {
+      VertexElement();
+
       VertexElement(char const * name, Util::Type type, int64_t width);
 
       char const * name;
@@ -20,8 +25,11 @@ namespace flEngine
       int64_t      offset;
     };
 
-    class flEXPORT VertexBuffer : public Interface
+    class flEXPORT VertexBuffer : public APIResource
     {
+    protected:
+      VertexBuffer(API *pAPI);
+
     public:
       /**
        * @brief Bind the VertexBuffer to the the graphics API context

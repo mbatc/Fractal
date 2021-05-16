@@ -1,6 +1,7 @@
 #include "graphics/flAPI.h"
 #include "flRef.h"
 #include "ctString.h"
+#include "graphics/flAPIResource.h"
 
 namespace flEngine
 {
@@ -21,7 +22,7 @@ namespace flEngine
       if (FindFactory(pFactory->GetIdentifier()))
         return false;
 
-      g_apis.push_back(pFactory);
+      g_apis.push_back(MakeRef(pFactory, true));
       return true;
     }
 

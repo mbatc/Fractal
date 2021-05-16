@@ -1,21 +1,26 @@
 #ifndef fl_Graphics_Program_h__
 #define fl_Graphics_Program_h__
 
-#include "../flInterface.h"
 #include "../util/flType.h"
+#include "../math/flMath.h"
 #include "flProgramDetails.h"
+#include "flAPIResource.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
+    enum TextureType;
     class Sampler;
     class Texture;
     class VertexArray;
     class HardwareBuffer;
 
-    class Program : public Interface
+    class flEXPORT Program : public APIResource
     {
+    protected:
+      Program(API *pAPI);
+
     public:
       /**
        * @brief Bind the program to the graphics API context.
@@ -98,6 +103,21 @@ namespace flEngine
       virtual int64_t GetUniformBufferCount() const = 0;
 
       /**
+       * @brief Get the index of a uniform buffer
+       */
+      virtual int64_t FindAttribute(char const *name) const = 0;
+
+      /**
+       * @brief Get the index of a uniform buffer
+       */
+      virtual int64_t FindUniform(char const *name) const = 0;
+
+      /**
+       * @brief Get the index of a uniform buffer
+       */
+      virtual int64_t FindUniformBlock(char const *name) const = 0;
+
+      /**
        * @brief Get the name of a vertex attribute.
        */
       virtual char const * GetAttributeName(flIN int64_t index) const = 0;
@@ -123,14 +143,19 @@ namespace flEngine
       virtual bool GetUniformSamplerType(flIN int64_t index, flOUT TextureType* pType) const = 0;
 
       /**
+       * @brief Get the size of a uniform block in bytes
+       */
+      virtual int64_t GetUniformBlockSize(flIN int64_t blockIndex) const = 0;
+
+      /**
        * @brief Get the index of the uniform block that contains the uniform at 'index'
        */
-      virtual int64_t GetUniformBlockIndex(int64_t index) const = 0;
+      virtual int64_t GetUniformBlockIndex(flIN int64_t index) const = 0;
 
       /**
        * @brief Get a uniforms byte offset into the uniform block in belongs to.
        */
-      virtual int64_t GetUniformBlockOffset(int64_t index) const = 0;
+      virtual int64_t GetUniformBlockOffset(flIN int64_t index) const = 0;
 
       /**
        * @brief Get the native resource for the underlying graphics API.

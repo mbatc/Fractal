@@ -9,7 +9,7 @@ namespace flEngine
   {
     enum Type
     {
-      Type_Unknown,
+      Type_Unknown = -1,
       Type_Int8,
       Type_Int16,
       Type_Int32,
@@ -23,18 +23,20 @@ namespace flEngine
       Type_Float64,
     };
 
-    inline constexpr Type TypeOf(int8_t)   { return Type_Int8;    }
-    inline constexpr Type TypeOf(int16_t)  { return Type_Int16;   }
-    inline constexpr Type TypeOf(int32_t)  { return Type_Int32;   }
-    inline constexpr Type TypeOf(int64_t)  { return Type_Int64;   }
-    inline constexpr Type TypeOf(uint8_t)  { return Type_UInt8;   }
-    inline constexpr Type TypeOf(uint16_t) { return Type_UInt16;  }
-    inline constexpr Type TypeOf(uint32_t) { return Type_UInt32;  }
-    inline constexpr Type TypeOf(uint64_t) { return Type_UInt64;  }
-    inline constexpr Type TypeOf(bool)     { return Type_Bool;    }
-    inline constexpr Type TypeOf(float)    { return Type_Float32; }
-    inline constexpr Type TypeOf(double)   { return Type_Float64; }
-    inline constexpr Type TypeOf(...)      { return Type_Unknown; }
+    template<typename T> inline constexpr Type TypeOf() { return Type_Unknown; }
+    template<> inline constexpr Type TypeOf<int8_t>()   { return Type_Int8; }
+    template<> inline constexpr Type TypeOf<int16_t>()  { return Type_Int16; }
+    template<> inline constexpr Type TypeOf<int32_t>()  { return Type_Int32; }
+    template<> inline constexpr Type TypeOf<int64_t>()  { return Type_Int64; }
+    template<> inline constexpr Type TypeOf<uint8_t>()  { return Type_UInt8; }
+    template<> inline constexpr Type TypeOf<uint16_t>() { return Type_UInt16; }
+    template<> inline constexpr Type TypeOf<uint32_t>() { return Type_UInt32; }
+    template<> inline constexpr Type TypeOf<uint64_t>() { return Type_UInt64; }
+    template<> inline constexpr Type TypeOf<bool>()     { return Type_Bool; }
+    template<> inline constexpr Type TypeOf<float>()    { return Type_Float32; }
+    template<> inline constexpr Type TypeOf<double>()   { return Type_Float64; }
+
+    template<typename T> inline constexpr Type TypeOf(T const &) { return TypeOf<T>(); }
 
     flEXPORT int64_t SizeOf(flIN Type type);
 

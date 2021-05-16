@@ -1,6 +1,7 @@
 #ifndef fl_Graphics_VertexArray_h__
 #define fl_Graphics_VertexArray_h__
 
+#include "flAPIResource.h"
 #include "../flInterface.h"
 
 namespace flEngine
@@ -10,8 +11,11 @@ namespace flEngine
     class VertexBuffer;
     class IndexBuffer;
 
-    class flEXPORT VertexArray : public Interface
+    class flEXPORT VertexArray : public APIResource
     {
+    protected:
+      VertexArray(API *pAPI);
+
     public:
       virtual void Bind() = 0;
 

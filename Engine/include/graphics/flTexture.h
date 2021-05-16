@@ -4,6 +4,7 @@
 #include "../flInterface.h"
 #include "../math/flMath.h"
 #include "flPixelFormat.h"
+#include "flAPIResource.h"
 
 namespace flEngine
 {
@@ -58,8 +59,11 @@ namespace flEngine
       TextureType_Count,
     };
 
-    class flEXPORT Texture : public Interface
+    class flEXPORT Texture : public APIResource
     {
+    protected:
+      Texture(API *pAPI);
+
     public:
       /**
        * @brief Bind the texture to the graphics API context

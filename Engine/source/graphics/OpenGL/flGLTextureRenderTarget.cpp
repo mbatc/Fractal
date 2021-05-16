@@ -6,7 +6,8 @@ namespace flEngine
 {
   namespace Graphics
   {
-    GLTextureRenderTarget::GLTextureRenderTarget()
+    GLTextureRenderTarget::GLTextureRenderTarget(API *pAPI)
+      : TextureRenderTarget(pAPI)
     {
       glGenFramebuffers(1, &m_fbo);
     }
@@ -16,10 +17,10 @@ namespace flEngine
       glDeleteFramebuffers(1, &m_fbo);
     }
 
-    TextureRenderTarget* GLTextureRenderTarget::Create()
+    TextureRenderTarget* GLTextureRenderTarget::Create(API *pAPI)
     {
       ctFail("GLTextureRenderTarget is Not Implemented");
-      return flNew GLTextureRenderTarget;
+      return flNew GLTextureRenderTarget(pAPI);
     }
 
     bool GLTextureRenderTarget::SetFormat(flIN RenderTargetOptions const* pOptions)

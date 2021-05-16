@@ -11,6 +11,9 @@ namespace flEngine
 
     class flEXPORT TextureRenderTarget : public RenderTarget
     {
+    protected:
+      TextureRenderTarget(API *pAPI);
+
     public:
     };
   }

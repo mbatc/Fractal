@@ -14,6 +14,9 @@ namespace flEngine
 
     class flEXPORT WindowRenderTarget : public RenderTarget
     {
+    protected:
+      WindowRenderTarget(API *pAPI);
+
     public:
       /**
       * @brief Get the window associated with this render target.

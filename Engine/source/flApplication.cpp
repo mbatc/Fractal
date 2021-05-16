@@ -56,6 +56,8 @@ namespace flEngine
 
   Application::Application()
   {
+    _pApplication = this;
+
     Impl()->m_pApp = this;
   }
 
@@ -63,6 +65,8 @@ namespace flEngine
   {
     while (IsRunning())
     {
+      Inputs::Update(); // Push input events
+
       OnPreUpdate();
       OnPostUpdate();
 

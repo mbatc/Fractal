@@ -2,7 +2,7 @@
 #define fl_Graphics_IndexBuffer_h__
 
 #include "../util/flType.h"
-#include "flInterface.h"
+#include "flAPIResource.h"
 
 namespace flEngine
 {
@@ -10,8 +10,11 @@ namespace flEngine
   {
     class HardwareBuffer;
 
-    class flEXPORT IndexBuffer : public Interface
+    class flEXPORT IndexBuffer : public APIResource
     {
+    protected:
+      IndexBuffer(API *pAPI);
+
     public:
       /**
        * @brief Bind the VertexBuffer to the the graphics API context

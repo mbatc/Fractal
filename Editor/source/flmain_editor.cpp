@@ -22,6 +22,7 @@ public:
   Ref<Graphics::VertexArray> pGeometry;
   Ref<Graphics::WindowRenderTarget> pFirstTarget;
   Ref<Graphics::WindowRenderTarget> pSecondTarget;
+  Ref<Graphics::Material> pMaterial;
 
   virtual bool OnStartup() override
   {
@@ -38,12 +39,18 @@ public:
     pProgram = MakeRef(pGraphics->CreateProgram(), false);
     pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag",  Graphics::ProgramStage_Fragment);
     pProgram->SetShaderFromFile("../../Engine/assets/shader-library/transform.vert", Graphics::ProgramStage_Vertex);
+    pProgram->Compile();
 
     pTexture = MakeRef(pGraphics->CreateTexture2D(Graphics::PixelFormat_RGBA, Graphics::PixelComponentType_UNorm8), false);
     // Image image("C:/Users/mickb/Pictures/test.jpg");
     Image image("../../Engine/assets/texture-library/albedo/test0.jpg");
     pTexture->SetFromImage(&image);
     pTexture->GenerateMipMaps();
+
+    pMaterial = MakeRef(pGraphics->CreateMaterial(pProgram), false);
+    pMaterial->SetTexture("texture0", pTexture);
+    pMaterial->SetValue("albedo0", Vec4F(1, 0, 0, 1));
+    pMaterial->Apply();
 
     pSampler = MakeRef(pGraphics->CreateSampler(), false);
     pSampler->SetWrapMode(Graphics::WrapMode_Mirror);
@@ -54,9 +61,9 @@ public:
     // Construct a simple cube
     {
       // Create vertex and index buffers
-      Ref<Graphics::VertexBuffer> pPositionBuffer = MakeRef(pGraphics->CreateVertexBuffer(Type_Float32, 3, 8, nullptr), false);
-      Ref<Graphics::VertexBuffer> pColourBuffer   = MakeRef(pGraphics->CreateVertexBuffer(Type_Float32, 4, 8, nullptr), false);
-      Ref<Graphics::VertexBuffer> pTexcoordBuffer = MakeRef(pGraphics->CreateVertexBuffer(Type_Float32, 2, 8, nullptr), false);
+      Ref<Graphics::VertexBuffer> pPositionBuffer = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 3 * 8, nullptr), false);
+      Ref<Graphics::VertexBuffer> pColourBuffer   = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 4 * 8, nullptr), false);
+      Ref<Graphics::VertexBuffer> pTexcoordBuffer = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 2 * 8, nullptr), false);
       Ref<Graphics::IndexBuffer>  pIndexBuffer    = MakeRef(pGraphics->CreateIndexBuffer(36), false);
 
       // Map buffers to client memory
@@ -65,8 +72,8 @@ public:
       Math::Vec2F* pTexcoords = (Math::Vec2F*)pTexcoordBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
       uint32_t*    pIndices   = (uint32_t*)pIndexBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
       pPositionBuffer->SetLayout({ { "position0", Util::Type_Float32, 3 } });
-      pPositionBuffer->SetLayout({ { "colour0",   Util::Type_Float32, 4 } });
-      pPositionBuffer->SetLayout({ { "texcoord0", Util::Type_Float32, 2 } });
+      pColourBuffer->SetLayout  ({ { "colour0",   Util::Type_Float32, 4 } });
+      pTexcoordBuffer->SetLayout({ { "texcoord0", Util::Type_Float32, 2 } });
 
       // Set vertex data
       pPositions[0] = { -1, -1, -1 };  pColours[0] = { 1, 0, 0, 1 }; pTexcoords[0] = { 0, 0 };
@@ -98,11 +105,6 @@ public:
       pGeometry->AddVertexBuffer(pColourBuffer);
       pGeometry->AddVertexBuffer(pTexcoordBuffer);
       pGeometry->SetIndexBuffer(pIndexBuffer);
-
-      // Release buffers
-      pPositionBuffer->DecRef();
-      pColourBuffer->DecRef();
-      pIndexBuffer->DecRef();
     }
 
     return true;
@@ -110,12 +112,12 @@ public:
 
   virtual void OnPreUpdate()
   {
-    Inputs::Update(); // Push input events
   }
 
   virtual void OnPostUpdate()
   {
-
+    pMaterial->SetValue("albedo0", Vec4F(abs(ctSin(clock() / 1000.0)), abs(ctCos(clock() / 1000.0)), 0, 1));
+    pMaterial->Apply();
   }
 
   virtual void OnPreRender()
@@ -134,10 +136,11 @@ public:
     Mat4F mvp        = projection * modelMat;
 
     pFirstTarget->Bind();
+    pMaterial->Bind();
     pState->SetViewport(0, 0, pFirstTarget->GetWidth(), pFirstTarget->GetHeight());
 
     pProgram->SetMat4("mvp", mvp);
-    pGraphics->Render(Graphics::DrawMode_Triangles, true);
+    pGraphics->Render(Graphics::DrawMode_Triangles, true, 0, pGeometry->GetIndexCount());
 
     // Draw to the second window
     modelMat   = Mat4F::Translation({ 0, 0, -4 }) * Mat4F::RotationY(-clock() / 1000.0f);
@@ -148,7 +151,7 @@ public:
     pState->SetViewport(0, 0, pSecondTarget->GetWidth(), pSecondTarget->GetHeight());
 
     pProgram->SetMat4("mvp", mvp);
-    pGraphics->Render(Graphics::DrawMode_Triangles, true);
+    pGraphics->Render(Graphics::DrawMode_Triangles, true, 0, pGeometry->GetIndexCount());
   }
 
   virtual void OnPostRender()
@@ -168,7 +171,7 @@ public:
 
   virtual bool IsRunning()
   {
-    return !pWindow->ReceivedEvent(E_Wnd_Close);
+    return !pWindow->ReceivedEvent(E_Wnd_Close) && !pWindow2->ReceivedEvent(E_Wnd_Close);
   }
 };
 

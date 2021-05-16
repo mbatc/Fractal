@@ -18,6 +18,7 @@ namespace flEngine
     class HardwareBuffer;
     class VertexBuffer;
     class IndexBuffer;
+    class UniformBuffer;
     class Texture2D;
     class VertexArray;
     class RenderTarget;
@@ -25,6 +26,8 @@ namespace flEngine
     class TextureRenderTarget;
     class Program;
     class Sampler;
+    class Material;
+    class APIResource;
 
     struct PixelBufferDesc;
     struct RenderTargetOptions;
@@ -102,7 +105,7 @@ namespace flEngine
       /**
        * @brief 
        */
-      virtual VertexBuffer* CreateVertexBuffer(flIN Util::Type primitiveType, flIN int64_t primitiveWidth, flIN int64_t elementCount = 0, void const* pInitialData = nullptr) = 0;
+      virtual VertexBuffer* CreateVertexBuffer(flIN int64_t size, flIN void const *pInitialData = nullptr) = 0;
 
       /**
        * @brief
@@ -112,7 +115,17 @@ namespace flEngine
       /**
        * @brief
        */
+      virtual UniformBuffer * CreateUniformBuffer(flIN int64_t size, flIN void const *pInitialData = nullptr) = 0;
+
+      /**
+       * @brief
+       */
       virtual Program* CreateProgram() = 0;
+
+      /**
+       * @brief
+       */
+      virtual Material * CreateMaterial(flIN Program *pProgram, flIN char const * materialBlock = "Material") = 0;
 
       /**
        * @brief

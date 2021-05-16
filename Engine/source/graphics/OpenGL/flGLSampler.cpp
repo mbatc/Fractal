@@ -6,7 +6,8 @@ namespace flEngine
   namespace Graphics
   {
 
-    GLSampler::GLSampler()
+    GLSampler::GLSampler(API *pAPI)
+      : Sampler(pAPI)
     {
       glCreateSamplers(1, &m_samplerID);
     }
@@ -16,9 +17,14 @@ namespace flEngine
       glDeleteSamplers(1, &m_samplerID);
     }
 
-    Sampler *GLSampler::Create()
+    Sampler *GLSampler::Create(API *pAPI)
     {
-      return flNew GLSampler;
+      return flNew GLSampler(pAPI);
+    }
+
+    void GLSampler::Bind(flIN int64_t textureUnit)
+    {
+      glBindSampler((GLuint)textureUnit, m_samplerID);
     }
 
     void GLSampler::SetWrapMode(WrapMode wrap)

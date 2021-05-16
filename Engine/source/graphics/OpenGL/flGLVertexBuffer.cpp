@@ -1,5 +1,6 @@
-#include "graphics/OpenGL/flGLVertexBuffer.h"
 #include "graphics/flHardwareBuffer.h"
+#include "graphics/flAPI.h"
+#include "flGLVertexBuffer.h"
 #include "flGLUtil.h"
 
 using namespace flEngine::Util;
@@ -8,14 +9,16 @@ namespace flEngine
 {
   namespace Graphics
   {
-
-    GLVertexBuffer::GLVertexBuffer(HardwareBuffer * pBuffer, Util::Type primitiveType, int64_t primitiveWidth, int64_t elementCount, void const * pInitialData)
-      : m_pBuffer(pBuffer)
-    {}
-
-    VertexBuffer* GLVertexBuffer::Create(HardwareBuffer* pBuffer, Util::Type primitiveType /*= Util::Type_Unknown*/, int64_t primitiveWidth /*= 0*/, int64_t elementCount /*= 0*/, void const* pInitialData /*= nullptr*/)
+    GLVertexBuffer::GLVertexBuffer(API * pAPI, int64_t size, void const *pInitialData)
+      : VertexBuffer(pAPI)
     {
-      return flNew GLVertexBuffer(pBuffer, primitiveType, primitiveWidth, elementCount, pInitialData);
+      m_pBuffer = MakeRef(GetAPI()->CreateBuffer(BufferBinding_Vertices, AccessFlag_Write), false);
+      m_pBuffer->Set(pInitialData, size);
+    }
+
+    VertexBuffer* GLVertexBuffer::Create(API *pAPI, int64_t size, void const *pInitialData)
+    {
+      return flNew GLVertexBuffer(pAPI, size, pInitialData);
     }
 
     void GLVertexBuffer::Bind()

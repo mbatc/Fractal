@@ -131,6 +131,10 @@ namespace flEngine
       ctVector<ColourU32> m_pixels;
     };
 
+    flPIMPL_IMPL(Image);
+    flPIMPL_IMPL_COPY(Image);
+    flPIMPL_IMPL_MOVE(Image);
+
     Image::Image(flIN const char* path)
     {
       Impl()->Construct(path);

@@ -12,6 +12,8 @@ namespace flEngine
   public:
     Ref() = default;
 
+    Ref(std::nullptr_t const &ptr) : m_pInterface(ptr) {}
+
     explicit Ref(T* pInterface, bool incRef) {
       Set(pInterface, incRef);
     }
@@ -46,11 +48,11 @@ namespace flEngine
       return Get();
     }
 
-    T const& operator*() const {
+    T const & operator*() const {
       return *Get();
     }
 
-    T const* operator->() const {
+    T const * operator->() const {
       return Get();
     }
 
@@ -75,6 +77,7 @@ namespace flEngine
     operator T* () {
       return Get();
     }
+
     operator T const* () const {
       return Get();
     }

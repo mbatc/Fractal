@@ -3,14 +3,14 @@
 #include "graphics/flHardwareBuffer.h"
 #include "flGLVertexArray.h"
 #include "flGLUtil.h"
-#include "flGLAttributeCache.h"
 #include "ctLimits.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
-    GLVertexArray::GLVertexArray()
+    GLVertexArray::GLVertexArray(API * pAPI)
+      : VertexArray(pAPI)
     {
       glGenVertexArrays(1, &m_vao);
     }
@@ -20,9 +20,9 @@ namespace flEngine
       glDeleteVertexArrays(1, &m_vao);
     }
 
-    GLVertexArray *GLVertexArray::Create()
+    GLVertexArray *GLVertexArray::Create(API *pAPI)
     {
-      return flNew GLVertexArray;
+      return flNew GLVertexArray(pAPI);
     }
 
     void GLVertexArray::Bind()
@@ -34,32 +34,30 @@ namespace flEngine
         for (int64_t i = 0; i < m_numVBOsBounds; ++i)
           glDisableVertexAttribArray((GLuint)i);
 
-        for (int64_t attrib = 0; attrib < GetVertexBufferCount(); ++attrib)
+        int32_t location = 0;
+        for (int64_t bufferIndex = 0; bufferIndex < GetVertexBufferCount(); ++bufferIndex)
         {
-          int32_t location = GLAttributeCache::GetLocation(m_vertexBufferNames[attrib].c_str());
-          if (location < 0)
-            continue; // Attribute is not used by any shaders
+          VertexElement element;
+          VertexBuffer* pVertexBuffer = GetVertexBuffer(bufferIndex);
+          for (int64_t i = 0; i < pVertexBuffer->GetLayoutElementCount(); ++i)
+          {
+            pVertexBuffer->GetLayoutElement(i, &element);
 
-          VertexBuffer* pVertexBuffer = GetVertexBuffer(attrib);
+            GLenum glDataType = GLUtil::ToDataType(element.type);
+            GLsizei width = (GLsizei)element.width;
 
-          GLenum glDataType = GLUtil::ToDataType(pVertexBuffer->GetPrimitiveType());
-          GLsizei width = (GLsizei)pVertexBuffer->GetPrimitiveWidth();
+            glEnableVertexAttribArray(location);
+            pVertexBuffer->Bind();
+            glVertexAttribPointer(location, width, glDataType, false, (GLsizei)pVertexBuffer->GetVertexStride(), (void const *)element.offset);
 
-          glEnableVertexAttribArray(location);
-          glBindBuffer(GL_ARRAY_BUFFER, flNativeToGLID(pVertexBuffer->GetBuffer()->GetNativeResource()));
-          glVertexAttribPointer(location, width, glDataType, false, 0, nullptr);
+            ++location;
+          }
         }
 
         if (m_indexBuffer)
           m_indexBuffer->Bind();
-        if (pIndexBuffer)
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, flNativeToGLID(pIndexBuffer->GetBuffer()->GetNativeResource()));
         else
           glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-        glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
       }
     }
 

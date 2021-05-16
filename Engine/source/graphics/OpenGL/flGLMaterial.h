@@ -19,19 +19,25 @@ namespace flEngine
     class GLMaterial : public Material
     {
     public:
-      static Material* Create(Program * pProgram);
+      GLMaterial(API *pAPI, Program *pProgram, char const *blockName);
 
+      static Material* Create(API *pAPI, Program * pProgram, char const * blockName = "Material");
+
+      virtual void Apply() override;
       virtual void Bind() override;
       virtual bool SetValue(char const* name, float value) override;
       virtual bool SetValue(char const* name, float const* pValues, int64_t componentCount) override;
-      virtual bool SetTexture(char const* name) override;
+      virtual bool SetTexture(char const* name, Texture * pTexture) override;
+      virtual bool SetSampler(char const* name, Sampler * pTexture) override;
 
     private:
+      bool SetValue(char const * name, void const * pValue, Util::Type const & type, int64_t const & width);
+
       struct ValueData
       {
         Util::Type type;
         int64_t    width;
-        void*      pOffset;
+        int64_t    offset;
       };
 
       struct TextureData
@@ -39,10 +45,13 @@ namespace flEngine
         uint32_t     textureUnit;
         TextureType  textureType;
         Ref<Texture> texture;
+        Ref<Sampler> sampler;
       };
 
       ctHashMap<ctString, ValueData>   m_values;
       ctHashMap<ctString, TextureData> m_textures;
+
+      int64_t m_blockIndex = -1;
 
       ctVector<uint8_t> m_shaderData;
       ctVector<uint8_t> m_activeShaderData;

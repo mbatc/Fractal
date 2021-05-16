@@ -4,6 +4,7 @@
 #include "../flInterface.h"
 #include "../util/flColour.h"
 #include "flPixelFormat.h"
+#include "flAPIResource.h"
 
 namespace flEngine
 {
@@ -27,8 +28,11 @@ namespace flEngine
       bool stereoBuffer = false;
     };
 
-    class flEXPORT RenderTarget : public Interface
+    class flEXPORT RenderTarget : public APIResource
     {
+    protected:
+      RenderTarget(API *pAPI);
+
     public:
       /**
        * @brief Set the format of the RenderTarget.

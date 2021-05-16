@@ -14,11 +14,11 @@ namespace flEngine
 
     class GLVertexArray : public VertexArray
     {
-      GLVertexArray();
+      GLVertexArray(API *pAPI);
     public:
       ~GLVertexArray();
 
-      static GLVertexArray* Create();
+      static GLVertexArray* Create(API *pAPI);
 
       void Bind() override;
       void Unbind() override;

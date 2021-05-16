@@ -7,14 +7,18 @@ namespace flEngine
 {
   namespace Graphics
   {
+    class API;
+
     class GLSampler : public Sampler
     {
-      GLSampler();
+      GLSampler(API *pAPI);
 
     public:
       ~GLSampler();
 
-      static Sampler *Create();
+      static Sampler *Create(API *pAPI);
+
+      void Bind(flIN int64_t textureUnit) override;
 
       void SetWrapMode(WrapMode wrap) override;
       void GetWrapMode(WrapMode *pWrapX, WrapMode *pWrapY) const override;

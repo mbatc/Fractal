@@ -11,12 +11,12 @@ namespace flEngine
 
     class GLTextureRenderTarget : public TextureRenderTarget
     {
-      GLTextureRenderTarget();
+      GLTextureRenderTarget(API *pAPI);
 
     public:
       ~GLTextureRenderTarget();
 
-      static TextureRenderTarget* Create();
+      static TextureRenderTarget* Create(API *pAPI);
 
       virtual bool SetFormat(flIN const RenderTargetOptions* pOptions) override;
       virtual int64_t GetWidth() const override;

@@ -14,10 +14,10 @@ namespace flEngine
     {
       friend class OpenGL;
 
-      GLIndexBuffer(HardwareBuffer* pBuffer, int64_t indexCount, uint32_t const* pValues);
+      GLIndexBuffer(API *pAPI, int64_t indexCount, uint32_t const* pValues);
 
     public:
-      static IndexBuffer* Create(HardwareBuffer *pBuffer, int64_t indexCount = 0, uint32_t const* pValues = nullptr);
+      static IndexBuffer* Create(API *pAPI, int64_t indexCount = 0, uint32_t const* pValues = nullptr);
 
       void Bind() override;
       void Unbind() override;
