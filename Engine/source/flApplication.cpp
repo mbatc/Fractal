@@ -3,6 +3,7 @@
 #include "flEngine.h"
 #include "flInit.h"
 #include <functional>
+#include "ctVector.h"
 
 typedef  void (*EventFunc)(flEngine::Platform::Event*, void*);
 
@@ -29,14 +30,16 @@ namespace flEngine
 
     void HandleEvent(Platform::Event* pEvent)
     {
-      if (m_pApp->OnEvent(pEvent))
-      {
-        // TODO: Forward the event
-      }
+      if (m_pApp->Dispatch(pEvent))
+        for (int64_t i = m_subSystems.size() - 1; i >= 0; --i)
+          if (!m_subSystems[i]->Dispatch(pEvent))
+            break;
     }
 
     Platform::EventQueue* m_pSystemEvents = nullptr;
     Application* m_pApp = nullptr;
+
+    ctVector<SubSystem*> m_subSystems;
   };
 
   flPIMPL_IMPL(Application);
@@ -50,8 +53,6 @@ namespace flEngine
   void Application::OnPostUpdate() {}
   void Application::OnPostRender() {}
   
-  bool Application::OnEvent(flIN Platform::Event* pEvent) { ctUnused(pEvent); return true; }
-
   Application& Application::Get() { return *_pApplication; }
 
   Application::Application()

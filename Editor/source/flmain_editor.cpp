@@ -24,6 +24,17 @@ public:
   Ref<Graphics::WindowRenderTarget> pSecondTarget;
   Ref<Graphics::Material> pMaterial;
 
+  EditorApplication()
+  {
+    OnEvent(Platform::E_Kbd_KeyState, &EditorApplication::OnKeyState);
+  }
+
+  bool OnKeyState(Platform::Event* pEvent)
+  {
+    flWarning("Key Pressed Recieved");
+    return true;
+  }
+
   virtual bool OnStartup() override
   {
     Logging::SetLogLevel(Logging::LogLevel_Warning);
@@ -163,12 +174,6 @@ public:
 
     pSecondTarget->Swap();
     pSecondTarget->Clear(0xFF00FF00, 1.0f);
-  }
-
-  virtual bool OnEvent(flIN Platform::Event* pEvent)
-  {
-    ctUnused(pEvent);
-    return true;
   }
 
   virtual bool IsRunning()

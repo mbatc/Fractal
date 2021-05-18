@@ -2,6 +2,7 @@
 #define fl_Application_h__
 
 #include "flInterface.h"
+#include "flSubSystem.h"
 
 namespace flEngine
 {
@@ -26,7 +27,7 @@ namespace flEngine
    * flEngine::CreateApplication() function you implement.
    * 
    **/
-  class flEXPORT Application : public Interface
+  class flEXPORT Application : public EventDispatcher
   {
     flPIMPL_DEF(Application);
 
@@ -84,16 +85,6 @@ namespace flEngine
      * You can override this function to implement any extra functionality your application needs.
      **/
     virtual void OnPostUpdate();
-
-    /**
-     * @brief Handle an event.
-     * 
-     * This function is called when the application receives an event.
-     * 
-     * After the application has handled the event, return true to forward the Event
-     * to the applications subsystems, or false to block the Event.
-     */
-    virtual bool OnEvent(flIN Platform::Event* pEvent);
 
     /**
      * @brief Perform post-render tasks.
