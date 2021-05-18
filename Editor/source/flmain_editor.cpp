@@ -26,6 +26,8 @@ public:
 
   virtual bool OnStartup() override
   {
+    Logging::SetLogLevel(Logging::LogLevel_Warning);
+
     // Create a window
     pWindow  = flNew Window("Window 1", Window::Flag_Visible, Window::DM_Windowed);
     pWindow2 = flNew Window("Window 2", Window::Flag_Visible, Window::DM_Windowed);

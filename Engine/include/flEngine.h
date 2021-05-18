@@ -13,6 +13,7 @@
 #include "util/flColour.h"
 #include "util/flType.h"
 #include "flRef.h"
+#include "flLog.h"
 
 // Threading
 #include "threads/flThreads.h"
