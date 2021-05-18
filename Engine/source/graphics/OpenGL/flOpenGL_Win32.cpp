@@ -1,4 +1,5 @@
 #include "flOpenGL.h"
+#include "flLog.h"
 
 #if flUSING(flPLATFORM_WINDOWS)
 
@@ -39,10 +40,24 @@ HGLRC flEngine_GL_hCurrentGLRC = 0;
 
 static void GLAPIENTRY _ErrorMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
 {
-  userParam, length;
-  ctString assertion = "OpenGL Error (type: " + ctString((int64_t)type) + ", severity: " + ctString((int64_t)severity) + ", id: " + ctString((int64_t)id) + ")\n\n" + message;
-  printf((assertion + "\n").c_str());
-  ctRelAssert(type != GL_DEBUG_TYPE_ERROR, assertion);
+  Logging::LogLevel level = Logging::LogLevel_None;
+
+  switch (type)
+  {
+  case GL_DEBUG_TYPE_OTHER:
+    level = Logging::LogLevel_Info;
+    break;
+  case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+  case GL_DEBUG_TYPE_PORTABILITY:
+  case GL_DEBUG_TYPE_PERFORMANCE:
+    level = Logging::LogLevel_Warning;
+    break;
+  case GL_DEBUG_TYPE_ERROR:
+    level = Logging::LogLevel_Error;
+    break;
+  }
+
+  flLog(level, ("OpenGL Error: " + ctString(message)).c_str());
 }
 
 OpenGL::OpenGL(Platform::Window *pWindow, const RenderTargetOptions *pOptions)
