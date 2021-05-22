@@ -1,11 +1,16 @@
 #include "platform/flEventQueue.h"
+#include "input/flInputs.h"
 #include "flApplication.h"
-#include "flEngine.h"
 #include "flInit.h"
+#include "flRef.h"
 #include <functional>
 #include "ctVector.h"
+#include "ctString.h"
+#include "ctKeyValue.h"
 
 typedef  void (*EventFunc)(flEngine::Platform::Event*, void*);
+
+using namespace flEngine::Platform;
 
 namespace flEngine
 {
@@ -22,36 +27,87 @@ namespace flEngine
       // Initialize Fractal
       flEngine::Initialize();
 
-      m_pSystemEvents = flNew Platform::EventQueue;
-      m_pSystemEvents->SetEventCallback([](Platform::Event *pEvent, void *pUserData) {
+      m_pSystemEvents = flNew EventQueue;
+      m_pSystemEvents->SetEventCallback([](Event *pEvent, void *pUserData) {
         ((Impl_Application*)pUserData)->HandleEvent(pEvent);
       }, this);
     }
 
-    void HandleEvent(Platform::Event* pEvent)
+    void HandleEvent(Event* pEvent)
     {
       if (m_pApp->Dispatch(pEvent))
         for (int64_t i = m_subSystems.size() - 1; i >= 0; --i)
-          if (!m_subSystems[i]->Dispatch(pEvent))
+          if (!m_subSystems[i].m_val->Dispatch(pEvent))
             break;
     }
 
-    Platform::EventQueue* m_pSystemEvents = nullptr;
-    Application* m_pApp = nullptr;
+    template<typename ReturnT, typename... Args>
+    bool InvokeBehaviour(ReturnT(ApplicationBehaviour:: *func)(Args...), Args&&... args)
+    {
+      (m_pApp->*func)(args...);
+      for (int64_t i = 0; i < m_subSystems.size(); ++i)
+        (m_subSystems[i].m_val->*func)(args...);
+          return false;
+      return true;
+    }
 
-    ctVector<SubSystem*> m_subSystems;
+    bool Startup()
+    {
+      if (!m_pApp->OnStartup())
+        return false;
+      for (int64_t i = 0; i < m_subSystems.size(); ++i)
+        if (!m_subSystems[i].m_val->OnStartup())
+          return false;
+      return true;
+    }
+
+    void Shutdown()
+    {
+      InvokeBehaviour(&ApplicationBehaviour::OnShutdown);
+    }
+
+    void PreUpdate()
+    {
+      InvokeBehaviour(&ApplicationBehaviour::OnPreUpdate);
+    }
+
+    void Update()
+    {
+      InvokeBehaviour(&ApplicationBehaviour::OnUpdate);
+    }
+
+    void PostUpdate()
+    {
+      InvokeBehaviour(&ApplicationBehaviour::OnPostUpdate);
+    }
+
+    void PreRender()
+    {
+      InvokeBehaviour(&ApplicationBehaviour::OnPreRender);
+    }
+
+    void Render()
+    {
+      InvokeBehaviour(&ApplicationBehaviour::OnRender);
+    }
+
+    void PostRender()
+    {
+      InvokeBehaviour(&ApplicationBehaviour::OnPostRender);
+    }
+
+    Application* m_pApp = nullptr;
+    EventQueue* m_pSystemEvents = nullptr;
+    bool m_isRunning = true;
+    ctVector<ctKeyValue<ctString, Ref<SubSystem>>> m_subSystems;
   };
 
   flPIMPL_IMPL(Application);
 
-  bool Application::OnStartup()  { return true; }
-  bool Application::OnShutdown() { return false; }
-
-  void Application::OnPreUpdate() {}
-  void Application::OnPreRender() {}
-
-  void Application::OnPostUpdate() {}
-  void Application::OnPostRender() {}
+  void Application::Close()
+  {
+    Impl()->m_isRunning = false;
+  }
   
   Application& Application::Get() { return *_pApplication; }
 
@@ -62,19 +118,42 @@ namespace flEngine
     Impl()->m_pApp = this;
   }
 
+  void Application::AddSubSystem(SubSystem *pSystem, char const *name)
+  {
+    if (GetSubSystem(name) == nullptr)
+      Impl()->m_subSystems.emplace_back(name, MakeRef(pSystem, true));
+  }
+
+  SubSystem* Application::GetSubSystem(char const *name)
+  {
+    for (auto &kvp : Impl()->m_subSystems)
+      if (kvp.m_key.compare(name))
+        return kvp.m_val;
+    return nullptr;
+  }
+
   int Application::Run()
   {
-    while (IsRunning())
+    if (!Impl()->Startup())
+    {
+      Impl()->Shutdown();
+      return 1; // Startup failed
+    }
+
+    while (Impl()->m_isRunning)
     {
       Inputs::Update(); // Push input events
 
-      OnPreUpdate();
-      OnPostUpdate();
+      Impl()->PreUpdate();
+      Impl()->Update();
+      Impl()->PostUpdate();
 
-      OnPreRender();
-      OnPostRender();
+      Impl()->PreRender();
+      Impl()->Render();
+      Impl()->PostRender();
     }
 
+    Impl()->Shutdown();
     return 0;
   }
 }

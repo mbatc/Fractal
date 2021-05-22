@@ -1,8 +1,7 @@
-#ifndef fl_Application_h__
-#define fl_Application_h__
+#pragma once
 
-#include "flInterface.h"
 #include "flSubSystem.h"
+#include "flRef.h"
 
 namespace flEngine
 {
@@ -27,73 +26,27 @@ namespace flEngine
    * flEngine::CreateApplication() function you implement.
    * 
    **/
-  class flEXPORT Application : public EventDispatcher
+  class flEXPORT Application : public ApplicationBehaviour
   {
     flPIMPL_DEF(Application);
 
     friend class FractalEntryHandler;
 
   public:
-    /**
-     * @brief This function indicates if the engine should close the application.
-     *
-     * You must implement this function to tell the engine when it needs to close.
-     **/
-    virtual bool IsRunning() = 0;
+    template<typename T, typename... Args>
+    void AddSubSystem(Args&&... args) {
+      AddSubSystem(flNew T(std::forward<Args>(args)...), typeid(T).name());
+    }
+
+    template<typename T>
+    Ref<T> GetSubSystem() {
+      return MakeRef(GetSubSystem(typeid(T).name()), true);
+    }
 
     /**
-     * @brief Perform startup tasks.
-     * 
-     * This function is called when the application starts, after the engine has been initialized.
-     *
-     * You can override this function to implement any extra functionality your application needs.
-   **/
-    virtual bool OnStartup();
-
-    /**
-     * @brief Perform shutdown tasks.
-     *
-     * This function is called when the application is closing, before the engine is shutdown.
-     *
-     * You can override this function to implement any extra functionality your application needs.
-     **/
-    virtual bool OnShutdown();
-
-    /**
-     * @brief Perform pre-update tasks.
-     * 
-     * This function is called each frame before the main update step in the engine.
-     *
-     * You can override this function to implement any extra functionality your application needs.
-     **/
-    virtual void OnPreUpdate();
-
-    /**
-     * @brief Perform pre-render tasks.
-     *
-     * This function is called each frame before the main render step in the engine.
-     *
-     * You can override this function to implement any extra functionality your application needs.
-     **/
-    virtual void OnPreRender();
-
-    /**
-     * @brief Perform post-update tasks.
-     *
-     * This function is called each frame before the main update step in the engine.
-     *
-     * You can override this function to implement any extra functionality your application needs.
-     **/
-    virtual void OnPostUpdate();
-
-    /**
-     * @brief Perform post-render tasks.
-     *
-     * This function is called each frame after the main render step in the engine.
-     * 
-     * You can override this function to implement any extra functionality your application needs.
-     **/
-    virtual void OnPostRender();
+     * @brief Close the application.
+     */
+    void Close();
 
     /**
      * @brief Get the global Application instance.
@@ -104,8 +57,9 @@ namespace flEngine
     Application();
 
   private:
+    void AddSubSystem(SubSystem *pSystem, char const *name);
+    SubSystem *GetSubSystem(char const *name);
+
     int Run(); // Application entry point
   };
 }
-
-#endif // fl_Application_h__
