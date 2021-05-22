@@ -67,18 +67,28 @@ workspace "Fractal"
   flBinPath = flBuildsPath .. "/bin"
   ctools_bin = "../../../builds/bin"
 
+  -- Allow linking to files in the bin folder
+  libdirs { flBinPath }
+
   staticruntime "off"
   defines { "_CRT_SECURE_NO_WARNINGS" }
 
   -- Include ctools library modules
-  dofile "ctools/setup/all-modules.lua"
+  group "ctools"
+    dofile "ctools/setup/all-modules.lua"
   
-  -- Generate Fractal Engine Projects
-  dofile "Engine/project.lua"
-    location "Engine/"
+  group "Fractal"
+    -- Generate Fractal Engine Projects
+    dofile "Engine/project.lua"
+      location "Engine/"
   
-  dofile "Editor/project.lua"
-    location "Editor/"
+    dofile "Editor/project.lua"
+      location "Editor/"
 
-  dofile "Player/project.lua"
-    location "Player/"
+    dofile "Player/project.lua"
+      location "Player/"
+
+  -- The test bed project
+  group "Test Site"
+    dofile "TechArea49/project.lua"
+      location "TechArea49/"

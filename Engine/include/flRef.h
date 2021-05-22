@@ -133,6 +133,11 @@ namespace flEngine
   Ref<T> MakeRef(T* pPtr, bool incRef) {
     return Ref<T>(pPtr, incRef);
   }
+
+  template<typename T, typename... Args>
+  Ref<T> MakeRef(Args&&... args) {
+    return MakeRef(T::Create(std::forward<Args>(args)...), false);
+  }
 }
 
 #endif // fl_Ref_h__
