@@ -37,6 +37,7 @@ namespace flEngine
         Util::Type type;
         int64_t width = 0;
         int64_t offset = 0;
+        bool normalize = false;
       };
 
       ctVector<Element> m_layout;

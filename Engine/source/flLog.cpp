@@ -9,6 +9,8 @@ namespace flEngine
   {
     static ctString _logLevelName[LogLevel_Count]
     {
+      "Failure",
+      "Assert ",
       "Error  ",
       "Warning",
       "Info   "
@@ -16,7 +18,7 @@ namespace flEngine
 
     static LogLevel _logLevel = LogLevel_All;
 
-    void Log(flIN LogLevel code, flIN const char* message, flIN const char* function, flIN int64_t lineNumber)
+    void LogV(flIN LogLevel code, flIN const char *function, flIN int64_t lineNumber, flIN const char *messageFormat, va_list args)
     {
       if (_logLevel < code)
         return;
@@ -25,16 +27,49 @@ namespace flEngine
       time_t now = time(0);
       strftime(timeBuff, 100, "%H:%M:%S.00", localtime(&now));
 
-      printf("[%s] %s | %s (%s:%lld)\n",
+      // Print prefix
+      printf("[%s] %s | ",
         timeBuff,
-        _logLevelName[code].c_str(),
-        message,
+        _logLevelName[code].c_str()
+      );
+
+      // Print message
+      vprintf(messageFormat, args);
+
+      // Print suffix
+      printf(" (%s:%lld)\n",
         function,
         lineNumber
       );
+    }
 
-      if (code == LogLevel_Error)
-        ctFail(message);
+    void Log(flIN LogLevel code, flIN const char* function, flIN int64_t lineNumber, flIN const char *messageFormat, ...)
+    {
+      va_list argList;
+      va_start(argList, messageFormat);
+      LogV(code, function, lineNumber, messageFormat, argList);
+      va_end(argList);
+    }
+
+    void Assert(flIN bool condition, flIN char const *function, flIN int64_t lineNumber, flIN char const *messageFormat, ...)
+    {
+      if (condition)
+      {
+        va_list argList;
+        va_start(argList, messageFormat);
+        LogV(LogLevel_Failure, function, lineNumber, messageFormat, argList);
+        va_end(argList);
+        __debugbreak();
+      }
+    }
+
+    void Fail(flIN char const *function, flIN int64_t lineNumber, flIN char const *messageFormat, ...)
+    {
+      va_list argList;
+      va_start(argList, messageFormat);
+      LogV(LogLevel_Assert, function, lineNumber, messageFormat, argList);
+      va_end(argList);
+      __debugbreak();
     }
 
     void SetLogLevel(flIN LogLevel logLevel)

@@ -18,13 +18,14 @@ includedirs { ctools_module_dir .. "math/include" }
 includedirs { ctools_module_dir .. "math/include/**" }
 includedirs { ctools_module_dir .. "data/include" }
 includedirs { ctools_module_dir .. "data/include/**" }
-includedirs { ctools_module_dir .. "platform/inclu de" }
+includedirs { ctools_module_dir .. "platform/include" }
 includedirs { ctools_module_dir .. "platform/include/**" }
 
 libdirs { glew_dir .. "lib/Release/x64/" }
 
 -- Library links
 links { "ctools-common", "ctools-math", "ctools-data", "ctools-platform" } -- CTools
+links { "imgui" }
 links { "glew32", "opengl32" }                                             -- Open GL
 
 path_to_bin = third_party_prefix .. flBinPath
@@ -32,3 +33,5 @@ path_to_bin = third_party_prefix .. flBinPath
 postbuildcommands {
     getCopyCommand(glew_dir .. "bin\\Release\\x64\\glew32.dll", path_to_bin .. "\\glew32.dll")
 }
+
+

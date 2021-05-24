@@ -36,7 +36,7 @@ namespace flEngine
       }
 
       if (indexed)
-        glDrawElements(glDrawMode, (GLsizei)elementCount, GL_UNSIGNED_INT, (void*)elementOffset);
+        glDrawElements(glDrawMode, (GLsizei)elementCount, GL_UNSIGNED_INT, (void*)(elementOffset * sizeof(uint32_t)));
       else
         glDrawArrays(glDrawMode, (GLsizei)elementOffset, (GLsizei)elementCount);
     }

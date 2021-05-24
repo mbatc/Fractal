@@ -21,13 +21,13 @@ namespace flEngine
 
     bool GLHardwareBuffer::Resize(int64_t size, bool discardData)
     {
-      void* pMapped = Map(AccessFlag_Read);
-      if (!pMapped)
-        return false;
-
       uint8_t* pNewData = nullptr;
-      if (GetSize() > 0)
+      if (GetSize() > 0 && !discardData)
       {
+        void *pMapped = Map(AccessFlag_Read);
+        if (!pMapped)
+          return false;
+
         pNewData = flNew uint8_t[size];
         memcpy(pNewData, pMapped, min(size, m_size));
       }

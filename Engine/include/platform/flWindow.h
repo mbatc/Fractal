@@ -14,7 +14,7 @@ namespace flEngine
   {
     class Impl_Window;
 
-    class flEXPORT Window
+    class flEXPORT Window : public Interface
     {
       flPIMPL_DEF(Window);
 

@@ -4,6 +4,8 @@
 #include "flInterface.h"
 #include <type_traits>
 #include <memory>
+#include <utility>
+
 namespace flEngine
 {
   template<typename T>
@@ -136,7 +138,7 @@ namespace flEngine
 
   template<typename T, typename... Args>
   Ref<T> MakeRef(Args&&... args) {
-    return MakeRef(T::Create(std::forward<Args>(args)...), false);
+    return MakeRef(new (flAllocT(T, 1)) T(std::forward<Args>(args)...), false);
   }
 }
 

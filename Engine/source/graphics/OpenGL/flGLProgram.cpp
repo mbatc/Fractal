@@ -1,10 +1,12 @@
 #include "graphics/flHardwareBuffer.h"
 #include "graphics/flTexture.h"
 #include "graphics/flSampler.h"
-#include "flGLProgram.h"
 #include "util/flType.h"
-#include "ctFilename.h"
+#include "flGLProgram.h"
 #include "flGLUtil.h"
+#include "flLog.h"
+
+#include "ctFilename.h"
 #include "ctFile.h"
 
 namespace flEngine
@@ -85,6 +87,17 @@ namespace flEngine
       int value = 0;
       glGetUniformiv(m_programID, GetUniformLocation(name), &value);
       return value;
+    }
+
+    void GLProgram::SetTexture(uint32_t location, Texture *pTexture)
+    {
+      glActiveTexture(GL_TEXTURE0 + location);
+      pTexture->Bind();
+    }
+
+    void GLProgram::SetSampler(uint32_t location, Sampler *pSampler)
+    {
+      pSampler->Bind(location);
     }
 
     int64_t GLProgram::GetUniformCount() const
@@ -297,7 +310,7 @@ namespace flEngine
         glGetProgramInfoLog(m_programID, logLen, &logLen, logBuffer.data());
 
         // TODO: Report in error compilation log
-        printf("Failed to link shader:\n%s\n", logBuffer.data());
+        flError("Failed to link shader: %s", logBuffer.data());
 
         return false; // TODO: Report GL error
       }
@@ -320,8 +333,8 @@ namespace flEngine
         pShader->src = ctFile::ReadText(pShader->file, &success);
         if (!success)
         {
-          printf("Could not load source file: %s", pShader->file.c_str());
-          return false; // TODO: Report failed to read file
+          flError("Could not load source file: %s", pShader->file.c_str());
+          return false;
         }
       }
 
@@ -355,8 +368,7 @@ namespace flEngine
         // Get the compilation log
         glGetShaderInfoLog(pShader->glID, logLen, &logLen, logBuffer.data());
 
-        // TODO: Report in error compilation log
-        printf("Shader Compilation Failed:\n%s", logBuffer.data());
+        flError("Shader Compilation Failed: %s", logBuffer.data());
 
         return false; // TODO: Report GL error
       }

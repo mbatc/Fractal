@@ -17,11 +17,12 @@ namespace flEngine
     {
       VertexElement();
 
-      VertexElement(char const * name, Util::Type type, int64_t width);
+      VertexElement(char const * name, Util::Type type, int64_t width, bool normalize = false);
 
       char const * name;
       Util::Type   type;
       int64_t      width;
+      bool         normalize;
       int64_t      offset;
     };
 

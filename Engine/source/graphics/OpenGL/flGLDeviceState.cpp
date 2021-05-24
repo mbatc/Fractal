@@ -6,6 +6,10 @@ namespace flEngine
 {
   namespace Graphics
   {
+    GLDeviceState::GLDeviceState()
+    {
+    }
+
     GLDeviceState *GLDeviceState::Create()
     {
       return flNew GLDeviceState;
@@ -16,7 +20,7 @@ namespace flEngine
       GLenum glFeature = GL_NONE;
       switch (feature)
       {
-      case DeviceFeature_Blend:       glFeature = GL_BLEND;        break;
+      case DeviceFeature_Blend:       glFeature = GL_BLEND; break;
       case DeviceFeature_DepthTest:   glFeature = GL_DEPTH_TEST;   break;
       case DeviceFeature_StencilTest: glFeature = GL_STENCIL_TEST; break;
       }
@@ -31,7 +35,12 @@ namespace flEngine
       GLenum glFeature = GL_NONE;
       switch (feature)
       {
-      case DeviceFeature_Blend:       glFeature = GL_BLEND;        break;
+      case DeviceFeature_Blend:
+        glFeature = GL_BLEND;
+        // Setup default states
+        glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+        glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        break;
       case DeviceFeature_DepthTest:   glFeature = GL_DEPTH_TEST;   break;
       case DeviceFeature_StencilTest: glFeature = GL_STENCIL_TEST; break;
       }

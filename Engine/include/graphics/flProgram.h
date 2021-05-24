@@ -87,6 +87,10 @@ namespace flEngine
        */
       virtual int GetInt(const char * name) = 0;
 
+      virtual void SetTexture(uint32_t location, Texture *pTexture) = 0;
+
+      virtual void SetSampler(uint32_t location, Sampler *pSampler) = 0;
+
       /**
        * @brief Get the number of vertex attributes in the shader
        */

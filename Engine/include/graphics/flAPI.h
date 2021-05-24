@@ -19,6 +19,7 @@ namespace flEngine
     class VertexBuffer;
     class IndexBuffer;
     class UniformBuffer;
+    class Texture;
     class Texture2D;
     class VertexArray;
     class RenderTarget;

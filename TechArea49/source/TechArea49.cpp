@@ -1,5 +1,8 @@
 #include "flEngine.h"
 #include "flEntryPoint.h"
+#include "subsystem/flGUISystem.h"
+#include "gui/flPanel.h"
+#include "gui/flWidgets.h"
 #include <stdio.h>
 
 using namespace flEngine;
@@ -7,72 +10,105 @@ using namespace flEngine::Platform;
 using namespace flEngine::Util;
 using namespace flEngine::Threads;
 using namespace flEngine::Math;
+using namespace flEngine::GUI;
 
-class SubSystem_GUI : public flEngine::SubSystem
+class TestPanel : public GUI::Panel
 {
 public:
-  SubSystem_GUI()
+  TestPanel()
+    : Panel("Test Panel")
+  {}
+
+  virtual void OnGUI() override
   {
-    OnEvent(E_Kbd_KeyState, &SubSystem_GUI::OnKeyPressed);
+    Widgets::Input("test", &testFloat);
   }
 
-  SubSystem_GUI* Create()
+  float testFloat = 10.0f;
+};
+
+class PerspectiveCamera
+{
+public:
+  PerspectiveCamera(Input::Keyboard *pKeyboard, Input::Mouse *pMouse)
   {
-    return flNew SubSystem_GUI;
+    m_pKeyboard = pKeyboard;
+    m_pMouse    = pMouse;
+  }
+  
+  Mat4F ViewMatrix()
+  {
+    return (Mat4F::Translation(position) * Mat4F::YawPitchRoll(ypr)).Inverse();
   }
 
-  bool OnKeyPressed(Event *pEvent)
+  Mat4F ProjectionMatrix()
   {
-    flWarning("Key Pressed");
-    return true;
+    return Mat4F::Projection(width / height, FOV, nearPlane, height);
   }
+
+  void Update()
+  {
+    Vec3F velocity;
+    if (m_pKeyboard->GetKeyDown(Input::KC_A)) velocity.x -= 1;
+    if (m_pKeyboard->GetKeyDown(Input::KC_D)) velocity.x += 1;
+    if (m_pKeyboard->GetKeyDown(Input::KC_W)) velocity.z -= 1;
+    if (m_pKeyboard->GetKeyDown(Input::KC_S)) velocity.z += 1;
+    if (m_pKeyboard->GetKeyDown(Input::KC_E)) velocity.y += 1;
+    if (m_pKeyboard->GetKeyDown(Input::KC_Q)) velocity.y -= 1;
+
+    velocity = Mat4F::YawPitchRoll(ypr) * velocity;
+
+    position += velocity * 0.025;
+
+    if (m_pMouse->GetDown(Input::MB_Right))
+    {
+      Vec3F deltaYPR;
+      float aspect = width / height;
+      deltaYPR.x += m_pMouse->GetPositionDelta().x / aspect;
+      deltaYPR.y += m_pMouse->GetPositionDelta().y;
+
+      ypr += deltaYPR * 0.005;
+    }
+  }
+
+  float nearPlane = 0.01;
+  float farPlane  = 100;
+  float FOV       = ctDegs2Radsf(50);
+  float width     = 1;
+  float height    = 1;
+  Vec3D position  = { 0, 0, 0 };
+  Vec3D ypr       = { 0, 0, 0 };
+
+  Input::Keyboard *m_pKeyboard;
+  Input::Mouse    *m_pMouse;
 };
 
 class EditorApplication : public flEngine::Application
 {
 public:
-  Window *pWindow = nullptr;
-  Window *pWindow2 = nullptr;
-
-  Ref<Graphics::API> pGraphics;
-  Ref<Graphics::DeviceState> pState;
-  Ref<Graphics::Program> pProgram;
-  Ref<Graphics::Texture2D> pTexture;
-  Ref<Graphics::Sampler> pSampler;
+  Ref<Graphics::Program>     pProgram;
+  Ref<Graphics::Texture2D>   pTexture;
+  Ref<Graphics::Sampler>     pSampler;
   Ref<Graphics::VertexArray> pGeometry;
-  Ref<Graphics::WindowRenderTarget> pFirstTarget;
-  Ref<Graphics::WindowRenderTarget> pSecondTarget;
-  Ref<Graphics::Material> pMaterial;
+  Ref<Graphics::Material>    pMaterial;
 
   EditorApplication()
+    : Application("OpenGL")
+    , m_camera(GetMainWindow()->GetKeyboard(), GetMainWindow()->GetMouse())
   {
-    AddSubSystem<SubSystem_GUI>();
+    AddSubSystem<GUI::GUISystem>();
+    GetSubSystem<GUI::GUISystem>()->Open<TestPanel>();
 
-    OnEvent(Platform::E_Kbd_KeyState, &EditorApplication::OnKeyState);
     OnEvent(Platform::E_Wnd_Close, &EditorApplication::OnCloseEvent);
-  }
-
-  bool OnKeyState(Platform::Event *pEvent)
-  {
-    flWarning("Key Pressed Recieved");
-    return true;
   }
 
   bool OnCloseEvent(Platform::Event *pEvent) { Close(); return true; }
 
   virtual bool OnStartup() override
   {
-    Logging::SetLogLevel(Logging::LogLevel_Warning);
+    // Logging::SetLogLevel(Logging::LogLevel_Warning);
 
-    // Create a window
-    pWindow = flNew Window("Window 1", Window::Flag_Visible, Window::DM_Windowed);
-    pWindow2 = flNew Window("Window 2", Window::Flag_Visible, Window::DM_Windowed);
-
-    pGraphics = MakeRef(Graphics::API::Create("OpenGL", pWindow), false);
-    pState = MakeRef(pGraphics->GetState(), true);
-
-    pFirstTarget = MakeRef(pWindow->GetRenderTarget(), true);
-    pSecondTarget = MakeRef(pGraphics->CreateWindowRenderTarget(pWindow2, nullptr), false);
+    Graphics::API *pGraphics = GetGraphicsAPI();
 
     pProgram = MakeRef(pGraphics->CreateProgram(), false);
     pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag", Graphics::ProgramStage_Fragment);
@@ -147,9 +183,12 @@ public:
 
     return true;
   }
-
-  virtual void OnPreUpdate()
+  
+  virtual void OnUpdate()
   {
+    m_camera.Update();
+    m_camera.width  = GetMainWindow()->GetWidth();
+    m_camera.height = GetMainWindow()->GetHeight();
   }
 
   virtual void OnPostUpdate()
@@ -160,33 +199,22 @@ public:
 
   virtual void OnPreRender()
   {
+    Graphics::DeviceState *pState = GetGraphicsAPI()->GetState();
     pState->SetFeatureEnabled(Graphics::DeviceFeature_DepthTest, true);
 
     pGeometry->Bind();
     pProgram->Bind();
 
-    // pProgram->SetTexture("texture0", pTexture);
-    // pProgram->SetSampler("texture0", pSampler);
+    Window *pWindow = GetMainWindow();
+    Graphics::API *pGraphics = GetGraphicsAPI();
 
     // Draw to the first window
     Mat4F modelMat = Mat4F::Translation({ 0, 0, -3 }) * Mat4F::RotationY(clock() / 1000.0f);
-    Mat4F projection = Mat4F::Projection(pWindow->GetWidth() / (float)pWindow->GetHeight(), 60.0f * (float)ctPi / 180.0f, 0.01f, 1000.0f);
+    Mat4F projection = m_camera.ProjectionMatrix() * m_camera.ViewMatrix();
     Mat4F mvp = projection * modelMat;
 
-    pFirstTarget->Bind();
     pMaterial->Bind();
-    pState->SetViewport(0, 0, pFirstTarget->GetWidth(), pFirstTarget->GetHeight());
-
-    pProgram->SetMat4("mvp", mvp);
-    pGraphics->Render(Graphics::DrawMode_Triangles, true, 0, pGeometry->GetIndexCount());
-
-    // Draw to the second window
-    modelMat = Mat4F::Translation({ 0, 0, -4 }) * Mat4F::RotationY(-clock() / 1000.0f);
-    projection = Mat4F::Projection(pWindow2->GetWidth() / (float)pWindow2->GetHeight(), 60.0f * (float)ctPi / 180.0f, 0.01f, 1000.0f);
-    mvp = projection * modelMat;
-
-    pSecondTarget->Bind();
-    pState->SetViewport(0, 0, pSecondTarget->GetWidth(), pSecondTarget->GetHeight());
+    pState->SetViewport(0, 0, GetMainWindow()->GetWidth(), GetMainWindow()->GetHeight());
 
     pProgram->SetMat4("mvp", mvp);
     pGraphics->Render(Graphics::DrawMode_Triangles, true, 0, pGeometry->GetIndexCount());
@@ -194,12 +222,11 @@ public:
 
   virtual void OnPostRender()
   {
-    pFirstTarget->Swap();
-    pFirstTarget->Clear(0xFF000000, 1.0f);
-
-    pSecondTarget->Swap();
-    pSecondTarget->Clear(0xFF00FF00, 1.0f);
+    GetMainWindow()->GetRenderTarget()->Swap();
+    GetMainWindow()->GetRenderTarget()->Clear(0xFF00FF00, 1.0f);
   }
+
+  PerspectiveCamera m_camera;
 };
 
 flEngine::Application *flEngine::CreateApplication(char **argv, int argc)

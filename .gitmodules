@@ -7,3 +7,6 @@
 [submodule "3rdParty/nanosvg"]
 	path = 3rdParty/nanosvg
 	url = https://github.com/memononen/nanosvg.git
+[submodule "3rdParty/imgui"]
+	path = 3rdParty/imgui
+	url = https://github.com/mbatc/imgui.git

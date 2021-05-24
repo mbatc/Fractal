@@ -32,6 +32,7 @@ namespace flEngine
     GLTexture2D::GLTexture2D(API *pAPI, PixelFormat pixelFormat, PixelComponentType type)
       : GLTexture2D(pAPI)
     {
+      CreatePixelBufferDesc(&m_desc, pixelFormat, type, 0, 0);
       m_type = PixelBufferType_Colour;
       m_internalPixelFormat = pixelFormat;
       m_internalComponentType = type;
@@ -40,6 +41,7 @@ namespace flEngine
     GLTexture2D::GLTexture2D(API *pAPI, DepthFormat depthFormat)
       : GLTexture2D(pAPI)
     {
+      CreatePixelBufferDesc(&m_desc, depthFormat, 0, 0);
       m_type = PixelBufferType_Depth;
       m_internalDepthFormat = depthFormat;
     }
@@ -73,6 +75,9 @@ namespace flEngine
       glBindTexture(GL_TEXTURE_2D, m_texID);
       glTexImage2D(GL_TEXTURE_2D, (GLint)mipMap, glInternalFmt, (GLsizei)pBufferDesc->width, (GLsizei)pBufferDesc->height, 0, fmt, type, pPixels);
       glBindTexture(GL_TEXTURE_2D, 0);
+
+      m_desc = *pBufferDesc;
+
       return true;
     }
 
@@ -87,6 +92,9 @@ namespace flEngine
       glBindTexture(GL_TEXTURE_2D, m_texID);
       glTexSubImage2D(GL_TEXTURE_2D, (GLint)mipMap, (GLint)widthOffset, (GLint)heightOffset, (GLsizei)pBufferDesc->width, (GLsizei)pBufferDesc->height, fmt, type, pPixels);
       glBindTexture(GL_TEXTURE_2D, 0);
+
+      m_desc = *pBufferDesc;
+
       return true;
     }
 
@@ -140,12 +148,12 @@ namespace flEngine
 
     int64_t GLTexture2D::GetWidth(int64_t mipMap) const
     {
-      return m_resolution.x;
+      return m_desc.width;
     }
 
     int64_t GLTexture2D::GetHeight(int64_t mipMap) const
     {
-      return m_resolution.y;
+      return m_desc.height;
     }
 
     int64_t GLTexture2D::GetDepth(int64_t mipMap) const

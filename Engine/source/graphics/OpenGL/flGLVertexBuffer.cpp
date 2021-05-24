@@ -41,7 +41,9 @@ namespace flEngine
         m_layout[i].name   = pElements[i].name;
         m_layout[i].type   = pElements[i].type;
         m_layout[i].width  = pElements[i].width;
+        m_layout[i].normalize = pElements[i].normalize;
         m_layout[i].offset = m_stride;
+
         m_stride += Util::SizeOf(pElements[i].type) * pElements[i].width;
       }
     }
@@ -67,6 +69,8 @@ namespace flEngine
       pElement->name = elem.name.c_str();
       pElement->type = elem.type;
       pElement->width = elem.width;
+      pElement->offset = elem.offset;
+      pElement->normalize = elem.normalize;
     }
 
     HardwareBuffer* GLVertexBuffer::GetBuffer()

@@ -11,7 +11,9 @@ using namespace flEngine::Math;
 class FractalEditor : public flEngine::Application
 {
 public:
-
+  FractalEditor()
+    : Application("OpenGL")
+  {}
 };
 
 flEngine::Application* flEngine::CreateApplication(char** argv, int argc)

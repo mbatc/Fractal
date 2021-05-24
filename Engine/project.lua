@@ -6,6 +6,7 @@ project "FractalEngine"
   dependson { "ctools-data" }
   dependson { "ctools-math" }
   dependson { "ctools-platform" }
+  dependson { "imgui" }
 
   kind "SharedLib"
   architecture "x64"

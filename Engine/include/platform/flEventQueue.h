@@ -19,7 +19,7 @@ namespace flEngine
      * Custom events can also be posted via the Event classes custom event
      * mechanism.
      */
-    class flEXPORT EventQueue
+    class flEXPORT EventQueue : public Interface
     {
       flPIMPL_DEF(EventQueue);
 

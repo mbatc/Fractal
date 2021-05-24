@@ -48,7 +48,7 @@ namespace flEngine
 
             glEnableVertexAttribArray(location);
             pVertexBuffer->Bind();
-            glVertexAttribPointer(location, width, glDataType, false, (GLsizei)pVertexBuffer->GetVertexStride(), (void const *)element.offset);
+            glVertexAttribPointer(location, width, glDataType, element.normalize, (GLsizei)pVertexBuffer->GetVertexStride(), (void const *)element.offset);
 
             ++location;
           }
