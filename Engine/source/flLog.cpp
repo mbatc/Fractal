@@ -3,6 +3,8 @@
 #include "ctString.h"
 #include "ctDateTime.h"
 
+#define _CRT_SECURE_NO_WARNINGS
+
 namespace flEngine
 {
   namespace Logging

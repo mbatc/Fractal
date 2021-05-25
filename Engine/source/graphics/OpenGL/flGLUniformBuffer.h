@@ -11,9 +11,9 @@ namespace flEngine
     class GLUniformBuffer : public UniformBuffer
     {
     public:
-      GLUniformBuffer(API *pAPI, int64_t size, void const * pData);
+      GLUniformBuffer(API *pAPI, int64_t size, void const * pData, BufferUsage bufferUsage);
 
-      static UniformBuffer * Create(API *pAPI, int64_t size, void const * pData);
+      static UniformBuffer * Create(API *pAPI, int64_t size, void const * pData, BufferUsage bufferUsage);
 
       void Bind(flIN int64_t index) override;
       void Unbind() override;

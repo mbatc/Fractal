@@ -80,6 +80,9 @@ namespace flEngine
         m_pSelf    = pSelf;
         m_pContext = ImGui::CreateContext();
 
+        m_pKeyboard = pSelf->GetKeyboard();
+        m_pMouse    = pSelf->GetMouse();
+
         // Setup back-end capabilities flags
         ImGuiIO &io = ImGui::GetIO();
         io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;         // We can honor GetMouseCursor() values (optional)
@@ -110,8 +113,8 @@ namespace flEngine
         io.KeyMap[ImGuiKey_Z] = Input::KC_Z;
 
         API *pGraphics = Application::Get().GetGraphicsAPI();
-        m_indexBuffer = MakeRef(pGraphics->CreateIndexBuffer(), false);
-        m_vertexBuffer = MakeRef(pGraphics->CreateVertexBuffer(0), false);
+        m_indexBuffer = MakeRef(pGraphics->CreateIndexBuffer(0, 0,   BufferUsage_Dynamic), false);
+        m_vertexBuffer = MakeRef(pGraphics->CreateVertexBuffer(0, 0, BufferUsage_Dynamic), false);
         m_vertexArray = MakeRef(pGraphics->CreateVertexArray(), false);
 
         ImDrawVert vert;
@@ -143,10 +146,7 @@ namespace flEngine
         m_shader->SetShader(_fragSrc, ProgramStage_Fragment);
         m_shader->Compile();
 
-        m_pSelf->OnEvent(Platform::E_Kbd_KeyState, &Impl_GUISystem::OnKeyState);
-        m_pSelf->OnEvent(Platform::E_Kbd_ASCII,    &Impl_GUISystem::OnInputChar);
-        m_pSelf->OnEvent(Platform::E_Mse_State,    &Impl_GUISystem::OnMouseState);
-        m_pSelf->OnEvent(Platform::E_Mse_Move,     &Impl_GUISystem::OnMouseMove);
+        m_pSelf->OnEvent(Platform::E_Kbd_ASCII, &Impl_GUISystem::OnInputChar);
       }
       
       void BeginFrame()
@@ -182,9 +182,9 @@ namespace flEngine
         ImGuiIO &io = ImGui::GetIO();
 
         // Read keyboard modifiers inputs
-        io.KeyCtrl = m_keyboard.GetKeyDown(KC_Control);
-        io.KeyShift = m_keyboard.GetKeyDown(KC_Shift);
-        io.KeyAlt = m_keyboard.GetKeyDown(KC_Alt);
+        io.KeyCtrl  = m_pKeyboard->GetKeyDown(KC_Control);
+        io.KeyShift = m_pKeyboard->GetKeyDown(KC_Shift);
+        io.KeyAlt   = m_pKeyboard->GetKeyDown(KC_Alt);
         io.KeySuper = false;
       }
 
@@ -201,8 +201,11 @@ namespace flEngine
           UpdateMouseCursor();
         }
 
-        io.MouseWheel = m_mouse.GetScrollV();
-        io.MouseWheelH = m_mouse.GetScrollH();
+        io.MousePos.x = m_pMouse->GetPosition().x;
+        io.MousePos.y = m_pMouse->GetPosition().y;
+
+        io.MouseWheel  = m_pMouse->GetScrollV();
+        io.MouseWheelH = m_pMouse->GetScrollH();
       }
 
       void UpdateMouseCursor()
@@ -253,23 +256,16 @@ namespace flEngine
         return !ImGui::GetIO().WantCaptureMouse;
       } 
 
-      bool OnInputChar(Platform::Event *pEvent)
+      bool OnInputChar(Platform::Event* pEvent)
       {
         ImGui::GetIO().AddInputCharacter(pEvent->kbdASCII.character);
 
         return !ImGui::GetIO().WantTextInput;
       }
 
-      bool OnMouseMove(Platform::Event *pEvent)
-      {
-        ImVec2 &msPos = ImGui::GetIO().MousePos;
-        msPos.x = pEvent->mseMove.wndX;
-        msPos.y = pEvent->mseMove.wndY;
-        return true;
-      }
+      Input::Keyboard *m_pKeyboard;
+      Input::Mouse    *m_pMouse;
 
-      Input::Keyboard m_keyboard;
-      Input::Mouse    m_mouse;
       ImGuiContext *m_pContext = 0;
       ImGuiMouseCursor m_lastCursor = ImGuiMouseCursor_Arrow;
       ctVector<Ref<Panel>> m_panels;
@@ -346,7 +342,7 @@ namespace flEngine
           glClipRect.y = displaySize.y - cmd.ClipRect.y;
           glClipRect.z = cmd.ClipRect.z - cmd.ClipRect.x;
           glClipRect.w = cmd.ClipRect.w - cmd.ClipRect.y;
-          pGraphics->GetState()->SetScissorRect(glClipRect.x, glClipRect.y, glClipRect.z, glClipRect.w);
+          pGraphics->GetState()->SetScissorRect((int64_t)glClipRect.x, (int64_t)glClipRect.y, (int64_t)glClipRect.z, (int64_t)glClipRect.w);
 
           pProgram->SetTexture(0, (Graphics::Texture *)cmd.TextureId);
           pGraphics->Render(Graphics::DrawMode_Triangles, true, elementOffset, cmd.ElemCount);
@@ -357,6 +353,27 @@ namespace flEngine
       pGraphics->GetState()->SetFeatureEnabled(Graphics::DeviceFeature_Blend, false);
       pGraphics->GetState()->SetFeatureEnabled(Graphics::DeviceFeature_DepthTest, true);
       pGraphics->GetState()->SetFeatureEnabled(Graphics::DeviceFeature_StencilTest, false);
+    }
+
+    bool GUISystem::OnKeyState(Platform::Event * pEvent)
+    {
+      SubSystem::OnKeyState(pEvent);
+
+      return Impl()->OnKeyState(pEvent);
+    }
+
+    bool GUISystem::OnMouseState(Platform::Event * pEvent)
+    {
+      SubSystem::OnMouseState(pEvent);
+
+      return Impl()->OnMouseState(pEvent);
+    }
+
+    bool GUISystem::OnMouseScroll(Platform::Event * pEvent)
+    {
+      SubSystem::OnMouseScroll(pEvent);
+
+      return !ImGui::GetIO().WantCaptureMouse;
     }
 
     void GUISystem::Open(Panel *pPanel)

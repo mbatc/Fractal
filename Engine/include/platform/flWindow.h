@@ -220,20 +220,6 @@ namespace flEngine
       bool ReceivedEvent(flIN Platform::EventID id, flIN bool reset = true);
 
       /**
-       * @brief Get the keyboard input interface for this window.
-       *
-       * @return The Keyboard interface
-       */
-      Input::Keyboard* GetKeyboard() const;
-
-      /**
-       * @brief Get the mouse input interface for this window.
-       *
-       * @return The Mouse interface
-       */
-      Input::Mouse* GetMouse() const;
-
-      /**
        * @brief Test if this window is the source of the given event.
        *
        * @return True if this window is the source of the event.

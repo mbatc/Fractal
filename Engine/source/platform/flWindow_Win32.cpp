@@ -26,12 +26,8 @@ static Window *_pHoveredWindow = nullptr;
 
 static Window *_GetWindowFromHandle(HWND hWnd);
 
-void Impl_Window::Construct(Window *pWindow, const char *title, Window::Flags flags, Window::DisplayMode displayMode, InputDeviceServer *pKeyboardServer, InputDeviceServer *pMouseServer)
+void Impl_Window::Construct(Window *pWindow, const char *title, Window::Flags flags, Window::DisplayMode displayMode)
 {
-  // Set input device servers
-  m_keyboard.SetServer(pKeyboardServer);
-  m_mouse.SetServer(pMouseServer);
-
   HINSTANCE hInstance = ::GetModuleHandle(NULL);
 
   // Setup the event filter, so we only receive events for this window

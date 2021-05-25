@@ -15,9 +15,9 @@ namespace flEngine
     {
       friend class OpenGL;
 
-      GLVertexBuffer(API *pAPI, int64_t size, void const* pInitialData);
+      GLVertexBuffer(API *pAPI, int64_t size, void const* pInitialData, BufferUsage bufferUsage);
 
-      static VertexBuffer* Create(API *pAPI, int64_t size, void const * pInitialData);
+      static VertexBuffer* Create(API *pAPI, int64_t size, void const * pInitialData, BufferUsage bufferUsage);
     public:
       virtual void Bind() override;
       virtual void Unbind() override;

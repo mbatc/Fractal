@@ -6,16 +6,16 @@ namespace flEngine
 {
   namespace Graphics
   {
-    GLUniformBuffer::GLUniformBuffer(API *pAPI, int64_t size, void const * pData)
+    GLUniformBuffer::GLUniformBuffer(API *pAPI, int64_t size, void const * pData, BufferUsage bufferUsage)
       : UniformBuffer(pAPI)
     {
-      m_pBuffer = MakeRef(GetAPI()->CreateBuffer(BufferBinding_Uniforms, AccessFlag_Write), false);
+      m_pBuffer = MakeRef(GetAPI()->CreateBuffer(BufferBinding_Uniforms, bufferUsage), false);
       m_pBuffer->Set(pData, size);
     }
 
-    UniformBuffer * GLUniformBuffer::Create(API * pAPI, int64_t size, void const * pData)
+    UniformBuffer * GLUniformBuffer::Create(API * pAPI, int64_t size, void const * pData, BufferUsage bufferUsage)
     {
-      return flNew GLUniformBuffer(pAPI, size, pData);
+      return flNew GLUniformBuffer(pAPI, size, pData, bufferUsage);
     }
 
     void GLUniformBuffer::Bind(flIN int64_t index)

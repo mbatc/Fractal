@@ -7,17 +7,17 @@ namespace flEngine
 {
   namespace Graphics
   {
-    GLIndexBuffer::GLIndexBuffer(API *pAPI, int64_t indexCount, uint32_t const* pValues)
+    GLIndexBuffer::GLIndexBuffer(API *pAPI, int64_t indexCount, uint32_t const* pValues, BufferUsage usage)
       : IndexBuffer(pAPI)
     {
-      m_pBuffer = MakeRef(GetAPI()->CreateBuffer(BufferBinding_Indices, AccessFlag_Write), false);
+      m_pBuffer = MakeRef(GetAPI()->CreateBuffer(BufferBinding_Indices, usage), false);
       if (indexCount > 0)
         m_pBuffer->Set(pValues, indexCount * GetElementSize());
     }
 
-    IndexBuffer* GLIndexBuffer::Create(API *pAPI, int64_t indexCount, uint32_t const * pData)
+    IndexBuffer* GLIndexBuffer::Create(API *pAPI, int64_t indexCount, uint32_t const * pData, BufferUsage usage)
     {
-      return flNew GLIndexBuffer(pAPI, indexCount, pData);
+      return flNew GLIndexBuffer(pAPI, indexCount, pData, usage);
     }
 
     void GLIndexBuffer::Bind()

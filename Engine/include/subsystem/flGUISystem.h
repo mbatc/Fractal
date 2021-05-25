@@ -27,6 +27,10 @@ namespace flEngine
       virtual void OnUpdate() override;
       virtual void OnRender() override;
 
+      virtual bool OnKeyState(Platform::Event* pEvent) override;
+      virtual bool OnMouseState(Platform::Event* pEvent) override;
+      virtual bool OnMouseScroll(Platform::Event* pEvent) override;
+
     protected:
       void Open(Panel *pPanel);
     };

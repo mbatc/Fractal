@@ -9,16 +9,16 @@ namespace flEngine
 {
   namespace Graphics
   {
-    GLVertexBuffer::GLVertexBuffer(API * pAPI, int64_t size, void const *pInitialData)
+    GLVertexBuffer::GLVertexBuffer(API * pAPI, int64_t size, void const *pInitialData, BufferUsage bufferUsage)
       : VertexBuffer(pAPI)
     {
-      m_pBuffer = MakeRef(GetAPI()->CreateBuffer(BufferBinding_Vertices, AccessFlag_Write), false);
+      m_pBuffer = MakeRef(GetAPI()->CreateBuffer(BufferBinding_Vertices, bufferUsage), false);
       m_pBuffer->Set(pInitialData, size);
     }
 
-    VertexBuffer* GLVertexBuffer::Create(API *pAPI, int64_t size, void const *pInitialData)
+    VertexBuffer* GLVertexBuffer::Create(API *pAPI, int64_t size, void const *pInitialData, BufferUsage bufferUsage)
     {
-      return flNew GLVertexBuffer(pAPI, size, pInitialData);
+      return flNew GLVertexBuffer(pAPI, size, pInitialData, bufferUsage);
     }
 
     void GLVertexBuffer::Bind()

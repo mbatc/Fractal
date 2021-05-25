@@ -5,18 +5,18 @@ namespace flEngine
 {
   namespace Graphics
   {
-    GLHardwareBuffer* GLHardwareBuffer::Create(API *pAPI, BufferBinding binding, AccessFlags accessFlags)
+    GLHardwareBuffer* GLHardwareBuffer::Create(API *pAPI, BufferBinding binding, BufferUsage usage)
     {
-      return flNew GLHardwareBuffer(pAPI, binding, accessFlags);
+      return flNew GLHardwareBuffer(pAPI, binding, usage);
     }
 
-    GLHardwareBuffer::GLHardwareBuffer(API *pAPI, BufferBinding binding, AccessFlags accessFlags)
+    GLHardwareBuffer::GLHardwareBuffer(API *pAPI, BufferBinding binding, BufferUsage usage)
       : HardwareBuffer(pAPI)
     {
       glCreateBuffers(1, &m_bufferID);
-      m_accessFlags = accessFlags;
-      m_binding = binding;
-      m_glAccessFlags = GL_STATIC_DRAW;
+      m_binding      = binding;
+      m_usageFlag    = usage;
+      m_glUsageFlags = GLUtil::ToBufferUsage(usage);
     }
 
     bool GLHardwareBuffer::Resize(int64_t size, bool discardData)
@@ -40,7 +40,7 @@ namespace flEngine
     bool GLHardwareBuffer::Set(void const* pData, int64_t size)
     {
       glBindBuffer(GL_COPY_WRITE_BUFFER, m_bufferID);
-      glBufferData(GL_COPY_WRITE_BUFFER, (GLsizeiptr)size, pData, m_glAccessFlags);
+      glBufferData(GL_COPY_WRITE_BUFFER, (GLsizeiptr)size, pData, m_glUsageFlags);
       glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
       m_size = size;
       return true;
@@ -62,9 +62,9 @@ namespace flEngine
       return m_size;
     }
 
-    AccessFlags GLHardwareBuffer::GetAccessFlags() const
+    BufferUsage GLHardwareBuffer::GetBufferUsage() const
     {
-      return m_accessFlags;
+      return m_usageFlag;
     }
 
     BufferBinding GLHardwareBuffer::GetBinding() const

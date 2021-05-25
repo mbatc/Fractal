@@ -64,8 +64,8 @@ public:
     {
       Vec3F deltaYPR;
       float aspect = width / height;
-      deltaYPR.x += m_pMouse->GetPositionDelta().x / aspect;
-      deltaYPR.y += m_pMouse->GetPositionDelta().y;
+      deltaYPR.x -= m_pMouse->GetPositionDelta().x / aspect;
+      deltaYPR.y -= m_pMouse->GetPositionDelta().y;
 
       ypr += deltaYPR * 0.005;
     }
@@ -83,32 +83,18 @@ public:
   Input::Mouse    *m_pMouse;
 };
 
-class EditorApplication : public flEngine::Application
+class EditorSubSystem : public SubSystem
 {
 public:
-  Ref<Graphics::Program>     pProgram;
-  Ref<Graphics::Texture2D>   pTexture;
-  Ref<Graphics::Sampler>     pSampler;
-  Ref<Graphics::VertexArray> pGeometry;
-  Ref<Graphics::Material>    pMaterial;
-
-  EditorApplication()
-    : Application("OpenGL")
-    , m_camera(GetMainWindow()->GetKeyboard(), GetMainWindow()->GetMouse())
-  {
-    AddSubSystem<GUI::GUISystem>();
-    GetSubSystem<GUI::GUISystem>()->Open<TestPanel>();
-
-    OnEvent(Platform::E_Wnd_Close, &EditorApplication::OnCloseEvent);
-  }
-
-  bool OnCloseEvent(Platform::Event *pEvent) { Close(); return true; }
+  EditorSubSystem()
+    : m_camera(GetKeyboard(), GetMouse())
+  {}
 
   virtual bool OnStartup() override
   {
     // Logging::SetLogLevel(Logging::LogLevel_Warning);
 
-    Graphics::API *pGraphics = GetGraphicsAPI();
+    Graphics::API* pGraphics = GetGraphicsAPI();
 
     pProgram = MakeRef(pGraphics->CreateProgram(), false);
     pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag", Graphics::ProgramStage_Fragment);
@@ -136,15 +122,16 @@ public:
     {
       // Create vertex and index buffers
       Ref<Graphics::VertexBuffer> pPositionBuffer = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 3 * 8, nullptr), false);
-      Ref<Graphics::VertexBuffer> pColourBuffer = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 4 * 8, nullptr), false);
+      Ref<Graphics::VertexBuffer> pColourBuffer   = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 4 * 8, nullptr), false);
       Ref<Graphics::VertexBuffer> pTexcoordBuffer = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 2 * 8, nullptr), false);
-      Ref<Graphics::IndexBuffer>  pIndexBuffer = MakeRef(pGraphics->CreateIndexBuffer(36), false);
+      Ref<Graphics::IndexBuffer>  pIndexBuffer    = MakeRef(pGraphics->CreateIndexBuffer(36), false);
 
       // Map buffers to client memory
-      Math::Vec3F *pPositions = (Math::Vec3F *)pPositionBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
-      Math::Vec4F *pColours = (Math::Vec4F *)pColourBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
-      Math::Vec2F *pTexcoords = (Math::Vec2F *)pTexcoordBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
-      uint32_t *pIndices = (uint32_t *)pIndexBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
+      Math::Vec3F* pPositions = (Math::Vec3F*)pPositionBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
+      Math::Vec2F* pTexcoords = (Math::Vec2F*)pTexcoordBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
+      Math::Vec4F* pColours   = (Math::Vec4F*)pColourBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
+
+      uint32_t* pIndices = (uint32_t*)pIndexBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
       pPositionBuffer->SetLayout({ { "position0", Util::Type_Float32, 3 } });
       pColourBuffer->SetLayout({ { "colour0",   Util::Type_Float32, 4 } });
       pTexcoordBuffer->SetLayout({ { "texcoord0", Util::Type_Float32, 2 } });
@@ -183,11 +170,11 @@ public:
 
     return true;
   }
-  
+
   virtual void OnUpdate()
   {
     m_camera.Update();
-    m_camera.width  = GetMainWindow()->GetWidth();
+    m_camera.width = GetMainWindow()->GetWidth();
     m_camera.height = GetMainWindow()->GetHeight();
   }
 
@@ -199,14 +186,14 @@ public:
 
   virtual void OnPreRender()
   {
-    Graphics::DeviceState *pState = GetGraphicsAPI()->GetState();
+    Graphics::DeviceState* pState = GetGraphicsAPI()->GetState();
     pState->SetFeatureEnabled(Graphics::DeviceFeature_DepthTest, true);
 
     pGeometry->Bind();
     pProgram->Bind();
 
-    Window *pWindow = GetMainWindow();
-    Graphics::API *pGraphics = GetGraphicsAPI();
+    Window* pWindow = GetMainWindow();
+    Graphics::API* pGraphics = GetGraphicsAPI();
 
     // Draw to the first window
     Mat4F modelMat = Mat4F::Translation({ 0, 0, -3 }) * Mat4F::RotationY(clock() / 1000.0f);
@@ -226,7 +213,29 @@ public:
     GetMainWindow()->GetRenderTarget()->Clear(0xFF00FF00, 1.0f);
   }
 
+  Ref<Graphics::Program>     pProgram;
+  Ref<Graphics::Texture2D>   pTexture;
+  Ref<Graphics::Sampler>     pSampler;
+  Ref<Graphics::VertexArray> pGeometry;
+  Ref<Graphics::Material>    pMaterial;
+
   PerspectiveCamera m_camera;
+};
+
+class EditorApplication : public flEngine::Application
+{
+public:
+  EditorApplication()
+    : Application("OpenGL")
+  {
+    AddSubSystem<EditorSubSystem>();
+    AddSubSystem<GUI::GUISystem>();
+    GetSubSystem<GUI::GUISystem>()->Open<TestPanel>();
+
+    OnEvent(Platform::E_Wnd_Close, &EditorApplication::OnCloseEvent);
+  }
+
+  bool OnCloseEvent(Platform::Event *pEvent) { Close(); return true; }
 };
 
 flEngine::Application *flEngine::CreateApplication(char **argv, int argc)

@@ -5,28 +5,10 @@ using namespace flEngine;
 using namespace flEngine::Math;
 using namespace flEngine::Input;
 
-class _GlobalMouseServer : public InputDeviceServer
-{
-public:
-  _GlobalMouseServer()
-  {
-    m_events.SetFilter(Platform::E_Type_Mouse);
-    m_events.SetEventCallback(&Mouse::EventHandler, this);
-  }
-
-  static _GlobalMouseServer* Create()
-  {
-    return flNew _GlobalMouseServer;
-  }
-
-protected:
-  Platform::EventQueue m_events;
-};
-
 static Platform::Window* _pActiveWindow = nullptr;
 
 Mouse::Mouse()
-  : InputDevice(MB_Count + MB_ExtendedCount, MA_Count, _GlobalMouseServer::Create())
+  : InputDevice(MB_Count + MB_ExtendedCount, MA_Count)
 {}
 
 bool Mouse::GetDown(flIN MouseButton button) const
@@ -102,30 +84,6 @@ Vec2F Mouse::GetScroll() const
 Vec2F Mouse::GetScrollDelta() const
 {
   return Vec2F(GetScrollHDelta(), GetScrollVDelta());
-}
-
-void Mouse::EventHandler(flIN Platform::Event *pEvent, flIN void *pUserData)
-{
-  InputDeviceServer *pServer = (InputDeviceServer*)pUserData;
-
-  switch (pEvent->id)
-  {
-  case Platform::E_Mse_State:
-    pServer->SendEvent(pEvent->mseState.button, pEvent->mseState.isDown);
-    break;
-
-  case Platform::E_Mse_Scroll:
-    if (pEvent->mseScroll.isHorizontal)
-      pServer->SendEvent(Input::MA_HScroll, (float)pEvent->mseScroll.amount, true);
-    else
-      pServer->SendEvent(Input::MA_VScroll, (float)pEvent->mseScroll.amount, true);
-    break;
-
-  case Platform::E_Mse_Move:
-    pServer->SendEvent(Input::MA_XPos, (float)pEvent->mseMove.screenX);
-    pServer->SendEvent(Input::MA_YPos, (float)pEvent->mseMove.screenY);
-    break;
-  }
 }
 
 void Mouse::OnPostUpdate()
