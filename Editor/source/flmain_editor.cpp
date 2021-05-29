@@ -28,6 +28,21 @@ public:
     gui->Open<SceneViewPanel>();
     gui->Open<ProjectPanel>();
     gui->Open<PropertiesPanel>();
+
+    gui->AddMenuItem("File/Exit", Exit);
+
+    OnEvent(E_Wnd_Close, &FractalEditor::OnCloseEvent);
+  }
+
+  bool OnCloseEvent(Platform::Event* pEvent)
+  {
+    Close();
+    return true;
+  }
+
+  static void Exit()
+  {
+    Application::Get().Close();
   }
 };
 

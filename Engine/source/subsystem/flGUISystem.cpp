@@ -21,12 +21,14 @@
 #include "flApplication.h"
 #include "flRef.h"
 
-#include "ctVector.h"
+#include "ctHashMap.h"
+#include "ctString.h"
 
 #include "imgui/imgui.h"
 
 #include <time.h>
 #include <chrono>
+#include "flLog.h"
 
 using namespace flEngine::Input;
 using namespace flEngine::Graphics;
@@ -77,6 +79,12 @@ namespace flEngine
     class Impl_GUISystem
     {
     public:
+      struct Menu
+      {
+        ctHashMap<ctString, Menu> menus;
+        ctHashMap<ctString, GUISystem::MenuCommandFunc> commands;
+      };
+
       void Construct(GUISystem *pSelf)
       {
         m_pSelf    = pSelf;
@@ -267,6 +275,22 @@ namespace flEngine
         return !ImGui::GetIO().WantTextInput;
       }
 
+      void DrawMenu(ctString const& name, Menu * pMenu)
+      {
+        if (ImGui::BeginMenu(name.c_str()))
+        {
+          // Draw commands
+          for (auto& kvp : pMenu->commands)
+            if (ImGui::MenuItem(kvp.m_key.c_str()))
+              kvp.m_val();
+
+          // Draw the sub menus
+          for (auto& kvp : pMenu->menus)
+            DrawMenu(name, &kvp.m_val);
+          ImGui::EndMenu();
+        }
+      }
+
       Input::Keyboard *m_pKeyboard;
       Input::Mouse    *m_pMouse;
 
@@ -287,6 +311,8 @@ namespace flEngine
       GUISystem *m_pSelf = nullptr;
 
       std::chrono::steady_clock::time_point m_lastTime = std::chrono::steady_clock::now();
+
+      ctHashMap<ctString, Menu> m_menus;
     };
 
     flPIMPL_IMPL(GUISystem);
@@ -294,6 +320,25 @@ namespace flEngine
     GUISystem::GUISystem()
     {
       Impl()->Construct(this);
+    }
+
+    void GUISystem::AddMenuItem(char const * name, MenuCommandFunc func)
+    {
+      ctVector<ctString> path = ctString::_split(name, '/', true);
+
+      flErrorIf(path.size() < 2, "There must be at least 2 items in the menu command path. (e.g. file/save)");
+
+      if (path.size() >= 2)
+      {
+        Impl_GUISystem::Menu* pDest = nullptr;
+        for (int64_t i = 0; i < path.size() - 1; ++i)
+          pDest = &Impl()->m_menus.GetOrAdd(path[i]);
+
+        if (pDest && !pDest->commands.Contains(path.back()))
+          pDest->commands.Add(path.back(), func);
+        else
+          flError("Menu command '%s' already exists", name);
+      }
     }
 
     void GUISystem::OnUpdate()
@@ -307,29 +352,33 @@ namespace flEngine
 
       ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 
-      ImGui::Begin("DockspaceWindow", 0,
+      if (ImGui::Begin("DockspaceWindow", 0,
         ImGuiWindowFlags_NoBringToFrontOnFocus |
         ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoResize| 
+        ImGuiWindowFlags_NoResize |
         ImGuiWindowFlags_NoTitleBar |
         ImGuiWindowFlags_MenuBar
-      );
+      ))
+      {
 
-      ImGui::BeginMenuBar();
-      if (ImGui::BeginMenu("File"))
-        ImGui::EndMenu();
-      ImGui::EndMenuBar();
+        if (ImGui::BeginMenuBar())
+        {
+          for (auto& menu : Impl()->m_menus)
+            Impl()->DrawMenu(menu.m_key, &menu.m_val);
+          ImGui::EndMenuBar();
+        }
 
-      ImGui::SetWindowPos(ImVec2(0, 0));
-      ImGui::SetWindowSize(ImVec2(windowSize.x, windowSize.y));
+        ImGui::SetWindowPos(ImVec2(0, 0));
+        ImGui::SetWindowSize(ImVec2(windowSize.x, windowSize.y));
 
-      ImGuiID id = ImGui::GetID("MainDockspace");
-      ImGui::DockSpace(id);
+        ImGuiID id = ImGui::GetID("MainDockspace");
+        ImGui::DockSpace(id);
 
-      for (Ref<Panel> &panel : Impl()->m_panels)
-        panel->Update();
-
+        for (Ref<Panel>& panel : Impl()->m_panels)
+          panel->Update();
+      }
       ImGui::End();
+
       ImGui::PopStyleVar(1);
       Impl()->EndFrame();
     }

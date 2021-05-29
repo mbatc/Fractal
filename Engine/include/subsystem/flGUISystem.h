@@ -16,6 +16,8 @@ namespace flEngine
       flPIMPL_DEF(GUISystem);
 
     public:
+      typedef void (*MenuCommandFunc)();
+
       GUISystem();
 
       template<typename T, typename... Args>
@@ -23,6 +25,8 @@ namespace flEngine
       {
         Open(MakeRef(flNew T(this, std::forward<Args>(args)...), false).Get());
       }
+
+      void AddMenuItem(char const * name, MenuCommandFunc func);
 
       virtual void OnUpdate() override;
       virtual void OnRender() override;
