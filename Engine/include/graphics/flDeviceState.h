@@ -11,6 +11,7 @@ namespace flEngine
     {
       DeviceFeature_DepthTest,
       DeviceFeature_StencilTest,
+      DeviceFeature_ScissorTest,
       DeviceFeature_Blend,
       DeviceFeature_Count,
     };

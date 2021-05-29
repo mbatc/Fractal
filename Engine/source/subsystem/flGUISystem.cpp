@@ -12,6 +12,7 @@
 #include "graphics/flHardwareBuffer.h"
 #include "graphics/flMaterial.h"
 #include "graphics/flDeviceState.h"
+#include "graphics/flWindowRenderTarget.h"
 #include "util/flType.h"
 
 #include "input/flMouse.h"
@@ -29,6 +30,7 @@
 
 using namespace flEngine::Input;
 using namespace flEngine::Graphics;
+using namespace flEngine::Platform;
 
 static char const *_vertSrc = R"(
 #version 330
@@ -89,6 +91,8 @@ namespace flEngine
         io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;          // We can honor io.WantSetMousePos requests (optional, rarely used)
         io.BackendPlatformName = "Fractal Engine";
 
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
         // Keyboard mapping. ImGui will use those indices to peek into the io.KeysDown[] array that we will update during the application lifetime.
         io.KeyMap[ImGuiKey_Tab] = Input::KC_Tab;
         io.KeyMap[ImGuiKey_LeftArrow] = Input::KC_Left;
@@ -113,9 +117,9 @@ namespace flEngine
         io.KeyMap[ImGuiKey_Z] = Input::KC_Z;
 
         API *pGraphics = Application::Get().GetGraphicsAPI();
-        m_indexBuffer = MakeRef(pGraphics->CreateIndexBuffer(0, 0,   BufferUsage_Dynamic), false);
+        m_indexBuffer  = MakeRef(pGraphics->CreateIndexBuffer(0, 0,   BufferUsage_Dynamic), false);
         m_vertexBuffer = MakeRef(pGraphics->CreateVertexBuffer(0, 0, BufferUsage_Dynamic), false);
-        m_vertexArray = MakeRef(pGraphics->CreateVertexArray(), false);
+        m_vertexArray  = MakeRef(pGraphics->CreateVertexArray(), false);
 
         ImDrawVert vert;
         m_vertexBuffer->SetLayout({
@@ -294,14 +298,49 @@ namespace flEngine
 
     void GUISystem::OnUpdate()
     {
+      for (Ref<Panel> &panel : Impl()->m_panels)
+        panel->OnUpdate();
+
       Impl()->BeginFrame();
+
+      Math::Vec2F windowSize = { GetMainWindow()->GetWidth(), GetMainWindow()->GetHeight() };
+
+      ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
+
+      ImGui::Begin("DockspaceWindow", 0,
+        ImGuiWindowFlags_NoBringToFrontOnFocus |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoResize| 
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_MenuBar
+      );
+
+      ImGui::BeginMenuBar();
+      if (ImGui::BeginMenu("File"))
+        ImGui::EndMenu();
+      ImGui::EndMenuBar();
+
+      ImGui::SetWindowPos(ImVec2(0, 0));
+      ImGui::SetWindowSize(ImVec2(windowSize.x, windowSize.y));
+
+      ImGuiID id = ImGui::GetID("MainDockspace");
+      ImGui::DockSpace(id);
+
       for (Ref<Panel> &panel : Impl()->m_panels)
         panel->Update();
+
+      ImGui::End();
+      ImGui::PopStyleVar(1);
       Impl()->EndFrame();
     }
 
     void GUISystem::OnRender()
     {
+      for (Ref<Panel> &panel : Impl()->m_panels)
+        panel->OnRender();
+
+      GetMainWindow()->GetRenderTarget()->Bind();
+
       ImDrawData *pDrawData = ImGui::GetDrawData();
 
       Math::Mat4F projection = Math::Mat4F::Ortho(
@@ -313,10 +352,14 @@ namespace flEngine
       );
 
       API *pGraphics = Application::Get().GetGraphicsAPI();
+      Window *pWindow = Application::Get().GetMainWindow();
 
-      pGraphics->GetState()->SetFeatureEnabled(Graphics::DeviceFeature_StencilTest, true);
-      pGraphics->GetState()->SetFeatureEnabled(Graphics::DeviceFeature_DepthTest, false);
-      pGraphics->GetState()->SetFeatureEnabled(Graphics::DeviceFeature_Blend, true);
+      DeviceState *pState = pGraphics->GetState();
+      pState->SetFeatureEnabled(Graphics::DeviceFeature_StencilTest, true);
+      pState->SetFeatureEnabled(Graphics::DeviceFeature_ScissorTest, true);
+      pState->SetFeatureEnabled(Graphics::DeviceFeature_DepthTest, false);
+      pState->SetFeatureEnabled(Graphics::DeviceFeature_Blend, true);
+      pState->SetViewport(0, 0, pWindow->GetWidth(), pWindow->GetHeight());
 
       // Bind and update program
       Ref<Program> pProgram = Impl()->m_shader;
@@ -339,10 +382,15 @@ namespace flEngine
         {
           ImVec4 glClipRect;
           glClipRect.x = cmd.ClipRect.x;
-          glClipRect.y = displaySize.y - cmd.ClipRect.y;
+          glClipRect.y = displaySize.y - cmd.ClipRect.w;
           glClipRect.z = cmd.ClipRect.z - cmd.ClipRect.x;
           glClipRect.w = cmd.ClipRect.w - cmd.ClipRect.y;
-          pGraphics->GetState()->SetScissorRect((int64_t)glClipRect.x, (int64_t)glClipRect.y, (int64_t)glClipRect.z, (int64_t)glClipRect.w);
+
+          pGraphics->GetState()->SetScissorRect(
+            (int64_t)glClipRect.x,
+            (int64_t)glClipRect.y,
+            (int64_t)glClipRect.z,
+            (int64_t)glClipRect.w);
 
           pProgram->SetTexture(0, (Graphics::Texture *)cmd.TextureId);
           pGraphics->Render(Graphics::DrawMode_Triangles, true, elementOffset, cmd.ElemCount);
@@ -350,9 +398,48 @@ namespace flEngine
         }
       }
 
+      pState->SetFeatureEnabled(Graphics::DeviceFeature_ScissorTest, false);
       pGraphics->GetState()->SetFeatureEnabled(Graphics::DeviceFeature_Blend, false);
       pGraphics->GetState()->SetFeatureEnabled(Graphics::DeviceFeature_DepthTest, true);
       pGraphics->GetState()->SetFeatureEnabled(Graphics::DeviceFeature_StencilTest, false);
+    }
+
+    bool GUISystem::OnStartup()
+    {
+      bool success = true;
+      for (Ref<Panel> &panel : Impl()->m_panels)
+        success &= panel->OnStartup();
+      return success;
+    }
+
+    void GUISystem::OnShutdown()
+    {
+      for (Ref<Panel> &panel : Impl()->m_panels)
+        panel->OnShutdown();
+    }
+
+    void GUISystem::OnPreUpdate()
+    {
+      for (Ref<Panel> &panel : Impl()->m_panels)
+        panel->OnPreUpdate();
+    }
+
+    void GUISystem::OnPreRender()
+    {
+      for (Ref<Panel> &panel : Impl()->m_panels)
+        panel->OnPreRender();
+    }
+
+    void GUISystem::OnPostUpdate()
+    {
+      for (Ref<Panel> &panel : Impl()->m_panels)
+        panel->OnPostUpdate();
+    }
+
+    void GUISystem::OnPostRender()
+    {
+      for (Ref<Panel> &panel : Impl()->m_panels)
+        panel->OnPostRender();
     }
 
     bool GUISystem::OnKeyState(Platform::Event * pEvent)

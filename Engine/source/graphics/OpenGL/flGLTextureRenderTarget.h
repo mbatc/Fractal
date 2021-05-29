@@ -2,12 +2,14 @@
 #define fl_Graphics_GLTextureRenderTarget_h__
 
 #include "graphics/flTextureRenderTarget.h"
+#include "flRef.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
     class PixelBuffer;
+    class Texture2D;
 
     class GLTextureRenderTarget : public TextureRenderTarget
     {
@@ -28,8 +30,17 @@ namespace flEngine
       virtual void Bind(bool read, bool draw) override;
       virtual void * GetNativeResource() const override;
 
+      virtual Texture2D * GetColourTarget() override;
+      virtual Texture2D * GetDepthTarget() override;
+
     private:
       uint32_t m_fbo = 0;
+
+      int64_t m_width = 0;
+      int64_t m_height = 0;
+
+      Ref<Texture2D> m_depthTarget;
+      Ref<Texture2D> m_colourTarget;
     };
   }
 }

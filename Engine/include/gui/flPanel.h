@@ -1,19 +1,21 @@
 #pragma once
 
-#include "../flInterface.h"
+#include "../flApplicationBehaviour.h"
 
 namespace flEngine
 {
   namespace GUI
   {
+    class GUISystem;
+
     class flPIMPL_CLASS(Panel);
 
-    class flEXPORT Panel : public Interface
+    class flEXPORT Panel : public ApplicationBehaviour
     {
       flPIMPL_DEF(Panel);
 
     public:
-      Panel(char const *name);
+      Panel(GUISystem *pGUI, char const *name);
 
       void Update();
 
@@ -21,7 +23,13 @@ namespace flEngine
 
       Math::Vec2F Size();
 
+      Math::Vec2F ContentAreaSize();
+
       virtual void OnGUI();
+
+      GUISystem * GetGUI();
+
+      GUISystem const *GetGUI() const;
     };
   }
 }

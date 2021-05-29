@@ -21,11 +21,20 @@ namespace flEngine
       template<typename T, typename... Args>
       void Open(Args&&... args)
       {
-        Open(MakeRef(flNew T(std::forward<Args>(args)...), false).Get());
+        Open(MakeRef(flNew T(this, std::forward<Args>(args)...), false).Get());
       }
 
       virtual void OnUpdate() override;
       virtual void OnRender() override;
+
+      virtual bool OnStartup() override;
+      virtual void OnShutdown() override;
+
+      virtual void OnPreUpdate() override;
+      virtual void OnPreRender() override;
+
+      virtual void OnPostUpdate() override;
+      virtual void OnPostRender() override;
 
       virtual bool OnKeyState(Platform::Event* pEvent) override;
       virtual bool OnMouseState(Platform::Event* pEvent) override;

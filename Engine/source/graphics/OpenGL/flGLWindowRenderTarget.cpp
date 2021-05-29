@@ -51,8 +51,11 @@ namespace flEngine
     void GLWindowRenderTarget::Bind(bool read, bool draw)
     {
       MakeCurrent();
-      if (read) glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-      if (draw) glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+      if (read)
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+      if (draw)
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
     }
   }
 }

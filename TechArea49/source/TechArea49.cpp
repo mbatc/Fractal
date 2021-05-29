@@ -15,8 +15,8 @@ using namespace flEngine::GUI;
 class TestPanel : public GUI::Panel
 {
 public:
-  TestPanel()
-    : Panel("Test Panel")
+  TestPanel(GUISystem *pGUI)
+    : Panel(pGUI, "Test Panel")
   {}
 
   virtual void OnGUI() override
@@ -174,8 +174,8 @@ public:
   virtual void OnUpdate()
   {
     m_camera.Update();
-    m_camera.width = GetMainWindow()->GetWidth();
-    m_camera.height = GetMainWindow()->GetHeight();
+    m_camera.width  = (float)GetMainWindow()->GetWidth();
+    m_camera.height = (float)GetMainWindow()->GetHeight();
   }
 
   virtual void OnPostUpdate()
@@ -207,19 +207,11 @@ public:
     pGraphics->Render(Graphics::DrawMode_Triangles, true, 0, pGeometry->GetIndexCount());
   }
 
-  virtual void OnPostRender()
-  {
-    GetMainWindow()->GetRenderTarget()->Swap();
-    GetMainWindow()->GetRenderTarget()->Clear(0xFF00FF00, 1.0f);
-  }
-
   Ref<Graphics::Program>     pProgram;
   Ref<Graphics::Texture2D>   pTexture;
   Ref<Graphics::Sampler>     pSampler;
   Ref<Graphics::VertexArray> pGeometry;
   Ref<Graphics::Material>    pMaterial;
-
-  PerspectiveCamera m_camera;
 };
 
 class EditorApplication : public flEngine::Application

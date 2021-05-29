@@ -386,9 +386,9 @@ uint32_t GLUtil::ToPixelFormat(flIN DepthFormat depthFormat)
   {
   case DepthFormat_Float16:         return GL_DEPTH_COMPONENT16;
   case DepthFormat_Float24:         return GL_DEPTH_COMPONENT24;
-  case DepthFormat_Float24Stencil8: return GL_DEPTH24_STENCIL8;
+  case DepthFormat_Float24Stencil8: return GL_DEPTH_STENCIL;
   case DepthFormat_Float32:         return GL_DEPTH_COMPONENT;
-  case DepthFormat_Float32Stencil8: return GL_DEPTH32F_STENCIL8;
+  case DepthFormat_Float32Stencil8: return GL_DEPTH_STENCIL;
   }
 
   return GL_NONE;
@@ -434,7 +434,7 @@ uint32_t GLUtil::ToPixelDataType(flIN DepthFormat depthFormat)
   {
   case DepthFormat_Float16:         return GL_HALF_FLOAT;
   case DepthFormat_Float24:         return GL_FLOAT;
-  case DepthFormat_Float24Stencil8: return GL_FLOAT;
+  case DepthFormat_Float24Stencil8: return GL_UNSIGNED_INT_24_8;
   case DepthFormat_Float32:         return GL_FLOAT;
   case DepthFormat_Float32Stencil8: return GL_FLOAT;
   }

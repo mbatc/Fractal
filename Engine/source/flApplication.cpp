@@ -6,6 +6,8 @@
 #include "flApplication.h"
 #include "flInit.h"
 #include "flRef.h"
+#include "platform/flWindow.h"
+#include "graphics/flWindowRenderTarget.h"
 
 #include "ctVector.h"
 #include "ctString.h"
@@ -98,6 +100,7 @@ namespace flEngine
 
     void Render()
     {
+      m_pApp->GetMainWindow()->GetRenderTarget()->Bind();
       InvokeBehaviour(&ApplicationBehaviour::OnRender);
     }
 
@@ -187,9 +190,11 @@ namespace flEngine
       Impl()->Update();
       Impl()->PostUpdate();
 
+      GetMainWindow()->GetRenderTarget()->Clear();
       Impl()->PreRender();
       Impl()->Render();
       Impl()->PostRender();
+      GetMainWindow()->GetRenderTarget()->Swap();
 
       Threads::Sleep(1);
     }

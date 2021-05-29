@@ -23,6 +23,7 @@ namespace flEngine
       case DeviceFeature_Blend:       glFeature = GL_BLEND; break;
       case DeviceFeature_DepthTest:   glFeature = GL_DEPTH_TEST;   break;
       case DeviceFeature_StencilTest: glFeature = GL_STENCIL_TEST; break;
+      case DeviceFeature_ScissorTest: glFeature = GL_SCISSOR_TEST; break;
       }
 
       GLboolean value;
@@ -43,6 +44,7 @@ namespace flEngine
         break;
       case DeviceFeature_DepthTest:   glFeature = GL_DEPTH_TEST;   break;
       case DeviceFeature_StencilTest: glFeature = GL_STENCIL_TEST; break;
+      case DeviceFeature_ScissorTest: glFeature = GL_SCISSOR_TEST; break;
       }
 
       if (glFeature == GL_NONE)
