@@ -212,6 +212,8 @@ public:
   Ref<Graphics::Sampler>     pSampler;
   Ref<Graphics::VertexArray> pGeometry;
   Ref<Graphics::Material>    pMaterial;
+
+  PerspectiveCamera m_camera;
 };
 
 class EditorApplication : public flEngine::Application
@@ -221,8 +223,6 @@ public:
     : Application("OpenGL")
   {
     AddSubSystem<EditorSubSystem>();
-    AddSubSystem<GUI::GUISystem>();
-    GetSubSystem<GUI::GUISystem>()->Open<TestPanel>();
 
     OnEvent(Platform::E_Wnd_Close, &EditorApplication::OnCloseEvent);
   }
