@@ -352,7 +352,7 @@ namespace flEngine
 
       ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
 
-      if (ImGui::Begin("DockspaceWindow", 0,
+      if (ImGui::Begin("MainDockspace", 0,
         ImGuiWindowFlags_NoBringToFrontOnFocus |
         ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoResize |
@@ -368,12 +368,11 @@ namespace flEngine
           ImGui::EndMenuBar();
         }
 
-        ImGui::SetWindowPos(ImVec2(0, 0));
-        ImGui::SetWindowSize(ImVec2(windowSize.x, windowSize.y));
-
-        ImGuiID id = ImGui::GetID("MainDockspace");
+        ImGuiID id = ImGui::GetID("Dockspace");
         ImGui::DockSpace(id);
 
+        ImGui::SetWindowPos(ImVec2(0, 0));
+        ImGui::SetWindowSize(ImVec2(windowSize.x, windowSize.y));
         for (Ref<Panel>& panel : Impl()->m_panels)
           panel->Update();
       }
