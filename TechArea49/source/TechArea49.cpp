@@ -180,7 +180,7 @@ public:
 
   virtual void OnPostUpdate()
   {
-    pMaterial->SetValue("albedo0", Vec4F(abs(ctSin(clock() / 1000.0)), abs(ctCos(clock() / 1000.0)), 0, 1));
+    pMaterial->SetValue("albedo0", Vec4F((float)abs(ctSin(clock() / 1000.0)), (float)abs(ctCos(clock() / 1000.0)), 0, 1));
     pMaterial->Apply();
   }
 

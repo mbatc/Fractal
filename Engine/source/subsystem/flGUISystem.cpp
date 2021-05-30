@@ -322,7 +322,7 @@ namespace flEngine
       Impl()->Construct(this);
     }
 
-    void GUISystem::AddMenuItem(char const * name, MenuCommandFunc func)
+    void GUISystem::AddMenuItem(flIN char const * name, flIN MenuCommandFunc func)
     {
       ctVector<ctString> path = ctString::_split(name, '/', true);
 

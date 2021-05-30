@@ -24,7 +24,7 @@ namespace flEngine
 
     flPIMPL_IMPL(Panel);
 
-    Panel::Panel(GUISystem *pGUI, char const *name)
+    Panel::Panel(flIN GUISystem *pGUI, flIN char const *name)
     {
       Impl()->m_name = name;
       Impl()->m_pGUI = pGUI;
@@ -45,6 +45,7 @@ namespace flEngine
       };
 
       OnGUI();
+
       ImGui::End();
     }
 

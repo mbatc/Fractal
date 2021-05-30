@@ -164,19 +164,27 @@ public:
 
     if (!m_target || m_target->GetWidth() != ContentAreaSize().x || m_target->GetHeight() != ContentAreaSize().y)
     {
-      m_target = MakeRef(GetGUI()->GetGraphicsAPI()->CreateTextureRenderTarget(), false);
       RenderTargetOptions opts;
       opts.colourFormat = PixelFormat_RGBA;
       opts.pixelComponentType = PixelComponentType_UNorm8;
       opts.depthFormat = DepthFormat_Float24Stencil8;
-      opts.width  = ContentAreaSize().x;
+      opts.width = ContentAreaSize().x;
       opts.height = ContentAreaSize().y;
-      m_target->SetFormat(&opts);
+
+      m_target = nullptr;
+      if (opts.width > 0 && opts.height > 0)
+      {
+        m_target = MakeRef(GetGUI()->GetGraphicsAPI()->CreateTextureRenderTarget(), false);
+        m_target->SetFormat(&opts);
+      }
     }
   }
 
   virtual void OnRender()
   {
+    if (m_target == nullptr)
+      return;
+
     m_target->Bind();
     m_target->Clear(0xFFFFFFFF);
 
@@ -203,7 +211,8 @@ public:
 
   virtual void OnGUI() override
   {
-    GUI::Widgets::Image(m_target->GetColourTarget(), ContentAreaSize().x, ContentAreaSize().y);
+    if (m_target != nullptr)
+      GUI::Widgets::Image(m_target->GetColourTarget(), ContentAreaSize().x, ContentAreaSize().y);
   }
 
   PerspectiveCamera m_camera;

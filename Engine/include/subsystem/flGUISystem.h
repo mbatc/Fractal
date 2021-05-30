@@ -20,13 +20,26 @@ namespace flEngine
 
       GUISystem();
 
+      /**
+       * @brief Open a new panel in the GUI.
+       * 
+       * T must be a subclass of Panel, and it's constructor must take a GUISystem* as the first parameter.
+       * 
+       * Arguments passed to this function are forwarded to T's constructor following the GUISystem*.
+       */
       template<typename T, typename... Args>
       void Open(Args&&... args)
       {
         Open(MakeRef(flNew T(this, std::forward<Args>(args)...), false).Get());
       }
 
-      void AddMenuItem(char const * name, MenuCommandFunc func);
+      /**
+       * @brief Add a command to the menu bar.
+       * 
+       * @param [in] name The command path.
+       * @param [in] func The command function to call.
+       */
+      void AddMenuItem(flIN char const * name, flIN MenuCommandFunc func);
 
       virtual void OnUpdate() override;
       virtual void OnRender() override;
