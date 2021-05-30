@@ -2,6 +2,7 @@
 #define fl_Config_h__
 
 #include <stdint.h>
+#include <memory>
 
 #ifdef flSTATICLIB
 #define flEXPORT

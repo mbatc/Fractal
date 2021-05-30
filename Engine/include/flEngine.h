@@ -55,4 +55,10 @@
 #include "gui/flPanel.h"
 #include "gui/flWidgets.h"
 
+// Scene
+#include "scene/flScene.h"
+#include "scene/flNode.h"
+#include "scene/flComponent.h"
+#include "scene/flTransform.h"
+
 #endif // fl_Engine_h__

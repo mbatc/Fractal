@@ -1,8 +1,6 @@
 #include "flEngine.h"
 #include "flEntryPoint.h"
-#include "subsystem/flGUISystem.h"
-#include "gui/flPanel.h"
-#include "gui/flWidgets.h"
+
 #include <stdio.h>
 
 using namespace flEngine;
@@ -25,6 +23,12 @@ public:
   }
 
   float testFloat = 10.0f;
+};
+
+class Mesh : public Scene::Component
+{
+public:
+  FL_IMPLEMENT_COMPONENT(Mesh, "Mesh");
 };
 
 class PerspectiveCamera
@@ -92,6 +96,14 @@ public:
 
   virtual bool OnStartup() override
   {
+    Ref<Scene::Node> node = m_scene.AddNode();
+
+    node->AddComponent<Mesh>();
+    node->AddComponent<Scene::Transform>();
+
+    Ref<Mesh> mesh = node->GetComponent<Mesh>();
+    Ref<Scene::Transform> trans = node->GetComponent<Scene::Transform>();
+
     // Logging::SetLogLevel(Logging::LogLevel_Warning);
 
     Graphics::API* pGraphics = GetGraphicsAPI();
@@ -212,6 +224,8 @@ public:
   Ref<Graphics::Sampler>     pSampler;
   Ref<Graphics::VertexArray> pGeometry;
   Ref<Graphics::Material>    pMaterial;
+
+  Scene::Scene m_scene;
 
   PerspectiveCamera m_camera;
 };
