@@ -30,7 +30,7 @@ namespace flEngine
       template<typename T, typename... Args>
       void Open(Args&&... args)
       {
-        Open(MakeRef(flNew T(this, std::forward<Args>(args)...), false).Get());
+        Open(MakeRef(flNew (flAllocT(T, 1)) T(this, std::forward<Args>(args)...), false).Get());
       }
 
       /**
