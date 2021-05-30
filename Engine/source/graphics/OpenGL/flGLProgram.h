@@ -80,6 +80,9 @@ namespace flEngine
 
       int GetInt(const char* name) override;
 
+      void SetTexture(uint32_t location, Texture *pTexture) override;
+      void SetSampler(uint32_t location, Sampler *pSampler) override;
+
       int64_t GetAttributeCount() const override;
       int64_t GetUniformCount() const override;
       int64_t GetUniformBufferCount() const override;

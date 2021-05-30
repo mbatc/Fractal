@@ -4,89 +4,11 @@ using namespace flEngine;
 using namespace flEngine::Input;
 using namespace flEngine::Platform;
 
-class _WindowMouseServer : public InputDeviceServer
-{
-public:
-  static _WindowMouseServer *Create(Window *pWindow)
-  {
-    return flNew _WindowMouseServer(pWindow);
-  }
-
-  _WindowMouseServer(Window *pWindow)
-  {
-    m_events.SetFilter(Platform::E_Type_Mouse);
-
-    m_events.SetFilter(
-      [](Platform::Event *pEvent, void *pUserData)
-      {
-        return ((Window*)pUserData)->IsEventSource(pEvent);
-      },
-      pWindow);
-
-    m_events.SetEventCallback(&_WindowMouseServer::EventHandler, this);
-  }
-
-  static void EventHandler(Event *pEvent, void *pUserData)
-  {
-    _WindowMouseServer *pServer = (_WindowMouseServer*)pUserData;
-    switch (pEvent->id)
-    {
-    case E_Mse_Move: // Handle mouse moves to get relative coordinates
-      pServer->SendEvent(Input::MA_XPos, (float)pEvent->mseMove.wndX);
-      pServer->SendEvent(Input::MA_YPos, (float)pEvent->mseMove.wndY);
-      break;
-
-    default: // Use default handler for other events
-      Mouse::EventHandler(pEvent, pUserData);
-      break;
-    }
-  }
-
-protected:
-  EventQueue m_events;
-};
-
-class _WindowKeyboardServer : public InputDeviceServer
-{
-public:
-  static _WindowKeyboardServer *Create(Window *pWindow)
-  {
-    return flNew _WindowKeyboardServer(pWindow);
-  }
-
-  _WindowKeyboardServer(Window *pWindow)
-  {
-    m_events.SetFilter(Platform::E_Type_Keyboard);
-
-    m_events.SetFilter(
-      [](Platform::Event *pEvent, void *pUserData)
-      {
-        return ((Window*)pUserData)->IsEventSource(pEvent);
-      },
-      pWindow);
-
-    m_events.SetEventCallback(&Keyboard::EventHandler, this);
-  }
-
-protected:
-  EventQueue m_events;
-};
-
 bool Impl_Window::ReceivedEvent(EventID id, bool reset)
 {
   bool received = m_receivedEvents[id];
   m_receivedEvents[id] &= !reset;
   return received;
-}
-
-Keyboard* Impl_Window::GetKeyboard()
-{
-  return &m_keyboard;
-}
-
-Mouse* Impl_Window::GetMouse()
-{
-  return &m_mouse;
 }
 
 #define flIMPL flPIMPL(Window)
@@ -95,13 +17,7 @@ flPIMPL_IMPL(Window);
 
 Window::Window(flIN const char *title, flIN Flags flags, flIN DisplayMode displayMode)
 {
-  _WindowKeyboardServer *pKeyboardServer = _WindowKeyboardServer::Create(this);
-  _WindowMouseServer *pMouseServer = _WindowMouseServer::Create(this);
-
-  flIMPL->Construct(this, title, flags, displayMode, pKeyboardServer, pMouseServer);
-
-  pKeyboardServer->DecRef();
-  pMouseServer->DecRef();
+  flIMPL->Construct(this, title, flags, displayMode);
 }
 
 void Window::SetTitle(flIN const char *title)
@@ -192,16 +108,6 @@ void Window::GetRect(flOUT int64_t *pPosX, flOUT int64_t *pPosY, flOUT int64_t *
 bool Window::ReceivedEvent(flIN Platform::EventID id, flIN bool reset)
 {
   return flIMPL->ReceivedEvent(id, reset);
-}
-
-Input::Keyboard* Window::GetKeyboard() const
-{
-  return flIMPL->GetKeyboard();
-}
-
-Input::Mouse* Window::GetMouse() const
-{
-  return flIMPL->GetMouse();
 }
 
 bool Window::IsEventSource(const Event *pEvent) const

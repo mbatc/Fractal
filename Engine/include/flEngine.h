@@ -48,5 +48,11 @@
 
 // Application
 #include "flApplication.h"
+#include "flSubSystem.h"
+
+// GUI
+#include "subsystem/flGUISystem.h"
+#include "gui/flPanel.h"
+#include "gui/flWidgets.h"
 
 #endif // fl_Engine_h__

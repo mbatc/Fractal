@@ -2,6 +2,7 @@
 #define fl_Input_Keyboard_h__
 
 #include "flInputDevice.h"
+#include "../util/flEventDispatcher.h"
 #include "../platform/flEvent.h"
 
 namespace flEngine
@@ -180,17 +181,6 @@ namespace flEngine
        * @return True if the key specified is released, otherwise false.
        */
       bool GetKeyReleased(flIN KeyCode key) const;
-
-      /**
-       * @brief The default Keyboard event handler.
-       *
-       * This is the default event handler that can be used to forward system keyboard
-       * events to a keyboards InputDeviceServer.
-       *
-       * @param [in]  pEvent       The event to handle.
-       * @param [out] pInputServer A pointer to an InputDeviceServer.
-       */
-      static void EventHandler(flIN Platform::Event *pEvent, flIN void *pInputServer);
     };
   }
 }

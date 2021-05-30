@@ -7,6 +7,11 @@ namespace flEngine
 {
   namespace Platform {
     struct Event;
+    class Window;
+  }
+
+  namespace Graphics {
+    class API;
   }
 
   class flPIMPL_CLASS(Application);
@@ -40,7 +45,7 @@ namespace flEngine
 
     template<typename T>
     Ref<T> GetSubSystem() {
-      return MakeRef(GetSubSystem(typeid(T).name()), true);
+      return MakeRef((T*)GetSubSystem(typeid(T).name()), true);
     }
 
     /**
@@ -49,12 +54,24 @@ namespace flEngine
     void Close();
 
     /**
+     * @brief Returns a pointer to the applications main window.
+     */
+    Platform::Window * GetMainWindow();
+    Platform::Window const * GetMainWindow() const;
+
+    /**
+     * @brief Returns a pointer to the applications graphics API.
+     */
+    Graphics::API * GetGraphicsAPI();
+    Graphics::API const * GetGraphicsAPI() const;
+
+    /**
      * @brief Get the global Application instance.
      **/
     static Application& Get();
 
   protected:
-    Application();
+    Application(char const * graphicsAPIName);
 
   private:
     void AddSubSystem(SubSystem *pSystem, char const *name);

@@ -9,7 +9,9 @@ namespace flEngine
   {
     class GLDeviceState : public DeviceState
     {
+      GLDeviceState();
     public:
+
       static GLDeviceState* Create();
 
       bool GetFeatureEnabled(DeviceFeature feature) override;

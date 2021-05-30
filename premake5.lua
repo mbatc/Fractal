@@ -92,3 +92,6 @@ workspace "Fractal"
   group "Test Site"
     dofile "TechArea49/project.lua"
       location "TechArea49/"
+
+  group "3rd Party"
+    dofile "3rdParty/imgui/project.lua"

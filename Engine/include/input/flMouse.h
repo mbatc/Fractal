@@ -169,17 +169,6 @@ namespace flEngine
       */
       Math::Vec2F GetScrollDelta() const;
 
-      /**
-       * @brief The default Mouse event handler.
-       *
-       * This is the default event handler that can be used to forward system mouse
-       * events to a mouse's InputDeviceServer.
-       *
-       * @param [in]  pEvent       The event to handle.
-       * @param [out] pInputServer A pointer to an InputDeviceServer.
-       */
-      static void EventHandler(flIN Platform::Event *pEvent, flIN void *pUserData);
-
     protected:
       void OnPostUpdate() override;
     };

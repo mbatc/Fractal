@@ -3,6 +3,7 @@
 #include "ctVector.h"
 #include "ctString.h"
 #include "ctPool.h"
+#include "flRef.h"
 #include <time.h>
 
 using namespace flEngine::Input;
@@ -56,7 +57,7 @@ namespace flEngine
 
         // Setup device and server
         m_pDevice = pDevice;
-        m_pServer = pServer ? pServer : InputDeviceServer::Create();
+        m_pServer = pServer ? MakeRef(pServer, true) : MakeRef(InputDeviceServer::Create(), false);
         _devices.push_back(pDevice);
       }
 
@@ -69,7 +70,7 @@ namespace flEngine
       }
 
       InputDevice       *m_pDevice  = nullptr;
-      InputDeviceServer *m_pServer  = nullptr;
+      Ref<InputDeviceServer> m_pServer  = nullptr;
 
       ctVector<InputDevice::Button> m_buttons;
       ctVector<InputDevice::Analog> m_analogs;
@@ -88,14 +89,12 @@ InputDevice::InputDevice(flIN int64_t buttonCount, flIN int64_t analogCount, flI
 
 void InputDevice::SetServer(flIN InputDeviceServer *pServer)
 {
-  pServer->IncRef();
-  flIMPL->m_pServer->DecRef();
-  flIMPL->m_pServer = pServer;
+  flIMPL->m_pServer = MakeRef(pServer, true);
 }
 
 InputDeviceServer* InputDevice::GetServer() const
 {
-  return flIMPL->m_pServer;
+  return flIMPL->m_pServer.Get();
 }
 
 int64_t InputDevice::GetButtonCount() const

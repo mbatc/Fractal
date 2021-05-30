@@ -8,10 +8,11 @@ namespace flEngine
       : VertexElement("", Util::Type_Unknown, 0)
     {}
 
-    VertexElement::VertexElement(char const *_name, Util::Type _type, int64_t _width)
+    VertexElement::VertexElement(char const *_name, Util::Type _type, int64_t _width, bool _normalize)
       : name(_name)
       , type(_type)
       , width(_width)
+      , normalize(_normalize)
       , offset(0)
     {}
 

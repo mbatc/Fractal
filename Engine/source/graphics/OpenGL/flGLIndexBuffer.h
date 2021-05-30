@@ -2,6 +2,7 @@
 #define fl_Graphics_GLIndexBuffer_h__
 
 #include "graphics/flIndexBuffer.h"
+#include "graphics/flBufferDetails.h"
 #include "flRef.h"
 
 namespace flEngine
@@ -14,10 +15,10 @@ namespace flEngine
     {
       friend class OpenGL;
 
-      GLIndexBuffer(API *pAPI, int64_t indexCount, uint32_t const* pValues);
+      GLIndexBuffer(API *pAPI, int64_t indexCount, uint32_t const* pValues, BufferUsage usage);
 
     public:
-      static IndexBuffer* Create(API *pAPI, int64_t indexCount = 0, uint32_t const* pValues = nullptr);
+      static IndexBuffer* Create(API *pAPI, int64_t indexCount = 0, uint32_t const* pValues = nullptr, BufferUsage usage = BufferUsage_Default);
 
       void Bind() override;
       void Unbind() override;

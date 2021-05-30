@@ -25,10 +25,10 @@ namespace flEngine
       WindowRenderTarget* CreateWindowRenderTarget(Platform::Window* pWindow, RenderTargetOptions* pOptions) override;
       TextureRenderTarget* CreateTextureRenderTarget() override;
       VertexArray* CreateVertexArray() override;
-      HardwareBuffer* CreateBuffer(BufferBinding binding, AccessFlags accessFlags) override;
-      IndexBuffer* CreateIndexBuffer(int64_t indexCount, uint32_t const* pValues) override;
-      VertexBuffer* CreateVertexBuffer(int64_t size, void const* pInitialData) override;
-      UniformBuffer* CreateUniformBuffer(int64_t size, void const *pInitialData) override;
+      HardwareBuffer* CreateBuffer(BufferBinding binding, BufferUsage bufferUsage) override;
+      IndexBuffer* CreateIndexBuffer(int64_t indexCount, uint32_t const* pValues, BufferUsage bufferUsage) override;
+      VertexBuffer* CreateVertexBuffer(int64_t size, void const* pInitialData, BufferUsage bufferUsage) override;
+      UniformBuffer* CreateUniformBuffer(int64_t size, void const *pInitialData, BufferUsage bufferUsage) override;
       Program* CreateProgram() override;
       Material* CreateMaterial(flIN Program *pProgram, flIN char const *materialBlock = "Material") override;
 

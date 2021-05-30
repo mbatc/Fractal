@@ -7,6 +7,7 @@ namespace flEngine
 {
   namespace Graphics
   {
+    class Texture2D;
     class PixelBuffer;
 
     class flEXPORT TextureRenderTarget : public RenderTarget
@@ -15,6 +16,9 @@ namespace flEngine
       TextureRenderTarget(API *pAPI);
 
     public:
+      virtual Texture2D * GetColourTarget() = 0;
+
+      virtual Texture2D * GetDepthTarget() = 0;
     };
   }
 }

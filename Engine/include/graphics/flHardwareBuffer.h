@@ -40,7 +40,7 @@ namespace flEngine
       /**
        * @brief Get the access flags for this buffer.
        */
-      virtual AccessFlags GetAccessFlags() const = 0;
+      virtual BufferUsage GetBufferUsage() const = 0;
 
       /**
        * @brief Get the binding for this HardwareBuffer.

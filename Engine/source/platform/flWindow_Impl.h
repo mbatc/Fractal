@@ -13,7 +13,7 @@ namespace flEngine
     public:
       ~Impl_Window();
 
-      void Construct(Window *pWindow, const char *title, Window::Flags flags, Window::DisplayMode displayMode, Input::InputDeviceServer *pKeyboardServer, Input::InputDeviceServer *pMouseServer);
+      void Construct(Window *pWindow, const char *title, Window::Flags flags, Window::DisplayMode displayMode);
 
       void SetTitle(const char *title);
       void SetDisplayMode(Window::DisplayMode mode);
@@ -42,9 +42,6 @@ namespace flEngine
 
       bool ReceivedEvent(Platform::EventID id, bool reset);
 
-      Input::Keyboard* GetKeyboard();
-      Input::Mouse* GetMouse();
-
       bool IsEventSource(const Event *pEvent) const;
 
       void* GetNativeHandle() const;
@@ -64,9 +61,6 @@ namespace flEngine
       bool m_receivedEvents[Platform::Event_Count] = { 0 };
 
       Window::DisplayMode m_displayMode = Window::DM_Windowed;
-
-      Input::Keyboard m_keyboard;
-      Input::Mouse m_mouse;
 
       Graphics::WindowRenderTarget *m_pRenderTarget = nullptr;
 

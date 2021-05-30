@@ -48,7 +48,6 @@ namespace flEngine
 
       uint32_t m_texID = 0;
       bool m_hasMipMaps = false;
-      Math::Vec2I m_resolution = { -1, -1 };
     };
   }
 }

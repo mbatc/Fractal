@@ -44,9 +44,6 @@ static void GLAPIENTRY _ErrorMessageCallback(GLenum source, GLenum type, GLuint 
 
   switch (type)
   {
-  case GL_DEBUG_TYPE_OTHER:
-    level = Logging::LogLevel_Info;
-    break;
   case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
   case GL_DEBUG_TYPE_PORTABILITY:
   case GL_DEBUG_TYPE_PERFORMANCE:
@@ -57,7 +54,8 @@ static void GLAPIENTRY _ErrorMessageCallback(GLenum source, GLenum type, GLuint 
     break;
   }
 
-  flLog(level, ("OpenGL Error: " + ctString(message)).c_str());
+  if (level != Logging::LogLevel_None)
+    flLog(level, ("OpenGL Error: " + ctString(message)).c_str());
 }
 
 OpenGL::OpenGL(Platform::Window *pWindow, const RenderTargetOptions *pOptions)

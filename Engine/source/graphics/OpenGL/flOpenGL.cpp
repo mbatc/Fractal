@@ -36,7 +36,7 @@ namespace flEngine
       }
 
       if (indexed)
-        glDrawElements(glDrawMode, (GLsizei)elementCount, GL_UNSIGNED_INT, (void*)elementOffset);
+        glDrawElements(glDrawMode, (GLsizei)elementCount, GL_UNSIGNED_INT, (void*)(elementOffset * sizeof(uint32_t)));
       else
         glDrawArrays(glDrawMode, (GLsizei)elementOffset, (GLsizei)elementCount);
     }
@@ -61,24 +61,24 @@ namespace flEngine
       return GLVertexArray::Create(this);
     }
 
-    HardwareBuffer* OpenGL::CreateBuffer(BufferBinding binding, AccessFlags accessFlags)
+    HardwareBuffer* OpenGL::CreateBuffer(BufferBinding binding, BufferUsage bufferUsage)
     {
-      return GLHardwareBuffer::Create(this, binding, accessFlags);
+      return GLHardwareBuffer::Create(this, binding, bufferUsage);
     }
 
-    IndexBuffer* OpenGL::CreateIndexBuffer(int64_t indexCount, uint32_t const* pValues)
+    IndexBuffer* OpenGL::CreateIndexBuffer(int64_t indexCount, uint32_t const* pValues, BufferUsage bufferUsage)
     {
-      return GLIndexBuffer::Create(this, indexCount, pValues);
+      return GLIndexBuffer::Create(this, indexCount, pValues, bufferUsage);
     }
 
-    VertexBuffer* OpenGL::CreateVertexBuffer(int64_t size, void const* pInitialData)
+    VertexBuffer* OpenGL::CreateVertexBuffer(int64_t size, void const* pInitialData, BufferUsage bufferUsage)
     {
-      return GLVertexBuffer::Create(this, size, pInitialData);
+      return GLVertexBuffer::Create(this, size, pInitialData, bufferUsage);
     }
 
-    UniformBuffer *OpenGL::CreateUniformBuffer(int64_t size, void const *pInitialData)
+    UniformBuffer *OpenGL::CreateUniformBuffer(int64_t size, void const *pInitialData, BufferUsage bufferUsage)
     {
-      return GLUniformBuffer::Create(this, size, pInitialData);
+      return GLUniformBuffer::Create(this, size, pInitialData, bufferUsage);
     }
 
     Program* OpenGL::CreateProgram()

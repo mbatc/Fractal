@@ -1,12 +1,19 @@
 #include "platform/flEventQueue.h"
+#include "platform/flWindow.h"
+#include "threads/flThreads.h"
+#include "graphics/flAPI.h"
 #include "input/flInputs.h"
 #include "flApplication.h"
 #include "flInit.h"
 #include "flRef.h"
-#include <functional>
+#include "platform/flWindow.h"
+#include "graphics/flWindowRenderTarget.h"
+
 #include "ctVector.h"
 #include "ctString.h"
 #include "ctKeyValue.h"
+
+#include <functional>
 
 typedef  void (*EventFunc)(flEngine::Platform::Event*, void*);
 
@@ -22,15 +29,21 @@ namespace flEngine
   class flPIMPL_CLASS(Application)
   {
   public:
-    flPIMPL_CLASS(Application)::flPIMPL_CLASS(Application)()
+    void Construct(Application *pApp, char const * graphicsAPIName)
     {
       // Initialize Fractal
       flEngine::Initialize();
 
-      m_pSystemEvents = flNew EventQueue;
+      m_pApp = pApp;
+
+      m_pSystemEvents = MakeRef<EventQueue>();
       m_pSystemEvents->SetEventCallback([](Event *pEvent, void *pUserData) {
-        ((Impl_Application*)pUserData)->HandleEvent(pEvent);
-      }, this);
+        ((Impl_Application *)pUserData)->HandleEvent(pEvent);
+        }, this);
+
+      // Create the applications main window and graphics API
+      m_pMainWindow = MakeRef<Window>("Main Window", Window::Flag_Default, Window::DM_Windowed);
+      m_pGraphics   = MakeRef(Graphics::API::Create(graphicsAPIName, m_pMainWindow.Get()), false);
     }
 
     void HandleEvent(Event* pEvent)
@@ -47,7 +60,6 @@ namespace flEngine
       (m_pApp->*func)(args...);
       for (int64_t i = 0; i < m_subSystems.size(); ++i)
         (m_subSystems[i].m_val->*func)(args...);
-          return false;
       return true;
     }
 
@@ -88,6 +100,7 @@ namespace flEngine
 
     void Render()
     {
+      m_pApp->GetMainWindow()->GetRenderTarget()->Bind();
       InvokeBehaviour(&ApplicationBehaviour::OnRender);
     }
 
@@ -96,9 +109,16 @@ namespace flEngine
       InvokeBehaviour(&ApplicationBehaviour::OnPostRender);
     }
 
-    Application* m_pApp = nullptr;
-    EventQueue* m_pSystemEvents = nullptr;
-    bool m_isRunning = true;
+    // Application state
+    Application* m_pApp      = nullptr;
+    bool         m_isRunning = true;
+
+    // Core components of an application
+    Ref<Graphics::API> m_pGraphics     = nullptr;
+    Ref<Window>        m_pMainWindow   = nullptr;
+    Ref<EventQueue>    m_pSystemEvents = nullptr;
+
+    // Custom application sub systems
     ctVector<ctKeyValue<ctString, Ref<SubSystem>>> m_subSystems;
   };
 
@@ -108,14 +128,36 @@ namespace flEngine
   {
     Impl()->m_isRunning = false;
   }
+
+  Platform::Window *flEngine::Application::GetMainWindow()
+  {
+    return Impl()->m_pMainWindow.Get();
+  }
+
+  Platform::Window const * flEngine::Application::GetMainWindow() const
+  {
+      return Impl()->m_pMainWindow.Get();
+  }
+
+  Graphics::API *flEngine::Application::GetGraphicsAPI()
+  {
+    return Impl()->m_pGraphics.Get();
+  }
+
+  Graphics::API const *flEngine::Application::GetGraphicsAPI() const
+  {
+    return Impl()->m_pGraphics.Get();
+  }
   
   Application& Application::Get() { return *_pApplication; }
 
-  Application::Application()
+  Application::Application(char const *graphicsAPIName)
   {
+    // Set the global application ptr
     _pApplication = this;
 
-    Impl()->m_pApp = this;
+    // Construct the application implementation
+    Impl()->Construct(this, graphicsAPIName);
   }
 
   void Application::AddSubSystem(SubSystem *pSystem, char const *name)
@@ -148,9 +190,13 @@ namespace flEngine
       Impl()->Update();
       Impl()->PostUpdate();
 
+      GetMainWindow()->GetRenderTarget()->Clear();
       Impl()->PreRender();
       Impl()->Render();
       Impl()->PostRender();
+      GetMainWindow()->GetRenderTarget()->Swap();
+
+      Threads::Sleep(1);
     }
 
     Impl()->Shutdown();

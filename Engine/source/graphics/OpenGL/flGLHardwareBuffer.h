@@ -9,16 +9,16 @@ namespace flEngine
   {
     class GLHardwareBuffer : public HardwareBuffer
     {
-      GLHardwareBuffer(API *pAPI, BufferBinding binding, AccessFlags flags);
+      GLHardwareBuffer(API *pAPI, BufferBinding binding, BufferUsage flags);
 
     public:
-      static GLHardwareBuffer* Create(API *pAPI, BufferBinding binding, AccessFlags flags);
+      static GLHardwareBuffer* Create(API *pAPI, BufferBinding binding, BufferUsage usage);
 
       bool Resize(int64_t size, bool discardData) override;
       bool Set(void const * pData, int64_t size) override;
       bool Get(void * pBuffer, int64_t length = -1, int64_t offset = 0) override;
       int64_t GetSize() const override;
-      AccessFlags GetAccessFlags() const override;
+      BufferUsage GetBufferUsage() const override;
       BufferBinding GetBinding() const override;
       void* Map(AccessFlags flags, int64_t length = -1, int64_t offset = 0) override;
       bool Unmap() override;
@@ -28,8 +28,8 @@ namespace flEngine
       int64_t m_size = 0;
       uint32_t m_bufferID = 0;
 
-      uint32_t m_glAccessFlags = 0;
-      AccessFlags m_accessFlags = AccessFlag_None;
+      uint32_t m_glUsageFlags = 0;
+      BufferUsage m_usageFlag = BufferUsage_Default;
       BufferBinding m_binding = BufferBinding_Unknown;
 
       // Description of the mapped client memory

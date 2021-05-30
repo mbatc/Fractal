@@ -26,12 +26,8 @@ static Window *_pHoveredWindow = nullptr;
 
 static Window *_GetWindowFromHandle(HWND hWnd);
 
-void Impl_Window::Construct(Window *pWindow, const char *title, Window::Flags flags, Window::DisplayMode displayMode, InputDeviceServer *pKeyboardServer, InputDeviceServer *pMouseServer)
+void Impl_Window::Construct(Window *pWindow, const char *title, Window::Flags flags, Window::DisplayMode displayMode)
 {
-  // Set input device servers
-  m_keyboard.SetServer(pKeyboardServer);
-  m_mouse.SetServer(pMouseServer);
-
   HINSTANCE hInstance = ::GetModuleHandle(NULL);
 
   // Setup the event filter, so we only receive events for this window
@@ -267,7 +263,11 @@ void Impl_Window::SetFocus(Window::FocusFlags flags, bool focused)
 
 void Impl_Window::SetSize(int64_t width, int64_t height)
 {
-  ::SetWindowPos((HWND)m_hWnd, 0, 0, 0, (int)width, (int)height, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+  RECT rect = { 0 };
+  rect.left  = 0;          rect.top    = 0;
+  rect.right = (int)width; rect.bottom = (int)height;
+  AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+  ::SetWindowPos((HWND)m_hWnd, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 }
 
 void Impl_Window::SetPosition(int64_t posX, int64_t posY)
@@ -318,7 +318,7 @@ Window::Flags Impl_Window::GetFlags() const
 void Impl_Window::GetRect(int64_t *pPosX, int64_t *pPosY, int64_t *pWidth, int64_t *pHeight) const
 {
   RECT rect = { 0 };
-  ::GetWindowRect((HWND)m_hWnd, &rect);
+  ::GetClientRect((HWND)m_hWnd, &rect);
 
   if (pPosX)   *pPosX   = rect.left;
   if (pPosY)   *pPosY   = rect.top;

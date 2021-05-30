@@ -26,6 +26,10 @@ namespace flEngine
 
       // Stereo 3D
       bool stereoBuffer = false;
+
+      // Width and height of a texture render target
+      int64_t width  = -1;
+      int64_t height = -1;
     };
 
     class flEXPORT RenderTarget : public APIResource

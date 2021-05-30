@@ -14,7 +14,7 @@ namespace flEngine
   {
     class Impl_Window;
 
-    class flEXPORT Window
+    class flEXPORT Window : public Interface
     {
       flPIMPL_DEF(Window);
 
@@ -218,20 +218,6 @@ namespace flEngine
        * @param [in] reset Set this to false if the received status should NOT be reset to false.
        */
       bool ReceivedEvent(flIN Platform::EventID id, flIN bool reset = true);
-
-      /**
-       * @brief Get the keyboard input interface for this window.
-       *
-       * @return The Keyboard interface
-       */
-      Input::Keyboard* GetKeyboard() const;
-
-      /**
-       * @brief Get the mouse input interface for this window.
-       *
-       * @return The Mouse interface
-       */
-      Input::Mouse* GetMouse() const;
 
       /**
        * @brief Test if this window is the source of the given event.

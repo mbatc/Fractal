@@ -19,6 +19,7 @@ namespace flEngine
     class VertexBuffer;
     class IndexBuffer;
     class UniformBuffer;
+    class Texture;
     class Texture2D;
     class VertexArray;
     class RenderTarget;
@@ -100,22 +101,22 @@ namespace flEngine
       /**
        * @brief
        */
-      virtual HardwareBuffer* CreateBuffer(flIN BufferBinding type, flIN AccessFlags accessFlags) = 0;
+      virtual HardwareBuffer* CreateBuffer(flIN BufferBinding type, flIN BufferUsage bufferUsage) = 0;
 
       /**
        * @brief 
        */
-      virtual VertexBuffer* CreateVertexBuffer(flIN int64_t size, flIN void const *pInitialData = nullptr) = 0;
+      virtual VertexBuffer* CreateVertexBuffer(flIN int64_t size, flIN void const *pInitialData = nullptr, flIN BufferUsage bufferUsage = BufferUsage_Default) = 0;
 
       /**
        * @brief
        */
-      virtual IndexBuffer* CreateIndexBuffer(flIN int64_t indexCount = 0, uint32_t const * pValues = nullptr) = 0;
+      virtual IndexBuffer* CreateIndexBuffer(flIN int64_t indexCount = 0, uint32_t const * pValues = nullptr, flIN BufferUsage bufferUsage = BufferUsage_Default) = 0;
 
       /**
        * @brief
        */
-      virtual UniformBuffer * CreateUniformBuffer(flIN int64_t size, flIN void const *pInitialData = nullptr) = 0;
+      virtual UniformBuffer * CreateUniformBuffer(flIN int64_t size, flIN void const *pInitialData = nullptr, flIN BufferUsage bufferUsage = BufferUsage_Default) = 0;
 
       /**
        * @brief
