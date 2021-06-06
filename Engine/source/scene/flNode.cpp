@@ -1,4 +1,5 @@
 #include "scene/flComponent.h"
+#include "scene/flScene.h"
 #include "scene/flNode.h"
 #include "ctString.h"
 
@@ -14,6 +15,8 @@ namespace flEngine
       int64_t id;
 
       ctVector<Ref<Component>> components;
+
+      Scene * m_pScene;
     };
 
     flPIMPL_IMPL(Node);
@@ -46,8 +49,8 @@ namespace flEngine
         }
       }
 
+      pNewComponent->SetNode(this);
       Impl()->components.push_back(MakeRef(pNewComponent, true));
-
       return pNewComponent;
     }
 
@@ -59,6 +62,18 @@ namespace flEngine
       }
 
       return nullptr;
+    }
+
+    void Node::SetScene(flIN Scene *pScene) {
+      Impl()->m_pScene = pScene;
+    }
+
+    Scene *Node::_GetScene() {
+      return Impl()->m_pScene;
+    }
+
+    Scene const *Node::_GetScene() const {
+      return Impl()->m_pScene;
     }
   }
 }

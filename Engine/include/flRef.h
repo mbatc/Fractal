@@ -88,14 +88,6 @@ namespace flEngine
       return Get() != nullptr;
     }
 
-    bool operator==(T const* pPtr) const {
-      return pPtr == Get();
-    }
-
-    bool operator!=(T const* pPtr) const {
-      return !(*this == pPtr);
-    }
-
     template<typename T2>
     Ref<T2> StaticCast() {
       return Ref<T2>(static_cast<T2*>(Get()), true);

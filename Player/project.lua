@@ -1,12 +1,13 @@
 
 project "FractalPlayer"
   configurations { "Debug", "Release" }
-
+  
   dependson { "FractalEngine" }
-
+  
   kind "ConsoleApp"
   architecture "x64"
   language "C++"
+  cppdialect "C++17"
   characterset ("MBCS")
 
 -- Set Directories

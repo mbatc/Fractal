@@ -13,11 +13,12 @@ namespace flEngine
     class flEXPORT Transform : public Component
     {
       flPIMPL_DEF(Transform);
+      FL_IMPLEMENT_COMPONENT(Transform, "Transform", Component);
 
     public:
-      FL_IMPLEMENT_COMPONENT(Transform, "Transform");
-
       Math::Mat4D GetTransform();
+
+      Math::Mat4D GetInverseTransform();
 
       Math::Vec3D GetPosition();
 
@@ -34,6 +35,8 @@ namespace flEngine
       void SetOrientation(Math::QuatD quat);
 
       Math::Mat4D GetLocalTransform();
+
+      Math::Mat4D GetInverseLocalTransform();
 
       Math::Vec3D GetLocalPosition();
 
@@ -63,9 +66,18 @@ namespace flEngine
         return MakeRef(_GetParent(), true);
       }
 
+      int64_t GetChildCount() const;
+
+      inline Ref<Transform> GetChild(flIN int64_t index) {
+        return MakeRef(_GetChild(index), true);
+      }
+
     private:
-      void       _SetParent(Transform* pParent);
-      Transform* _GetParent();
+      void        _SetParent(Transform* pParent);
+      Transform * _GetParent();
+      Transform * _GetChild(int64_t index);
+      Transform const * _GetParent() const;
+      Transform const * _GetChild(int64_t index) const;
     };
   }
 }

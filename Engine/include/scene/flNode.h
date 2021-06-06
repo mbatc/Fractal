@@ -9,6 +9,7 @@ namespace flEngine
   {
     class Impl_Node;
 
+    class Scene;
     class Component;
 
     class flEXPORT Node : public Interface
@@ -57,9 +58,18 @@ namespace flEngine
         return MakeRef((T*)GetComponent(T::TypeID()), true);
       }
 
+      inline Ref<Scene> GetScene() {
+        return MakeRef(_GetScene(), true);
+      }
+
     protected:
       Component * AddComponent(flIN Component* pComponent);
       Component const * GetComponent(flIN int64_t typeID) const;
+
+    private:
+      void SetScene(flIN Scene *pScene);
+      Scene * _GetScene();
+      Scene const * _GetScene() const;
     };
   }
 }

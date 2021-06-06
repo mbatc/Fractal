@@ -25,12 +25,6 @@ public:
   float testFloat = 10.0f;
 };
 
-class Mesh : public Scene::Component
-{
-public:
-  FL_IMPLEMENT_COMPONENT(Mesh, "Mesh");
-};
-
 class PerspectiveCamera
 {
 public:
@@ -96,13 +90,10 @@ public:
 
   virtual bool OnStartup() override
   {
-    Ref<Scene::Node> node = m_scene.AddNode();
+    Ref<Scene::Transform> a = MakeRef<Scene::Transform>();
+    Ref<Scene::Transform> b = MakeRef<Scene::Transform>();
+    Ref<Scene::Transform> c = MakeRef<Scene::Transform>();
 
-    node->AddComponent<Mesh>();
-    node->AddComponent<Scene::Transform>();
-
-    Ref<Mesh> mesh = node->GetComponent<Mesh>();
-    Ref<Scene::Transform> trans = node->GetComponent<Scene::Transform>();
 
     // Logging::SetLogLevel(Logging::LogLevel_Warning);
 
