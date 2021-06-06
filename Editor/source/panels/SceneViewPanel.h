@@ -168,8 +168,8 @@ public:
       opts.colourFormat = PixelFormat_RGBA;
       opts.pixelComponentType = PixelComponentType_UNorm8;
       opts.depthFormat = DepthFormat_Float24Stencil8;
-      opts.width = ContentAreaSize().x;
-      opts.height = ContentAreaSize().y;
+      opts.width  = (int64_t)ContentAreaSize().x;
+      opts.height = (int64_t)ContentAreaSize().y;
 
       m_target = nullptr;
       if (opts.width > 0 && opts.height > 0)

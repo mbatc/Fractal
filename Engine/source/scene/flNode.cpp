@@ -54,25 +54,61 @@ namespace flEngine
       return pNewComponent;
     }
 
-    Component const * Node::GetComponent(flIN int64_t typeID) const {
-      for (Ref<Component> const& pComponent : Impl()->components) {
-        if (pComponent->GetTypeID() == typeID) {
-          return pComponent;
+    Component *Node::GetComponent(flIN int64_t typeID) {
+      return GetComponentByIndex(FindComponent(typeID));
+    }
+
+    Component const *Node::GetComponent(flIN int64_t typeID) const {
+      return GetComponentByIndex(FindComponent(typeID));
+    }
+
+    Component *Node::GetComponent(flIN char const *typeName) {
+      return GetComponentByIndex(FindComponent(typeName));
+    }
+
+    Component const *Node::GetComponent(flIN char const *typeName) const {
+      return GetComponentByIndex(FindComponent(typeName));
+    }
+
+    Component *Node::GetComponentByIndex(flIN int64_t index) {
+      return index < 0 || index >= GetComponentCount() ? nullptr : Impl()->components[index];
+    }
+
+    Component const *Node::GetComponentByIndex(flIN int64_t index) const {
+      return index < 0 || index >= GetComponentCount() ? nullptr : Impl()->components[index];
+    }
+
+    int64_t Node::FindComponent(flIN int64_t typeID) const {
+      int64_t numComponents = GetComponentCount();
+      for (int64_t i = 0; i < numComponents; ++i) {
+        if (GetComponentByIndex(i)->GetTypeID() == typeID) {
+          return i;
         }
       }
 
-      return nullptr;
+      return -1;
+    }
+
+    int64_t Node::FindComponent(flIN char const * typeName) const {
+      int64_t numComponents = GetComponentCount();
+      for (int64_t i = 0; i < numComponents; ++i) {
+        if (strcmp(typeName, GetComponentByIndex(i)->GetType()) == 0) {
+          return i;
+        }
+      }
+
+      return -1;
     }
 
     void Node::SetScene(flIN Scene *pScene) {
       Impl()->m_pScene = pScene;
     }
 
-    Scene *Node::_GetScene() {
+    Scene *Node::GetScene() {
       return Impl()->m_pScene;
     }
 
-    Scene const *Node::_GetScene() const {
+    Scene const *Node::GetScene() const {
       return Impl()->m_pScene;
     }
   }

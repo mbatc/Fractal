@@ -54,22 +54,39 @@ namespace flEngine
        * @brief Get a component attached to this node.
        */
       template<typename T>
-      Ref<T> GetComponent() const {
-        return MakeRef((T*)GetComponent(T::TypeID()), true);
+      T * GetComponent() const {
+        return (T*)GetComponent(T::TypeID());
       }
 
-      inline Ref<Scene> GetScene() {
-        return MakeRef(_GetScene(), true);
-      }
+      Scene * GetScene();
+      Scene const * GetScene() const;
+
+      /**
+       * @brief Get a component attached to this node using it's type ID
+       */
+      Component * GetComponent(flIN int64_t typeID);
+      Component const * GetComponent(flIN int64_t typeID) const;
+
+      /**
+       * @brief Get a component attached to this node using it's registered type name.
+       */
+      Component * GetComponent(flIN char const *typeName);
+      Component const * GetComponent(flIN char const * typeName) const;
+
+      /**
+       * @brief Get a component attached to this node using it's index
+       */
+      Component * GetComponentByIndex(flIN int64_t index);
+      Component const * GetComponentByIndex(flIN int64_t index) const;
+
+      int64_t FindComponent(flIN int64_t typeID) const;
+      int64_t FindComponent(flIN char const * typeName) const;
 
     protected:
-      Component * AddComponent(flIN Component* pComponent);
-      Component const * GetComponent(flIN int64_t typeID) const;
+      Component * AddComponent(flIN Component * pComponent);
 
     private:
       void SetScene(flIN Scene *pScene);
-      Scene * _GetScene();
-      Scene const * _GetScene() const;
     };
   }
 }

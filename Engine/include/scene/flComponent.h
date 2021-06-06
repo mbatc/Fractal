@@ -4,6 +4,32 @@
 #include "../flInterface.h"
 #include "flComponentRegistry.h"
 
+template <typename T>
+struct flEXPORT Serializer
+{
+  static bool Serialize(T const *pObject) {
+    return false;
+  }
+
+  static bool Deserialize(T **ppObject) {
+    return false;
+  }
+};
+
+template<typename T>
+struct ComponentTraits {
+  static int64_t Type()         { return -1; }
+  static char const *TypeName() { return "Unknown"; }
+  static int64_t BaseID()       { return -1; }
+};
+
+template<>
+struct ComponentTraits<int> {
+  static int64_t Type()         { return 1; }
+  static char const *TypeName() { return "int"; }
+  static int64_t BaseID()       { return 0; }
+};
+
 #define FL_IMPLEMENT_COMPONENT(ClassName, TypeName, BaseClass)                                   \
 public:                                                                                          \
 static char const *  Type()   { return TypeName; }                                               \
@@ -44,14 +70,13 @@ namespace flEngine
       virtual char const * GetType()   const = 0;
       virtual int64_t      GetTypeID() const = 0;
 
+      Node * GetNode();
+      Node const * GetNode() const;
+
       bool Is(flIN int64_t typeID);
 
       template<typename T> Ref<T> As() {
-        return Is(T::TypeID()) ? MakeRef((T *), true) : nullptr;
-      }
-
-      inline Ref<Node> GetNode() {
-        return MakeRef(_GetNode(), true);
+        return Is(T::TypeID()) ? MakeRef((T *)this, true) : nullptr;
       }
 
     protected:
@@ -59,9 +84,6 @@ namespace flEngine
 
     private:
       void SetNode(Node * pParent);
-
-      Node * _GetNode();
-      Node const *_GetNode() const;
     };
   }
 }

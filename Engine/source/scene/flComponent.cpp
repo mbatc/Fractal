@@ -21,10 +21,10 @@ namespace flEngine
 
     bool Component::Is(flIN int64_t typeID)
     {
-      return flEngine::Scene::ComponentRegistry::IsBase(typeID, GetTypeID());
+      return typeID == GetTypeID() || flEngine::Scene::ComponentRegistry::IsBase(typeID, GetTypeID());
     }
 
-    Node const *Component::_GetNode() const
+    Node const * Component::GetNode() const
     {
       return Impl()->m_pNode;
     }
@@ -33,7 +33,7 @@ namespace flEngine
       Impl()->m_pNode = pParent;
     }
 
-    Node *Component::_GetNode()
+    Node * Component::GetNode()
     {
       return Impl()->m_pNode;
     }
