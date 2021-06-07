@@ -264,7 +264,7 @@ namespace flEngine
         return Impl()->children.size();
     }
 
-    void Transform::_SetParent(Transform * pParent)
+    void Transform::SetParent(Transform * pParent)
     {
       if (Impl()->pParent == pParent)
         return;
@@ -293,22 +293,22 @@ namespace flEngine
       Impl()->SetReEvaluate(false);
     }
 
-    Transform* Transform::_GetParent()
+    Transform* Transform::GetParent()
     {
       return Impl()->pParent;
     }
 
-    Transform* Transform::_GetChild(int64_t index)
+    Transform* Transform::GetChild(int64_t index)
     {
       return Impl()->children[index].Get();
     }
 
-    Transform const * Transform::_GetParent() const
+    Transform const * Transform::GetParent() const
     {
       return Impl()->pParent;
     }
 
-    Transform const * Transform::_GetChild(int64_t index) const
+    Transform const * Transform::GetChild(int64_t index) const
     {
       return Impl()->children[index].Get();
     }

@@ -54,30 +54,15 @@ namespace flEngine
 
       operator Math::Mat4D() { return GetTransform(); }
 
-      inline void SetChild(Ref<Transform> pTransform) {
-        pTransform->_SetParent(this);
-      }
-
-      inline void SetParent(Ref<Transform> pTransform) {
-        _SetParent(pTransform.Get());
-      }
-
-      inline Ref<Transform> GetParent() {
-        return MakeRef(_GetParent(), true);
-      }
-
       int64_t GetChildCount() const;
 
-      inline Ref<Transform> GetChild(flIN int64_t index) {
-        return MakeRef(_GetChild(index), true);
-      }
+      void        SetParent(Transform* pParent);
+      Transform * GetParent();
 
-    private:
-      void        _SetParent(Transform* pParent);
-      Transform * _GetParent();
-      Transform * _GetChild(int64_t index);
-      Transform const * _GetParent() const;
-      Transform const * _GetChild(int64_t index) const;
+      Transform * GetChild(int64_t index);
+
+      Transform const * GetParent() const;
+      Transform const * GetChild(int64_t index) const;
     };
   }
 }

@@ -7,6 +7,8 @@ class EditorSystem : public flEngine::SubSystem
 {
 public:
   EditorSystem() {}
+
+  int64_t m_selectedNode;
 };
 
 #endif // EditorSystem_h__

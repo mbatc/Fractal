@@ -15,19 +15,20 @@ namespace flEngine
     {
       flPIMPL_DEF(Scene);
     public:
+      Scene();
 
-      inline Ref<Node> AddNode(char const * name = "Node", flIN int64_t parentID = -1) {
-        return AddNode(GetNextNodeID(), name, parentID);
-      }
+      Node* AddNode(char const* name = "Node", flIN int64_t parentID = -1);
 
-      inline Ref<Node> AddNode(flIN int64_t id, flIN char const* name = "Node", flIN int64_t parentID = -1) {
-        return MakeRef<Node>(_AddNode(id, name), true);
-      }
+      Node* AddNode(flIN int64_t id, flIN char const* name = "Node", flIN int64_t parentID = -1);
+
+      Node* GetNode(flIN int64_t id);
+      Node const * GetNode(flIN int64_t id) const;
+
+      Node * GetRootNode();
+      Node const * GetRootNode() const;
 
     protected:
       int64_t GetNextNodeID();
-
-      Node* _AddNode(flIN int64_t id, flIN char const* name);
     };
   }
 }

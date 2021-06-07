@@ -5,6 +5,7 @@
 #include "EditorGUI.h"
 #include "ProjectPanel.h"
 #include "ScenePanel.h"
+#include "SceneSystem.h"
 #include "SceneViewPanel.h"
 #include "PropertiesPanel.h"
 
@@ -20,6 +21,7 @@ public:
   FractalEditor()
     : Application("OpenGL")
   {
+    AddSubSystem<SceneSystem>();
     AddSubSystem<EditorGUI>();
     AddSubSystem<EditorSystem>();
 

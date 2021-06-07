@@ -27,7 +27,14 @@ namespace flEngine
 
       char timeBuff[100];
       time_t now = time(0);
+
+#ifdef flPLATFORM_WINDOWS
+      tm t; // Safe version on windows
+      localtime_s(&t, &now);
+      strftime(timeBuff, 100, "%H:%M:%S.00", &t);
+#else
       strftime(timeBuff, 100, "%H:%M:%S.00", localtime(&now));
+#endif
 
       // Print prefix
       printf("[%s] %s | ",

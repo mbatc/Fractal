@@ -16,7 +16,12 @@ namespace flEngine
     {
       flPIMPL_DEF(Node);
 
+      friend class Scene;
+
     public:
+      /**
+       * @brief Construct a new node with the given ID and name.
+       */
       Node(flIN int64_t id, flIN char const * name = "Node");
 
       /**
@@ -58,6 +63,9 @@ namespace flEngine
         return (T*)GetComponent(T::TypeID());
       }
 
+      /**
+       * @brief Get a pointer to the scene that this Node belongs to.
+       */
       Scene * GetScene();
       Scene const * GetScene() const;
 
@@ -79,6 +87,9 @@ namespace flEngine
       Component * GetComponentByIndex(flIN int64_t index);
       Component const * GetComponentByIndex(flIN int64_t index) const;
 
+      /**
+       * @brief Find the index of a component attached to this node.
+       */
       int64_t FindComponent(flIN int64_t typeID) const;
       int64_t FindComponent(flIN char const * typeName) const;
 

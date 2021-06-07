@@ -8,9 +8,9 @@ namespace flEngine
   {
     class flEXPORT NodeBehaviour : public Component
     {
-    public:
       FL_IMPLEMENT_COMPONENT(NodeBehaviour, "NodeBehaviour", Component)
 
+    public:
       virtual void OnUpdate();
       virtual void OnPreUpdate();
       virtual void OnPostUpdate();

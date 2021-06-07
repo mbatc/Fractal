@@ -62,5 +62,6 @@
 #include "scene/flTransform.h"
 #include "scene/flNodeBehaviour.h"
 #include "scene/flComponentRegistry.h"
+#include "scene/flVisitor.h"
 
 #endif // fl_Engine_h__

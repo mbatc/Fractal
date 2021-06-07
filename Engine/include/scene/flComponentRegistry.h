@@ -10,7 +10,9 @@ namespace flEngine
     {
     public:
       template<typename T>
-      static inline bool Register() { return Register(T::Type(), T::TypeID(), T::BaseID()); }
+      static inline bool Register() {
+        return Register(T::Type(), T::TypeID(), T::BaseID());
+      }
 
       static bool Register(flIN char const * typeName, flIN int64_t typeID, flIN int64_t baseTypeID);
 
@@ -19,6 +21,8 @@ namespace flEngine
       static int64_t ComponentCount();
 
       static char const * GetComponentName(flIN int64_t typeID);
+
+      static int64_t NextTypeID();
     };
   }
 }

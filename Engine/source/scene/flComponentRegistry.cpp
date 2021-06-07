@@ -20,6 +20,8 @@ namespace flEngine
 
     static ctVector<ctVector<bool>>   _derivedMap;
 
+    static int64_t _nextTypeID = 0;
+
     bool ComponentRegistry::Register(flIN char const * typeName, flIN int64_t typeID, flIN int64_t baseTypeID)
     {
       if (typeID >= _components.size())
@@ -68,6 +70,10 @@ namespace flEngine
     char const * ComponentRegistry::GetComponentName(flIN int64_t typeID)
     {
       return _components[typeID].name.c_str();
+    }
+    int64_t ComponentRegistry::NextTypeID()
+    {
+      return ++_nextTypeID;
     }
   }
 }

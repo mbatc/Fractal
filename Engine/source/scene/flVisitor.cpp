@@ -7,28 +7,54 @@ namespace flEngine
 {
   namespace Scene
   {
-    bool Visitor::VisitNode(flIN Node *pNode)
+    bool Visitor::VisitNode(flIN Node * pNode)
     {
+      if (pNode == nullptr)
+        return false;
+
       if (OnEnterNode(pNode))
       {
+        Transform * pNextTransform = nullptr;
         for (int64_t i = 0; i < pNode->GetComponentCount(); ++i)
-          VisitComponent(pNode->GetComponentByIndex(i));
+        {
+          Component * pComponent = pNode->GetComponentByIndex(i);
+          if (pNextTransform == nullptr && pComponent->Is(Transform::TypeID())) {
+            pNextTransform = (Transform*)pComponent;
+          }
+          else {
+            VisitComponent(pComponent);
+          }
+        }
+
+        // If the node had a transform attached, visit the children
+        if (pNextTransform != nullptr) {
+          for (int64_t i = 0; i < pNextTransform->GetChildCount(); ++i)
+            VisitNode(pNextTransform->GetChild(i)->GetNode());
+        }
+
+        OnLeaveNode(pNode);
+        return true;
       }
+
+      return false;
     }
 
-    bool Visitor::VisitComponent(flIN Component *pComponent)
+    bool Visitor::VisitComponent(flIN Component * pComponent)
     {
-      if (pComponent->Is(Transform::TypeID())) {
-        Ref<Transform> transform = pComponent->As<Transform>();
-        for (int64_t i = 0; i < transform->GetChildCount(); ++i)
-          VisitNode(transform->GetChild(i)->GetNode());
+      if (pComponent == nullptr)
+        return false;
+
+      if (OnEnterComponent(pComponent)) {
+        OnLeaveComponent(pComponent);
+        return true;
       }
+
+      return false;
     }
 
-    bool Visitor::OnEnterNode(flIN Node *pNode) { return true; }
-    bool Visitor::OnLeaveNode(flIN Node *pNode) { return true; }
-    bool Visitor::OnEnterComponent(flIN Component *pComponent) { return true; }
-    bool Visitor::OnLeaveComponent(flIN Component *pComponent) { return true; }
-
+    bool Visitor::OnEnterNode(flIN Node * pNode) { return true; }
+    void Visitor::OnLeaveNode(flIN Node * pNode) {}
+    bool Visitor::OnEnterComponent(flIN Component * pComponent) { return true; }
+    void Visitor::OnLeaveComponent(flIN Component * pComponent) {}
   }
 }
