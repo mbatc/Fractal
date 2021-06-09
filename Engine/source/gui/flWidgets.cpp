@@ -12,6 +12,21 @@ namespace flEngine
         ImGui::Separator();
       }
 
+      flEXPORT void PushID(flIN int64_t id)
+      {
+        ImGui::PushID((int)id);
+      }
+
+      flEXPORT void PushID(flIN char const* name)
+      {
+        ImGui::PushID(name);
+      }
+
+      flEXPORT void PopID()
+      {
+        ImGui::PopID();
+      }
+
       flEXPORT bool Button(flIN char const* name)
       {
         return ImGui::Button(name);
@@ -22,19 +37,39 @@ namespace flEngine
         ImGui::Text(text);
       }
 
-      flEXPORT bool Checkbox(flIN char const* name, flIN bool* pValue)
+      flEXPORT bool Checkbox(flIN char const* name, flIN bool* pValue, flIN int64_t count)
       {
         return ImGui::Checkbox(name, pValue);
       }
 
-      flEXPORT bool Input(flIN char const* name, flIN float* pValue)
+      flEXPORT bool Input(flIN char const* name, flIN float* pValue, flIN int64_t count)
       {
-        return ImGui::InputFloat(name, pValue);
+        return ImGui::InputScalarN(name, ImGuiDataType_Float, pValue, (int)count);
       }
 
-      flEXPORT bool Input(flIN char const* name, flIN int* pValue)
+      flEXPORT bool Input(flIN char const* name, flIN double* pValue, flIN int64_t count)
       {
-        return ImGui::InputInt(name, pValue);
+        return ImGui::InputScalarN(name, ImGuiDataType_Double, pValue, (int)count);
+      }
+
+      flEXPORT bool Input(flIN char const* name, flIN int32_t* pValue, flIN int64_t count)
+      {
+        return ImGui::InputScalarN(name, ImGuiDataType_S32, pValue, (int)count);
+      }
+
+      flEXPORT bool Input(flIN char const* name, flIN uint32_t* pValue, flIN int64_t count)
+      {
+        return ImGui::InputScalarN(name, ImGuiDataType_U32, pValue, (int)count);
+      }
+
+      flEXPORT bool Input(flIN char const* name, flIN int64_t* pValue, flIN int64_t count)
+      {
+        return ImGui::InputScalarN(name, ImGuiDataType_S64, pValue, (int)count);
+      }
+
+      flEXPORT bool Input(flIN char const* name, flIN uint64_t* pValue, flIN int64_t count)
+      {
+        return ImGui::InputScalarN(name, ImGuiDataType_U64, pValue, (int)count);
       }
 
       flEXPORT bool Input(flIN char const* name, flIN char* text, flIN int64_t bufferSize)
@@ -61,21 +96,6 @@ namespace flEngine
       {
         return ImGui::IsItemClicked();
       }
-    }
-
-    ScopeID::ScopeID(char const* id)
-    {
-      ImGui::PushID(id);
-    }
-
-    ScopeID::ScopeID(int64_t id)
-    {
-      ImGui::PushID((ImGuiID)id);
-    }
-
-    ScopeID::~ScopeID()
-    {
-      ImGui::PopID();
     }
   }
 }

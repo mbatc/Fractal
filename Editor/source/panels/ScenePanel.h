@@ -17,7 +17,7 @@ class ScenePanel : public flEngine::GUI::Panel
       if (pNode == pNode->GetScene()->GetRootNode())
         return true;
 
-      m_idStack.emplace_back(pNode->GetID());
+      flEngine::GUI::Widgets::PushID(pNode->GetID());
 
       bool open = flEngine::GUI::Widgets::BeginTreeNode(pNode->GetName(), m_selectedID == pNode->GetID());
       if (flEngine::GUI::Widgets::IsItemClicked()) {
@@ -25,7 +25,7 @@ class ScenePanel : public flEngine::GUI::Panel
       }
 
       if (!open)
-        m_idStack.pop_back();
+        flEngine::GUI::Widgets::PopID();
 
       return open;
     }
@@ -34,12 +34,11 @@ class ScenePanel : public flEngine::GUI::Panel
       if (pNode != pNode->GetScene()->GetRootNode())
       {
         flEngine::GUI::Widgets::EndTreeNode();
-        m_idStack.pop_back();
+        flEngine::GUI::Widgets::PopID();
       }
     }
 
     int64_t m_selectedID;
-    ctVector<flEngine::GUI::ScopeID> m_idStack;
   };
 
 public:
@@ -54,7 +53,7 @@ public:
     flEngine::Ref<EditorSystem> pEditor = flEngine::Application::Get().GetSubSystem<EditorSystem>();
     flEngine::Ref<flEngine::Scene::Scene> pScene = m_pSceneSystem->ActiveScene();
     if (flEngine::GUI::Widgets::Button("Add")) {
-      flEngine::Scene::Node* pNode = pScene->AddNode("Node Node", pEditor->m_selectedNode);
+      flEngine::Scene::Node* pNode = pScene->AddNode("New Node", pEditor->m_selectedNode);
       pEditor->m_selectedNode = pNode->GetID();
     }
 

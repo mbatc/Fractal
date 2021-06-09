@@ -19,7 +19,7 @@ namespace flEngine
       return typeID++;
     }
 
-    bool Component::Is(flIN int64_t typeID)
+    bool Component::Is(flIN int64_t typeID) const
     {
       return typeID == GetTypeID() || flEngine::Scene::ComponentRegistry::IsBase(typeID, GetTypeID());
     }

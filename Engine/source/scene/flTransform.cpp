@@ -133,7 +133,7 @@ namespace flEngine
           ReEvaluateGlobal();
           reEvaluateLocal  = true;
         }
-        else if (!reEvaluateGlobal)
+        else if (!local && !reEvaluateGlobal)
         {
           ReEvaluateLocal();
           reEvaluateGlobal = true;
@@ -190,17 +190,17 @@ namespace flEngine
 
     Math::Vec3D Transform::GetLocalPosition()
     {
-      return Impl()->Evaluated().position;
+      return Impl()->Evaluated().localPosition;
     }
 
     Math::Vec3D Transform::GetLocalScale()
     {
-      return Impl()->Evaluated().scale;
+      return Impl()->Evaluated().localScale;
     }
 
     Math::QuatD Transform::GetLocalOrientation()
     {
-      return Impl()->Evaluated().orientation;
+      return Impl()->Evaluated().localOrientation;
     }
 
     void Transform::SetTransform(Math::Mat4D transform)

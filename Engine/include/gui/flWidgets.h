@@ -8,20 +8,16 @@ namespace flEngine
 
   namespace GUI
   {
-    class flEXPORT ScopeID
-    {
-    public:
-      ScopeID(char const * id);
-      ScopeID(int64_t id);
-      ~ScopeID();
-    };
-
     namespace Widgets
     {
       /**
        * @brief Draw a separator.
        */
       flEXPORT void Separator();
+
+      flEXPORT void PushID(flIN int64_t id);
+      flEXPORT void PushID(flIN char const * name);
+      flEXPORT void PopID();
 
       /**
        * @brief Draw a button.
@@ -36,17 +32,37 @@ namespace flEngine
       /**
        * @brief Draw a check box label.
        */
-      flEXPORT bool Checkbox(flIN char const* name, flIN bool* pValue);
+      flEXPORT bool Checkbox(flIN char const* name, flIN bool * pValue, flIN int64_t count = 1);
 
       /**
        * @brief Draw a float input.
        */
-      flEXPORT bool Input(flIN char const* name, flIN float* pValue);
+      flEXPORT bool Input(flIN char const* name, flIN float * pValue, flIN int64_t count = 1);
+
+      /**
+       * @brief Draw a double input.
+       */
+      flEXPORT bool Input(flIN char const* name, flIN double * pValue, flIN int64_t count = 1);
 
       /**
        * @brief Draw an int input.
        */
-      flEXPORT bool Input(flIN char const* name, flIN int* pValue);
+      flEXPORT bool Input(flIN char const* name, flIN int32_t * pValue, flIN int64_t count = 1);
+
+      /**
+       * @brief Draw an int input.
+       */
+      flEXPORT bool Input(flIN char const* name, flIN uint32_t * pValue, flIN int64_t count = 1);
+
+      /**
+       * @brief Draw an int input.
+       */
+      flEXPORT bool Input(flIN char const* name, flIN int64_t* pValue, flIN int64_t count = 1);
+
+      /**
+       * @brief Draw an int input.
+       */
+      flEXPORT bool Input(flIN char const* name, flIN uint64_t* pValue, flIN int64_t count = 1);
 
       /**
        * @brief Draw a text input.

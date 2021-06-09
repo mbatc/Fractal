@@ -47,9 +47,13 @@ namespace flEngine
       Node * GetNode();
       Node const * GetNode() const;
 
-      bool Is(flIN int64_t typeID);
+      bool Is(flIN int64_t typeID) const;
 
-      template<typename T> Ref<T> As() {
+      template<typename T> bool Is() const {
+        return Is(T::TypeID());
+      }
+
+      template<typename T> Ref<T> As() const {
         return Is(T::TypeID()) ? MakeRef((T *)this, true) : nullptr;
       }
 
