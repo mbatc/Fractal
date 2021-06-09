@@ -198,15 +198,45 @@ public:
     API *pGraphics = GetGUI()->GetGraphicsAPI();
 
     // Draw to the first window
-    Mat4F modelMat = Mat4F::Translation({ 0, 0, -3 }) * Mat4F::RotationY(clock() / 1000.0f);
     Mat4F projection = m_camera.ProjectionMatrix() * m_camera.ViewMatrix();
-    Mat4F mvp = projection * modelMat;
 
     pMaterial->Bind();
     pState->SetViewport(0, 0, m_target->GetWidth(), m_target->GetHeight());
 
-    pProgram->SetMat4("mvp", mvp);
-    pGraphics->Render(DrawMode_Triangles, true, 0, pGeometry->GetIndexCount());
+    class RenderVisitor : public flEngine::Scene::Visitor
+    {
+    public:
+      RenderVisitor(Mat4F projection, Ref<Program> pProgram, Ref<VertexArray> pVertArray, API *pAPI)
+        : m_projection(projection)
+        , m_pProgram(pProgram)
+        , m_pGraphics(pAPI)
+        , m_pVertArray(pVertArray)
+      {}
+
+      virtual bool OnEnterNode(flIN flEngine::Scene::Node* pNode) {
+        if (pNode == pNode->GetScene()->GetRootNode())
+          return true;
+
+        flEngine::Scene::Transform *pTransform = pNode->GetComponent<flEngine::Scene::Transform>();
+
+        if (pTransform)
+        {
+          Mat4F mvp = m_projection * (Mat4F)pTransform->GetTransform();
+          m_pProgram->SetMat4("mvp", mvp);
+          m_pGraphics->Render(DrawMode_Triangles, true, 0, m_pVertArray->GetIndexCount());
+        }
+
+        return true;
+      }
+
+      Mat4F m_projection;
+      Ref<Program> m_pProgram;
+      Ref<VertexArray> m_pVertArray;
+      API* m_pGraphics;
+    };
+
+    flEngine::Scene::Scene* pScene = Application::Get().GetSubSystem<SceneSystem>()->ActiveScene();
+    RenderVisitor(projection, pProgram, pGeometry, pGraphics).VisitNode(pScene->GetRootNode());
   }
 
   virtual void OnGUI() override
