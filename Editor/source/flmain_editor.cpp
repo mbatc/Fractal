@@ -5,7 +5,6 @@
 #include "EditorGUI.h"
 #include "ProjectPanel.h"
 #include "ScenePanel.h"
-#include "SceneSystem.h"
 #include "SceneViewPanel.h"
 #include "PropertiesPanel.h"
 
@@ -30,7 +29,6 @@ public:
     gui->Open<SceneViewPanel>();
     gui->Open<ProjectPanel>();
     gui->Open<PropertiesPanel>();
-
     gui->AddMenuItem("File/Exit", Exit);
 
     OnEvent(E_Wnd_Close, &FractalEditor::OnCloseEvent);

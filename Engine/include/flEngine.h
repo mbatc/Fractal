@@ -56,6 +56,7 @@
 #include "gui/flWidgets.h"
 
 // Scene
+#include "subsystem/flSceneSystem.h"
 #include "scene/flSceneGraph.h"
 #include "scene/flNode.h"
 #include "scene/flComponent.h"
