@@ -6,19 +6,19 @@ class SceneSystem : public flEngine::SubSystem
 {
 public:
   SceneSystem()
-    : m_scene(flEngine::MakeRef<flEngine::Scene::Scene>())
+    : m_scene(flEngine::MakeRef<flEngine::Scene::SceneGraph>())
   {}
 
-  flEngine::Ref<flEngine::Scene::Scene> ActiveScene() const {
+  flEngine::Ref<flEngine::Scene::SceneGraph> ActiveScene() const {
     return m_scene;
   }
 
-  class BehaviourVisitor : public flEngine::Scene::Visitor
+  class BehaviourVisitor : public flEngine::Scene::Visitor<flEngine::Scene::Component>
   {
   public:
     BehaviourVisitor(void (flEngine::Scene::NodeBehaviour::*func)()) : m_method(func) {}
 
-    virtual bool OnEnterComponent(flIN flEngine::Scene::Component* pComponent) override {
+    virtual bool OnEnter(flIN flEngine::Scene::Component* pComponent) override {
       flEngine::Scene::NodeBehaviour * pBehaviour = pComponent->As<flEngine::Scene::NodeBehaviour>();
       if (pBehaviour == nullptr)
         return false;
@@ -38,29 +38,35 @@ public:
   }
 
   virtual void OnUpdate() override {
-    BehaviourVisitor(&flEngine::Scene::NodeBehaviour::OnUpdate).VisitNode(m_scene->GetRootNode());
+    BehaviourVisitor visitor(&flEngine::Scene::NodeBehaviour::OnUpdate);
+    m_scene->Visit(nullptr, &visitor);
   }
 
   virtual void OnRender() override {
-    BehaviourVisitor(&flEngine::Scene::NodeBehaviour::OnRender).VisitNode(m_scene->GetRootNode());
+    BehaviourVisitor visitor(&flEngine::Scene::NodeBehaviour::OnRender);
+    m_scene->Visit(nullptr, &visitor);
   }
 
   virtual void OnPreUpdate() override {
-    BehaviourVisitor(&flEngine::Scene::NodeBehaviour::OnPreUpdate).VisitNode(m_scene->GetRootNode());
+    BehaviourVisitor visitor(&flEngine::Scene::NodeBehaviour::OnPreUpdate);
+    m_scene->Visit(nullptr, &visitor);
   }
 
   virtual void OnPreRender() override {
-    BehaviourVisitor(&flEngine::Scene::NodeBehaviour::OnPreRender).VisitNode(m_scene->GetRootNode());
+    BehaviourVisitor visitor(&flEngine::Scene::NodeBehaviour::OnPreRender);
+    m_scene->Visit(nullptr, &visitor);
   }
 
   virtual void OnPostUpdate() override {
-    BehaviourVisitor(&flEngine::Scene::NodeBehaviour::OnPostUpdate).VisitNode(m_scene->GetRootNode());
+    BehaviourVisitor visitor(&flEngine::Scene::NodeBehaviour::OnPostUpdate);
+    m_scene->Visit(nullptr, &visitor);
   }
 
   virtual void OnPostRender() override {
-    BehaviourVisitor(&flEngine::Scene::NodeBehaviour::OnPostRender).VisitNode(m_scene->GetRootNode());
+    BehaviourVisitor visitor(&flEngine::Scene::NodeBehaviour::OnPostRender);
+    m_scene->Visit(nullptr, &visitor);
   }
 
 private:
-  flEngine::Ref<flEngine::Scene::Scene> m_scene;
+  flEngine::Ref<flEngine::Scene::SceneGraph> m_scene;
 };

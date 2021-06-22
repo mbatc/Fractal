@@ -125,7 +125,7 @@ namespace flEngine
         io.KeyMap[ImGuiKey_Z] = Input::KC_Z;
 
         API *pGraphics = Application::Get().GetGraphicsAPI();
-        m_indexBuffer  = MakeRef(pGraphics->CreateIndexBuffer(0, 0,   BufferUsage_Dynamic), false);
+        m_indexBuffer  = MakeRef(pGraphics->CreateIndexBuffer(0, 0,  BufferUsage_Dynamic), false);
         m_vertexBuffer = MakeRef(pGraphics->CreateVertexBuffer(0, 0, BufferUsage_Dynamic), false);
         m_vertexArray  = MakeRef(pGraphics->CreateVertexArray(), false);
 
@@ -228,7 +228,7 @@ namespace flEngine
       void UpdateDrawBuffers(ImDrawData *pDrawData)
       {
         m_vertexBuffer->GetBuffer()->Resize(sizeof(ImDrawVert) * pDrawData->TotalVtxCount, true);
-        m_indexBuffer->GetBuffer()->Resize(sizeof(ImDrawVert) * pDrawData->TotalIdxCount, true);
+        m_indexBuffer->GetBuffer()->Resize(sizeof(ImDrawIdx) * pDrawData->TotalIdxCount, true);
 
         if (m_vertexBuffer->GetVertexCount() == 0) return;
         if (m_indexBuffer->GetIndexCount() == 0)   return;
@@ -268,14 +268,14 @@ namespace flEngine
         return !ImGui::GetIO().WantCaptureMouse;
       } 
 
-      bool OnInputChar(Platform::Event* pEvent)
+      bool OnInputChar(Platform::Event *pEvent)
       {
         ImGui::GetIO().AddInputCharacter(pEvent->kbdASCII.character);
 
         return !ImGui::GetIO().WantTextInput;
       }
 
-      void DrawMenu(ctString const& name, Menu * pMenu)
+      void DrawMenu(ctString const &name, Menu *pMenu)
       {
         if (ImGui::BeginMenu(name.c_str()))
         {
@@ -447,9 +447,12 @@ namespace flEngine
       }
 
       pState->SetFeatureEnabled(Graphics::DeviceFeature_ScissorTest, false);
-      pGraphics->GetState()->SetFeatureEnabled(Graphics::DeviceFeature_Blend, false);
-      pGraphics->GetState()->SetFeatureEnabled(Graphics::DeviceFeature_DepthTest, true);
-      pGraphics->GetState()->SetFeatureEnabled(Graphics::DeviceFeature_StencilTest, false);
+      pState->SetFeatureEnabled(Graphics::DeviceFeature_Blend, false);
+      pState->SetFeatureEnabled(Graphics::DeviceFeature_DepthTest, true);
+      pState->SetFeatureEnabled(Graphics::DeviceFeature_StencilTest, false);
+
+      // Unbind the vertex array
+      Impl()->m_vertexArray->Unbind();
     }
 
     bool GUISystem::OnStartup()

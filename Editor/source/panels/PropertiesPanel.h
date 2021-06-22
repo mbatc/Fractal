@@ -32,7 +32,7 @@ public:
       flEngine::GUI::Widgets::Separator();
       for (int64_t i = 0; i < pNode->GetComponentCount(); ++i)
       {
-        flEngine::Scene::Component* pComponent = pNode->GetComponentByIndex(i);
+        flEngine::Scene::Component* pComponent = pNode->GetComponent(i);
         flEngine::GUI::Widgets::Label(pComponent->GetType());
         flEngine::GUI::Widgets::Separator();
         DrawComponent(pComponent);
@@ -56,9 +56,13 @@ public:
       Vec3D scl = localTransform ? pTransform->GetLocalScale() : pTransform->GetScale();
       Vec3D rot = (localTransform ? pTransform->GetLocalOrientation() : pTransform->GetOrientation()).EulerAngles();
 
+      rot = ctRads2Degs(rot);
+
       bool changed = flEngine::GUI::Widgets::Input("Position", &pos.x, 3);
       changed     |= flEngine::GUI::Widgets::Input("Scale   ", &scl.x, 3);
       changed     |= flEngine::GUI::Widgets::Input("Rotation", &rot.x, 3);
+
+      rot = ctDegs2Rads(rot);
 
       if (changed)
       {

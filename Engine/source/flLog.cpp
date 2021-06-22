@@ -62,11 +62,11 @@ namespace flEngine
 
     void Assert(flIN bool condition, flIN char const *function, flIN int64_t lineNumber, flIN char const *messageFormat, ...)
     {
-      if (condition)
+      if (!condition)
       {
         va_list argList;
         va_start(argList, messageFormat);
-        LogV(LogLevel_Failure, function, lineNumber, messageFormat, argList);
+        LogV(LogLevel_Assert, function, lineNumber, messageFormat, argList);
         va_end(argList);
         __debugbreak();
       }
@@ -76,7 +76,7 @@ namespace flEngine
     {
       va_list argList;
       va_start(argList, messageFormat);
-      LogV(LogLevel_Assert, function, lineNumber, messageFormat, argList);
+      LogV(LogLevel_Failure, function, lineNumber, messageFormat, argList);
       va_end(argList);
       __debugbreak();
     }

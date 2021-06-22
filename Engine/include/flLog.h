@@ -2,6 +2,9 @@
 #define fl_Logging_h__
 
 #include "flConfig.h"
+#include <string>
+#include <vector>
+#include <sstream>
 
 namespace flEngine
 {
@@ -53,6 +56,43 @@ namespace flEngine
   //   stream << typeid(o).name() << std::hex << (uint64_t)&o;
   //   return stream.str();
   // }
+
+  inline std::string Repr(void const *ptr) {
+    std::stringstream stream;
+    stream << std::hex << (uint64_t)ptr;
+    return stream.str();
+  }
+
+  inline std::string Repr(int8_t   const &o)    { return std::to_string(o); }
+  inline std::string Repr(int16_t  const &o)    { return std::to_string(o); }
+  inline std::string Repr(int32_t  const &o)    { return std::to_string(o); }
+  inline std::string Repr(int64_t  const &o)    { return std::to_string(o); }
+  inline std::string Repr(uint8_t  const &o)    { return std::to_string(o); }
+  inline std::string Repr(uint16_t const &o)    { return std::to_string(o); }
+  inline std::string Repr(uint32_t const &o)    { return std::to_string(o); }
+  inline std::string Repr(uint64_t const &o)    { return std::to_string(o); }
+  inline std::string Repr(float    const &o)    { return std::to_string(o); }
+  inline std::string Repr(double   const &o)    { return std::to_string(o); }
+  inline std::string Repr(long double const &o) { return std::to_string(o); }
+  inline std::string Repr(char const *o)        { return std::string(o); }
+  inline std::string Repr(std::string const &o) { return o; }
+
+  inline std::string JoinList(std::string const &separator, std::vector<std::string> const & segments) {
+    std::string result;
+    if (segments.size() > 0)
+    {
+      for (size_t i = 0; i < segments.size() - 1; ++i)
+        result += segments[i] + separator;
+      result += segments.back();
+    }
+
+    return result;
+  }
+
+  template<typename... Args>
+  inline std::string Join(std::string const &separator, Args&&... args) {
+    return JoinList(separator, std::vector<std::string>{ Repr(std::forward<Args>(args))... });
+  }
 }
 
 

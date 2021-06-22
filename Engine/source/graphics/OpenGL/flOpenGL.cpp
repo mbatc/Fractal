@@ -1,3 +1,4 @@
+#include "flLog.h"
 #include "flOpenGL.h"
 #include "flGLUtil.h"
 #include "flGLProgram.h"
@@ -36,9 +37,9 @@ namespace flEngine
       }
 
       if (indexed)
-        glDrawElements(glDrawMode, (GLsizei)elementCount, GL_UNSIGNED_INT, (void*)(elementOffset * sizeof(uint32_t)));
+        flVerifyGL(glDrawElements, glDrawMode, (GLsizei)elementCount, GL_UNSIGNED_INT, (void*)(elementOffset * sizeof(uint32_t)));
       else
-        glDrawArrays(glDrawMode, (GLsizei)elementOffset, (GLsizei)elementCount);
+        flVerifyGL(glDrawArrays, glDrawMode, (GLsizei)elementOffset, (GLsizei)elementCount);
     }
 
     OpenGL* OpenGL::Create(Platform::Window* pWindow, const RenderTargetOptions* pOptions)

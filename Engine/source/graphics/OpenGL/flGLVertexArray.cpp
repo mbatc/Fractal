@@ -12,12 +12,12 @@ namespace flEngine
     GLVertexArray::GLVertexArray(API * pAPI)
       : VertexArray(pAPI)
     {
-      glGenVertexArrays(1, &m_vao);
+      flVerifyGL(glGenVertexArrays, 1, &m_vao);
     }
 
     GLVertexArray::~GLVertexArray()
     {
-      glDeleteVertexArrays(1, &m_vao);
+      flVerifyGL(glDeleteVertexArrays, 1, &m_vao);
     }
 
     GLVertexArray *GLVertexArray::Create(API *pAPI)
@@ -27,12 +27,13 @@ namespace flEngine
 
     void GLVertexArray::Bind()
     {
-      glBindVertexArray(m_vao);
+      flVerifyGL(glBindVertexArray, m_vao);
 
       if (m_rebindVBOs)
       {
-        for (int64_t i = 0; i < m_numVBOsBounds; ++i)
-          glDisableVertexAttribArray((GLuint)i);
+        for (uint32_t &loc : m_boundLocations)
+          flVerifyGL(glDisableVertexAttribArray, (GLuint)loc);
+        m_boundLocations.clear();
 
         int32_t location = 0;
         for (int64_t bufferIndex = 0; bufferIndex < GetVertexBufferCount(); ++bufferIndex)
@@ -46,10 +47,10 @@ namespace flEngine
             GLenum glDataType = GLUtil::ToDataType(element.type);
             GLsizei width = (GLsizei)element.width;
 
-            glEnableVertexAttribArray(location);
+            flVerifyGL(glEnableVertexAttribArray, location);
             pVertexBuffer->Bind();
-            glVertexAttribPointer(location, width, glDataType, element.normalize, (GLsizei)pVertexBuffer->GetVertexStride(), (void const *)element.offset);
-
+            flVerifyGL(glVertexAttribPointer, location, width, glDataType, element.normalize, (GLsizei)pVertexBuffer->GetVertexStride(), (void const *)element.offset);
+            m_boundLocations.push_back(location);
             ++location;
           }
         }
@@ -57,13 +58,15 @@ namespace flEngine
         if (m_indexBuffer)
           m_indexBuffer->Bind();
         else
-          glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+          flVerifyGL(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        m_rebindVBOs = false;
       }
     }
 
     void GLVertexArray::Unbind()
     {
-      glBindVertexArray(0);
+      flVerifyGL(glBindVertexArray, 0);
     }
 
     void GLVertexArray::AddVertexBuffer(flIN VertexBuffer* pBuffer)

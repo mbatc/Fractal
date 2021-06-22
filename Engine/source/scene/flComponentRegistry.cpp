@@ -42,6 +42,9 @@ namespace flEngine
 
     bool ComponentRegistry::IsBase(flIN int64_t baseID, flIN int64_t derivedID)
     {
+      if (baseID >= ComponentCount() || derivedID >= ComponentCount())
+        return false;
+
       if (_derivedMap.empty())
       { // Build class hierarchy lookup
         _derivedMap.resize(ComponentCount());

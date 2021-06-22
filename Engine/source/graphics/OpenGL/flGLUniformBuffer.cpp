@@ -20,13 +20,13 @@ namespace flEngine
 
     void GLUniformBuffer::Bind(flIN int64_t index)
     {
-      glBindBufferRange(GL_UNIFORM_BUFFER, (GLuint)index, flNativeToGLID(m_pBuffer->GetNativeResource()), 0, m_pBuffer->GetSize());
+      flVerifyGL(glBindBufferRange, GL_UNIFORM_BUFFER, (GLuint)index, flNativeToGLID(m_pBuffer->GetNativeResource()), 0, m_pBuffer->GetSize());
       m_boundIndex = index;
     }
 
     void GLUniformBuffer::Unbind()
     {
-      glBindBufferRange(GL_UNIFORM_BUFFER, (GLuint)m_boundIndex, 0, 0, 0);
+      flVerifyGL(glBindBufferRange, GL_UNIFORM_BUFFER, (GLuint)m_boundIndex, 0, 0, 0);
     }
 
     HardwareBuffer *GLUniformBuffer::GetBuffer()

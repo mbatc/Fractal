@@ -1,5 +1,6 @@
+#include "scene/flTransform.h"
 #include "scene/flComponent.h"
-#include "scene/flScene.h"
+#include "scene/flSceneGraph.h"
 #include "scene/flNode.h"
 #include "ctString.h"
 
@@ -16,72 +17,108 @@ namespace flEngine
 
       ctVector<Ref<Component>> components;
 
-      Scene * m_pScene;
+      Transform *m_pTransform = nullptr;
+      SceneGraph *m_pScene = nullptr;
     };
 
     flPIMPL_IMPL(Node);
 
-    Node::Node(flIN int64_t id, flIN char const* name) {
-      Impl()->id   = id;
+    Node::Node(flIN SceneGraph *pScene, flIN int64_t id, flIN char const *name) {
+      Impl()->id = id;
       Impl()->name = name;
+      Impl()->m_pScene = pScene;
     }
 
     int64_t Node::GetID() const {
       return Impl()->id;
     }
 
-    char const* Node::GetName() const {
+    char const *Node::GetName() const {
       return Impl()->name.c_str();
     }
 
-    void Node::SetName(flIN char const* name) {
+    void Node::SetName(flIN char const *name) {
       Impl()->name = name;
+    }
+
+    Node *Node::GetParent() {
+      return GetTransform()->GetParent()->GetNode();
+    }
+
+    Node const *Node::GetParent() const {
+      return GetTransform()->GetParent()->GetNode();
+    }
+
+    Node *Node::GetChild(flIN int64_t index) {
+      return GetTransform()->GetChild(index)->GetNode();
+    }
+
+    Node const *Node::GetChild(flIN int64_t index) const {
+      return GetTransform()->GetChild(index)->GetNode();
+    }
+
+    int64_t Node::GetChildCount() const {
+      return GetTransform()->GetChildCount();
     }
 
     int64_t Node::GetComponentCount() const {
       return Impl()->components.size();
     }
 
-    Component* Node::AddComponent(flIN Component* pNewComponent) {
-      for (Ref<Component> const & pComponent : Impl()->components) {
+    Component *Node::AddComponent(flIN Component *pNewComponent) {
+      for (Ref<Component> const &pComponent : Impl()->components) {
         if (pComponent->GetType() == pNewComponent->GetType()) {
           return nullptr;
         }
       }
 
       pNewComponent->SetNode(this);
+
+      if (Impl()->m_pTransform == nullptr && pNewComponent->Is<Transform>())
+        Impl()->m_pTransform = (Transform *)pNewComponent;
+
       Impl()->components.push_back(MakeRef(pNewComponent, true));
       return pNewComponent;
     }
 
-    Component *Node::GetComponent(flIN int64_t typeID) {
-      return GetComponentByIndex(FindComponent(typeID));
+    Component *Node::GetComponentByType(flIN int64_t typeID) {
+      return GetComponent(FindComponent(typeID));
     }
 
-    Component const *Node::GetComponent(flIN int64_t typeID) const {
-      return GetComponentByIndex(FindComponent(typeID));
+    Component const *Node::GetComponentByType(flIN int64_t typeID) const {
+      return GetComponent(FindComponent(typeID));
     }
 
-    Component *Node::GetComponent(flIN char const *typeName) {
-      return GetComponentByIndex(FindComponent(typeName));
+    Component *Node::GetComponentByType(flIN char const *typeName) {
+      return GetComponent(FindComponent(typeName));
     }
 
-    Component const *Node::GetComponent(flIN char const *typeName) const {
-      return GetComponentByIndex(FindComponent(typeName));
+    Component const *Node::GetComponentByType(flIN char const *typeName) const {
+      return GetComponent(FindComponent(typeName));
     }
 
-    Component *Node::GetComponentByIndex(flIN int64_t index) {
+    Component *Node::GetComponent(flIN int64_t index) {
       return index < 0 || index >= GetComponentCount() ? nullptr : Impl()->components[index];
     }
 
-    Component const *Node::GetComponentByIndex(flIN int64_t index) const {
+    Component const *Node::GetComponent(flIN int64_t index) const {
       return index < 0 || index >= GetComponentCount() ? nullptr : Impl()->components[index];
+    }
+
+    Transform *Node::GetTransform()
+    {
+      return Impl()->m_pTransform;
+    }
+
+    Transform const *Node::GetTransform() const
+    {
+      return Impl()->m_pTransform;
     }
 
     int64_t Node::FindComponent(flIN int64_t typeID) const {
       int64_t numComponents = GetComponentCount();
       for (int64_t i = 0; i < numComponents; ++i) {
-        if (GetComponentByIndex(i)->GetTypeID() == typeID) {
+        if (GetComponent(i)->GetTypeID() == typeID) {
           return i;
         }
       }
@@ -89,10 +126,10 @@ namespace flEngine
       return -1;
     }
 
-    int64_t Node::FindComponent(flIN char const * typeName) const {
+    int64_t Node::FindComponent(flIN char const *typeName) const {
       int64_t numComponents = GetComponentCount();
       for (int64_t i = 0; i < numComponents; ++i) {
-        if (strcmp(typeName, GetComponentByIndex(i)->GetType()) == 0) {
+        if (strcmp(typeName, GetComponent(i)->GetType()) == 0) {
           return i;
         }
       }
@@ -100,15 +137,31 @@ namespace flEngine
       return -1;
     }
 
-    void Node::SetScene(flIN Scene *pScene) {
-      Impl()->m_pScene = pScene;
+    bool Node::RemoveComponent(flIN int64_t index)
+    {
+      if (index < 0 || index >= GetComponentCount())
+        return false;
+
+      Impl()->components[index]->SetNode(nullptr);
+      Impl()->components.erase(index);
+      return true;
     }
 
-    Scene *Node::GetScene() {
+    bool Node::RemoveComponentByType(flIN int64_t typeID)
+    {
+      return RemoveComponent(FindComponent(typeID));
+    }
+
+    bool Node::RemoveComponentByType(flIN char const *typeName)
+    {
+      return RemoveComponent(FindComponent(typeName));
+    }
+
+    SceneGraph *Node::GetScene() {
       return Impl()->m_pScene;
     }
 
-    Scene const *Node::GetScene() const {
+    SceneGraph const *Node::GetScene() const {
       return Impl()->m_pScene;
     }
   }

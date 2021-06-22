@@ -7,9 +7,7 @@
 #include "flGLDeviceState.h"
 #include "ctString.h"
 #include <windows.h>
-#include "GL/glew.h"
-#include "GL/wglew.h"
-#include "GL/GL.h"
+#include "flGLUtil.h"
 
 using namespace flEngine;
 using namespace flEngine::Graphics;

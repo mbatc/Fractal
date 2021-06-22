@@ -16,12 +16,13 @@ static bool Register() {                                                        
   static bool done = false;                                                                  \
   static bool result = false;                                                                \
   if (!done) {                                                                               \
-    result = flEngine::Scene::ComponentRegistry::Register<ClassName>();                      \
+    result |= BaseClass::Register();                                                         \
+    result |= flEngine::Scene::ComponentRegistry::Register<ClassName>();                     \
     done = true;                                                                             \
   }                                                                                          \
   return result;                                                                             \
 }                                                                                            \
-bool __registered = ClassName::Register();                                                   
+bool __registered = ClassName::Register();
 
 namespace flEngine
 {
@@ -59,6 +60,7 @@ namespace flEngine
 
     protected:
       static int64_t GetNextTypeID();
+      static bool Register();
 
     private:
       void SetNode(Node * pParent);

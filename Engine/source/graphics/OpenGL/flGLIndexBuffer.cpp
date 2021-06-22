@@ -22,12 +22,12 @@ namespace flEngine
 
     void GLIndexBuffer::Bind()
     {
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, flNativeToGLID(m_pBuffer->GetNativeResource()));
+      flVerifyGL(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, flNativeToGLID(m_pBuffer->GetNativeResource()));
     }
 
     void GLIndexBuffer::Unbind()
     {
-      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+      flVerifyGL(glBindBuffer, GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
     void GLIndexBuffer::Resize(int64_t indexCount, bool discardData)

@@ -8,12 +8,12 @@
 
 class ScenePanel : public flEngine::GUI::Panel
 {
-  class GUIVisitor : public flEngine::Scene::Visitor
+  class GUIVisitor : public flEngine::Scene::Visitor<flEngine::Scene::Node>
   {
   public:
     GUIVisitor(int64_t selectedID) : m_selectedID(selectedID) {}
 
-    virtual bool OnEnterNode(flIN flEngine::Scene::Node* pNode) {
+    virtual bool OnEnter(flIN flEngine::Scene::Node* pNode) {
       if (pNode == pNode->GetScene()->GetRootNode())
         return true;
 
@@ -30,7 +30,7 @@ class ScenePanel : public flEngine::GUI::Panel
       return open;
     }
 
-    virtual void OnLeaveNode(flIN flEngine::Scene::Node* pNode) {
+    virtual void OnLeave(flIN flEngine::Scene::Node* pNode) {
       if (pNode != pNode->GetScene()->GetRootNode())
       {
         flEngine::GUI::Widgets::EndTreeNode();
@@ -51,7 +51,7 @@ public:
   virtual void OnGUI() override
   {
     flEngine::Ref<EditorSystem> pEditor = flEngine::Application::Get().GetSubSystem<EditorSystem>();
-    flEngine::Ref<flEngine::Scene::Scene> pScene = m_pSceneSystem->ActiveScene();
+    flEngine::Ref<flEngine::Scene::SceneGraph> pScene = m_pSceneSystem->ActiveScene();
     if (flEngine::GUI::Widgets::Button("Add")) {
       flEngine::Scene::Node* pNode = pScene->AddNode("New Node", pEditor->m_selectedNode);
       pEditor->m_selectedNode = pNode->GetID();
@@ -60,7 +60,7 @@ public:
     flEngine::GUI::Widgets::Separator();
 
     GUIVisitor visitor(pEditor->m_selectedNode);
-    visitor.VisitNode(pScene->GetRootNode());
+    pScene->Traverse(&visitor, nullptr);
     pEditor->m_selectedNode = visitor.m_selectedID;
   }
 
