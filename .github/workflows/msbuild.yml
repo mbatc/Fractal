@@ -19,11 +19,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v1.0.2
-
     - name: Checkout submodules
       run: git submodule update --init --recursive
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Create Solution
       run: echo 2 | ./generate-project.bat
@@ -37,3 +37,13 @@ jobs:
       # Add additional options to the MSBuild command line here (like platform or verbosity level).
       # See https://docs.microsoft.com/visualstudio/msbuild/msbuild-command-line-reference
       run: msbuild /m /p:Configuration=${{env.BUILD_CONFIGURATION}} ${{env.SOLUTION_FILE_PATH}}
+
+    - name: Upload Artifact
+      run: ./builds/DeployScript.sh
+
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Fractal
+        path: builds/artifact/
+
+
