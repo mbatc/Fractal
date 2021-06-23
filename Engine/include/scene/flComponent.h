@@ -122,7 +122,7 @@ namespace flEngine
        *         the specified type. Otherwise, nullptr is returned.
        */
       template<typename T> T* As() const {
-        return Is(T::TypeID()) ? (T *) : nullptr;
+        return Is(T::TypeID()) ? (T*)this : nullptr;
       }
 
     protected:

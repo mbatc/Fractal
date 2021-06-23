@@ -41,7 +41,7 @@ void PropertiesPanel::DrawComponent(flEngine::Scene::Component* pComponent)
 {
   if (pComponent->Is<Transform>())
   {
-    Ref<Transform> pTransform = pComponent->As<Transform>();
+    Ref<Transform> pTransform = MakeRef(pComponent->As<Transform>(), true);
 
     static bool localTransform = false;
     if (Widgets::Button(localTransform ? "Local" : "Global"))
