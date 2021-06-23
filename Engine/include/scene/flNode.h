@@ -122,6 +122,9 @@ namespace flEngine
       int64_t FindComponent(flIN int64_t typeID) const;
       int64_t FindComponent(flIN char const *typeName) const;
 
+      /**
+       * @brief Remove a component from the node.
+       */
       bool RemoveComponent(flIN int64_t index);
       bool RemoveComponentByType(flIN int64_t typeID);
       bool RemoveComponentByType(flIN char const *typeName);

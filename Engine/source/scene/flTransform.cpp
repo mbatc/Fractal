@@ -203,56 +203,56 @@ namespace flEngine
       return Impl()->Evaluated().localOrientation;
     }
 
-    void Transform::SetTransform(Math::Mat4D transform)
+    void Transform::SetTransform(flIN Math::Mat4D transform)
     {
       SetOrientation(transform.GetOrientation());
       SetPosition(transform.GetTranslation());
       SetScale(transform.GetScale());
     }
 
-    void Transform::SetPosition(Math::Vec3D pos)
+    void Transform::SetPosition(flIN Math::Vec3D pos)
     {
       Impl()->SetReEvaluate(true);
       Impl()->position = pos;
       Impl()->transformChanged = true;
     }
 
-    void Transform::SetScale(Math::Vec3D scale)
+    void Transform::SetScale(flIN Math::Vec3D scale)
     {
       Impl()->SetReEvaluate(true);
       Impl()->scale = scale;
       Impl()->transformChanged = true;
     }
 
-    void Transform::SetOrientation(Math::QuatD quat)
+    void Transform::SetOrientation(flIN Math::QuatD quat)
     {
       Impl()->SetReEvaluate(true);
       Impl()->orientation = quat;
       Impl()->transformChanged = true;
     }
 
-    void Transform::SetLocalTransform(Math::Mat4D transform)
+    void Transform::SetLocalTransform(flIN Math::Mat4D transform)
     {
       SetLocalOrientation(transform.GetOrientation());
       SetLocalPosition(transform.GetTranslation());
       SetLocalScale(transform.GetScale());
     }
 
-    void Transform::SetLocalPosition(Math::Vec3D pos)
+    void Transform::SetLocalPosition(flIN Math::Vec3D pos)
     {
       Impl()->SetReEvaluate(false);
       Impl()->localPosition         = pos;
       Impl()->localTransformChanged = true;
     }
 
-    void Transform::SetLocalScale(Math::Vec3D scale)
+    void Transform::SetLocalScale(flIN Math::Vec3D scale)
     {
       Impl()->SetReEvaluate(false);
       Impl()->localScale            = scale;
       Impl()->localTransformChanged = true;
     }
 
-    void Transform::SetLocalOrientation(Math::QuatD quat)
+    void Transform::SetLocalOrientation(flIN Math::QuatD quat)
     {
       Impl()->SetReEvaluate(false);
       Impl()->localOrientation      = quat;
@@ -264,7 +264,7 @@ namespace flEngine
         return Impl()->children.size();
     }
 
-    void Transform::SetParent(Transform * pParent)
+    void Transform::SetParent(flIN Transform * pParent)
     {
       if (Impl()->pParent == pParent)
         return;
@@ -298,7 +298,7 @@ namespace flEngine
       return Impl()->pParent;
     }
 
-    Transform* Transform::GetChild(int64_t index)
+    Transform* Transform::GetChild(flIN int64_t index)
     {
       return Impl()->children[index].Get();
     }
@@ -308,7 +308,7 @@ namespace flEngine
       return Impl()->pParent;
     }
 
-    Transform const * Transform::GetChild(int64_t index) const
+    Transform const * Transform::GetChild(flIN int64_t index) const
     {
       return Impl()->children[index].Get();
     }
