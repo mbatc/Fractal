@@ -2,6 +2,8 @@
 [bB]in/
 [dD]ocumentation/
 output/
+[bB]uilds/
+[dD]ebug/
 
 *.user
 *.filters
