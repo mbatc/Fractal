@@ -1,19 +1,16 @@
-#ifndef ScenePanel_h__
-#define ScenePanel_h__
+#pragma once
 
 #include "flEngine.h"
+#include "EditorSystem.h"
+#include "ctVector.h"
 
 class ScenePanel : public flEngine::GUI::Panel
 {
 public:
-  ScenePanel(flEngine::GUI::GUISystem *pGUI)
-    : Panel(pGUI, "Scene")
-  {}
+  ScenePanel(flEngine::GUI::GUISystem* pGUI);
 
-  virtual void OnGUI() override
-  {
+  virtual void OnGUI() override;
 
-  }
+private:
+  flEngine::SceneSystem *m_pSceneSystem = nullptr;
 };
-
-#endif // ScenePanel_h__

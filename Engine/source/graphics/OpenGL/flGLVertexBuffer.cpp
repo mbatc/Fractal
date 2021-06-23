@@ -24,12 +24,12 @@ namespace flEngine
     void GLVertexBuffer::Bind()
     {
       uint32_t vao = flNativeToGLID(GetBuffer()->GetNativeResource());
-      glBindBuffer(GL_ARRAY_BUFFER, vao);
+      flVerifyGL(glBindBuffer, GL_ARRAY_BUFFER, vao);
     }
 
     void GLVertexBuffer::Unbind()
     {
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      flVerifyGL(glBindBuffer, GL_ARRAY_BUFFER, 0);
     }
 
     void GLVertexBuffer::SetLayout(VertexElement const * pElements, int64_t elementCount)

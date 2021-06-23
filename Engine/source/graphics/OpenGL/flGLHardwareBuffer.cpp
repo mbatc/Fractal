@@ -13,7 +13,7 @@ namespace flEngine
     GLHardwareBuffer::GLHardwareBuffer(API *pAPI, BufferBinding binding, BufferUsage usage)
       : HardwareBuffer(pAPI)
     {
-      glCreateBuffers(1, &m_bufferID);
+      flVerifyGL(glCreateBuffers, 1, &m_bufferID);
       m_binding      = binding;
       m_usageFlag    = usage;
       m_glUsageFlags = GLUtil::ToBufferUsage(usage);
@@ -21,27 +21,35 @@ namespace flEngine
 
     bool GLHardwareBuffer::Resize(int64_t size, bool discardData)
     {
-      uint8_t* pNewData = nullptr;
-      if (GetSize() > 0 && !discardData)
-      {
-        void *pMapped = Map(AccessFlag_Read);
-        if (!pMapped)
-          return false;
+      bool success = true;
+      if (size > m_gpuSize)
+      { // Reallocate
+        uint8_t *pNewData = nullptr;
+        if (!discardData)
+        {
+          void *pMapped = Map(AccessFlag_Read);
+          if (!pMapped)
+            return false;
 
-        pNewData = flNew uint8_t[size];
-        memcpy(pNewData, pMapped, min(size, m_size));
+          pNewData = flNew uint8_t[size];
+          memcpy(pNewData, pMapped, min(size, m_size));
+          Unmap();
+        }
+
+        bool success = Set(pNewData, size);
+        flDelete[] pNewData;
+        m_gpuSize = size;
       }
-      Unmap();
-      bool success = Set(pNewData, size);
-      flDelete[] pNewData;
+
+      m_size = size;
       return success;
     }
 
     bool GLHardwareBuffer::Set(void const* pData, int64_t size)
     {
-      glBindBuffer(GL_COPY_WRITE_BUFFER, m_bufferID);
-      glBufferData(GL_COPY_WRITE_BUFFER, (GLsizeiptr)size, pData, m_glUsageFlags);
-      glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
+      flVerifyGL(glBindBuffer, GL_COPY_WRITE_BUFFER, m_bufferID);
+      flVerifyGL(glBufferData, GL_COPY_WRITE_BUFFER, (GLsizeiptr)size, pData, m_glUsageFlags);
+      flVerifyGL(glBindBuffer, GL_COPY_WRITE_BUFFER, 0);
       m_size = size;
       return true;
     }
@@ -91,14 +99,15 @@ namespace flEngine
       }
 
       GLenum glAccess = 0;
-      if ((flags & AccessFlag_Read) > 0)  glAccess |= GL_MAP_READ_BIT;
-      if ((flags & AccessFlag_Write) > 0) glAccess |= GL_MAP_WRITE_BIT;
+      if (flags == AccessFlag_Read)      glAccess = GL_READ_ONLY;
+      if (flags == AccessFlag_Write)     glAccess = GL_WRITE_ONLY;
+      if (flags == AccessFlag_ReadWrite) glAccess = GL_READ_WRITE;
       if (glAccess == 0)
         return nullptr;
 
-      glBindBuffer(GL_COPY_WRITE_BUFFER, m_bufferID);
-      m_pMappedPtr = glMapBufferRange(GL_COPY_WRITE_BUFFER, offset, mappedLength, glAccess);
-      glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
+      flVerifyGL(glBindBuffer, GL_COPY_WRITE_BUFFER, m_bufferID);
+      m_pMappedPtr = flVerifyGL(glMapBuffer, GL_COPY_WRITE_BUFFER, glAccess);
+      flVerifyGL(glBindBuffer, GL_COPY_WRITE_BUFFER, 0);
 
       if (!m_pMappedPtr)
         return nullptr;
@@ -118,9 +127,9 @@ namespace flEngine
       if (--m_mappedCount > 0)
         return true;
 
-      glBindBuffer(GL_COPY_WRITE_BUFFER, m_bufferID);
-      glUnmapBuffer(GL_COPY_WRITE_BUFFER);
-      glBindBuffer(GL_COPY_WRITE_BUFFER, 0);
+      flVerifyGL(glBindBuffer, GL_COPY_WRITE_BUFFER, m_bufferID);
+      flAssert(flVerifyGL(glUnmapBuffer, GL_COPY_WRITE_BUFFER), "Unmap buffer failed");
+      flVerifyGL(glBindBuffer, GL_COPY_WRITE_BUFFER, 0);
 
       m_pMappedPtr = nullptr;
       return true;

@@ -44,8 +44,8 @@ namespace flEngine
     }
 
     template<typename T>
-    Ref<T> GetSubSystem() {
-      return MakeRef((T*)GetSubSystem(typeid(T).name()), true);
+    T* GetSubSystem() {
+      return (T*)GetSubSystem(typeid(T).name());
     }
 
     /**

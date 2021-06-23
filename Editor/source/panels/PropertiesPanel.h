@@ -1,19 +1,14 @@
-#ifndef PropertiesPanel_h__
-#define PropertiesPanel_h__
+#pragma once
 
-#include "gui/flPanel.h"
+#include "flEngine.h"
+#include "EditorSystem.h"
+#include "ctString.h"
 
 class PropertiesPanel : public flEngine::GUI::Panel
 {
 public:
-  PropertiesPanel(flEngine::GUI::GUISystem *pGUI)
-    : Panel(pGUI, "Properties")
-  {}
+  PropertiesPanel(flEngine::GUI::GUISystem* pGUI);
 
-  virtual void OnGUI() override
-  {
-
-  }
+  virtual void OnGUI() override;
+  void DrawComponent(flEngine::Scene::Component* pComponent);
 };
-
-#endif // PropertiesPanel_h__

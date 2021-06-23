@@ -9,12 +9,12 @@ namespace flEngine
     GLSampler::GLSampler(API *pAPI)
       : Sampler(pAPI)
     {
-      glCreateSamplers(1, &m_samplerID);
+      flVerifyGL(glCreateSamplers, 1, &m_samplerID);
     }
 
     GLSampler::~GLSampler()
     {
-      glDeleteSamplers(1, &m_samplerID);
+      flVerifyGL(glDeleteSamplers, 1, &m_samplerID);
     }
 
     Sampler *GLSampler::Create(API *pAPI)
@@ -24,7 +24,7 @@ namespace flEngine
 
     void GLSampler::Bind(flIN int64_t textureUnit)
     {
-      glBindSampler((GLuint)textureUnit, m_samplerID);
+      flVerifyGL(glBindSampler, (GLuint)textureUnit, m_samplerID);
     }
 
     void GLSampler::SetWrapMode(WrapMode wrap)
@@ -38,8 +38,8 @@ namespace flEngine
       int32_t xMode = 0;
       int32_t yMode = 0;
 
-      glGetSamplerParameteriv(m_samplerID, GL_TEXTURE_WRAP_S, &xMode);
-      glGetSamplerParameteriv(m_samplerID, GL_TEXTURE_WRAP_T, &yMode);
+      flVerifyGL(glGetSamplerParameteriv, m_samplerID, GL_TEXTURE_WRAP_S, &xMode);
+      flVerifyGL(glGetSamplerParameteriv, m_samplerID, GL_TEXTURE_WRAP_T, &yMode);
 
       if (pWrapX) *pWrapX = GLUtil::GetWrapMode(xMode);
       if (pWrapY) *pWrapY = GLUtil::GetWrapMode(yMode);
@@ -47,46 +47,46 @@ namespace flEngine
 
     void GLSampler::SetWrapModeX(WrapMode wrap)
     {
-      glSamplerParameteri(m_samplerID, GL_TEXTURE_WRAP_S, GLUtil::ToWrapMode(wrap));
+      flVerifyGL(glSamplerParameteri, m_samplerID, GL_TEXTURE_WRAP_S, GLUtil::ToWrapMode(wrap));
     }
 
     void GLSampler::SetWrapModeY(WrapMode wrap)
     {
-      glSamplerParameteri(m_samplerID, GL_TEXTURE_WRAP_T, GLUtil::ToWrapMode(wrap));
+      flVerifyGL(glSamplerParameteri, m_samplerID, GL_TEXTURE_WRAP_T, GLUtil::ToWrapMode(wrap));
     }
 
     void GLSampler::SetFilterMinMode(FilterMode mode, bool mipmaps)
     {
-      glSamplerParameteri(m_samplerID, GL_TEXTURE_MIN_FILTER, GLUtil::ToFilterMode(mode, mipmaps));
+      flVerifyGL(glSamplerParameteri, m_samplerID, GL_TEXTURE_MIN_FILTER, GLUtil::ToFilterMode(mode, mipmaps));
     }
 
     void GLSampler::SetFilterMagMode(FilterMode mode)
     {
-      glSamplerParameteri(m_samplerID, GL_TEXTURE_MAG_FILTER, GLUtil::ToFilterMode(mode));
+      flVerifyGL(glSamplerParameteri, m_samplerID, GL_TEXTURE_MAG_FILTER, GLUtil::ToFilterMode(mode));
     }
 
     FilterMode GLSampler::GetFilterMinMode(bool *pUseMipmaps) const
     {
       int32_t mode = 0;
-      glGetSamplerParameteriv(m_samplerID, GL_TEXTURE_MAG_FILTER, &mode);
+      flVerifyGL(glGetSamplerParameteriv, m_samplerID, GL_TEXTURE_MAG_FILTER, &mode);
       return GLUtil::GetFilterMode(mode, pUseMipmaps);
     }
 
     FilterMode GLSampler::GetFilterMagMode() const
     {
       int32_t mode = 0;
-      glGetSamplerParameteriv(m_samplerID, GL_TEXTURE_MAG_FILTER, &mode);
+      flVerifyGL(glGetSamplerParameteriv, m_samplerID, GL_TEXTURE_MAG_FILTER, &mode);
       return GLUtil::GetFilterMode(mode);
     }
 
     void GLSampler::SetBorderColour(Util::Colour *pColour)
     {
-      glSamplerParameterfv(m_samplerID, GL_TEXTURE_BORDER_COLOR, &pColour->r);
+      flVerifyGL(glSamplerParameterfv, m_samplerID, GL_TEXTURE_BORDER_COLOR, &pColour->r);
     }
 
     void GLSampler::GetBorderColour(Util::Colour *pColour) const
     {
-      glGetSamplerParameterfv(m_samplerID, GL_TEXTURE_BORDER_COLOR, &pColour->r);
+      flVerifyGL(glGetSamplerParameterfv, m_samplerID, GL_TEXTURE_BORDER_COLOR, &pColour->r);
     }
 
     void *GLSampler::GetNativeResource()

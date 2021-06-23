@@ -2,7 +2,6 @@
 #define fl_Graphics_OpenGL_h__
 
 #include "graphics/flAPI.h"
-#include "util/flType.h"
 #include "flRef.h"
 
 namespace flEngine

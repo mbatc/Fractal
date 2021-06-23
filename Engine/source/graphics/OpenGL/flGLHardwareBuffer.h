@@ -26,6 +26,7 @@ namespace flEngine
 
     private:
       int64_t m_size = 0;
+      int64_t m_gpuSize = 0;
       uint32_t m_bufferID = 0;
 
       uint32_t m_glUsageFlags = 0;

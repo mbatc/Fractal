@@ -45,6 +45,7 @@ namespace flEngine
 
       Ref<IndexBuffer>            m_indexBuffer;
       ctVector<Ref<VertexBuffer>> m_vertexBuffers;
+      ctVector<uint32_t>          m_boundLocations;
     };
   }
 }

@@ -1,16 +1,17 @@
 
 project "FractalEngine"
   configurations { "Debug", "Release" }
-
+  
   dependson { "ctools-common" }
   dependson { "ctools-data" }
   dependson { "ctools-math" }
   dependson { "ctools-platform" }
   dependson { "imgui" }
-
+  
   kind "SharedLib"
   architecture "x64"
   language "C++"
+  cppdialect "C++17"
   characterset ("MBCS")
 
   targetdir (flBinPath)

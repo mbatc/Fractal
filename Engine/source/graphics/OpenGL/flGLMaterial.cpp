@@ -62,13 +62,13 @@ namespace flEngine
 
       for (auto &kvp : m_textures)
       {
-        glActiveTexture(GL_TEXTURE0 + kvp.m_val.textureUnit);
+        flVerifyGL(glActiveTexture, GL_TEXTURE0 + kvp.m_val.textureUnit);
 
         if (kvp.m_val.texture != nullptr) kvp.m_val.texture->Bind();
-        else                              glBindTexture(GL_TEXTURE_2D, 0);
+        else                              flVerifyGL(glBindTexture, GL_TEXTURE_2D, 0);
 
         if (kvp.m_val.sampler != nullptr) kvp.m_val.sampler->Bind(kvp.m_val.textureUnit);
-        else                              glBindSampler(0, 0);
+        else                              flVerifyGL(glBindSampler, 0, 0);
       }
     }
 

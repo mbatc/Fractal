@@ -12,12 +12,12 @@ namespace flEngine
     GLTextureRenderTarget::GLTextureRenderTarget(API *pAPI)
       : TextureRenderTarget(pAPI)
     {
-      glGenFramebuffers(1, &m_fbo);
+      flVerifyGL(glGenFramebuffers, 1, &m_fbo);
     }
 
     GLTextureRenderTarget::~GLTextureRenderTarget()
     {
-      glDeleteFramebuffers(1, &m_fbo);
+      flVerifyGL(glDeleteFramebuffers, 1, &m_fbo);
     }
 
     TextureRenderTarget* GLTextureRenderTarget::Create(API *pAPI)
@@ -52,12 +52,12 @@ namespace flEngine
       m_width  = pOptions->width;
       m_height = pOptions->height;
 
-      glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+      flVerifyGL(glBindFramebuffer, GL_FRAMEBUFFER, m_fbo);
 
       if (m_colourTarget)
       {
         m_colourTarget->Bind();
-        glFramebufferTexture2D(
+        flVerifyGL(glFramebufferTexture2D, 
           GL_FRAMEBUFFER,
           GL_COLOR_ATTACHMENT0,
           GL_TEXTURE_2D,
@@ -65,19 +65,19 @@ namespace flEngine
           0);
 
         GLenum buffers = GL_COLOR_ATTACHMENT0;
-        glDrawBuffers(1, &buffers);
-        glReadBuffer(GL_COLOR_ATTACHMENT0);
+        flVerifyGL(glDrawBuffers, 1, &buffers);
+        flVerifyGL(glReadBuffer, GL_COLOR_ATTACHMENT0);
       }
       else
       {
-        glDrawBuffer(GL_NONE);
-        glReadBuffer(GL_NONE);
+        flVerifyGL(glDrawBuffer, GL_NONE);
+        flVerifyGL(glReadBuffer, GL_NONE);
       }
 
       if (m_depthTarget)
       {
         m_depthTarget->Bind();
-        glFramebufferTexture2D(
+        flVerifyGL(glFramebufferTexture2D, 
           GL_FRAMEBUFFER,
           GL_DEPTH_ATTACHMENT,
           GL_TEXTURE_2D,
@@ -85,7 +85,7 @@ namespace flEngine
           0);
       }
 
-      glBindFramebuffer(GL_FRAMEBUFFER, 0);
+      flVerifyGL(glBindFramebuffer, GL_FRAMEBUFFER, 0);
 
       return true;
     }
@@ -109,31 +109,31 @@ namespace flEngine
 
     void GLTextureRenderTarget::ClearDepth(flIN float depth)
     {
-      glClearDepth(depth);
-      glClear(GL_DEPTH_BUFFER_BIT);
+      flVerifyGL(glClearDepth, depth);
+      flVerifyGL(glClear, GL_DEPTH_BUFFER_BIT);
     }
 
     void GLTextureRenderTarget::ClearColour(flIN Util::Colour colour)
     {
-      glClearColor(colour.r, colour.g, colour.b, colour.a);
-      glClear(GL_COLOR_BUFFER_BIT);
+      flVerifyGL(glClearColor, colour.r, colour.g, colour.b, colour.a);
+      flVerifyGL(glClear, GL_COLOR_BUFFER_BIT);
     }
 
     void GLTextureRenderTarget::ClearStencil(flIN int32_t colour)
     {
-      glClearStencil(colour);
-      glClear(GL_STENCIL_BUFFER_BIT);
+      flVerifyGL(glClearStencil, colour);
+      flVerifyGL(glClear, GL_STENCIL_BUFFER_BIT);
     }
 
     void GLTextureRenderTarget::Bind(bool read, bool draw)
     {
       if (read)
       {
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, m_fbo);
-        glReadBuffer(GL_COLOR_ATTACHMENT0);
+        flVerifyGL(glBindFramebuffer, GL_READ_FRAMEBUFFER, m_fbo);
+        flVerifyGL(glReadBuffer, GL_COLOR_ATTACHMENT0);
       }
       if (draw)
-        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_fbo);
+        flVerifyGL(glBindFramebuffer, GL_DRAW_FRAMEBUFFER, m_fbo);
     }
 
     void * GLTextureRenderTarget::GetNativeResource() const

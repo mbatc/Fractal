@@ -87,8 +87,14 @@ namespace flEngine
        */
       virtual int GetInt(const char * name) = 0;
 
+      /**
+       * @brief Bind a texture to a texture unit.
+       */
       virtual void SetTexture(uint32_t location, Texture *pTexture) = 0;
 
+      /**
+       * @brief Bind a sampler to a texture unit.
+       */
       virtual void SetSampler(uint32_t location, Sampler *pSampler) = 0;
 
       /**

@@ -1,12 +1,9 @@
 #include "flGLWindowRenderTarget.h"
-
+#include "flGLUtil.h"
 #if flUSING(flPLATFORM_WINDOWS)
 
 #include <windows.h>
 #include "ctVector.h"
-#include "GL/glew.h"
-#include "GL/wglew.h"
-#include "GL/GL.h"
 #include "../../platform/flWindow_Impl.h"
 
 using namespace flEngine;
@@ -172,14 +169,14 @@ namespace flEngine
     {
       if (m_hDC != flEngine_GL_hCurrentDC) // Make this the current DC
       {
-        wglMakeCurrent((HDC)m_hDC, flEngine_GL_hCurrentGLRC);
+        flVerifyGL(wglMakeCurrent, (HDC)m_hDC, flEngine_GL_hCurrentGLRC);
         flEngine_GL_hCurrentDC = (HDC)m_hDC;
       }
     }
 
     void GLWindowRenderTarget::Swap()
     {
-      if (!SwapBuffers((HDC)m_hDC))
+      if (!flVerifyGL(SwapBuffers, (HDC)m_hDC))
         printf("Swap Buffers Failed\n");
     }
 #endif

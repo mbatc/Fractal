@@ -8,10 +8,10 @@
 #include "flRef.h"
 #include "platform/flWindow.h"
 #include "graphics/flWindowRenderTarget.h"
-
 #include "ctVector.h"
 #include "ctString.h"
 #include "ctKeyValue.h"
+#include "flLog.h"
 
 #include <functional>
 
@@ -101,6 +101,7 @@ namespace flEngine
     void Render()
     {
       m_pApp->GetMainWindow()->GetRenderTarget()->Bind();
+      m_pApp->GetMainWindow()->GetRenderTarget()->Clear();
       InvokeBehaviour(&ApplicationBehaviour::OnRender);
     }
 

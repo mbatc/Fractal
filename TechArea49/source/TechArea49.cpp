@@ -1,8 +1,6 @@
 #include "flEngine.h"
 #include "flEntryPoint.h"
-#include "subsystem/flGUISystem.h"
-#include "gui/flPanel.h"
-#include "gui/flWidgets.h"
+
 #include <stdio.h>
 
 using namespace flEngine;
@@ -92,6 +90,14 @@ public:
 
   virtual bool OnStartup() override
   {
+    Ref<Scene::Transform> a = MakeRef<Scene::Transform>();
+    Ref<Scene::Transform> b = MakeRef<Scene::Transform>();
+    Ref<Scene::Transform> c = MakeRef<Scene::Transform>();
+
+    Ref<Scene::Scene> scene = MakeRef<Scene::Scene>();
+    Scene::Node* node = scene->AddNode();
+    node->AddComponent<Scene::Transform>();
+
     // Logging::SetLogLevel(Logging::LogLevel_Warning);
 
     Graphics::API* pGraphics = GetGraphicsAPI();
@@ -212,6 +218,8 @@ public:
   Ref<Graphics::Sampler>     pSampler;
   Ref<Graphics::VertexArray> pGeometry;
   Ref<Graphics::Material>    pMaterial;
+
+  Scene::Scene m_scene;
 
   PerspectiveCamera m_camera;
 };

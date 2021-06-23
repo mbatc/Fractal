@@ -20,6 +20,7 @@ public:
   FractalEditor()
     : Application("OpenGL")
   {
+    AddSubSystem<SceneSystem>();
     AddSubSystem<EditorGUI>();
     AddSubSystem<EditorSystem>();
 
@@ -28,7 +29,6 @@ public:
     gui->Open<SceneViewPanel>();
     gui->Open<ProjectPanel>();
     gui->Open<PropertiesPanel>();
-
     gui->AddMenuItem("File/Exit", Exit);
 
     OnEvent(E_Wnd_Close, &FractalEditor::OnCloseEvent);

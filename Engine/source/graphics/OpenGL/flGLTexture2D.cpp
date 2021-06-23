@@ -18,15 +18,15 @@ namespace flEngine
     GLTexture2D::GLTexture2D(API *pAPI)
       : Texture2D(pAPI)
     {
-      glGenTextures(1, &m_texID);
-      glBindTexture(GL_TEXTURE_2D, m_texID);
+      flVerifyGL(glGenTextures, 1, &m_texID);
+      flVerifyGL(glBindTexture, GL_TEXTURE_2D, m_texID);
 
       // Setup default sampler parameters
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glBindTexture(GL_TEXTURE_2D, 0);
+      flVerifyGL(glTexParameteri, GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+      flVerifyGL(glTexParameteri, GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+      flVerifyGL(glTexParameteri, GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      flVerifyGL(glTexParameteri, GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      flVerifyGL(glBindTexture, GL_TEXTURE_2D, 0);
     }
 
     GLTexture2D::GLTexture2D(API *pAPI, PixelFormat pixelFormat, PixelComponentType type)
@@ -48,17 +48,17 @@ namespace flEngine
 
     GLTexture2D::~GLTexture2D()
     {
-      glDeleteTextures(1, &m_texID);
+      flVerifyGL(glDeleteTextures, 1, &m_texID);
     }
 
     void GLTexture2D::Bind()
     {
-      glBindTexture(GL_TEXTURE_2D, m_texID);
+      flVerifyGL(glBindTexture, GL_TEXTURE_2D, m_texID);
     }
 
     void GLTexture2D::Unbind()
     {
-      glBindTexture(GL_TEXTURE_2D, 0);
+      flVerifyGL(glBindTexture, GL_TEXTURE_2D, 0);
     }
 
     TextureType GLTexture2D::GetTextureType() const
@@ -72,9 +72,9 @@ namespace flEngine
       if (!GetGLFormat(pBufferDesc, &glInternalFmt, &fmt, &type))
         return false;
 
-      glBindTexture(GL_TEXTURE_2D, m_texID);
-      glTexImage2D(GL_TEXTURE_2D, (GLint)mipMap, glInternalFmt, (GLsizei)pBufferDesc->width, (GLsizei)pBufferDesc->height, 0, fmt, type, pPixels);
-      glBindTexture(GL_TEXTURE_2D, 0);
+      flVerifyGL(glBindTexture, GL_TEXTURE_2D, m_texID);
+      flVerifyGL(glTexImage2D, GL_TEXTURE_2D, (GLint)mipMap, glInternalFmt, (GLsizei)pBufferDesc->width, (GLsizei)pBufferDesc->height, 0, fmt, type, pPixels);
+      flVerifyGL(glBindTexture, GL_TEXTURE_2D, 0);
 
       m_desc = *pBufferDesc;
 
@@ -89,9 +89,9 @@ namespace flEngine
       if (!GetGLFormat(pBufferDesc, nullptr, &fmt, &type))
         return false;
 
-      glBindTexture(GL_TEXTURE_2D, m_texID);
-      glTexSubImage2D(GL_TEXTURE_2D, (GLint)mipMap, (GLint)widthOffset, (GLint)heightOffset, (GLsizei)pBufferDesc->width, (GLsizei)pBufferDesc->height, fmt, type, pPixels);
-      glBindTexture(GL_TEXTURE_2D, 0);
+      flVerifyGL(glBindTexture, GL_TEXTURE_2D, m_texID);
+      flVerifyGL(glTexSubImage2D, GL_TEXTURE_2D, (GLint)mipMap, (GLint)widthOffset, (GLint)heightOffset, (GLsizei)pBufferDesc->width, (GLsizei)pBufferDesc->height, fmt, type, pPixels);
+      flVerifyGL(glBindTexture, GL_TEXTURE_2D, 0);
 
       m_desc = *pBufferDesc;
 
@@ -123,15 +123,15 @@ namespace flEngine
       int64_t pixelStride = GetPixelStride(pBufferDesc);
       *ppPixels = flAlloc(pixelStride * pBufferDesc->width * pBufferDesc->height);
 
-      glBindTexture(GL_TEXTURE_2D, m_texID);
-      glGetTexImage(GL_TEXTURE_2D, (GLint)mipMap, fmt, type, *ppPixels);
-      glBindTexture(GL_TEXTURE_2D, 0);
+      flVerifyGL(glBindTexture, GL_TEXTURE_2D, m_texID);
+      flVerifyGL(glGetTexImage, GL_TEXTURE_2D, (GLint)mipMap, fmt, type, *ppPixels);
+      flVerifyGL(glBindTexture, GL_TEXTURE_2D, 0);
       return true;
     }
 
     bool GLTexture2D::GenerateMipMaps()
     {
-      glGenerateTextureMipmap(m_texID);
+      flVerifyGL(glGenerateTextureMipmap, m_texID);
       m_hasMipMaps = true;
       return true;
     }

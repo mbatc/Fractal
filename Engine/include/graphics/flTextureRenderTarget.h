@@ -16,8 +16,14 @@ namespace flEngine
       TextureRenderTarget(API *pAPI);
 
     public:
+      /**
+       * @brief Get a pointer to the colour target texture.
+       */
       virtual Texture2D * GetColourTarget() = 0;
 
+      /**
+       * @brief Get a pointer to the depth target texture.
+       */
       virtual Texture2D * GetDepthTarget() = 0;
     };
   }

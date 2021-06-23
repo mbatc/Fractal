@@ -1,11 +1,13 @@
 #ifndef fl_Graphics_GLUtil_h__
 #define fl_Graphics_GLUtil_h__
 
-#include "flConfig.h"
+#include "flLog.h"
+#include <graphics/flSampler.h>
+
 #include "GL/glew.h"
 #include "GL/wglew.h"
 #include "GL/GL.h"
-#include <graphics/flSampler.h>
+#include <functional>
 
 #define flNativeToGLID(nativeResource) ((uint32_t)(uint64_t)nativeResource)
 #define flNativeFromGLID(nativeResource) ((void*)(uint64_t)nativeResource)
@@ -63,7 +65,45 @@ namespace flEngine
       static uint32_t ToWrapMode(flIN WrapMode wrapMode);
       static uint32_t ToFilterMode(flIN FilterMode filterMode, bool mipmaps = false);
     };
+
+    template<typename... Args, size_t... Indices>
+    std::string TupleToString(std::tuple<Args...> const &args, std::index_sequence<Indices...>)
+    {
+      return flEngine::Join(", ", std::get<Indices>(args)...);
+    }
+
+    template<typename ReturnT, typename... Args, typename... Args2>
+    ReturnT GLAPICall(char const *callingFunc, int line, char const *apiFunc, ReturnT(*func)(Args...), Args2&&... args) {
+      class GLLogger
+      {
+      public:
+        GLLogger(std::function<void(GLenum)> onError) : m_onError(onError) {}
+
+        ~GLLogger() {
+          GLenum err = glGetError();
+          if (err != GL_NO_ERROR)
+            m_onError(err);
+        }
+
+        std::function<void(GLenum)> m_onError;
+        std::tuple<Args...> m_args;
+      };
+
+#ifdef _DEBUG
+      GLLogger logger([callingFunc, line, apiFunc, args = std::make_tuple(args...)](GLenum err) {
+        flEngine::Logging::Log(flEngine::Logging::LogLevel_Error, callingFunc, line, "OpenGL error %d occurred in %s(%s)", err, apiFunc, TupleToString(args, std::make_index_sequence<sizeof...(Args)>{}).c_str());
+      });
+#else
+      GLLogger logger([&](GLenum err) {
+        flEngine::Logging::Log(flEngine::Logging::LogLevel_Error, callingFunc, line, "OpenGL error %d occurred in %s(...)", err, apiFunc);
+        });
+#endif
+
+      return func((Args)std::forward<Args2>(args)...);
+    }
   }
 }
+
+#define flVerifyGL(func, ...)  flEngine::Graphics::GLAPICall(__FUNCTION__, __LINE__, #func, func, __VA_ARGS__)
 
 #endif // flGLUtil_h__
