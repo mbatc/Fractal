@@ -94,7 +94,7 @@ public:
     Ref<Scene::Transform> b = MakeRef<Scene::Transform>();
     Ref<Scene::Transform> c = MakeRef<Scene::Transform>();
 
-    Ref<Scene::Scene> scene = MakeRef<Scene::Scene>();
+    Ref<Scene::SceneGraph> scene = MakeRef<Scene::SceneGraph>();
     Scene::Node* node = scene->AddNode();
     node->AddComponent<Scene::Transform>();
 
@@ -219,7 +219,7 @@ public:
   Ref<Graphics::VertexArray> pGeometry;
   Ref<Graphics::Material>    pMaterial;
 
-  Scene::Scene m_scene;
+  Scene::SceneGraph m_scene;
 
   PerspectiveCamera m_camera;
 };
