@@ -15,6 +15,9 @@
 #include "flRef.h"
 #include "flLog.h"
 
+// Assets
+#include "flMesh.h"
+
 // Threading
 #include "threads/flThreads.h"
 #include "threads/flThreadPool.h"
