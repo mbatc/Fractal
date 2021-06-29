@@ -132,7 +132,7 @@ namespace flEngine
   {
     Impl()->polygons.emplace_back();
     SetPolygonVertices(GetPolygonCount() - 1, pIndices, vertexCount);
-    SetPolygonMaterial(material);
+    SetPolygonMaterial(GetPolygonCount() - 1, material);
     return GetPolygonCount();
   }
 

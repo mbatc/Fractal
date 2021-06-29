@@ -20,6 +20,9 @@ public:
   FractalEditor()
     : Application("OpenGL")
   {
+    OBJImporter importer;
+    importer.Import("C:/Users/mickb/OneDrive/Documents/Assets/Models/OBJ.obj");
+
     AddSubSystem<SceneSystem>();
     AddSubSystem<EditorGUI>();
     AddSubSystem<EditorSystem>();

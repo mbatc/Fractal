@@ -17,6 +17,7 @@
 
 // Assets
 #include "flMesh.h"
+#include "importers/flOBJImporter.h"
 
 // Threading
 #include "threads/flThreads.h"
