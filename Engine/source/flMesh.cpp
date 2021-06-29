@@ -19,6 +19,17 @@ namespace flEngine
 
   flPIMPL_IMPL(Mesh);
 
+  Mesh* Mesh::Create()
+  {
+    return flNew(Mesh);
+  }
+
+  void Mesh::Clear()
+  {
+    Impl()->vertices.clear();
+    Impl()->polygons.clear();
+  }
+
   int64_t Mesh::GetVertexCount() const
   {
     return Impl()->vertices.size();
@@ -77,13 +88,13 @@ namespace flEngine
     vertex.normal = normal;
     vertex.texcoord = texcoord;
     vertex.colour = colour;
-    return GetVertexCount();
+    return GetVertexCount() - 1;
   }
 
   int64_t Mesh::AddVertices(flIN Vertex const * pVertices, flIN int64_t count)
   {
     Impl()->vertices.insert(Impl()->vertices.size(), pVertices, pVertices + count);
-    return GetVertexCount();
+    return GetVertexCount() - 1;
   }
 
   void Mesh::SetVertices(flIN Vertex const * pVertices, flIN int64_t count)
@@ -125,7 +136,7 @@ namespace flEngine
   int64_t Mesh::AddPolygon()
   {
     Impl()->polygons.emplace_back();
-    return GetPolygonCount();
+    return GetPolygonCount() - 1;
   }
 
   int64_t Mesh::AddPolygon(flIN int64_t const * pIndices, flIN int64_t vertexCount, flIN int64_t material)
@@ -133,7 +144,7 @@ namespace flEngine
     Impl()->polygons.emplace_back();
     SetPolygonVertices(GetPolygonCount() - 1, pIndices, vertexCount);
     SetPolygonMaterial(GetPolygonCount() - 1, material);
-    return GetPolygonCount();
+    return GetPolygonCount() - 1;
   }
 
   int64_t Mesh::AddPolygonVertex(flIN int64_t polyIndex, flIN int64_t vertIndex)

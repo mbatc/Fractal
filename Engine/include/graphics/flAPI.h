@@ -27,7 +27,7 @@ namespace flEngine
     class TextureRenderTarget;
     class Program;
     class Sampler;
-    class Material;
+    class ShaderMaterial;
     class APIResource;
 
     struct PixelBufferDesc;
@@ -126,7 +126,7 @@ namespace flEngine
       /**
        * @brief
        */
-      virtual Material * CreateMaterial(flIN Program *pProgram, flIN char const * materialBlock = "Material") = 0;
+      virtual ShaderMaterial * CreateMaterial(flIN Program *pProgram, flIN char const * materialBlock = "Material") = 0;
 
       /**
        * @brief

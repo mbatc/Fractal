@@ -33,21 +33,33 @@ namespace flEngine
   class Impl_OBJImporter
   {
   public:
+    Impl_OBJImporter() {
+      m_pMesh = Mesh::Create();
+    }
+
+    ~Impl_OBJImporter() {
+      m_pMesh->DecRef();
+    }
+
     bool ParseVertex(ctVector<ctString> const &tokens) {
       if (tokens.size() >= 4) {
         Vec3D position(0);
-        Vec4D colour(0);
 
         // Position
         for (int64_t i = 1; i < 4; ++i) {
           position[i - 1] = ctScan::Float(tokens[i]);
         }
 
+        m_positions.push_back(position);
+
         // Colour
-        if (tokens.size() == 8) {
-          for (int64_t i = 4; i < 8; ++i) {
-            colour[i - 4] = ctScan::Float(i);
+        if (tokens.size() == 7) {
+          Vec3D colour(0);
+          for (int64_t i = 4; i < 7; ++i) {
+            colour[i - 4] = ctScan::Float(tokens[i]);
           }
+
+          m_colours.push_back(colour);
         }
 
         return true;
@@ -59,12 +71,14 @@ namespace flEngine
 
     bool ParseNormal(ctVector<ctString> const &tokens) {
       if (tokens.size() >= 4) {
-        Vec3D position(0);
+        Vec3D normal(0);
 
         // Position
         for (int64_t i = 1; i < 4; ++i) {
-          position[i - 1] = ctScan::Float(tokens[i]);
+          normal[i - 1] = ctScan::Float(tokens[i]);
         }
+
+        m_normals.push_back(normal);
 
         return true;
       }
@@ -80,6 +94,8 @@ namespace flEngine
           texcoord[i - 1] = ctScan::Float(tokens[i]);
         }
 
+        m_texcoords.push_back(texcoord);
+
         return true;
       }
       else {
@@ -88,18 +104,30 @@ namespace flEngine
     }
 
     bool ParseFace(ctVector<ctString> const &tokens) {
-      Triangle tri;
-      for (int64_t i = 1; i < tokens.size(); ++i) {
-        int64_t offset = i - 1;
-        ParseFaceIndices(
-          tokens[i],
-          tri.pos + offset,
-          tri.tex + offset,
-          tri.nrm + offset
-        );
+      if (tokens.size() < 4) {
+        return false;
       }
 
-      m_triangle.push_back(tri);
+      Polygon polygon;
+      polygon.startVertex = m_vertices.size();
+
+      for (int64_t i = 1; i < tokens.size(); ++i) {
+        int64_t offset = i - 1;
+        Vertex vert;
+        ParseFaceIndices(
+          tokens[i],
+          &vert.pos,
+          &vert.tex,
+          &vert.nrm
+        );
+
+        m_vertices.push_back(vert);
+      }
+
+      polygon.endVertex = m_vertices.size() - 1;
+      polygon.material = m_activeMaterial;
+      m_polygons.push_back(polygon);
+
       return true;
     }
 
@@ -113,14 +141,14 @@ namespace flEngine
     }
 
     bool ParseUseMTL(const ctString &line) {
-      ctString useMtl = ReadProperty(line);
-      if (useMtl.length() == 0)
+      ctString mtlName = ReadProperty(line);
+      if (mtlName.length() == 0)
         return false;
 
-      m_activeMaterial = ctIndexOf(m_materials.begin(), m_materials.end(), useMtl);
-      if (m_materials == -1) {
+      m_activeMaterial = ctIndexOf(m_materials.begin(), m_materials.end(), mtlName);
+      if (m_activeMaterial == -1) {
         m_activeMaterial = m_materials.size();
-        m_materials.push_back(line);
+        m_materials.push_back(mtlName);
       }
 
       return true;
@@ -163,33 +191,56 @@ namespace flEngine
         }
       }
 
+      ConstructMesh();
+
       return true;
     }
 
     void ParseFaceIndices(ctString const & vertex, int64_t *pVert, int64_t *pTexcoord, int64_t *pNormal) {
       char const * pText = vertex.c_str();
 
-      int64_t i   = -1;
+      int64_t i   = 0;
       int64_t len = 0;
       int64_t indices[3] = { -1, -1, -1 };
 
       do {
         indices[i] = ctScan::Int(&pText, &len);
-
         if (len == 0)
           indices[i] = -1;
-
-        pText += len;
-
         if (*pText == '/')
           pText += 1;
-
         ++i;
-      } while (pText <= vertex.end());
+      } while (i < 3 && *pText != 0);
 
       *pVert     = indices[0];
       *pTexcoord = indices[1];
       *pNormal   = indices[2];
+    }
+
+    void ConstructMesh()
+    {
+      m_pMesh->Clear();
+
+      bool hasColours = m_colours.size() > 0;
+
+      for (int64_t i = 0; i < m_polygons.size(); ++i) {
+        Polygon &poly = m_polygons[i];
+        int64_t newPolyID = m_pMesh->AddPolygon();
+
+        m_pMesh->SetPolygonMaterial(newPolyID, poly.material);
+        for (int64_t v = poly.startVertex; v <= poly.endVertex; ++v) {
+          Vertex& vert = m_vertices[v];
+          m_pMesh->AddPolygonVertex(
+            newPolyID,
+            m_pMesh->AddVertex(
+              vert.pos != CT_INVALID_INDEX ? m_positions[vert.pos - 1] : Vec3D(0),
+              vert.nrm != CT_INVALID_INDEX ? m_normals[vert.nrm - 1]   : Vec3D(0, 1, 0),
+              vert.tex != CT_INVALID_INDEX ? m_texcoords[vert.tex - 1] : Vec2D(0),
+              hasColours && vert.pos != CT_INVALID_INDEX ? Vec4D(m_colours[vert.pos - 1], 1) : Vec4D(1)
+            )
+          );
+        }
+      }
     }
 
     ctString ReadProperty(const ctString &line) {
@@ -200,22 +251,32 @@ namespace flEngine
       return ctString(seeker.Text()).trim("\"");
     }
 
-    struct Triangle
+    struct Vertex
     {
-      int64_t pos[3];
-      int64_t tex[3];
-      int64_t nrm[3];
+      int64_t pos;
+      int64_t tex;
+      int64_t nrm;
     };
 
-    Mesh m_mesh;
+    struct Polygon
+    {
+      int64_t startVertex;
+      int64_t endVertex;
+      int64_t material;
+    };
+
+    Mesh *m_pMesh = nullptr;
 
     int64_t m_activeMaterial = -1;
 
-    ctVector<Vec3D> position;
-    ctVector<Vec2D> texcoord;
-    ctVector<Vec3D> normal;
+    ctVector<Vec3D> m_positions;
+    ctVector<Vec2D> m_texcoords;
+    ctVector<Vec3D> m_normals;
+    ctVector<Vec3D> m_colours;
 
-    ctVector<Triangle> m_triangle;
+    ctVector<Vertex> m_vertices;
+    ctVector<Polygon> m_polygons;
+
     ctVector<ctString> m_mtlFiles;
     ctVector<ctString> m_materials;
   };
@@ -227,7 +288,7 @@ namespace flEngine
   }
 
   Mesh * OBJImporter::GetResult() {
-    return &Impl()->m_mesh;
+    return Impl()->m_pMesh;
   }
 }
 

@@ -12,7 +12,7 @@
 #include "flGLDeviceState.h"
 #include "flGLSampler.h"
 #include "flGLUniformBuffer.h"
-#include "flGLMaterial.h"
+#include "flGLShaderMaterial.h"
 
 namespace flEngine
 {
@@ -87,9 +87,9 @@ namespace flEngine
       return GLProgram::Create(this);
     }
 
-    Material *OpenGL::CreateMaterial(flIN Program *pProgram, flIN char const *materialBlockName)
+    ShaderMaterial *OpenGL::CreateMaterial(flIN Program *pProgram, flIN char const *materialBlockName)
     {
-      return GLMaterial::Create(this, pProgram, materialBlockName);
+      return GLShaderMaterial::Create(this, pProgram, materialBlockName);
     }
 
     Texture2D* OpenGL::CreateTexture2D(DepthFormat depthFormat)

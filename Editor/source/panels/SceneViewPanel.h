@@ -40,7 +40,7 @@ public:
   flEngine::Ref<flEngine::Graphics::Texture2D>   pTexture;
   flEngine::Ref<flEngine::Graphics::Sampler>     pSampler;
   flEngine::Ref<flEngine::Graphics::VertexArray> pGeometry;
-  flEngine::Ref<flEngine::Graphics::Material>    pMaterial;
+  flEngine::Ref<flEngine::Graphics::ShaderMaterial> pMaterial;
 
   flEngine::Ref<flEngine::Graphics::TextureRenderTarget> m_target;
 };

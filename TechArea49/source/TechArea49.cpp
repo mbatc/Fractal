@@ -217,7 +217,7 @@ public:
   Ref<Graphics::Texture2D>   pTexture;
   Ref<Graphics::Sampler>     pSampler;
   Ref<Graphics::VertexArray> pGeometry;
-  Ref<Graphics::Material>    pMaterial;
+  Ref<Graphics::ShaderMaterial>    pMaterial;
 
   Scene::SceneGraph m_scene;
 

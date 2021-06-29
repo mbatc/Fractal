@@ -48,7 +48,7 @@
 #include "graphics/flTexture.h"
 #include "graphics/flTexture2D.h"
 #include "graphics/flSampler.h"
-#include "graphics/flMaterial.h"
+#include "graphics/flShaderMaterial.h"
 
 // Application
 #include "flApplication.h"

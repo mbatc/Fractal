@@ -21,7 +21,9 @@ public:
     : Application("OpenGL")
   {
     OBJImporter importer;
-    importer.Import("C:/Users/mickb/OneDrive/Documents/Assets/Models/OBJ.obj");
+    importer.Import("C:/Users/Mick/Documents/Models/Sponza/sponza.obj");
+
+    Mesh *pMesh = importer.GetResult();
 
     AddSubSystem<SceneSystem>();
     AddSubSystem<EditorGUI>();

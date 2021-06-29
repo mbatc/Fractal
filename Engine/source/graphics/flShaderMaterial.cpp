@@ -1,10 +1,10 @@
-#include "graphics/flMaterial.h"
+#include "graphics/flShaderMaterial.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
-    Material::Material(API *pAPI)
+    ShaderMaterial::ShaderMaterial(API *pAPI)
       : APIResource(pAPI)
     {}
   }

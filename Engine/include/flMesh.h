@@ -19,6 +19,10 @@ namespace flEngine
   {
     flPIMPL_DEF(Mesh);
   public:
+    static Mesh * Create();
+
+    void Clear();
+
     int64_t GetVertexCount() const;
 
     Vertex * GetVertices();

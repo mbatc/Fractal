@@ -1,7 +1,7 @@
 #ifndef flGLMaterial_h__
 #define flGLMaterial_h__
 
-#include "graphics/flMaterial.h"
+#include "graphics/flShaderMaterial.h"
 #include "ctHashMap.h"
 #include "ctString.h"
 #include "flRef.h"
@@ -16,12 +16,12 @@ namespace flEngine
     class Texture;
     class UniformBuffer;
 
-    class GLMaterial : public Material
+    class GLShaderMaterial : public ShaderMaterial
     {
     public:
-      GLMaterial(API *pAPI, Program *pProgram, char const *blockName);
+      GLShaderMaterial(API *pAPI, Program *pProgram, char const *blockName);
 
-      static Material* Create(API *pAPI, Program * pProgram, char const * blockName = "Material");
+      static ShaderMaterial* Create(API *pAPI, Program * pProgram, char const * blockName = "Material");
 
       virtual void Apply() override;
       virtual void Bind() override;
