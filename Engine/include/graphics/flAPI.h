@@ -51,8 +51,7 @@ namespace flEngine
       /**
        * @brief Register a Graphics API implementation with the engine.
        * 
-       * @param [in] identifier A unique identifier for the implementation.
-       * @param [in] APIFactory A factory object that will create instances of the implementation.
+       * @param [in] pFactory A factory object that will create instances of the implementation.
        */
       static bool RegisterAPI(flIN APIFactory * pFactory);
 

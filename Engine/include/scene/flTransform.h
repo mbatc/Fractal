@@ -47,32 +47,32 @@ namespace flEngine
       Math::QuatD GetOrientation();
 
       /**
-       * @bref Set the global transform using a transformation matrix.
+       * @brief Set the global transform using a transformation matrix.
        */
       void SetTransform(flIN Math::Mat4D transform);
 
       /**
-       * @bref Set the global position.
+       * @brief Set the global position.
        */
       void SetPosition(flIN Math::Vec3D pos);
 
       /**
-       * @bref Set the global scale.
+       * @brief Set the global scale.
        */
       void SetScale(flIN Math::Vec3D scale);
 
       /**
-       * @bref Set the global orientation.
+       * @brief Set the global orientation.
        */
       void SetOrientation(flIN Math::QuatD quat);
 
       /**
-       * @bref Set the local transformation matrix.
+       * @brief Set the local transformation matrix.
        */
       Math::Mat4D GetLocalTransform();
 
       /**
-       * @bref Set the inverse of the local transformation matrix.
+       * @brief Set the inverse of the local transformation matrix.
        */
       Math::Mat4D GetInverseLocalTransform();
 

@@ -24,8 +24,9 @@ namespace flEngine
       /**
        * @brief Construct a new node with the given ID and name.
        *
-       * @param [in] id   The ID to assign to the node.
-       * @param [in] name The name of the node.
+       * @param [in] pScene A pointer to the scene that created the node.
+       * @param [in] id     The ID to assign to the node.
+       * @param [in] name   The name of the node.
        */
       Node(flIN SceneGraph *pScene, flIN int64_t id, flIN char const *name = "Node");
 

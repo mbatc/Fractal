@@ -63,15 +63,18 @@ namespace flEngine
 
       /**
        * @brief Visit all the nodes in the scene.
+       * 
+       * @param [in] pNodeVisitor      A visitor to handle Node's in the scene. Can be nullptr.
+       * @param [in] pComponentVisitor A visitor to handle Component's in the scene. Can be nullptr.
        */
       void Visit(flIN Visitor<Node> *pNodeVisitor, flIN Visitor<Component> *pComponentVisitor);
 
       /**
        * @brief Traverse the transform hierarchy in the scene.
-       * 
-       * @param [in] pNodeVisitor
-       * @param [in] pComponentVistor
-       * @param [in] id
+       *
+       * @param [in] pNodeVisitor      A visitor to handle Node's in the scene. Can be nullptr.
+       * @param [in] pComponentVisitor A visitor to handle Component's in the scene. Can be nullptr.
+       * @param [in] id                The ID of the root node to traverse from.
        */
       void Traverse(flIN Visitor<Node> *pNodeVisitor, flIN Visitor<Component> *pComponentVisitor, flIN int64_t id = -1);
 

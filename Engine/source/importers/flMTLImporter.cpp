@@ -220,7 +220,7 @@ namespace flEngine
     return flNew MTLImporter;
   }
 
-  bool MTLImporter::Import(char const *path) {
+  bool MTLImporter::Import(flIN char const *path) {
     return Impl()->Import(path);
   }
   

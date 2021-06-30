@@ -46,7 +46,7 @@ namespace flEngine
     return Impl()->sourcePath.Directory().c_str();
   }
 
-  void Mesh::SetSourcePath(char const *path)
+  void Mesh::SetSourcePath(flIN char const *path)
   {
     Impl()->sourcePath = path;
   }
@@ -88,7 +88,7 @@ namespace flEngine
     return true;
   }
 
-  bool Mesh::SetVertices(flIN int64_t index, flIN Vertex const * pVertices, int64_t count)
+  bool Mesh::SetVertices(flIN int64_t index, flIN Vertex const * pVertices, flIN int64_t count)
   {
     if (index < 0 || index + count > GetVertexCount())
       return false;
@@ -114,8 +114,9 @@ namespace flEngine
 
   int64_t Mesh::AddVertices(flIN Vertex const * pVertices, flIN int64_t count)
   {
+    int64_t firstIndex = GetVertexCount();
     Impl()->vertices.insert(Impl()->vertices.size(), pVertices, pVertices + count);
-    return GetVertexCount() - 1;
+    return firstIndex;
   }
 
   void Mesh::SetVertices(flIN Vertex const * pVertices, flIN int64_t count)
@@ -175,7 +176,7 @@ namespace flEngine
 
     Polygon &poly = Impl()->polygons[polyIndex];
     poly.indices.push_back(vertIndex);
-    return poly.indices.size();
+    return poly.indices.size() - 1;
   }
 
   bool Mesh::SetPolygonSize(flIN int64_t polyIndex, flIN int64_t vertexCount)

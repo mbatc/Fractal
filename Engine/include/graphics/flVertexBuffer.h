@@ -47,8 +47,8 @@ namespace flEngine
        *
        * Use this function to specify the format of the data in the vertex buffer.
        *
-       * @param [in] primitiveType  The data type of the primitives in the buffer.
-       * @param [in] primitiveWidth The number of primitive items per vertex element.
+       * @param [in] pElements    A pointer to an array of VertexElement's.
+       * @param [in] elementCount The number of elements in the array.
        */
       virtual void SetLayout(flIN VertexElement const* pElements, int64_t elementCount) = 0;
 
