@@ -17,13 +17,13 @@ namespace flEngine
     {
       VertexElement();
 
-      VertexElement(char const * name, Util::Type type, int64_t width, bool normalize = false);
+      VertexElement(uint32_t location, Util::Type type, int64_t width, bool normalize = false);
 
-      char const * name;
-      Util::Type   type;
-      int64_t      width;
-      bool         normalize;
-      int64_t      offset;
+      uint32_t   location;
+      Util::Type type;
+      int64_t    width;
+      bool       normalize;
+      int64_t    offset;
     };
 
     class flEXPORT VertexBuffer : public APIResource
@@ -47,8 +47,8 @@ namespace flEngine
        *
        * Use this function to specify the format of the data in the vertex buffer.
        *
-       * @param [in] primitiveType  The data type of the primitives in the buffer.
-       * @param [in] primitiveWidth The number of primitive items per vertex element.
+       * @param [in] pElements    A pointer to an array of VertexElement's.
+       * @param [in] elementCount The number of elements in the array.
        */
       virtual void SetLayout(flIN VertexElement const* pElements, int64_t elementCount) = 0;
 
@@ -90,7 +90,7 @@ namespace flEngine
       /**
        * @brief Set the vertex layout from an initializer list of VertexElement's.
        */
-      inline void SetLayout(std::initializer_list<VertexElement> const& elements) {
+      inline void SetLayout(std::initializer_list<VertexElement> const &elements) {
         SetLayout(elements.begin(), elements.size());
       }
     };

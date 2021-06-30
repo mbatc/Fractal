@@ -15,6 +15,12 @@
 #include "flRef.h"
 #include "flLog.h"
 
+// Assets
+#include "flMesh.h"
+#include "flSurfaceMaterial.h"
+#include "importers/flOBJImporter.h"
+#include "importers/flMTLImporter.h"
+
 // Threading
 #include "threads/flThreads.h"
 #include "threads/flThreadPool.h"
@@ -44,7 +50,8 @@
 #include "graphics/flTexture.h"
 #include "graphics/flTexture2D.h"
 #include "graphics/flSampler.h"
-#include "graphics/flMaterial.h"
+#include "graphics/flShaderMaterial.h"
+#include "graphics/flRenderMesh.h"
 
 // Application
 #include "flApplication.h"

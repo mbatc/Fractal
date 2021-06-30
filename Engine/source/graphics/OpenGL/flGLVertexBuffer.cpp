@@ -38,11 +38,11 @@ namespace flEngine
       m_stride = 0;
       for (int64_t i = 0; i < elementCount; ++i)
       {
-        m_layout[i].name   = pElements[i].name;
-        m_layout[i].type   = pElements[i].type;
-        m_layout[i].width  = pElements[i].width;
+        m_layout[i].location  = pElements[i].location;
+        m_layout[i].type      = pElements[i].type;
+        m_layout[i].width     = pElements[i].width;
         m_layout[i].normalize = pElements[i].normalize;
-        m_layout[i].offset = m_stride;
+        m_layout[i].offset    = m_stride;
 
         m_stride += Util::SizeOf(pElements[i].type) * pElements[i].width;
       }
@@ -66,10 +66,10 @@ namespace flEngine
     void GLVertexBuffer::GetLayoutElement(int64_t index, VertexElement * pElement) const
     {
       Element const& elem = m_layout[index];
-      pElement->name = elem.name.c_str();
-      pElement->type = elem.type;
-      pElement->width = elem.width;
-      pElement->offset = elem.offset;
+      pElement->location  = elem.location;
+      pElement->type      = elem.type;
+      pElement->width     = elem.width;
+      pElement->offset    = elem.offset;
       pElement->normalize = elem.normalize;
     }
 

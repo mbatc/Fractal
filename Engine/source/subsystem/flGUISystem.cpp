@@ -10,7 +10,7 @@
 #include "graphics/flIndexBuffer.h"
 #include "graphics/flProgram.h"
 #include "graphics/flHardwareBuffer.h"
-#include "graphics/flMaterial.h"
+#include "graphics/flShaderMaterial.h"
 #include "graphics/flDeviceState.h"
 #include "graphics/flWindowRenderTarget.h"
 #include "util/flType.h"
@@ -131,9 +131,9 @@ namespace flEngine
 
         ImDrawVert vert;
         m_vertexBuffer->SetLayout({
-          { "position0", Util::Type_Float32, 2 },
-          { "texcoord0", Util::Type_Float32, 2 },
-          { "colour0",   Util::Type_UInt8,   4, true }
+          { 0, Util::Type_Float32, 2 },
+          { 1, Util::Type_Float32, 2 },
+          { 2, Util::Type_UInt8,   4, true }
           });
 
         m_vertexArray->AddVertexBuffer(m_vertexBuffer);
@@ -302,7 +302,7 @@ namespace flEngine
       Ref<IndexBuffer>  m_indexBuffer;
       Ref<VertexArray>  m_vertexArray;
       Ref<Program>      m_shader;
-      Ref<Material>     m_material;
+      Ref<ShaderMaterial>     m_material;
       Ref<Texture2D>    m_fontTexture;
 
       ctVector<ImDrawVert> m_vertexData;

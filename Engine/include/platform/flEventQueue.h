@@ -31,7 +31,7 @@ namespace flEngine
        * event queue. Event types can be combined to allow more than 1 or more
        * types.
        *
-       * @param Any combination of the EventType bit field.
+       * @param [in] type Any combination of the EventType bit field.
        */
       void SetFilter(flIN EventType type);
 
@@ -45,7 +45,9 @@ namespace flEngine
        * If a EventType filter has been set, both the callback test and type test must
        * pass for the Event to be accepted.
        * 
-       * @param FilterFunc A pointer to the callback that should be used to filter Events.
+       * @param [in] FilterFunc A pointer to the callback that should be used to filter Events.
+       * @param [in] pUserData  A void * that is forwarded to the FilterFunc. This can be used to
+       *                   pass custom data to the callback.
        */
       void SetFilter(flIN bool (*FilterFunc)(Event *, void *), void *pUserData = nullptr);
 

@@ -36,11 +36,10 @@ public:
 
   PerspectiveCamera m_camera;
 
-  flEngine::Ref<flEngine::Graphics::Program>     pProgram;
-  flEngine::Ref<flEngine::Graphics::Texture2D>   pTexture;
-  flEngine::Ref<flEngine::Graphics::Sampler>     pSampler;
-  flEngine::Ref<flEngine::Graphics::VertexArray> pGeometry;
-  flEngine::Ref<flEngine::Graphics::Material>    pMaterial;
+  flEngine::Ref<flEngine::Graphics::Program>        pProgram;
+  flEngine::Ref<flEngine::Graphics::Sampler>        pSampler;
+  flEngine::Ref<flEngine::Graphics::RenderMesh>     pRenderMesh;
+  std::vector<flEngine::Ref<flEngine::Graphics::ShaderMaterial>> materials;
 
   flEngine::Ref<flEngine::Graphics::TextureRenderTarget> m_target;
 };

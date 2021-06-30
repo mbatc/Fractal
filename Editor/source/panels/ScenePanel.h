@@ -2,7 +2,6 @@
 
 #include "flEngine.h"
 #include "EditorSystem.h"
-#include "ctVector.h"
 
 class ScenePanel : public flEngine::GUI::Panel
 {

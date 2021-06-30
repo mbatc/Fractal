@@ -1,5 +1,8 @@
 #include "SceneViewPanel.h"
 
+#include "ctFile.h"
+#include "ctFilename.h"
+
 using namespace flEngine;
 using namespace flEngine::GUI;
 using namespace flEngine::Util;
@@ -7,11 +10,12 @@ using namespace flEngine::Math;
 using namespace flEngine::Input;
 using namespace flEngine::Graphics;
 using namespace flEngine::Platform;
+using namespace flEngine::Scene;
 
 SceneViewPanel::SceneViewPanel(GUISystem* pGUI)
-    : Panel(pGUI, "Scene View")
-    , m_camera(pGUI->GetKeyboard(), pGUI->GetMouse())
-  {}
+  : Panel(pGUI, "Scene View")
+  , m_camera(pGUI->GetKeyboard(), pGUI->GetMouse())
+{}
 
 bool SceneViewPanel::OnStartup()
 {
@@ -22,71 +26,44 @@ bool SceneViewPanel::OnStartup()
   pProgram->SetShaderFromFile("../../Engine/assets/shader-library/transform.vert", ProgramStage_Vertex);
   pProgram->Compile();
 
-  pTexture = MakeRef(pGraphics->CreateTexture2D(PixelFormat_RGBA, PixelComponentType_UNorm8), false);
-  // Image image("C:/Users/mickb/Pictures/test.jpg");
-  Image image("../../Engine/assets/texture-library/albedo/test0.jpg");
-  pTexture->SetFromImage(&image);
-  pTexture->GenerateMipMaps();
-
-  pMaterial = MakeRef(pGraphics->CreateMaterial(pProgram), false);
-  pMaterial->SetTexture("texture0", pTexture);
-  pMaterial->SetValue("albedo0", Vec4F(1, 0, 0, 1));
-  pMaterial->Apply();
-
   pSampler = MakeRef(pGraphics->CreateSampler(), false);
   pSampler->SetWrapMode(WrapMode_Mirror);
   pSampler->SetFilterMinMode(FilterMode_Linear, true);
 
-  pGeometry = MakeRef(pGraphics->CreateVertexArray(), false);
-
   // Construct a simple cube
   {
     // Create vertex and index buffers
-    Ref<VertexBuffer> pPositionBuffer = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 3 * 8, nullptr), false);
-    Ref<VertexBuffer> pColourBuffer = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 4 * 8, nullptr), false);
-    Ref<VertexBuffer> pTexcoordBuffer = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 2 * 8, nullptr), false);
-    Ref<IndexBuffer>  pIndexBuffer = MakeRef(pGraphics->CreateIndexBuffer(36), false);
+    OBJImporter importer;
+    importer.Import("C:/Users/mickb/OneDrive/Documents/Test Models/Sponza/sponza.obj");
 
-    // Map buffers to client memory
-    Vec3F* pPositions = (Vec3F*)pPositionBuffer->GetBuffer()->Map(AccessFlag_Write);
-    Vec2F* pTexcoords = (Vec2F*)pTexcoordBuffer->GetBuffer()->Map(AccessFlag_Write);
-    Vec4F* pColours = (Vec4F*)pColourBuffer->GetBuffer()->Map(AccessFlag_Write);
+    Mesh *pMesh = importer.GetResult();
+    pMesh->Triangulate();
 
-    uint32_t* pIndices = (uint32_t*)pIndexBuffer->GetBuffer()->Map(AccessFlag_Write);
-    pPositionBuffer->SetLayout({ { "position0", Type_Float32, 3 } });
-    pColourBuffer->SetLayout({ { "colour0",   Type_Float32, 4 } });
-    pTexcoordBuffer->SetLayout({ { "texcoord0", Type_Float32, 2 } });
+    pRenderMesh = MakeRef(pGraphics->CreateRenderMesh(pMesh), false);
 
-    // Set vertex data
-    pPositions[0] = { -1, -1, -1 };  pColours[0] = { 1, 0, 0, 1 }; pTexcoords[0] = { 0, 0 };
-    pPositions[1] = { -1, -1,  1 };  pColours[1] = { 0, 1, 0, 1 }; pTexcoords[1] = { 2, 0 };
-    pPositions[2] = { 1, -1,  1 };   pColours[2] = { 0, 0, 1, 1 }; pTexcoords[2] = { 2, 2 };
-    pPositions[3] = { 1, -1, -1 };   pColours[3] = { 1, 0, 0, 1 }; pTexcoords[3] = { 0, 2 };
-    pPositions[4] = { -1,  1, -1 };  pColours[4] = { 0, 1, 0, 1 }; pTexcoords[4] = { 2, 2 };
-    pPositions[5] = { -1,  1,  1 };  pColours[5] = { 0, 0, 1, 1 }; pTexcoords[5] = { 0, 2 };
-    pPositions[6] = { 1,  1,  1 };   pColours[6] = { 1, 0, 0, 1 }; pTexcoords[6] = { 0, 0 };
-    pPositions[7] = { 1,  1, -1 };   pColours[7] = { 0, 1, 0, 1 }; pTexcoords[7] = { 2, 0 };
+    for (int64_t matIdx = 0; matIdx < pMesh->GetMaterialCount(); ++matIdx) {
+      SurfaceMaterial *pMaterialData = pMesh->GetMaterial(matIdx);
+      Ref<ShaderMaterial> pShaderMat = MakeRef(pGraphics->CreateMaterial(pProgram), false);
+      char const * path = pMaterialData->GetTexture("diffuse");
+      if (path != nullptr) {
+        bool found = false;
+        ctFilename fullPath = ctFile::Find(ctString(pMesh->GetSourceDirectory()) + "/" + path, &found);
 
-    // Set index data
-    // Bottom        // Front         // Left          // Back          // Right         // Top
-    pIndices[0] = 0; pIndices[6] = 0;  pIndices[12] = 1; pIndices[18] = 2; pIndices[24] = 3; pIndices[30] = 4;
-    pIndices[1] = 1; pIndices[7] = 4;  pIndices[13] = 5; pIndices[19] = 6; pIndices[25] = 7; pIndices[31] = 5;
-    pIndices[2] = 2; pIndices[8] = 7;  pIndices[14] = 4; pIndices[20] = 5; pIndices[26] = 6; pIndices[32] = 6;
-    pIndices[3] = 0; pIndices[9] = 0;  pIndices[15] = 1; pIndices[21] = 2; pIndices[27] = 3; pIndices[33] = 4;
-    pIndices[4] = 2; pIndices[10] = 7; pIndices[16] = 4; pIndices[22] = 5; pIndices[28] = 6; pIndices[34] = 6;
-    pIndices[5] = 3; pIndices[11] = 3; pIndices[17] = 0; pIndices[23] = 1; pIndices[29] = 2; pIndices[35] = 7;
+        if (found) {
+          Image image(fullPath.c_str());
 
-    // Unmap the buffers
-    pPositionBuffer->GetBuffer()->Unmap();
-    pColourBuffer->GetBuffer()->Unmap();
-    pTexcoordBuffer->GetBuffer()->Unmap();
-    pIndexBuffer->GetBuffer()->Unmap();
+          Ref<Texture2D> pTexture = MakeRef(pGraphics->CreateTexture2D(PixelFormat_RGBA, PixelComponentType_UNorm8), false);
+          pTexture->SetFromImage(&image);
+          pTexture->GenerateMipMaps();
 
-    // Add buffers to the geometry
-    pGeometry->AddVertexBuffer(pPositionBuffer);
-    pGeometry->AddVertexBuffer(pColourBuffer);
-    pGeometry->AddVertexBuffer(pTexcoordBuffer);
-    pGeometry->SetIndexBuffer(pIndexBuffer);
+          pShaderMat->SetTexture("texture0", pTexture);
+        }
+      }
+
+      pShaderMat->SetValue("albedo0", pMaterialData->GetColour("diffuse"));
+      pShaderMat->Apply();
+      materials.push_back(pShaderMat);
+    }
   }
 
   return true;
@@ -97,9 +74,6 @@ void SceneViewPanel::OnUpdate()
   m_camera.Update();
   m_camera.width = (float)ContentAreaSize().x;
   m_camera.height = (float)ContentAreaSize().y;
-
-  pMaterial->SetValue("albedo0", Math::Vec4F((float)abs(ctSin(clock() / 1000.0)), (float)abs(ctCos(clock() / 1000.0)), 0, 1));
-  pMaterial->Apply();
 
   if (!m_target || m_target->GetWidth() != ContentAreaSize().x || m_target->GetHeight() != ContentAreaSize().y)
   {
@@ -130,7 +104,7 @@ void SceneViewPanel::OnRender()
   DeviceState* pState = GetGUI()->GetGraphicsAPI()->GetState();
   pState->SetFeatureEnabled(DeviceFeature_DepthTest, true);
 
-  pGeometry->Bind();
+  pRenderMesh->GetVertexArray()->Bind();
   pProgram->Bind();
 
   Window* pWindow = GetGUI()->GetMainWindow();
@@ -139,17 +113,17 @@ void SceneViewPanel::OnRender()
   // Draw to the first window
   Mat4F projection = m_camera.ProjectionMatrix() * m_camera.ViewMatrix();
 
-  pMaterial->Bind();
   pState->SetViewport(0, 0, m_target->GetWidth(), m_target->GetHeight());
 
   class RenderVisitor : public flEngine::Scene::Visitor<flEngine::Scene::Node>
   {
   public:
-    RenderVisitor(Mat4F projection, Ref<Program> pProgram, Ref<VertexArray> pVertArray, API* pAPI)
+    RenderVisitor(Mat4F projection, std::vector<Ref<ShaderMaterial>> const & materials, Ref<Program> pProgram, Ref<RenderMesh> pMesh, API* pAPI)
       : m_projection(projection)
       , m_pProgram(pProgram)
       , m_pGraphics(pAPI)
-      , m_pVertArray(pVertArray)
+      , m_pRenderMesh(pMesh)
+      , m_materials(materials)
     {}
 
     bool OnEnter(flEngine::Scene::Node* pNode) override {
@@ -162,7 +136,13 @@ void SceneViewPanel::OnRender()
       {
         Mat4F mvp = m_projection * (Mat4F)pTransform->GetTransform();
         m_pProgram->SetMat4("mvp", mvp);
-        m_pGraphics->Render(DrawMode_Triangles, true, 0, m_pVertArray->GetIndexCount());
+
+        for (int64_t i = 0; i < m_pRenderMesh->GetSubmeshCount(); ++i) {
+          m_materials[i]->Bind();
+
+          RenderMesh::SubMesh *pSubMesh = m_pRenderMesh->GetSubmesh(i);
+          m_pGraphics->Render(DrawMode_Triangles, true, pSubMesh->offset, pSubMesh->count);
+        }
       }
 
       return true;
@@ -170,12 +150,13 @@ void SceneViewPanel::OnRender()
 
     Mat4F m_projection;
     Ref<Program> m_pProgram;
-    Ref<VertexArray> m_pVertArray;
+    Ref<RenderMesh> m_pRenderMesh;
+    std::vector<Ref<ShaderMaterial>> m_materials;
     API* m_pGraphics;
   };
 
-  flEngine::Scene::SceneGraph* pScene = Application::Get().GetSubSystem<SceneSystem>()->ActiveScene();
-  RenderVisitor renderVisitor(projection, pProgram, pGeometry, pGraphics);
+  SceneGraph* pScene = Application::Get().GetSubSystem<SceneSystem>()->ActiveScene();
+  RenderVisitor renderVisitor(projection, materials, pProgram, pRenderMesh, pGraphics);
 
   pScene->Traverse(&renderVisitor, nullptr);
 }

@@ -3,15 +3,15 @@
 #include "graphics/flTexture.h"
 #include "graphics/flSampler.h"
 #include "graphics/flAPI.h"
-#include "flGLMaterial.h"
+#include "flGLShaderMaterial.h"
 #include "flGLUtil.h"
 
 namespace flEngine
 {
   namespace Graphics
   {
-    GLMaterial::GLMaterial(API *pAPI, Program *pProgram, char const *blockName)
-      : Material(pAPI)
+    GLShaderMaterial::GLShaderMaterial(API *pAPI, Program *pProgram, char const *blockName)
+      : ShaderMaterial(pAPI)
     {
       int64_t blockIndex = pProgram->FindUniformBlock(blockName);
       int64_t blockSize  = pProgram->GetUniformBlockSize(blockIndex);
@@ -45,18 +45,18 @@ namespace flEngine
       m_blockIndex = blockIndex;
     }
 
-    Material* GLMaterial::Create(API *pAPI, Program *pProgram, char const * blockName)
+    ShaderMaterial* GLShaderMaterial::Create(API *pAPI, Program *pProgram, char const * blockName)
     {
-      return flNew GLMaterial(pAPI, pProgram, blockName);
+      return flNew GLShaderMaterial(pAPI, pProgram, blockName);
     }
 
-    void GLMaterial::Apply()
+    void GLShaderMaterial::Apply()
     {
       if (m_shaderData != m_activeShaderData)
         m_uniformBuffer->GetBuffer()->Set(m_shaderData.data(), m_shaderData.size());
     }
 
-    void GLMaterial::Bind()
+    void GLShaderMaterial::Bind()
     {
       m_uniformBuffer->Bind(m_blockIndex);
 
@@ -72,17 +72,17 @@ namespace flEngine
       }
     }
 
-    bool GLMaterial::SetValue(char const* name, float value)
+    bool GLShaderMaterial::SetValue(char const* name, float value)
     {
       return SetValue(name, &value, Util::Type_Float32, 1);
     }
 
-    bool GLMaterial::SetValue(char const *name, float const *pValues, int64_t componentCount)
+    bool GLShaderMaterial::SetValue(char const *name, float const *pValues, int64_t componentCount)
     {
       return SetValue(name, pValues, Util::TypeOf<float>(), componentCount);
     }
 
-    bool GLMaterial::SetValue(char const * name, void const *pValue, Util::Type const &type, int64_t const &width)
+    bool GLShaderMaterial::SetValue(char const * name, void const *pValue, Util::Type const &type, int64_t const &width)
     {
       ValueData *pValueData = m_values.TryGet(name);
       if (pValueData == nullptr)
@@ -93,7 +93,7 @@ namespace flEngine
       return true;
     }
 
-    bool GLMaterial::SetTexture(char const * name, Texture * pTexture)
+    bool GLShaderMaterial::SetTexture(char const * name, Texture * pTexture)
     {
       TextureData *pTextureData = m_textures.TryGet(name);
       if (pTextureData == nullptr)
@@ -103,7 +103,7 @@ namespace flEngine
       return true;
     }
 
-    bool GLMaterial::SetSampler(char const * name, Sampler * pSampler)
+    bool GLShaderMaterial::SetSampler(char const * name, Sampler * pSampler)
     {
       TextureData *pTextureData = m_textures.TryGet(name);
       if (pTextureData == nullptr)

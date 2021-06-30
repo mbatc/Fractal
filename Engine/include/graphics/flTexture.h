@@ -83,10 +83,9 @@ namespace flEngine
       /**
        * @brief Set the pixel data for this texture.
        *
-       * @param [in] pPixels A pointer to a buffer containing the pixel data.
-       * @param [in] format  The format of the pixel data.
-       * @param [in] type    The type of the pixel data components.
-       * @param [in] mipMap  The mip-map layer to copy the pixel data to.
+       * @param [in] pPixels     A pointer to a buffer containing the pixel data.
+       * @param [in] pBufferDesc A description of the pixel data.
+       * @param [in] mipMap      The mip-map layer to copy the pixel data to.
        *
        * @return Returns true if the pixel data was set without errors, otherwise returns false.
        */
@@ -95,12 +94,12 @@ namespace flEngine
       /**
        * @brief Set the pixel data for this texture.
        *
-       * @param [in] pPixels A pointer to a buffer containing the pixel data.
-       * @param [in] size    The dimensions of the pixel data buffer.
-       * @param [in] format  The format of the pixel data.
-       * @param [in] type    The type of the pixel data components.
-       * @param [in] offset  The starting coordinate when copying the pixel data into the texture.
-       * @param [in] mipMap  The mip-map layer to copy the pixel data to.
+       * @param [in] pPixels      A pointer to a buffer containing the pixel data.
+       * @param [in] pBufferDesc  A description of the pixel data.
+       * @param [in] widthOffset  The starting x-coordinate when copying the pixel data into the texture.
+       * @param [in] heightOffset The starting y-coordinate when copying the pixel data into the texture.
+       * @param [in] depthOffset  The starting z-coordinate when copying the pixel data into the texture.
+       * @param [in] mipMap       The mip-map layer to copy the pixel data to.
        *
        * @return Returns true if the pixel data was set without errors, otherwise returns false.
        */

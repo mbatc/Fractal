@@ -13,10 +13,10 @@ namespace flEngine
     class Program;
     class Sampler;
 
-    class flEXPORT Material : public APIResource
+    class flEXPORT ShaderMaterial : public APIResource
     {
     protected:
-      Material(API *pAPI);
+      ShaderMaterial(API *pAPI);
 
     public:
       virtual void Apply() = 0;

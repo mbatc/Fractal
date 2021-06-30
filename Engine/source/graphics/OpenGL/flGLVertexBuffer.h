@@ -33,7 +33,7 @@ namespace flEngine
     private:
       struct Element
       {
-        ctString name;
+        uint32_t location = 0;
         Util::Type type;
         int64_t width = 0;
         int64_t offset = 0;
