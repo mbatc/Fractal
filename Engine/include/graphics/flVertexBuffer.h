@@ -17,13 +17,13 @@ namespace flEngine
     {
       VertexElement();
 
-      VertexElement(char const * name, Util::Type type, int64_t width, bool normalize = false);
+      VertexElement(uint32_t location, Util::Type type, int64_t width, bool normalize = false);
 
-      char const * name;
-      Util::Type   type;
-      int64_t      width;
-      bool         normalize;
-      int64_t      offset;
+      uint32_t   location;
+      Util::Type type;
+      int64_t    width;
+      bool       normalize;
+      int64_t    offset;
     };
 
     class flEXPORT VertexBuffer : public APIResource
@@ -90,7 +90,7 @@ namespace flEngine
       /**
        * @brief Set the vertex layout from an initializer list of VertexElement's.
        */
-      inline void SetLayout(std::initializer_list<VertexElement> const& elements) {
+      inline void SetLayout(std::initializer_list<VertexElement> const &elements) {
         SetLayout(elements.begin(), elements.size());
       }
     };

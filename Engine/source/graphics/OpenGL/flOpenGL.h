@@ -29,7 +29,7 @@ namespace flEngine
       VertexBuffer* CreateVertexBuffer(int64_t size, void const* pInitialData, BufferUsage bufferUsage) override;
       UniformBuffer* CreateUniformBuffer(int64_t size, void const *pInitialData, BufferUsage bufferUsage) override;
       Program* CreateProgram() override;
-      ShaderMaterial* CreateMaterial(flIN Program *pProgram, flIN char const *materialBlock = "Material") override;
+      ShaderMaterial* CreateMaterial(Program *pProgram, char const *materialBlock = "Material") override;
 
       Texture2D* CreateTexture2D(DepthFormat depthFormat) override;
       Texture2D* CreateTexture2D(PixelFormat pixelFormat, PixelComponentType type) override;

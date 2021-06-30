@@ -77,7 +77,7 @@ namespace flEngine
       return GLVertexBuffer::Create(this, size, pInitialData, bufferUsage);
     }
 
-    UniformBuffer *OpenGL::CreateUniformBuffer(int64_t size, void const *pInitialData, BufferUsage bufferUsage)
+    UniformBuffer* OpenGL::CreateUniformBuffer(int64_t size, void const *pInitialData, BufferUsage bufferUsage)
     {
       return GLUniformBuffer::Create(this, size, pInitialData, bufferUsage);
     }
@@ -87,7 +87,7 @@ namespace flEngine
       return GLProgram::Create(this);
     }
 
-    ShaderMaterial *OpenGL::CreateMaterial(flIN Program *pProgram, flIN char const *materialBlockName)
+    ShaderMaterial* OpenGL::CreateMaterial(Program *pProgram, char const *materialBlockName)
     {
       return GLShaderMaterial::Create(this, pProgram, materialBlockName);
     }
@@ -102,7 +102,7 @@ namespace flEngine
       return GLTexture2D::Create(this, pixelFormat, type);
     }
 
-    Sampler *OpenGL::CreateSampler()
+    Sampler* OpenGL::CreateSampler()
     {
       return GLSampler::Create(this);
     }

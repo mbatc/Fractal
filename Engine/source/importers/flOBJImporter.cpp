@@ -1,8 +1,10 @@
 #include "importers/flOBJImporter.h"
+#include "importers/flMTLImporter.h"
 #include "math/flMath.h"
+#include "flSurfaceMaterial.h"
 #include "flMesh.h"
 #include "flLog.h"
-
+#include "flRef.h"
 #include "ctVector.h"
 #include "ctFile.h"
 #include "ctStringReader.h"
@@ -10,35 +12,13 @@
 using namespace flEngine;
 using namespace flEngine::Math;
 
-template<size_t N>
-bool _Compare(char const (&token)[N], char const *str)
-{
-  return strncmp(str, token, N);
-}
-
-template<typename T, size_t N>
-bool _ReadValues(T *pValues, ctStringSeeker *pSeeker)
-{
-  for (int64_t i = 0; i < N; ++i) {
-    pSeeker->SkipWhitespace();
-    int64_t len;
-    pValues[i] = ctScan::Scan<T>(pSeeker->Text(), &len);
-    pSeeker->Seek(len);
-  }
-  return true;
-}
-
 namespace flEngine
 {
   class Impl_OBJImporter
   {
   public:
     Impl_OBJImporter() {
-      m_pMesh = Mesh::Create();
-    }
-
-    ~Impl_OBJImporter() {
-      m_pMesh->DecRef();
+      m_pMesh = MakeRef<Mesh>();
     }
 
     bool ParseVertex(ctVector<ctString> const &tokens) {
@@ -154,7 +134,7 @@ namespace flEngine
       return true;
     }
 
-    bool Import(flIN char const *filename) {
+    bool Import(char const * filename) {
       ctFile file;
       if (!file.Open(filename, atFM_Read)) {
         flError("Could not open file '%s'", filename);
@@ -191,7 +171,26 @@ namespace flEngine
         }
       }
 
+      MTLImporter mtlImporter;
+      ctString srcDir = ctFilename(filename).Directory() + "/";
+      for (ctString const  & mtlFile : m_mtlFiles) {
+        ctFilename mtlPath = ctFile::Find(srcDir + mtlFile);
+        mtlImporter.Import(mtlPath.c_str());
+      }
+
+      for (ctString const &mtlName : m_materials) {
+        SurfaceMaterial * pMaterial = mtlImporter.GetMaterial(mtlName);
+        if (pMaterial) {
+          m_pMesh->AddMaterial(pMaterial);
+        }
+        else {
+          m_pMesh->AddMaterial(MakeRef(SurfaceMaterial::Create(), false));
+        }
+      }
+
       ConstructMesh();
+
+      m_pMesh->SetSourcePath(filename);
 
       return true;
     }
@@ -265,7 +264,7 @@ namespace flEngine
       int64_t material;
     };
 
-    Mesh *m_pMesh = nullptr;
+    Ref<Mesh> m_pMesh = nullptr;
 
     int64_t m_activeMaterial = -1;
 

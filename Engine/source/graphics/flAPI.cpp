@@ -1,7 +1,8 @@
+#include "graphics/flRenderMesh.h"
 #include "graphics/flAPI.h"
 #include "flRef.h"
+
 #include "ctString.h"
-#include "graphics/flAPIResource.h"
 
 namespace flEngine
 {
@@ -41,6 +42,11 @@ namespace flEngine
       Ref<APIFactory> pFactory = FindFactory(apiIdentifier);
 
       return pFactory ? pFactory->Create(pWindow, pOptions) : nullptr;
+    }
+
+    RenderMesh *API::CreateRenderMesh(flIN Mesh *pMesh)
+    {
+      return RenderMesh::Create(this, pMesh);
     }
   }
 }

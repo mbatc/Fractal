@@ -43,6 +43,9 @@ namespace flEngine
       Colour(const Colour &o);
       Colour(const ColourU32 &val = ColourU32_White);
 
+      inline Colour(const Math::Vec3F &vec) : Colour(vec.x, vec.y, vec.z, 1) {}
+      inline Colour(const Math::Vec4F &vec) : Colour(vec.x, vec.y, vec.z, vec.w) {}
+
       Colour& operator=(const Colour &rhs);
       bool operator==(const Colour &rhs) const;
       bool operator!=(const Colour &rhs) const;

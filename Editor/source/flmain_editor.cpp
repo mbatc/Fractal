@@ -20,11 +20,6 @@ public:
   FractalEditor()
     : Application("OpenGL")
   {
-    OBJImporter importer;
-    importer.Import("C:/Users/Mick/Documents/Models/Sponza/sponza.obj");
-
-    Mesh *pMesh = importer.GetResult();
-
     AddSubSystem<SceneSystem>();
     AddSubSystem<EditorGUI>();
     AddSubSystem<EditorSystem>();
@@ -37,25 +32,6 @@ public:
     gui->AddMenuItem("File/Exit", Exit);
 
     OnEvent(E_Wnd_Close, &FractalEditor::OnCloseEvent);
-
-    Mesh m;
-    m.AddVertex({ -1, 0, -1 }, { 0, 1, 0 }, { 0, 0 }, { 1, 1, 1, 1 });
-    m.AddVertex({ -1, 0,  1 }, { 0, 1, 0 }, { 0, 0 }, { 1, 1, 1, 1 });
-    m.AddVertex({  1, 0,  1 }, { 0, 1, 0 }, { 0, 0 }, { 1, 1, 1, 1 });
-    m.AddVertex({  1, 0, -1 }, { 0, 1, 0 }, { 0, 0 }, { 1, 1, 1, 1 });
-    
-    m.AddPolygon();
-    m.AddPolygon();
-
-    m.SetPolygonMaterial(0, 0);
-    m.AddPolygonVertex(0, 0);
-    m.AddPolygonVertex(0, 1);
-    m.AddPolygonVertex(0, 2);
-
-    m.SetPolygonMaterial(1, 0);
-    m.AddPolygonVertex(1, 0);
-    m.AddPolygonVertex(1, 2);
-    m.AddPolygonVertex(1, 3);
   }
 
   bool OnCloseEvent(Platform::Event* pEvent)

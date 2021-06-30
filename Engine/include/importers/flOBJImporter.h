@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../flPImpl.h"
+#include "../flInterface.h"
 
 namespace flEngine
 {
@@ -8,7 +8,7 @@ namespace flEngine
 
   class Mesh;
 
-  class flEXPORT OBJImporter
+  class flEXPORT OBJImporter : public Interface
   {
     flPIMPL_DEF(OBJImporter);
 

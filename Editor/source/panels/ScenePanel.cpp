@@ -1,4 +1,5 @@
 #include "ScenePanel.h"
+#include "ctVector.h"
 
 using namespace flEngine;
 using namespace flEngine::Scene;

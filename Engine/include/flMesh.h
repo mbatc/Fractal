@@ -5,6 +5,8 @@
 
 namespace flEngine
 {
+  class SurfaceMaterial;
+
   class Impl_Mesh;
 
   struct Vertex
@@ -22,6 +24,12 @@ namespace flEngine
     static Mesh * Create();
 
     void Clear();
+
+    char const * GetSourcePath();
+
+    char const * GetSourceDirectory();
+
+    void SetSourcePath(char const * path);
 
     int64_t GetVertexCount() const;
 
@@ -68,5 +76,19 @@ namespace flEngine
     bool SetPolygonVertex(flIN int64_t polyIndex, flIN int64_t vertIndex, flIN int64_t index);
 
     bool SetPolygonVertices(flIN int64_t polyIndex, flIN int64_t const * pIndices, flIN int64_t count);
+
+    int64_t AddMaterial();
+
+    int64_t AddMaterial(flIN SurfaceMaterial * pMaterial);
+
+    int64_t FindMaterial(flIN char const * name) const;
+
+    SurfaceMaterial * GetMaterial(flIN int64_t materialIndex);
+
+    SurfaceMaterial const *GetMaterial(flIN int64_t materialIndex) const;
+
+    int64_t GetMaterialCount() const;
+
+    int64_t Triangulate();
   };
 }

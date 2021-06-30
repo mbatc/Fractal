@@ -131,9 +131,9 @@ namespace flEngine
 
         ImDrawVert vert;
         m_vertexBuffer->SetLayout({
-          { "position0", Util::Type_Float32, 2 },
-          { "texcoord0", Util::Type_Float32, 2 },
-          { "colour0",   Util::Type_UInt8,   4, true }
+          { 0, Util::Type_Float32, 2 },
+          { 1, Util::Type_Float32, 2 },
+          { 2, Util::Type_UInt8,   4, true }
           });
 
         m_vertexArray->AddVertexBuffer(m_vertexBuffer);

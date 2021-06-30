@@ -10,6 +10,8 @@
 
 namespace flEngine
 {
+  class Mesh;
+
   namespace Platform { class Window; }
 
   namespace Graphics
@@ -28,6 +30,7 @@ namespace flEngine
     class Program;
     class Sampler;
     class ShaderMaterial;
+    class RenderMesh;
     class APIResource;
 
     struct PixelBufferDesc;
@@ -142,6 +145,11 @@ namespace flEngine
        * @brief
        */
       virtual Sampler* CreateSampler() = 0;
+
+      /**
+       * @brief
+       */
+      RenderMesh* CreateRenderMesh(flIN Mesh *pMesh);
     };
   }
 }

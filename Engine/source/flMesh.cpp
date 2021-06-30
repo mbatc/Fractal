@@ -1,5 +1,8 @@
 #include "flMesh.h"
+#include "flRef.h"
+#include "flSurfaceMaterial.h"
 #include "ctVector.h"
+#include "ctFilename.h"
 
 namespace flEngine
 {
@@ -13,8 +16,11 @@ namespace flEngine
   class Impl_Mesh
   {
   public:
+    ctFilename sourcePath;
+
     ctVector<Vertex> vertices;
     ctVector<Polygon> polygons;
+    ctVector<Ref<SurfaceMaterial>> materials;
   };
 
   flPIMPL_IMPL(Mesh);
@@ -28,6 +34,21 @@ namespace flEngine
   {
     Impl()->vertices.clear();
     Impl()->polygons.clear();
+  }
+
+  char const * Mesh::GetSourcePath()
+  {
+    return Impl()->sourcePath.c_str();
+  }
+
+  char const * Mesh::GetSourceDirectory()
+  {
+    return Impl()->sourcePath.Directory().c_str();
+  }
+
+  void Mesh::SetSourcePath(char const *path)
+  {
+    Impl()->sourcePath = path;
   }
 
   int64_t Mesh::GetVertexCount() const
@@ -200,5 +221,67 @@ namespace flEngine
     Polygon& poly = Impl()->polygons[polyIndex];
     poly.material = material;
     return true;
+  }
+
+  int64_t Mesh::AddMaterial()
+  {
+    Impl()->materials.push_back(MakeRef(SurfaceMaterial::Create(), false));
+    return GetMaterialCount() - 1;
+  }
+
+  int64_t Mesh::AddMaterial(flIN SurfaceMaterial *pMaterial)
+  {
+    Impl()->materials.push_back(MakeRef(pMaterial, true));
+    return GetMaterialCount() - 1;
+  }
+
+  int64_t Mesh::FindMaterial(flIN char const * name) const
+  {
+    int64_t i = 0;
+    for (auto pMaterial : Impl()->materials) {
+      if (strcmp(pMaterial->GetName(), name)) {
+        return i;
+      }
+      ++i;
+    }
+    return -1;
+  }
+  
+  SurfaceMaterial * Mesh::GetMaterial(flIN int64_t materialIndex)
+  {
+    return Impl()->materials[materialIndex].Get();
+  }
+
+  SurfaceMaterial const * Mesh::GetMaterial(flIN int64_t materialIndex) const
+  {
+    return Impl()->materials[materialIndex].Get();
+  }
+
+  int64_t Mesh::GetMaterialCount() const
+  {
+    return Impl()->materials.size();
+  }
+
+  int64_t Mesh::Triangulate()
+  {
+    ctVector<Polygon> newPolygons;
+
+    newPolygons.reserve(GetPolygonCount());
+
+    for (Polygon &poly : Impl()->polygons) {
+      int64_t triCount = poly.indices.size() - 2;
+      for (int64_t tri = 0; tri < triCount; ++tri) {
+        Polygon newTri;
+        newTri.material = poly.material;
+        newTri.indices.push_back(poly.indices[0]);
+        newTri.indices.push_back(poly.indices[tri + 1]);
+        newTri.indices.push_back(poly.indices[tri + 2]);
+        newPolygons.push_back(newTri);
+      }
+    }
+
+    int64_t newTris = newPolygons.size() - Impl()->polygons.size();
+    Impl()->polygons = newPolygons;
+    return newTris;
   }
 }

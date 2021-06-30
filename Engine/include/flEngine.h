@@ -17,7 +17,9 @@
 
 // Assets
 #include "flMesh.h"
+#include "flSurfaceMaterial.h"
 #include "importers/flOBJImporter.h"
+#include "importers/flMTLImporter.h"
 
 // Threading
 #include "threads/flThreads.h"
@@ -49,6 +51,7 @@
 #include "graphics/flTexture2D.h"
 #include "graphics/flSampler.h"
 #include "graphics/flShaderMaterial.h"
+#include "graphics/flRenderMesh.h"
 
 // Application
 #include "flApplication.h"

@@ -14,4 +14,5 @@ out vec4 fsout_colour0;
 void main()
 {
   fsout_colour0 = texture(texture0, vsout_texcoord0) * vsout_colour0 * albedo0;
+  fsout_colour0.a = 1;
 }

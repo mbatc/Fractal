@@ -12,6 +12,7 @@ namespace flEngine
   {
     flPIMPL_DEF(SurfaceMaterial);
   public:
+    static SurfaceMaterial * Create();
 
     char const * GetName() const;
 
@@ -27,6 +28,12 @@ namespace flEngine
 
     void SetColour(flIN char const * name, flIN Util::Colour colour);
 
-    void SetTexture(flIN char const * name, flIN char const * path)
+    void SetTexture(flIN char const *name, flIN char const *path);
+
+    int64_t GetValueCount() const;
+    
+    int64_t GetColourCount() const;
+
+    int64_t GetTextureCount() const;
   };
 }

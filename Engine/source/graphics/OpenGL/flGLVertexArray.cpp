@@ -35,7 +35,6 @@ namespace flEngine
           flVerifyGL(glDisableVertexAttribArray, (GLuint)loc);
         m_boundLocations.clear();
 
-        int32_t location = 0;
         for (int64_t bufferIndex = 0; bufferIndex < GetVertexBufferCount(); ++bufferIndex)
         {
           VertexElement element;
@@ -47,11 +46,10 @@ namespace flEngine
             GLenum glDataType = GLUtil::ToDataType(element.type);
             GLsizei width = (GLsizei)element.width;
 
-            flVerifyGL(glEnableVertexAttribArray, location);
+            flVerifyGL(glEnableVertexAttribArray, element.location);
             pVertexBuffer->Bind();
-            flVerifyGL(glVertexAttribPointer, location, width, glDataType, element.normalize, (GLsizei)pVertexBuffer->GetVertexStride(), (void const *)element.offset);
-            m_boundLocations.push_back(location);
-            ++location;
+            flVerifyGL(glVertexAttribPointer, element.location, width, glDataType, element.normalize, (GLsizei)pVertexBuffer->GetVertexStride(), (void const *)element.offset);
+            m_boundLocations.push_back(element.location);
           }
         }
 
