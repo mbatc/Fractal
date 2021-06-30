@@ -138,9 +138,9 @@ public:
       Math::Vec4F* pColours   = (Math::Vec4F*)pColourBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
 
       uint32_t* pIndices = (uint32_t*)pIndexBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
-      pPositionBuffer->SetLayout({ { "position0", Util::Type_Float32, 3 } });
-      pColourBuffer->SetLayout({ { "colour0",   Util::Type_Float32, 4 } });
-      pTexcoordBuffer->SetLayout({ { "texcoord0", Util::Type_Float32, 2 } });
+      pPositionBuffer->SetLayout({ { 0, Util::Type_Float32, 3 } });
+      pTexcoordBuffer->SetLayout({ { 2, Util::Type_Float32, 2 } });
+      pColourBuffer->SetLayout({ { 3, Util::Type_Float32, 4 } });
 
       // Set vertex data
       pPositions[0] = { -1, -1, -1 };  pColours[0] = { 1, 0, 0, 1 }; pTexcoords[0] = { 0, 0 };
