@@ -1,6 +1,7 @@
 #pragma once
 
 #include "flEngine.h"
+#include "ctVector.h"
 
 class PerspectiveCamera
 {
@@ -27,7 +28,7 @@ public:
 class SceneViewPanel : public flEngine::GUI::Panel
 {
 public:
-  SceneViewPanel(flEngine::GUI::GUISystem* pGUI);
+  SceneViewPanel(flEngine::GUI::GUIModule* pGUI);
 
   virtual bool OnStartup() override;
   virtual void OnUpdate() override;
@@ -39,7 +40,8 @@ public:
   flEngine::Ref<flEngine::Graphics::Program>        pProgram;
   flEngine::Ref<flEngine::Graphics::Sampler>        pSampler;
   flEngine::Ref<flEngine::Graphics::RenderMesh>     pRenderMesh;
-  std::vector<flEngine::Ref<flEngine::Graphics::ShaderMaterial>> materials;
+
+  ctVector<flEngine::Ref<flEngine::Graphics::ShaderMaterial>> materials;
 
   flEngine::Ref<flEngine::Graphics::TextureRenderTarget> m_target;
 };

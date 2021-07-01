@@ -38,16 +38,16 @@ public:
   int64_t m_selectedID;
 };
 
-ScenePanel::ScenePanel(GUISystem* pGUI)
+ScenePanel::ScenePanel(GUIModule* pGUI)
   : Panel(pGUI, "Scene")
 {
-  m_pSceneSystem = Application::Get().GetSubSystem<SceneSystem>();
+  m_pSceneManager = Application::Get().GetModule<SceneManager>();
 }
 
 void ScenePanel::OnGUI()
 {
-  EditorSystem *pEditor = Application::Get().GetSubSystem<EditorSystem>();
-  SceneGraph *pScene = m_pSceneSystem->ActiveScene();
+  EditorModule *pEditor = Application::Get().GetModule<EditorModule>();
+  SceneGraph *pScene = m_pSceneManager->ActiveScene();
   if (Widgets::Button("Add")) {
     Node* pNode = pScene->AddNode("New Node", pEditor->m_selectedNode);
     pEditor->m_selectedNode = pNode->GetID();

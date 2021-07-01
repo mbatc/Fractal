@@ -12,7 +12,7 @@ using namespace flEngine::Graphics;
 using namespace flEngine::Platform;
 using namespace flEngine::Scene;
 
-SceneViewPanel::SceneViewPanel(GUISystem* pGUI)
+SceneViewPanel::SceneViewPanel(GUIModule* pGUI)
   : Panel(pGUI, "Scene View")
   , m_camera(pGUI->GetKeyboard(), pGUI->GetMouse())
 {}
@@ -118,7 +118,7 @@ void SceneViewPanel::OnRender()
   class RenderVisitor : public flEngine::Scene::Visitor<flEngine::Scene::Node>
   {
   public:
-    RenderVisitor(Mat4F projection, std::vector<Ref<ShaderMaterial>> const & materials, Ref<Program> pProgram, Ref<RenderMesh> pMesh, API* pAPI)
+    RenderVisitor(Mat4F projection, ctVector<Ref<ShaderMaterial>> const & materials, Ref<Program> pProgram, Ref<RenderMesh> pMesh, API* pAPI)
       : m_projection(projection)
       , m_pProgram(pProgram)
       , m_pGraphics(pAPI)
@@ -151,11 +151,11 @@ void SceneViewPanel::OnRender()
     Mat4F m_projection;
     Ref<Program> m_pProgram;
     Ref<RenderMesh> m_pRenderMesh;
-    std::vector<Ref<ShaderMaterial>> m_materials;
+    ctVector<Ref<ShaderMaterial>> m_materials;
     API* m_pGraphics;
   };
 
-  SceneGraph* pScene = Application::Get().GetSubSystem<SceneSystem>()->ActiveScene();
+  SceneGraph* pScene = Application::Get().GetModule<SceneManager>()->ActiveScene();
   RenderVisitor renderVisitor(projection, materials, pProgram, pRenderMesh, pGraphics);
 
   pScene->Traverse(&renderVisitor, nullptr);

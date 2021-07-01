@@ -55,15 +55,15 @@
 
 // Application
 #include "flApplication.h"
-#include "flSubSystem.h"
+#include "flModule.h"
 
 // GUI
-#include "subsystem/flGUISystem.h"
+#include "modules/flGUIModule.h"
 #include "gui/flPanel.h"
 #include "gui/flWidgets.h"
 
 // Scene
-#include "subsystem/flSceneSystem.h"
+#include "modules/flSceneManager.h"
 #include "scene/flSceneGraph.h"
 #include "scene/flNode.h"
 #include "scene/flComponent.h"

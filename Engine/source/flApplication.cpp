@@ -120,7 +120,7 @@ namespace flEngine
     Ref<EventQueue>    m_pSystemEvents = nullptr;
 
     // Custom application sub systems
-    ctVector<ctKeyValue<ctString, Ref<SubSystem>>> m_subSystems;
+    ctVector<ctKeyValue<ctString, Ref<Module>>> m_subSystems;
   };
 
   flPIMPL_IMPL(Application);
@@ -161,13 +161,13 @@ namespace flEngine
     Impl()->Construct(this, graphicsAPIName);
   }
 
-  void Application::AddSubSystem(SubSystem *pSystem, char const *name)
+  void Application::AddModule(Module *pSystem, char const *name)
   {
-    if (GetSubSystem(name) == nullptr)
+    if (GetModule(name) == nullptr)
       Impl()->m_subSystems.emplace_back(name, MakeRef(pSystem, true));
   }
 
-  SubSystem* Application::GetSubSystem(char const *name)
+  Module* Application::GetModule(char const *name)
   {
     for (auto &kvp : Impl()->m_subSystems)
       if (kvp.m_key.compare(name))

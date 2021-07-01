@@ -1,8 +1,8 @@
 #include "flEngine.h"
 #include "flEntryPoint.h"
 
-#include "EditorSystem.h"
-#include "EditorGUI.h"
+#include "EditorModule.h"
+#include "EditorGUIModule.h"
 #include "ProjectPanel.h"
 #include "ScenePanel.h"
 #include "SceneViewPanel.h"
@@ -20,11 +20,11 @@ public:
   FractalEditor()
     : Application("OpenGL")
   {
-    AddSubSystem<SceneSystem>();
-    AddSubSystem<EditorGUI>();
-    AddSubSystem<EditorSystem>();
+    AddModule<SceneManager>();
+    AddModule<EditorGUIModule>();
+    AddModule<EditorModule>();
 
-    auto gui = GetSubSystem<EditorGUI>();
+    auto gui = GetModule<EditorGUIModule>();
     gui->Open<ScenePanel>();
     gui->Open<SceneViewPanel>();
     gui->Open<ProjectPanel>();

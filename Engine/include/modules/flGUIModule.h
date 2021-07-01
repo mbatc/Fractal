@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../flInterface.h"
-#include "../flSubSystem.h"
+#include "../flModule.h"
 
 namespace flEngine
 {
@@ -9,16 +9,16 @@ namespace flEngine
   {
     class Panel;
 
-    class Impl_GUISystem;
+    class Impl_GUIModule;
 
-    class flEXPORT GUISystem : public SubSystem
+    class flEXPORT GUIModule : public Module
     {
-      flPIMPL_DEF(GUISystem);
+      flPIMPL_DEF(GUIModule);
 
     public:
       typedef void (*MenuCommandFunc)();
 
-      GUISystem();
+      GUIModule();
 
       /**
        * @brief Open a new panel in the GUI.

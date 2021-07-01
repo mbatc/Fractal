@@ -1,46 +1,46 @@
-#include "flSubSystem.h"
+#include "flModule.h"
 #include "flApplication.h"
 #include "flRef.h"
 
 namespace flEngine
 {
-  class Impl_SubSystem
+  class Impl_Module
   {
   public:
     Input::Keyboard m_keyboard;
     Input::Mouse    m_mouse;
   };
 
-  flPIMPL_IMPL(SubSystem)
+  flPIMPL_IMPL(Module)
 
-  SubSystem::SubSystem()
+  Module::Module()
   {
-    OnEvent(Platform::E_Kbd_KeyState, &SubSystem::OnKeyState);
-    OnEvent(Platform::E_Mse_Move,     &SubSystem::OnMouseMove);
-    OnEvent(Platform::E_Mse_State,    &SubSystem::OnMouseState);
-    OnEvent(Platform::E_Mse_Scroll,   &SubSystem::OnMouseScroll);
+    OnEvent(Platform::E_Kbd_KeyState, &Module::OnKeyState);
+    OnEvent(Platform::E_Mse_Move,     &Module::OnMouseMove);
+    OnEvent(Platform::E_Mse_State,    &Module::OnMouseState);
+    OnEvent(Platform::E_Mse_Scroll,   &Module::OnMouseScroll);
   }
 
-  bool SubSystem::OnKeyState(Platform::Event* pEvent)
+  bool Module::OnKeyState(Platform::Event* pEvent)
   {
     Impl()->m_keyboard.GetServer()->SendEvent(pEvent->kbdState.keyCode, pEvent->kbdState.isDown);
     return true;
   }
 
-  bool SubSystem::OnMouseMove(Platform::Event* pEvent)
+  bool Module::OnMouseMove(Platform::Event* pEvent)
   {
     Impl()->m_mouse.GetServer()->SendEvent(Input::MA_XPos, (float)pEvent->mseMove.wndX);
     Impl()->m_mouse.GetServer()->SendEvent(Input::MA_YPos, (float)pEvent->mseMove.wndY);
     return true;
   }
 
-  bool SubSystem::OnMouseState(Platform::Event* pEvent)
+  bool Module::OnMouseState(Platform::Event* pEvent)
   {
     Impl()->m_mouse.GetServer()->SendEvent(pEvent->mseState.button, pEvent->mseState.isDown);
     return true;
   }
 
-  bool SubSystem::OnMouseScroll(Platform::Event* pEvent)
+  bool Module::OnMouseScroll(Platform::Event* pEvent)
   {
     if (pEvent->mseScroll.isHorizontal)
       Impl()->m_mouse.GetServer()->SendEvent(Input::MA_HScroll, (float)pEvent->mseScroll.amount, true);
@@ -49,42 +49,42 @@ namespace flEngine
     return true;
   }
 
-  flEngine::Platform::Window* SubSystem::GetMainWindow()
+  flEngine::Platform::Window* Module::GetMainWindow()
   {
     return Application::Get().GetMainWindow();
   }
 
-  flEngine::Platform::Window const* SubSystem::GetMainWindow() const
+  flEngine::Platform::Window const* Module::GetMainWindow() const
   {
     return Application::Get().GetMainWindow();
   }
 
-  flEngine::Graphics::API* SubSystem::GetGraphicsAPI()
+  flEngine::Graphics::API* Module::GetGraphicsAPI()
   {
     return Application::Get().GetGraphicsAPI();
   }
 
-  flEngine::Graphics::API* SubSystem::GetGraphicsAPI() const
+  flEngine::Graphics::API* Module::GetGraphicsAPI() const
   {
     return Application::Get().GetGraphicsAPI();
   }
 
-  Input::Mouse* SubSystem::GetMouse()
+  Input::Mouse* Module::GetMouse()
   {
     return &Impl()->m_mouse;
   }
 
-  Input::Keyboard* SubSystem::GetKeyboard()
+  Input::Keyboard* Module::GetKeyboard()
   {
     return &Impl()->m_keyboard;
   }
 
-  Input::Keyboard const * SubSystem::GetKeyboard() const
+  Input::Keyboard const * Module::GetKeyboard() const
   {
     return &Impl()->m_keyboard;
   }
 
-  Input::Mouse const * SubSystem::GetMouse() const
+  Input::Mouse const * Module::GetMouse() const
   {
     return &Impl()->m_mouse;
   }

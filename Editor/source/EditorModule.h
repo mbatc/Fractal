@@ -1,12 +1,12 @@
 #ifndef EditorSystem_h__
 #define EditorSystem_h__
 
-#include "flSubSystem.h"
+#include "flModule.h"
 
-class EditorSystem : public flEngine::SubSystem
+class EditorModule : public flEngine::Module
 {
 public:
-  EditorSystem() {}
+  EditorModule() {}
 
   int64_t m_selectedNode = -1;
 };

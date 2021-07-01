@@ -1,6 +1,6 @@
 #pragma once
 
-#include "flSubSystem.h"
+#include "flModule.h"
 
 namespace flEngine
 {
@@ -8,11 +8,11 @@ namespace flEngine
     class SceneGraph;
   }
 
-  class Impl_SceneSystem;
+  class Impl_SceneManager;
 
-  class flEXPORT SceneSystem : public flEngine::SubSystem
+  class flEXPORT SceneManager : public flEngine::Module
   {
-    flPIMPL_DEF(SceneSystem);
+    flPIMPL_DEF(SceneManager);
 
   public:
     virtual bool OnStartup() override;

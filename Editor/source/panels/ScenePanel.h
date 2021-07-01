@@ -1,15 +1,15 @@
 #pragma once
 
 #include "flEngine.h"
-#include "EditorSystem.h"
+#include "EditorModule.h"
 
 class ScenePanel : public flEngine::GUI::Panel
 {
 public:
-  ScenePanel(flEngine::GUI::GUISystem* pGUI);
+  ScenePanel(flEngine::GUI::GUIModule* pGUI);
 
   virtual void OnGUI() override;
 
 private:
-  flEngine::SceneSystem *m_pSceneSystem = nullptr;
+  flEngine::SceneManager *m_pSceneManager = nullptr;
 };
