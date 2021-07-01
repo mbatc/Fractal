@@ -6,7 +6,7 @@
 class ProjectPanel : public flEngine::GUI::Panel
 {
 public:
-  ProjectPanel(flEngine::GUI::GUISystem *pGUI)
+  ProjectPanel(flEngine::GUI::GUIModule *pGUI)
     : Panel(pGUI, "Project")
   {
 

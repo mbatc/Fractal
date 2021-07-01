@@ -1,4 +1,4 @@
-#include "subsystem/flGUISystem.h"
+#include "modules/flGUIModule.h"
 #include "platform/flWindow.h"
 #include "input/flKeyboard.h"
 
@@ -76,16 +76,16 @@ namespace flEngine
 {
   namespace GUI
   {
-    class Impl_GUISystem
+    class Impl_GUIModule
     {
     public:
       struct Menu
       {
         ctHashMap<ctString, Menu> menus;
-        ctHashMap<ctString, GUISystem::MenuCommandFunc> commands;
+        ctHashMap<ctString, GUIModule::MenuCommandFunc> commands;
       };
 
-      void Construct(GUISystem *pSelf)
+      void Construct(GUIModule *pSelf)
       {
         m_pSelf    = pSelf;
         m_pContext = ImGui::CreateContext();
@@ -158,7 +158,7 @@ namespace flEngine
         m_shader->SetShader(_fragSrc, ProgramStage_Fragment);
         m_shader->Compile();
 
-        m_pSelf->OnEvent(Platform::E_Kbd_ASCII, &Impl_GUISystem::OnInputChar);
+        m_pSelf->OnEvent(Platform::E_Kbd_ASCII, &Impl_GUIModule::OnInputChar);
       }
       
       void BeginFrame()
@@ -308,21 +308,21 @@ namespace flEngine
       ctVector<ImDrawVert> m_vertexData;
       ctVector<ImDrawIdx>  m_indexData;
 
-      GUISystem *m_pSelf = nullptr;
+      GUIModule *m_pSelf = nullptr;
 
       std::chrono::steady_clock::time_point m_lastTime = std::chrono::steady_clock::now();
 
       ctHashMap<ctString, Menu> m_menus;
     };
 
-    flPIMPL_IMPL(GUISystem);
+    flPIMPL_IMPL(GUIModule);
 
-    GUISystem::GUISystem()
+    GUIModule::GUIModule()
     {
       Impl()->Construct(this);
     }
 
-    void GUISystem::AddMenuItem(flIN char const * name, flIN MenuCommandFunc func)
+    void GUIModule::AddMenuItem(flIN char const * name, flIN MenuCommandFunc func)
     {
       ctVector<ctString> path = ctString::_split(name, '/', true);
 
@@ -330,7 +330,7 @@ namespace flEngine
 
       if (path.size() >= 2)
       {
-        Impl_GUISystem::Menu* pDest = nullptr;
+        Impl_GUIModule::Menu* pDest = nullptr;
         for (int64_t i = 0; i < path.size() - 1; ++i)
           pDest = &Impl()->m_menus.GetOrAdd(path[i]);
 
@@ -341,7 +341,7 @@ namespace flEngine
       }
     }
 
-    void GUISystem::OnUpdate()
+    void GUIModule::OnUpdate()
     {
       for (Ref<Panel> &panel : Impl()->m_panels)
         panel->OnUpdate();
@@ -382,7 +382,7 @@ namespace flEngine
       Impl()->EndFrame();
     }
 
-    void GUISystem::OnRender()
+    void GUIModule::OnRender()
     {
       for (Ref<Panel> &panel : Impl()->m_panels)
         panel->OnRender();
@@ -455,7 +455,7 @@ namespace flEngine
       Impl()->m_vertexArray->Unbind();
     }
 
-    bool GUISystem::OnStartup()
+    bool GUIModule::OnStartup()
     {
       bool success = true;
       for (Ref<Panel> &panel : Impl()->m_panels)
@@ -463,58 +463,58 @@ namespace flEngine
       return success;
     }
 
-    void GUISystem::OnShutdown()
+    void GUIModule::OnShutdown()
     {
       for (Ref<Panel> &panel : Impl()->m_panels)
         panel->OnShutdown();
     }
 
-    void GUISystem::OnPreUpdate()
+    void GUIModule::OnPreUpdate()
     {
       for (Ref<Panel> &panel : Impl()->m_panels)
         panel->OnPreUpdate();
     }
 
-    void GUISystem::OnPreRender()
+    void GUIModule::OnPreRender()
     {
       for (Ref<Panel> &panel : Impl()->m_panels)
         panel->OnPreRender();
     }
 
-    void GUISystem::OnPostUpdate()
+    void GUIModule::OnPostUpdate()
     {
       for (Ref<Panel> &panel : Impl()->m_panels)
         panel->OnPostUpdate();
     }
 
-    void GUISystem::OnPostRender()
+    void GUIModule::OnPostRender()
     {
       for (Ref<Panel> &panel : Impl()->m_panels)
         panel->OnPostRender();
     }
 
-    bool GUISystem::OnKeyState(Platform::Event * pEvent)
+    bool GUIModule::OnKeyState(Platform::Event * pEvent)
     {
-      SubSystem::OnKeyState(pEvent);
+      Module::OnKeyState(pEvent);
 
       return Impl()->OnKeyState(pEvent);
     }
 
-    bool GUISystem::OnMouseState(Platform::Event * pEvent)
+    bool GUIModule::OnMouseState(Platform::Event * pEvent)
     {
-      SubSystem::OnMouseState(pEvent);
+      Module::OnMouseState(pEvent);
 
       return Impl()->OnMouseState(pEvent);
     }
 
-    bool GUISystem::OnMouseScroll(Platform::Event * pEvent)
+    bool GUIModule::OnMouseScroll(Platform::Event * pEvent)
     {
-      SubSystem::OnMouseScroll(pEvent);
+      Module::OnMouseScroll(pEvent);
 
       return !ImGui::GetIO().WantCaptureMouse;
     }
 
-    void GUISystem::Open(Panel *pPanel)
+    void GUIModule::Open(Panel *pPanel)
     {
       Impl()->m_panels.push_back(MakeRef(pPanel, true));
     }

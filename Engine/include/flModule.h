@@ -17,14 +17,14 @@ namespace flEngine
 
   class Application;
 
-  class Impl_SubSystem;
+  class Impl_Module;
 
-  class flEXPORT SubSystem : public ApplicationBehaviour
+  class flEXPORT Module : public ApplicationBehaviour
   {
-    flPIMPL_DEF(SubSystem);
+    flPIMPL_DEF(Module);
 
   public:
-    SubSystem();
+    Module();
 
     Platform::Window * GetMainWindow();
     

@@ -19,12 +19,12 @@ namespace flEngine
       Vec2F m_pos;
       Vec2F m_size;
       Vec2F m_contentAreaSize;
-      GUISystem *m_pGUI = nullptr;
+      GUIModule *m_pGUI = nullptr;
     };
 
     flPIMPL_IMPL(Panel);
 
-    Panel::Panel(flIN GUISystem *pGUI, flIN char const *name)
+    Panel::Panel(flIN GUIModule *pGUI, flIN char const *name)
     {
       Impl()->m_name = name;
       Impl()->m_pGUI = pGUI;
@@ -66,12 +66,12 @@ namespace flEngine
 
     void Panel::OnGUI() {}
 
-    GUISystem * Panel::GetGUI()
+    GUIModule * Panel::GetGUI()
     {
       return Impl()->m_pGUI;
     }
 
-    GUISystem const * Panel::GetGUI() const
+    GUIModule const * Panel::GetGUI() const
     {
       return Impl()->m_pGUI;
     }

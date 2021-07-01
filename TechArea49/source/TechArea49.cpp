@@ -13,7 +13,7 @@ using namespace flEngine::GUI;
 class TestPanel : public GUI::Panel
 {
 public:
-  TestPanel(GUISystem *pGUI)
+  TestPanel(GUIModule *pGUI)
     : Panel(pGUI, "Test Panel")
   {}
 
@@ -81,10 +81,10 @@ public:
   Input::Mouse    *m_pMouse;
 };
 
-class EditorSubSystem : public SubSystem
+class EditorModule : public Module
 {
 public:
-  EditorSubSystem()
+  EditorModule()
     : m_camera(GetKeyboard(), GetMouse())
   {}
 
@@ -230,7 +230,7 @@ public:
   EditorApplication()
     : Application("OpenGL")
   {
-    AddSubSystem<EditorSubSystem>();
+    AddModule<EditorModule>();
 
     OnEvent(Platform::E_Wnd_Close, &EditorApplication::OnCloseEvent);
   }

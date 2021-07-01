@@ -5,14 +5,14 @@ using namespace flEngine::Scene;
 using namespace flEngine::GUI;
 using namespace flEngine::Math;
 
-PropertiesPanel::PropertiesPanel(GUISystem* pGUI)
+PropertiesPanel::PropertiesPanel(GUIModule* pGUI)
   : Panel(pGUI, "Properties")
 {}
 
 void PropertiesPanel::OnGUI()
 {
-  EditorSystem* pEditor = Application::Get().GetSubSystem<EditorSystem>();
-  SceneSystem* pSceneSystem = Application::Get().GetSubSystem<SceneSystem>();
+  EditorModule* pEditor = Application::Get().GetModule<EditorModule>();
+  SceneManager* pSceneSystem = Application::Get().GetModule<SceneManager>();
 
   Node* pNode = pSceneSystem->ActiveScene()->GetNode(pEditor->m_selectedNode);
 

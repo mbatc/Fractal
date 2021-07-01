@@ -1,4 +1,4 @@
-#include "subsystem/flSceneSystem.h"
+#include "modules/flSceneManager.h"
 #include "scene/flNodeBehaviour.h"
 #include "scene/flSceneGraph.h"
 #include "scene/flComponent.h"
@@ -25,57 +25,57 @@ namespace flEngine
     void (NodeBehaviour::* m_method)(); // The method to invoke on the behavior
   };
 
-  class Impl_SceneSystem
+  class Impl_SceneManager
   {
   public:
-    Impl_SceneSystem()
+    Impl_SceneManager()
       : m_activeScene(flEngine::MakeRef<flEngine::Scene::SceneGraph>())
     {}
 
     Ref<SceneGraph> m_activeScene;
   };
 
-  flPIMPL_IMPL(SceneSystem);
+  flPIMPL_IMPL(SceneManager);
 
-  bool SceneSystem::OnStartup() { return true; }
+  bool SceneManager::OnStartup() { return true; }
 
-  void SceneSystem::OnShutdown() {}
+  void SceneManager::OnShutdown() {}
 
-  void SceneSystem::OnUpdate() {
+  void SceneManager::OnUpdate() {
     BehaviourVisitor visitor(&NodeBehaviour::OnUpdate);
     Impl()->m_activeScene->Visit(nullptr, &visitor);
   }
 
-  void SceneSystem::OnRender() {
+  void SceneManager::OnRender() {
     BehaviourVisitor visitor(&NodeBehaviour::OnRender);
     Impl()->m_activeScene->Visit(nullptr, &visitor);
   }
 
-  void SceneSystem::OnPreUpdate() {
+  void SceneManager::OnPreUpdate() {
     BehaviourVisitor visitor(&NodeBehaviour::OnPreUpdate);
     Impl()->m_activeScene->Visit(nullptr, &visitor);
   }
 
-  void SceneSystem::OnPreRender() {
+  void SceneManager::OnPreRender() {
     BehaviourVisitor visitor(&NodeBehaviour::OnPreRender);
     Impl()->m_activeScene->Visit(nullptr, &visitor);
   }
 
-  void SceneSystem::OnPostUpdate() {
+  void SceneManager::OnPostUpdate() {
     BehaviourVisitor visitor(&NodeBehaviour::OnPostUpdate);
     Impl()->m_activeScene->Visit(nullptr, &visitor);
   }
 
-  void SceneSystem::OnPostRender() {
+  void SceneManager::OnPostRender() {
     BehaviourVisitor visitor(&NodeBehaviour::OnPostRender);
     Impl()->m_activeScene->Visit(nullptr, &visitor);
   }
 
-  SceneGraph const * SceneSystem::ActiveScene() const {
+  SceneGraph const * SceneManager::ActiveScene() const {
     return Impl()->m_activeScene.Get();
   }
 
-  SceneGraph * SceneSystem::ActiveScene() {
+  SceneGraph * SceneManager::ActiveScene() {
     return Impl()->m_activeScene.Get();
   }
 }

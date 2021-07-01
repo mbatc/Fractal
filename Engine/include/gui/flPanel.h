@@ -6,7 +6,7 @@ namespace flEngine
 {
   namespace GUI
   {
-    class GUISystem;
+    class GUIModule;
 
     class flPIMPL_CLASS(Panel);
 
@@ -21,7 +21,7 @@ namespace flEngine
        * @param [in] pGUI A pointer to the parent GUI.
        * @param [in] name The name of the panel as a c-string.
        */
-      Panel(flIN GUISystem *pGUI, flIN char const *name);
+      Panel(flIN GUIModule *pGUI, flIN char const *name);
 
       /**
        * @brief Update the Panel.
@@ -63,14 +63,14 @@ namespace flEngine
        *
        * @return A pointer to the GUI.
        */
-      GUISystem * GetGUI();
+      GUIModule * GetGUI();
 
       /**
        * @brief Get a const pointer to the GUI that this Panel belongs to.
        *
        * @return A const pointer to the GUI.
        */
-      GUISystem const * GetGUI() const;
+      GUIModule const * GetGUI() const;
     };
   }
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "flSubSystem.h"
+#include "flModule.h"
 #include "flRef.h"
 
 namespace flEngine
@@ -39,13 +39,13 @@ namespace flEngine
 
   public:
     template<typename T, typename... Args>
-    void AddSubSystem(Args&&... args) {
-      AddSubSystem(flNew T(std::forward<Args>(args)...), typeid(T).name());
+    void AddModule(Args&&... args) {
+      AddModule(flNew T(std::forward<Args>(args)...), typeid(T).name());
     }
 
     template<typename T>
-    T* GetSubSystem() {
-      return (T*)GetSubSystem(typeid(T).name());
+    T* GetModule() {
+      return (T*)GetModule(typeid(T).name());
     }
 
     /**
@@ -74,8 +74,8 @@ namespace flEngine
     Application(char const * graphicsAPIName);
 
   private:
-    void AddSubSystem(SubSystem *pSystem, char const *name);
-    SubSystem *GetSubSystem(char const *name);
+    void AddModule(Module *pSystem, char const *name);
+    Module *GetModule(char const *name);
 
     int Run(); // Application entry point
   };
