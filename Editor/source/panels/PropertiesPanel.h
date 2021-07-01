@@ -4,11 +4,11 @@
 #include "EditorModule.h"
 #include "ctString.h"
 
-class PropertiesPanel : public flEngine::GUI::Panel
+class PropertiesPanel : public Fractal::Panel
 {
 public:
-  PropertiesPanel(flEngine::GUI::GUIModule* pGUI);
+  PropertiesPanel(Fractal::GUIModule* pGUI);
 
   virtual void OnGUI() override;
-  void DrawComponent(flEngine::Scene::Component* pComponent);
+  void DrawComponent(Fractal::Component* pComponent);
 };

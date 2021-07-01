@@ -3,33 +3,29 @@
 #include "flModule.h"
 #include "flRef.h"
 
-namespace flEngine
+namespace Fractal
 {
-  namespace Platform {
-    struct Event;
-    class Window;
-  }
+  struct Event;
+  class Window;
 
-  namespace Graphics {
-    class API;
-  }
+  class API;
 
-  class flPIMPL_CLASS(Application);
+  class Impl_Application;
 
   /**
    * @brief The Application class is used to implement your client application.
-   * 
+   *
    * Using the Engines provided entry point ensures all the subsystems are
    * correctly initialized before entering your application.
-   * 
-   * After implementing a subclass of Application, you need to include 
-   * flEntryPoint.h in a source file and implement the flEngine::CreateApplication().
-   * 
+   *
+   * After implementing a subclass of Application, you need to include
+   * flEntryPoint.h in a source file and implement the Fractal::CreateApplication().
+   *
    * This class is a singleton and only 1 instance of an Application subclass should be
    * created at any time. You should not instantiate a subclass of Application in your
    * client app. Fractal will handle the lifetime of the application class using the
-   * flEngine::CreateApplication() function you implement.
-   * 
+   * Fractal::CreateApplication() function you implement.
+   *
    **/
   class flEXPORT Application : public ApplicationBehaviour
   {
@@ -44,8 +40,8 @@ namespace flEngine
     }
 
     template<typename T>
-    T* GetModule() {
-      return (T*)GetModule(typeid(T).name());
+    T *GetModule() {
+      return (T *)GetModule(typeid(T).name());
     }
 
     /**
@@ -56,22 +52,22 @@ namespace flEngine
     /**
      * @brief Returns a pointer to the applications main window.
      */
-    Platform::Window * GetMainWindow();
-    Platform::Window const * GetMainWindow() const;
+    Window *GetMainWindow();
+    Window const *GetMainWindow() const;
 
     /**
      * @brief Returns a pointer to the applications graphics API.
      */
-    Graphics::API * GetGraphicsAPI();
-    Graphics::API const * GetGraphicsAPI() const;
+    API *GetGraphicsAPI();
+    API const *GetGraphicsAPI() const;
 
     /**
      * @brief Get the global Application instance.
      **/
-    static Application& Get();
+    static Application &Get();
 
   protected:
-    Application(char const * graphicsAPIName);
+    Application(char const *graphicsAPIName);
 
   private:
     void AddModule(Module *pSystem, char const *name);

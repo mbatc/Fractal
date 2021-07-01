@@ -3,10 +3,8 @@
 #include "ctString.h"
 #include "ctDateTime.h"
 
-namespace flEngine
+namespace Fractal
 {
-  namespace Logging
-  {
     static ctString _logLevelName[LogLevel_Count]
     {
       "Failure",
@@ -88,5 +86,4 @@ namespace flEngine
     {
       return _logLevel;
     }
-  }
 }

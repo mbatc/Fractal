@@ -6,10 +6,10 @@
 class PerspectiveCamera
 {
 public:
-  PerspectiveCamera(flEngine::Input::Keyboard* pKeyboard, flEngine::Input::Mouse* pMouse);
+  PerspectiveCamera(Fractal::Keyboard* pKeyboard, Fractal::Mouse* pMouse);
 
-  flEngine::Math::Mat4F ViewMatrix();
-  flEngine::Math::Mat4F ProjectionMatrix();
+  Fractal::Mat4F ViewMatrix();
+  Fractal::Mat4F ProjectionMatrix();
 
   void Update();
 
@@ -18,17 +18,17 @@ public:
   float FOV = ctDegs2Radsf(50);
   float width = 1;
   float height = 1;
-  flEngine::Math::Vec3D position = { 0, 0, 0 };
-  flEngine::Math::Vec3D ypr = { 0, 0, 0 };
+  Fractal::Vec3D position = { 0, 0, 0 };
+  Fractal::Vec3D ypr = { 0, 0, 0 };
 
-  flEngine::Input::Keyboard *m_pKeyboard;
-  flEngine::Input::Mouse *m_pMouse;
+  Fractal::Keyboard *m_pKeyboard;
+  Fractal::Mouse *m_pMouse;
 };
 
-class SceneViewPanel : public flEngine::GUI::Panel
+class SceneViewPanel : public Fractal::Panel
 {
 public:
-  SceneViewPanel(flEngine::GUI::GUIModule* pGUI);
+  SceneViewPanel(Fractal::GUIModule* pGUI);
 
   virtual bool OnStartup() override;
   virtual void OnUpdate() override;
@@ -37,11 +37,11 @@ public:
 
   PerspectiveCamera m_camera;
 
-  flEngine::Ref<flEngine::Graphics::Program>        pProgram;
-  flEngine::Ref<flEngine::Graphics::Sampler>        pSampler;
-  flEngine::Ref<flEngine::Graphics::RenderMesh>     pRenderMesh;
+  Fractal::Ref<Fractal::Program>        pProgram;
+  Fractal::Ref<Fractal::Sampler>        pSampler;
+  Fractal::Ref<Fractal::RenderMesh>     pRenderMesh;
 
-  ctVector<flEngine::Ref<flEngine::Graphics::ShaderMaterial>> materials;
+  ctVector<Fractal::Ref<Fractal::ShaderMaterial>> materials;
 
-  flEngine::Ref<flEngine::Graphics::TextureRenderTarget> m_target;
+  Fractal::Ref<Fractal::TextureRenderTarget> m_target;
 };

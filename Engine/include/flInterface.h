@@ -1,10 +1,9 @@
-#ifndef fl_Interface_h__
-#define fl_Interface_h__
+#pragma once
 
 #include "flMemory.h"
 #include "flPImpl.h"
 
-namespace flEngine
+namespace Fractal
 {
   /**
    * @brief Engine API base class.
@@ -79,5 +78,3 @@ namespace flEngine
     int64_t m_refCount = 0; // Internal reference count
   };
 }
-
-#endif // fl_Interface_h__

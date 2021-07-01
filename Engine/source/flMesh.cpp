@@ -4,7 +4,7 @@
 #include "ctVector.h"
 #include "ctFilename.h"
 
-namespace flEngine
+namespace Fractal
 {
   struct Polygon
   {
@@ -75,7 +75,7 @@ namespace flEngine
     return true;
   }
 
-  bool Mesh::SetVertex(flIN int64_t index, flIN Math::Vec3D position, flIN Math::Vec3D normal, flIN Math::Vec2D texcoord, flIN Math::Vec4D colour)
+  bool Mesh::SetVertex(flIN int64_t index, flIN Vec3D position, flIN Vec3D normal, flIN Vec2D texcoord, flIN Vec4D colour)
   {
     if (index < 0 || index >= GetVertexCount())
       return false;
@@ -101,7 +101,7 @@ namespace flEngine
     Impl()->vertices.resize(count);
   }
 
-  int64_t Mesh::AddVertex(flIN Math::Vec3D position, flIN Math::Vec3D normal, flIN Math::Vec2D texcoord, flIN Math::Vec4D colour)
+  int64_t Mesh::AddVertex(flIN Vec3D position, flIN Vec3D normal, flIN Vec2D texcoord, flIN Vec4D colour)
   {
     Impl()->vertices.emplace_back();
     Vertex& vertex = Impl()->vertices.back();

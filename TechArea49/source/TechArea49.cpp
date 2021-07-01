@@ -3,14 +3,9 @@
 
 #include <stdio.h>
 
-using namespace flEngine;
-using namespace flEngine::Platform;
-using namespace flEngine::Util;
-using namespace flEngine::Threads;
-using namespace flEngine::Math;
-using namespace flEngine::GUI;
+using namespace Fractal;
 
-class TestPanel : public GUI::Panel
+class TestPanel : public Panel
 {
 public:
   TestPanel(GUIModule *pGUI)
@@ -28,7 +23,7 @@ public:
 class PerspectiveCamera
 {
 public:
-  PerspectiveCamera(Input::Keyboard *pKeyboard, Input::Mouse *pMouse)
+  PerspectiveCamera(Keyboard *pKeyboard, Mouse *pMouse)
   {
     m_pKeyboard = pKeyboard;
     m_pMouse    = pMouse;
@@ -47,18 +42,18 @@ public:
   void Update()
   {
     Vec3F velocity;
-    if (m_pKeyboard->GetKeyDown(Input::KC_A)) velocity.x -= 1;
-    if (m_pKeyboard->GetKeyDown(Input::KC_D)) velocity.x += 1;
-    if (m_pKeyboard->GetKeyDown(Input::KC_W)) velocity.z -= 1;
-    if (m_pKeyboard->GetKeyDown(Input::KC_S)) velocity.z += 1;
-    if (m_pKeyboard->GetKeyDown(Input::KC_E)) velocity.y += 1;
-    if (m_pKeyboard->GetKeyDown(Input::KC_Q)) velocity.y -= 1;
+    if (m_pKeyboard->GetKeyDown(KC_A)) velocity.x -= 1;
+    if (m_pKeyboard->GetKeyDown(KC_D)) velocity.x += 1;
+    if (m_pKeyboard->GetKeyDown(KC_W)) velocity.z -= 1;
+    if (m_pKeyboard->GetKeyDown(KC_S)) velocity.z += 1;
+    if (m_pKeyboard->GetKeyDown(KC_E)) velocity.y += 1;
+    if (m_pKeyboard->GetKeyDown(KC_Q)) velocity.y -= 1;
 
     velocity = Mat4F::YawPitchRoll(ypr) * velocity;
 
     position += velocity * 0.025;
 
-    if (m_pMouse->GetDown(Input::MB_Right))
+    if (m_pMouse->GetDown(MB_Right))
     {
       Vec3F deltaYPR;
       float aspect = width / height;
@@ -77,8 +72,8 @@ public:
   Vec3D position  = { 0, 0, 0 };
   Vec3D ypr       = { 0, 0, 0 };
 
-  Input::Keyboard *m_pKeyboard;
-  Input::Mouse    *m_pMouse;
+  Keyboard *m_pKeyboard;
+  Mouse    *m_pMouse;
 };
 
 class EditorModule : public Module
@@ -90,24 +85,24 @@ public:
 
   virtual bool OnStartup() override
   {
-    Ref<Scene::Transform> a = MakeRef<Scene::Transform>();
-    Ref<Scene::Transform> b = MakeRef<Scene::Transform>();
-    Ref<Scene::Transform> c = MakeRef<Scene::Transform>();
+    Ref<Transform> a = MakeRef<Transform>();
+    Ref<Transform> b = MakeRef<Transform>();
+    Ref<Transform> c = MakeRef<Transform>();
 
-    Ref<Scene::SceneGraph> scene = MakeRef<Scene::SceneGraph>();
-    Scene::Node* node = scene->AddNode();
-    node->AddComponent<Scene::Transform>();
+    Ref<SceneGraph> scene = MakeRef<SceneGraph>();
+    Node* node = scene->AddNode();
+    node->AddComponent<Transform>();
 
     // Logging::SetLogLevel(Logging::LogLevel_Warning);
 
-    Graphics::API* pGraphics = GetGraphicsAPI();
+    API* pGraphics = GetGraphicsAPI();
 
     pProgram = MakeRef(pGraphics->CreateProgram(), false);
-    pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag", Graphics::ProgramStage_Fragment);
-    pProgram->SetShaderFromFile("../../Engine/assets/shader-library/transform.vert", Graphics::ProgramStage_Vertex);
+    pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag", ProgramStage_Fragment);
+    pProgram->SetShaderFromFile("../../Engine/assets/shader-library/transform.vert", ProgramStage_Vertex);
     pProgram->Compile();
 
-    pTexture = MakeRef(pGraphics->CreateTexture2D(Graphics::PixelFormat_RGBA, Graphics::PixelComponentType_UNorm8), false);
+    pTexture = MakeRef(pGraphics->CreateTexture2D(PixelFormat_RGBA, PixelComponentType_UNorm8), false);
     // Image image("C:/Users/mickb/Pictures/test.jpg");
     Image image("../../Engine/assets/texture-library/albedo/test0.jpg");
     pTexture->SetFromImage(&image);
@@ -119,28 +114,28 @@ public:
     pMaterial->Apply();
 
     pSampler = MakeRef(pGraphics->CreateSampler(), false);
-    pSampler->SetWrapMode(Graphics::WrapMode_Mirror);
-    pSampler->SetFilterMinMode(Graphics::FilterMode_Linear, true);
+    pSampler->SetWrapMode(WrapMode_Mirror);
+    pSampler->SetFilterMinMode(FilterMode_Linear, true);
 
     pGeometry = MakeRef(pGraphics->CreateVertexArray(), false);
 
     // Construct a simple cube
     {
       // Create vertex and index buffers
-      Ref<Graphics::VertexBuffer> pPositionBuffer = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 3 * 8, nullptr), false);
-      Ref<Graphics::VertexBuffer> pColourBuffer   = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 4 * 8, nullptr), false);
-      Ref<Graphics::VertexBuffer> pTexcoordBuffer = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 2 * 8, nullptr), false);
-      Ref<Graphics::IndexBuffer>  pIndexBuffer    = MakeRef(pGraphics->CreateIndexBuffer(36), false);
+      Ref<VertexBuffer> pPositionBuffer = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 3 * 8, nullptr), false);
+      Ref<VertexBuffer> pColourBuffer   = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 4 * 8, nullptr), false);
+      Ref<VertexBuffer> pTexcoordBuffer = MakeRef(pGraphics->CreateVertexBuffer(sizeof(float) * 2 * 8, nullptr), false);
+      Ref<IndexBuffer>  pIndexBuffer    = MakeRef(pGraphics->CreateIndexBuffer(36), false);
 
       // Map buffers to client memory
-      Math::Vec3F* pPositions = (Math::Vec3F*)pPositionBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
-      Math::Vec2F* pTexcoords = (Math::Vec2F*)pTexcoordBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
-      Math::Vec4F* pColours   = (Math::Vec4F*)pColourBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
+      Vec3F* pPositions = (Vec3F*)pPositionBuffer->GetBuffer()->Map(AccessFlag_Write);
+      Vec2F* pTexcoords = (Vec2F*)pTexcoordBuffer->GetBuffer()->Map(AccessFlag_Write);
+      Vec4F* pColours   = (Vec4F*)pColourBuffer->GetBuffer()->Map(AccessFlag_Write);
 
-      uint32_t* pIndices = (uint32_t*)pIndexBuffer->GetBuffer()->Map(Graphics::AccessFlag_Write);
-      pPositionBuffer->SetLayout({ { 0, Util::Type_Float32, 3 } });
-      pTexcoordBuffer->SetLayout({ { 2, Util::Type_Float32, 2 } });
-      pColourBuffer->SetLayout({ { 3, Util::Type_Float32, 4 } });
+      uint32_t* pIndices = (uint32_t*)pIndexBuffer->GetBuffer()->Map(AccessFlag_Write);
+      pPositionBuffer->SetLayout({ { 0, Type_Float32, 3 } });
+      pTexcoordBuffer->SetLayout({ { 2, Type_Float32, 2 } });
+      pColourBuffer->SetLayout({ { 3, Type_Float32, 4 } });
 
       // Set vertex data
       pPositions[0] = { -1, -1, -1 };  pColours[0] = { 1, 0, 0, 1 }; pTexcoords[0] = { 0, 0 };
@@ -192,14 +187,14 @@ public:
 
   virtual void OnPreRender()
   {
-    Graphics::DeviceState* pState = GetGraphicsAPI()->GetState();
-    pState->SetFeatureEnabled(Graphics::DeviceFeature_DepthTest, true);
+    DeviceState* pState = GetGraphicsAPI()->GetState();
+    pState->SetFeatureEnabled(DeviceFeature_DepthTest, true);
 
     pGeometry->Bind();
     pProgram->Bind();
 
     Window* pWindow = GetMainWindow();
-    Graphics::API* pGraphics = GetGraphicsAPI();
+    API* pGraphics = GetGraphicsAPI();
 
     // Draw to the first window
     Mat4F modelMat = Mat4F::Translation({ 0, 0, -3 }) * Mat4F::RotationY(clock() / 1000.0f);
@@ -210,21 +205,21 @@ public:
     pState->SetViewport(0, 0, GetMainWindow()->GetWidth(), GetMainWindow()->GetHeight());
 
     pProgram->SetMat4("mvp", mvp);
-    pGraphics->Render(Graphics::DrawMode_Triangles, true, 0, pGeometry->GetIndexCount());
+    pGraphics->Render(DrawMode_Triangles, true, 0, pGeometry->GetIndexCount());
   }
 
-  Ref<Graphics::Program>     pProgram;
-  Ref<Graphics::Texture2D>   pTexture;
-  Ref<Graphics::Sampler>     pSampler;
-  Ref<Graphics::VertexArray> pGeometry;
-  Ref<Graphics::ShaderMaterial>    pMaterial;
+  Ref<Program>     pProgram;
+  Ref<Texture2D>   pTexture;
+  Ref<Sampler>     pSampler;
+  Ref<VertexArray> pGeometry;
+  Ref<ShaderMaterial>    pMaterial;
 
-  Scene::SceneGraph m_scene;
+  SceneGraph m_scene;
 
   PerspectiveCamera m_camera;
 };
 
-class EditorApplication : public flEngine::Application
+class EditorApplication : public Fractal::Application
 {
 public:
   EditorApplication()
@@ -232,13 +227,13 @@ public:
   {
     AddModule<EditorModule>();
 
-    OnEvent(Platform::E_Wnd_Close, &EditorApplication::OnCloseEvent);
+    OnEvent(E_Wnd_Close, &EditorApplication::OnCloseEvent);
   }
 
-  bool OnCloseEvent(Platform::Event *pEvent) { Close(); return true; }
+  bool OnCloseEvent(Event *pEvent) { Close(); return true; }
 };
 
-flEngine::Application *flEngine::CreateApplication(char **argv, int argc)
+Fractal::Application *Fractal::CreateApplication(char **argv, int argc)
 {
   return flNew EditorApplication;
 }

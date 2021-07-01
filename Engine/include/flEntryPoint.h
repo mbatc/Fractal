@@ -1,9 +1,8 @@
-#ifndef fl_EntryPoint_h__
-#define fl_EntryPoint_h__
+#pragma once
 
 #include "flApplication.h"
 
-namespace flEngine {
+namespace Fractal {
   /**
    * @brief Create the client application. INTERNAL USE ONLY.
    * 
@@ -40,10 +39,10 @@ namespace flEngine {
 int main(char** argv, int argc)
 {
   // Create the application
-  flEngine::Application *pApp = flEngine::CreateApplication(argv, argc);
+  Fractal::Application *pApp = Fractal::CreateApplication(argv, argc);
 
   // Run it and wait for the result
-  int result = flEngine::FractalEntryHandler::Run(argv, argc);
+  int result = Fractal::FractalEntryHandler::Run(argv, argc);
 
   // Release the application reference
   pApp->DecRef();
@@ -54,5 +53,3 @@ int main(char** argv, int argc)
 
 #endif
 #endif
-
-#endif // fl_EntryPoint_h__

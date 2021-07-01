@@ -1,10 +1,8 @@
 #include "flMemory.h"
 #include <malloc.h>
 
-namespace flEngine
+namespace Fractal
 {
-  namespace Memory
-  {
     flEXPORT void *Alloc(flIN int64_t size)
     {
       return malloc(size);
@@ -19,5 +17,4 @@ namespace flEngine
     {
       return realloc(pBuffer, size);
     }
-  }
 }

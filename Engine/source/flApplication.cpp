@@ -1,13 +1,12 @@
-#include "platform/flEventQueue.h"
-#include "platform/flWindow.h"
-#include "threads/flThreads.h"
-#include "graphics/flAPI.h"
-#include "input/flInputs.h"
+#include "flEventQueue.h"
+#include "flWindow.h"
+#include "flThreads.h"
+#include "flAPI.h"
+#include "flInputs.h"
 #include "flApplication.h"
 #include "flInit.h"
 #include "flRef.h"
-#include "platform/flWindow.h"
-#include "graphics/flWindowRenderTarget.h"
+#include "flWindowRenderTarget.h"
 #include "ctVector.h"
 #include "ctString.h"
 #include "ctKeyValue.h"
@@ -15,24 +14,20 @@
 
 #include <functional>
 
-typedef  void (*EventFunc)(flEngine::Platform::Event*, void*);
-
-using namespace flEngine::Platform;
-
-namespace flEngine
+namespace Fractal
 {
   // The main application instance
+  typedef void (*EventFunc)(Event *, void *);
+
   static Application* _pApplication = nullptr;
 
-  class Impl_Application;
-
-  class flPIMPL_CLASS(Application)
+  class Impl_Application
   {
   public:
     void Construct(Application *pApp, char const * graphicsAPIName)
     {
       // Initialize Fractal
-      flEngine::Initialize();
+      Initialize();
 
       m_pApp = pApp;
 
@@ -43,7 +38,7 @@ namespace flEngine
 
       // Create the applications main window and graphics API
       m_pMainWindow = MakeRef<Window>("Main Window", Window::Flag_Default, Window::DM_Windowed);
-      m_pGraphics   = MakeRef(Graphics::API::Create(graphicsAPIName, m_pMainWindow.Get()), false);
+      m_pGraphics   = MakeRef(API::Create(graphicsAPIName, m_pMainWindow.Get()), false);
     }
 
     void HandleEvent(Event* pEvent)
@@ -115,7 +110,7 @@ namespace flEngine
     bool         m_isRunning = true;
 
     // Core components of an application
-    Ref<Graphics::API> m_pGraphics     = nullptr;
+    Ref<API> m_pGraphics     = nullptr;
     Ref<Window>        m_pMainWindow   = nullptr;
     Ref<EventQueue>    m_pSystemEvents = nullptr;
 
@@ -130,22 +125,22 @@ namespace flEngine
     Impl()->m_isRunning = false;
   }
 
-  Platform::Window *flEngine::Application::GetMainWindow()
+  Window *Application::GetMainWindow()
   {
     return Impl()->m_pMainWindow.Get();
   }
 
-  Platform::Window const * flEngine::Application::GetMainWindow() const
+  Window const * Application::GetMainWindow() const
   {
       return Impl()->m_pMainWindow.Get();
   }
 
-  Graphics::API *flEngine::Application::GetGraphicsAPI()
+  API *Application::GetGraphicsAPI()
   {
     return Impl()->m_pGraphics.Get();
   }
 
-  Graphics::API const *flEngine::Application::GetGraphicsAPI() const
+  API const *Application::GetGraphicsAPI() const
   {
     return Impl()->m_pGraphics.Get();
   }
@@ -197,7 +192,7 @@ namespace flEngine
       Impl()->PostRender();
       GetMainWindow()->GetRenderTarget()->Swap();
 
-      Threads::Sleep(1);
+      Sleep(1);
     }
 
     Impl()->Shutdown();

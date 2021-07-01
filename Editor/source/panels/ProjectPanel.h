@@ -3,10 +3,10 @@
 
 #include "flEngine.h"
 
-class ProjectPanel : public flEngine::GUI::Panel
+class ProjectPanel : public Fractal::Panel
 {
 public:
-  ProjectPanel(flEngine::GUI::GUIModule *pGUI)
+  ProjectPanel(Fractal::GUIModule *pGUI)
     : Panel(pGUI, "Project")
   {
 

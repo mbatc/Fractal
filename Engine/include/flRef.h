@@ -1,12 +1,11 @@
-#ifndef fl_Ref_h__
-#define fl_Ref_h__
+#pragma once
 
 #include "flInterface.h"
 #include <type_traits>
 #include <memory>
 #include <utility>
 
-namespace flEngine
+namespace Fractal
 {
   template<typename T>
   class Ref
@@ -133,5 +132,3 @@ namespace flEngine
     return MakeRef(new (flAllocT(T, 1)) T(std::forward<Args>(args)...), false);
   }
 }
-
-#endif // fl_Ref_h__

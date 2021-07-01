@@ -8,13 +8,9 @@
 #include "SceneViewPanel.h"
 #include "PropertiesPanel.h"
 
-using namespace flEngine;
-using namespace flEngine::Platform;
-using namespace flEngine::Util;
-using namespace flEngine::Threads;
-using namespace flEngine::Math;
+using namespace Fractal;
 
-class FractalEditor : public flEngine::Application
+class FractalEditor : public Fractal::Application
 {
 public:
   FractalEditor()
@@ -34,7 +30,7 @@ public:
     OnEvent(E_Wnd_Close, &FractalEditor::OnCloseEvent);
   }
 
-  bool OnCloseEvent(Platform::Event* pEvent)
+  bool OnCloseEvent(Event* pEvent)
   {
     Close();
     return true;
@@ -46,7 +42,7 @@ public:
   }
 };
 
-flEngine::Application* flEngine::CreateApplication(char** argv, int argc)
+Fractal::Application* Fractal::CreateApplication(char** argv, int argc)
 {
   return flNew FractalEditor;
 }

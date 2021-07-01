@@ -1,10 +1,10 @@
 #pragma once
 
 #include "flInterface.h"
-#include "math/flMath.h"
-#include "util/flColour.h"
+#include "flMath.h"
+#include "flColour.h"
 
-namespace flEngine
+namespace Fractal
 {
   class Impl_SurfaceMaterial;
 
@@ -47,7 +47,7 @@ namespace flEngine
      *
      * @return The material colour.
      */
-    Util::Colour GetColour(flIN char const * name) const;
+    Colour GetColour(flIN char const * name) const;
 
     /**
      * @brief Get a material texture path by name.
@@ -72,7 +72,7 @@ namespace flEngine
      * @param [in] name   The name of the Material colour.
      * @param [in] colour The colour to be assigned.
      */
-    void SetColour(flIN char const * name, flIN Util::Colour colour);
+    void SetColour(flIN char const * name, flIN Colour colour);
 
     /**
      * @brief Set a material texture path by name.

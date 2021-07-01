@@ -1,9 +1,9 @@
 #pragma once
 
 #include "flInterface.h"
-#include "math/flMath.h"
+#include "flMath.h"
 
-namespace flEngine
+namespace Fractal
 {
   class SurfaceMaterial;
 
@@ -11,10 +11,10 @@ namespace flEngine
 
   struct Vertex
   {
-    Math::Vec3D position;
-    Math::Vec3D normal;
-    Math::Vec2D texcoord;
-    Math::Vec4D colour;
+    Vec3D position;
+    Vec3D normal;
+    Vec2D texcoord;
+    Vec4D colour;
   };
 
   class flEXPORT Mesh : public Interface
@@ -94,7 +94,7 @@ namespace flEngine
      * 
      * @return True if the index is valid. Otherwise, False.
      */
-    bool SetVertex(flIN int64_t index, flIN Math::Vec3D position, flIN Math::Vec3D normal, flIN Math::Vec2D texcoord, flIN Math::Vec4D colour);
+    bool SetVertex(flIN int64_t index, flIN Vec3D position, flIN Vec3D normal, flIN Vec2D texcoord, flIN Vec4D colour);
 
     /**
      * @brief Set a contiguous group of Vertices.
@@ -127,7 +127,7 @@ namespace flEngine
      * 
      * @return The index of the new vertex.
      */
-    int64_t AddVertex(flIN Math::Vec3D position, flIN Math::Vec3D normal, flIN Math::Vec2D texcoord, flIN Math::Vec4D colour);
+    int64_t AddVertex(flIN Vec3D position, flIN Vec3D normal, flIN Vec2D texcoord, flIN Vec4D colour);
 
     /**
      * @brief Add multiple Vertices to the Mesh.

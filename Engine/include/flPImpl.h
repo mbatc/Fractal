@@ -1,12 +1,6 @@
-#ifndef fl_PImpl_h__
-#define fl_PImpl_h__
+#pragma once
 
 #include "flMemory.h"
-
-/**
- * Implementation typename for a class
- */
-#define flPIMPL_CLASS(Class) Impl_ ## Class
 
 /**
  * Implementation member variable name for a class
@@ -21,19 +15,18 @@
  * destruct the internal data.
  */
 #define flPIMPL_DEF(Class)\
-  friend flPIMPL_CLASS(Class);\
+  friend Impl_ ## Class;\
 public:                                                  \
   ~Class();                                              \
-  flPIMPL_CLASS(Class) * Impl();                         \
-  flPIMPL_CLASS(Class) const * Impl() const;             \
+  Impl_ ## Class * Impl();                         \
+  Impl_ ## Class const * Impl() const;             \
 private:                                                 \
-  static flPIMPL_CLASS(Class)* __CreateImpl();           \
-  flPIMPL_CLASS(Class)* flPIMPL(Class) = __CreateImpl();
+  static Impl_ ## Class* __CreateImpl();           \
+  Impl_ ## Class* flPIMPL(Class) = __CreateImpl();
 
 #define flPIMPL_DEF_COPY(Class) Class &operator=(const Class &rhs);
 
 #define flPIMPL_DEF_MOVE(Class) Class &operator=(Class &&rhs);
-
 
  /**
   * @brief Define that implements the PImpl declared in a class.
@@ -42,22 +35,18 @@ private:                                                 \
   * created using the flPIMPL_DEF define.
   */
 #define flPIMPL_IMPL(Class)\
-template<typename T> inline T __remove_ptr(T *p) { return *p; }\
-Class::~Class() { flDelete flPIMPL(Class); }\
-decltype(Class::flPIMPL(Class)) Class::__CreateImpl() { return flNew decltype(__remove_ptr(Class::flPIMPL(Class))); }\
-flPIMPL_CLASS(Class) * Class::Impl() { return flPIMPL(Class); }\
-flPIMPL_CLASS(Class) const * Class::Impl() const { return flPIMPL(Class); }
+Class::~Class()                            { flDelete flPIMPL(Class); }     \
+Impl_ ## Class * Class::__CreateImpl()       { return flNew Impl_ ## Class; } \
+Impl_ ## Class * Class::Impl()             { return flPIMPL(Class); }       \
+Impl_ ## Class const * Class::Impl() const { return flPIMPL(Class); }
 
-#define flPIMPL_IMPL_COPY(Class) Class& Class::operator=(const Class &rhs) { *flPIMPL(Class) = *rhs.flPIMPL(Class); return *this; }
+#define flPIMPL_IMPL_COPY(Class) Class& Class::operator=(const Class &rhs) { *Impl() = *rhs.Impl(); return *this; }
 
 #define flPIMPL_IMPL_MOVE(Class)\
-Class& Class::operator=(Class &&rhs)                                  \
-{                                                                     \
-  flPIMPL_CLASS(Class) *pTemp = flPIMPL(Class);                       \
-  flPIMPL(Class) = rhs.flPIMPL(Class);                                \
-  rhs.flPIMPL(Class) = pTemp;                                         \
-  return *this;                                                       \
+Class& Class::operator=(Class &&rhs) \
+{                                    \
+  Impl_ ## Class *pTemp = Impl();    \
+  flPIMPL(Class) = rhs.Impl();       \
+  rhs.flPIMPL(Class) = pTemp;        \
+  return *this;                      \
 }
-
-
-#endif // flPImpl_h__

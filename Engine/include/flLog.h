@@ -1,15 +1,12 @@
-#ifndef fl_Logging_h__
-#define fl_Logging_h__
+#pragma once
 
 #include "flConfig.h"
 #include <string>
 #include <vector>
 #include <sstream>
 
-namespace flEngine
+namespace Fractal
 {
-  namespace Logging
-  {
     /**
      * @brief Different log levels. Higher values are lower severity.
      */
@@ -49,7 +46,6 @@ namespace flEngine
      * @brief Get the active log level.
      */
     flEXPORT LogLevel GetLogLevel();
-  }
 
   // template<typename T> std::string Repr(T const & o) {
   //   std::stringstream stream;
@@ -99,22 +95,22 @@ namespace flEngine
 /**
  * @brief Helper to add a log that includes the current function name an line.
  */
-#define flLog(level, message, ...) (level <= flEngine::Logging::GetLogLevel() ? flEngine::Logging::Log(level, __FUNCTION__, __LINE__, message, __VA_ARGS__) : void())
+#define flLog(level, message, ...) (level <= Fractal::GetLogLevel() ? Fractal::Log(level, __FUNCTION__, __LINE__, message, __VA_ARGS__) : void())
 
 /**
  * @brief Helper to log some information that includes the current function name an line.
  */
-#define flInfo(message, ...) flLog(flEngine::Logging::LogLevel_Info, message, __VA_ARGS__)
+#define flInfo(message, ...) flLog(Fractal::LogLevel_Info, message, __VA_ARGS__)
 
 /**
  * @brief Helper to log a warning that includes the current function name an line.
  */
-#define flWarning(message, ...) flLog(flEngine::Logging::LogLevel_Warning, message, __VA_ARGS__)
+#define flWarning(message, ...) flLog(Fractal::LogLevel_Warning, message, __VA_ARGS__)
 
 /**
  * @brief Helper to log an error that includes the current function name an line.
  */
-#define flError(message, ...) flLog(flEngine::Logging::LogLevel_Error, message, __VA_ARGS__)
+#define flError(message, ...) flLog(Fractal::LogLevel_Error, message, __VA_ARGS__)
 
 /**
  * @brief Macro that pushes an error on a condition. Reports the function name and line number.
@@ -129,25 +125,23 @@ namespace flEngine
 /**
  * @brief Macro that pushes an error on a condition. Reports the function name and line number.
  */
-#define flWarningIf(condition, message, ...) flLogIf(condition, flEngine::Logging::LogLevel_Warning, message, __VA_ARGS__)
+#define flWarningIf(condition, message, ...) flLogIf(condition, Fractal::LogLevel_Warning, message, __VA_ARGS__)
 
 /**
  * @brief Macro that pushes an error on a condition. Reports the function name and line number.
  */
-#define flErrorIf(condition, message, ...) flLogIf(condition, flEngine::Logging::LogLevel_Error, message, __VA_ARGS__)
+#define flErrorIf(condition, message, ...) flLogIf(condition, Fractal::LogLevel_Error, message, __VA_ARGS__)
 
  /**
   * @brief A helper macro that asserts logs a failure message with the function name and line number
  *
  * This function causes a debug break if the condition fails.
  */
-#define flAssert(condition, message, ...) flEngine::Logging::Assert(condition, __FUNCTION__, __LINE__, message, __VA_ARGS__)
+#define flAssert(condition, message, ...) Fractal::Assert(condition, __FUNCTION__, __LINE__, message, __VA_ARGS__)
 
  /**
   * @brief A helper macro that asserts logs a failure message with the function name and line number.
   *
   * This function causes a debug break.
   */
-#define flFail(message, ...) flEngine::Logging::Fail(message, __FUNCTION__, __LINE__, , __VA_ARGS__)
-
-#endif // flError_h__
+#define flFail(message, ...) Fractal::Fail(message, __FUNCTION__, __LINE__, , __VA_ARGS__)

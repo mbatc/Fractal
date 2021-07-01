@@ -1,16 +1,13 @@
 #include "ScenePanel.h"
 #include "ctVector.h"
 
-using namespace flEngine;
-using namespace flEngine::Scene;
-using namespace flEngine::GUI;
-
+using namespace Fractal;
 class GUIVisitor : public Visitor<Node>
 {
 public:
   GUIVisitor(int64_t selectedID) : m_selectedID(selectedID) {}
 
-  virtual bool OnEnter(flIN Node* pNode) {
+  virtual bool OnEnter(flIN Node *pNode) {
     if (pNode == pNode->GetScene()->GetRootNode())
       return true;
 
@@ -27,7 +24,7 @@ public:
     return open;
   }
 
-  virtual void OnLeave(flIN Node* pNode) {
+  virtual void OnLeave(flIN Node *pNode) {
     if (pNode != pNode->GetScene()->GetRootNode())
     {
       Widgets::EndTreeNode();
@@ -38,7 +35,7 @@ public:
   int64_t m_selectedID;
 };
 
-ScenePanel::ScenePanel(GUIModule* pGUI)
+ScenePanel::ScenePanel(GUIModule *pGUI)
   : Panel(pGUI, "Scene")
 {
   m_pSceneManager = Application::Get().GetModule<SceneManager>();
@@ -49,7 +46,7 @@ void ScenePanel::OnGUI()
   EditorModule *pEditor = Application::Get().GetModule<EditorModule>();
   SceneGraph *pScene = m_pSceneManager->ActiveScene();
   if (Widgets::Button("Add")) {
-    Node* pNode = pScene->AddNode("New Node", pEditor->m_selectedNode);
+    Node *pNode = pScene->AddNode("New Node", pEditor->m_selectedNode);
     pEditor->m_selectedNode = pNode->GetID();
   }
 

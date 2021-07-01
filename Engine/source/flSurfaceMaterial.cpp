@@ -1,4 +1,3 @@
-#include "..\include\flSurfaceMaterial.h"
 #include "flSurfaceMaterial.h"
 #include "ctString.h"
 
@@ -70,7 +69,7 @@ protected:
   ctVector<ctString> m_names;
 };
 
-namespace flEngine
+namespace Fractal
 {
   class Impl_SurfaceMaterial
   {
@@ -79,7 +78,7 @@ namespace flEngine
 
     StringMap<float>        m_values;
     StringMap<ctString>     m_textures;
-    StringMap<Util::Colour> m_colours;
+    StringMap<Colour> m_colours;
   };
 
   flPIMPL_IMPL(SurfaceMaterial);
@@ -101,8 +100,8 @@ namespace flEngine
     return Impl()->m_values.GetValueOr(name, 0.0f);
   }
 
-  Util::Colour SurfaceMaterial::GetColour(flIN char const *name) const {
-    return Impl()->m_colours.GetValueOr(name, Util::ColourU32_White);
+  Colour SurfaceMaterial::GetColour(flIN char const *name) const {
+    return Impl()->m_colours.GetValueOr(name, ColourU32_White);
   }
 
   char const * SurfaceMaterial::GetTexture(flIN char const *name) const {
@@ -114,7 +113,7 @@ namespace flEngine
     Impl()->m_values.AddOrSet(name, value);
   }
 
-  void SurfaceMaterial::SetColour(flIN char const *name, flIN Util::Colour colour) {
+  void SurfaceMaterial::SetColour(flIN char const *name, flIN Colour colour) {
     Impl()->m_colours.AddOrSet(name, colour);
   }
 

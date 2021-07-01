@@ -1,5 +1,4 @@
-#ifndef fl_Config_h__
-#define fl_Config_h__
+#pragma once
 
 #include <stdint.h>
 #include <memory>
@@ -43,5 +42,3 @@ flBITWISE_ENUM_OPERATOR(type, & )\
 inline type operator~(const type &a) { return (type)(~(int64_t)a); }
 
 #define flHasFlag(bitfield, flag) bool((bitfield & flag) != 0)
-
-#endif // flConfig_h__

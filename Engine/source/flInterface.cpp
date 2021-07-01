@@ -1,7 +1,7 @@
 #include "flInterface.h"
 
-using namespace flEngine;
-
+namespace Fractal
+{
 Interface::Interface()
   : m_refCount(1) // Default to 1 for the creator
 {}
@@ -19,7 +19,7 @@ void Interface::Destroy()
   flDelete this;
 }
 
-void flEngine::Interface::IncRef()
+void Fractal::Interface::IncRef()
 {
   if (this != nullptr)
     ++m_refCount;
@@ -28,4 +28,5 @@ void flEngine::Interface::IncRef()
 int64_t Interface::GetReferenceCount() const
 {
   return this != nullptr ? m_refCount : 0;
+}
 }

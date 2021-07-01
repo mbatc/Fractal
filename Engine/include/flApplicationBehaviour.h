@@ -1,10 +1,10 @@
 #pragma once
 
-#include "util/flEventDispatcher.h"
+#include "flEventDispatcher.h"
 
-namespace flEngine
+namespace Fractal
 {
-  class flEXPORT ApplicationBehaviour : public Util::EventDispatcher
+  class flEXPORT ApplicationBehaviour : public EventDispatcher
   {
   public:
     /**

@@ -3,14 +3,7 @@
 #include "ctFile.h"
 #include "ctFilename.h"
 
-using namespace flEngine;
-using namespace flEngine::GUI;
-using namespace flEngine::Util;
-using namespace flEngine::Math;
-using namespace flEngine::Input;
-using namespace flEngine::Graphics;
-using namespace flEngine::Platform;
-using namespace flEngine::Scene;
+using namespace Fractal;
 
 SceneViewPanel::SceneViewPanel(GUIModule* pGUI)
   : Panel(pGUI, "Scene View")
@@ -19,7 +12,7 @@ SceneViewPanel::SceneViewPanel(GUIModule* pGUI)
 
 bool SceneViewPanel::OnStartup()
 {
-  Graphics::API* pGraphics = GetGUI()->GetGraphicsAPI();
+  API* pGraphics = GetGUI()->GetGraphicsAPI();
 
   pProgram = MakeRef(pGraphics->CreateProgram(), false);
   pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag", ProgramStage_Fragment);
@@ -115,7 +108,7 @@ void SceneViewPanel::OnRender()
 
   pState->SetViewport(0, 0, m_target->GetWidth(), m_target->GetHeight());
 
-  class RenderVisitor : public flEngine::Scene::Visitor<flEngine::Scene::Node>
+  class RenderVisitor : public Fractal::Visitor<Fractal::Node>
   {
   public:
     RenderVisitor(Mat4F projection, ctVector<Ref<ShaderMaterial>> const & materials, Ref<Program> pProgram, Ref<RenderMesh> pMesh, API* pAPI)
@@ -126,11 +119,11 @@ void SceneViewPanel::OnRender()
       , m_materials(materials)
     {}
 
-    bool OnEnter(flEngine::Scene::Node* pNode) override {
+    bool OnEnter(Fractal::Node* pNode) override {
       if (pNode == pNode->GetScene()->GetRootNode())
         return true;
 
-      flEngine::Scene::Transform* pTransform = pNode->GetComponent<flEngine::Scene::Transform>();
+      Fractal::Transform* pTransform = pNode->GetComponent<Fractal::Transform>();
 
       if (pTransform)
       {
@@ -164,7 +157,7 @@ void SceneViewPanel::OnRender()
 void SceneViewPanel::OnGUI()
 {
   if (m_target != nullptr)
-    GUI::Widgets::Image(m_target->GetColourTarget(), ContentAreaSize().x, ContentAreaSize().y);
+    Widgets::Image(m_target->GetColourTarget(), ContentAreaSize().x, ContentAreaSize().y);
 }
 
 PerspectiveCamera::PerspectiveCamera(Keyboard* pKeyboard, Mouse* pMouse)
