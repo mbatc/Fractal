@@ -119,7 +119,7 @@ namespace Fractal
   };
 
   // Implement PIMPL idiom
-  flPIMPL_IMPL(EventQueue)
+  flPIMPL_IMPL(EventQueue);
 
     bool EventQueue::PostGlobalEvent(flIN Event *pEvent)
   {

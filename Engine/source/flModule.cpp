@@ -11,7 +11,7 @@ namespace Fractal
     Mouse    m_mouse;
   };
 
-  flPIMPL_IMPL(Module)
+  flPIMPL_IMPL(Module);
 
   Module::Module()
   {

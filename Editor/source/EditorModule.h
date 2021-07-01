@@ -3,7 +3,7 @@
 
 #include "flModule.h"
 
-class EditorModule : public flEngine::Module
+class EditorModule : public Fractal::Module
 {
 public:
   EditorModule() {}

@@ -47,7 +47,7 @@ namespace Fractal
     ctVector<Thread *> m_threads;
   };
 
-  flPIMPL_IMPL(ThreadPool)
+  flPIMPL_IMPL(ThreadPool);
 
     ThreadPool::ThreadPool(int64_t threadCount)
   {

@@ -28,7 +28,7 @@ namespace Fractal
     RecursiveMutex  m_lock;
   };
 
-  flPIMPL_IMPL(InputDeviceServer)
+  flPIMPL_IMPL(InputDeviceServer);
 
   InputDeviceServer::InputDeviceServer() {}
 

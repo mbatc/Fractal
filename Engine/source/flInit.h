@@ -3,7 +3,7 @@
 
 #include "flConfig.h"
 
-namespace flEngine
+namespace Fractal
 {
   bool flEXPORT Initialize();
 }

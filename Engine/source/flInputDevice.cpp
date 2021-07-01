@@ -41,7 +41,7 @@ namespace Fractal
     ctVector<InputDevice::Analog> m_analogs;
   };
 
-  flPIMPL_IMPL(InputDevice)
+  flPIMPL_IMPL(InputDevice);
 
     InputDevice::InputDevice(flIN int64_t buttonCount, flIN int64_t analogCount, flIN InputDeviceServer *pServer)
   {

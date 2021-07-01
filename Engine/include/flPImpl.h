@@ -36,7 +36,7 @@ private:                                                 \
   */
 #define flPIMPL_IMPL(Class)\
 Class::~Class()                            { flDelete flPIMPL(Class); }     \
-Impl_ ## Class * Class::__CreateImpl()       { return flNew Impl_ ## Class; } \
+Impl_ ## Class * Class::__CreateImpl()     { return flNew Impl_ ## Class; } \
 Impl_ ## Class * Class::Impl()             { return flPIMPL(Class); }       \
 Impl_ ## Class const * Class::Impl() const { return flPIMPL(Class); }
 

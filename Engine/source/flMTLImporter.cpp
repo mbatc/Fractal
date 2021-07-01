@@ -211,7 +211,7 @@ namespace Fractal
     ctVector<Ref<SurfaceMaterial>> materials;
   };
   
-  flPIMPL_IMPL(MTLImporter)
+  flPIMPL_IMPL(MTLImporter);
 
   MTLImporter * MTLImporter::Create() {
     return flNew MTLImporter;

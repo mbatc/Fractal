@@ -19,7 +19,7 @@ namespace Fractal
       Ref<IEventHandler> m_handlers[Event_Count];
     };
 
-    flPIMPL_IMPL(EventDispatcher)
+    flPIMPL_IMPL(EventDispatcher);
 
       bool EventDispatcher::Dispatch(flIN Event *pEvent)
     {

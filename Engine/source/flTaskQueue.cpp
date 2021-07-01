@@ -61,7 +61,7 @@ namespace Fractal
     std::unique_ptr<Mutex> m_lock = std::make_unique<Mutex>();
   };
 
-  flPIMPL_IMPL(TaskQueue)
+  flPIMPL_IMPL(TaskQueue);
 
     class _flGenericTask : public Task
   {
