@@ -14,25 +14,31 @@ namespace Fractal
   class Impl_OBJImporter
   {
   public:
-    Impl_OBJImporter() {
+    Impl_OBJImporter()
+    {
       m_pMesh = MakeRef<Mesh>();
     }
 
-    bool ParseVertex(ctVector<ctString> const &tokens) {
-      if (tokens.size() >= 4) {
+    bool ParseVertex(ctVector<ctString> const& tokens)
+    {
+      if (tokens.size() >= 4)
+      {
         Vec3D position(0);
 
         // Position
-        for (int64_t i = 1; i < 4; ++i) {
+        for (int64_t i = 1; i < 4; ++i)
+        {
           position[i - 1] = ctScan::Float(tokens[i]);
         }
 
         m_positions.push_back(position);
 
         // Colour
-        if (tokens.size() == 7) {
+        if (tokens.size() == 7)
+        {
           Vec3D colour(0);
-          for (int64_t i = 4; i < 7; ++i) {
+          for (int64_t i = 4; i < 7; ++i)
+          {
             colour[i - 4] = ctScan::Float(tokens[i]);
           }
 
@@ -41,17 +47,21 @@ namespace Fractal
 
         return true;
       }
-      else {
+      else
+      {
         return false;
       }
     }
 
-    bool ParseNormal(ctVector<ctString> const &tokens) {
-      if (tokens.size() >= 4) {
+    bool ParseNormal(ctVector<ctString> const& tokens)
+    {
+      if (tokens.size() >= 4)
+      {
         Vec3D normal(0);
 
         // Position
-        for (int64_t i = 1; i < 4; ++i) {
+        for (int64_t i = 1; i < 4; ++i)
+        {
           normal[i - 1] = ctScan::Float(tokens[i]);
         }
 
@@ -59,15 +69,19 @@ namespace Fractal
 
         return true;
       }
-      else {
+      else
+      {
         return false;
       }
     }
 
-    bool ParseTexcoord(ctVector<ctString> const &tokens) {
-      if (tokens.size() > 2) {
+    bool ParseTexcoord(ctVector<ctString> const& tokens)
+    {
+      if (tokens.size() > 2)
+      {
         Vec2D texcoord(0);
-        for (int64_t i = 1; i < 3; ++i) {
+        for (int64_t i = 1; i < 3; ++i)
+        {
           texcoord[i - 1] = ctScan::Float(tokens[i]);
         }
 
@@ -75,20 +89,24 @@ namespace Fractal
 
         return true;
       }
-      else {
+      else
+      {
         return false;
       }
     }
 
-    bool ParseFace(ctVector<ctString> const &tokens) {
-      if (tokens.size() < 4) {
+    bool ParseFace(ctVector<ctString> const& tokens)
+    {
+      if (tokens.size() < 4)
+      {
         return false;
       }
 
       Polygon polygon;
       polygon.startVertex = m_vertices.size();
 
-      for (int64_t i = 1; i < tokens.size(); ++i) {
+      for (int64_t i = 1; i < tokens.size(); ++i)
+      {
         int64_t offset = i - 1;
         Vertex vert;
         ParseFaceIndices(
@@ -108,7 +126,8 @@ namespace Fractal
       return true;
     }
 
-    bool ParseMTLLib(const ctString &line) {
+    bool ParseMTLLib(const ctString& line)
+    {
       ctString libFile = ReadProperty(line);
       if (libFile.length() == 0)
         return false;
@@ -117,13 +136,15 @@ namespace Fractal
       return true;
     }
 
-    bool ParseUseMTL(const ctString &line) {
+    bool ParseUseMTL(const ctString& line)
+    {
       ctString mtlName = ReadProperty(line);
       if (mtlName.length() == 0)
         return false;
 
       m_activeMaterial = ctIndexOf(m_materials.begin(), m_materials.end(), mtlName);
-      if (m_activeMaterial == -1) {
+      if (m_activeMaterial == -1)
+      {
         m_activeMaterial = m_materials.size();
         m_materials.push_back(mtlName);
       }
@@ -131,56 +152,69 @@ namespace Fractal
       return true;
     }
 
-    bool Import(char const * filename) {
+    bool Import(char const* filename)
+    {
       ctFile file;
-      if (!file.Open(filename, atFM_Read)) {
+      if (!file.Open(filename, atFM_Read))
+      {
         flError("Could not open file '%s'", filename);
         return false;
       }
 
       ctStringReader reader(&file);
 
-      while (reader.Available() > 0) {
-        ctString const &line = reader.ReadLine();
+      while (reader.Available() > 0)
+      {
+        ctString const& line = reader.ReadLine();
         ctStringSeeker seeker(&line);
         seeker.SkipWhitespace();
         ctVector<ctString> tokens = line.split(ctString::Whitespace(), true);
         if (tokens.size() == 0)
           continue;
 
-        if (tokens[0] == "v") {
+        if (tokens[0] == "v")
+        {
           ParseVertex(tokens);
         }
-        else if (tokens[0] == "vn") {
+        else if (tokens[0] == "vn")
+        {
           ParseNormal(tokens);
         }
-        else if (tokens[0] == "vt") {
+        else if (tokens[0] == "vt")
+        {
           ParseTexcoord(tokens);
         }
-        else if (tokens[0] == "f") {
+        else if (tokens[0] == "f")
+        {
           ParseFace(tokens);
         }
-        else if (tokens[0] == "mtllib") {
+        else if (tokens[0] == "mtllib")
+        {
           ParseMTLLib(line);
         }
-        else if (tokens[0] == "usemtl") {
+        else if (tokens[0] == "usemtl")
+        {
           ParseUseMTL(line);
         }
       }
 
       MTLImporter mtlImporter;
       ctString srcDir = ctFilename(filename).Directory() + "/";
-      for (ctString const  & mtlFile : m_mtlFiles) {
+      for (ctString const&   mtlFile : m_mtlFiles)
+      {
         ctFilename mtlPath = ctFile::Find(srcDir + mtlFile);
         mtlImporter.Import(mtlPath.c_str());
       }
 
-      for (ctString const &mtlName : m_materials) {
-        SurfaceMaterial * pMaterial = mtlImporter.GetMaterial(mtlName);
-        if (pMaterial) {
+      for (ctString const& mtlName : m_materials)
+      {
+        SurfaceMaterial* pMaterial = mtlImporter.GetMaterial(mtlName);
+        if (pMaterial)
+        {
           m_pMesh->AddMaterial(pMaterial);
         }
-        else {
+        else
+        {
           m_pMesh->AddMaterial(MakeRef(SurfaceMaterial::Create(), false));
         }
       }
@@ -192,21 +226,24 @@ namespace Fractal
       return true;
     }
 
-    void ParseFaceIndices(ctString const & vertex, int64_t *pVert, int64_t *pTexcoord, int64_t *pNormal) {
-      char const * pText = vertex.c_str();
+    void ParseFaceIndices(ctString const& vertex, int64_t* pVert, int64_t* pTexcoord, int64_t* pNormal)
+    {
+      char const* pText = vertex.c_str();
 
       int64_t i   = 0;
       int64_t len = 0;
       int64_t indices[3] = { -1, -1, -1 };
 
-      do {
+      do
+      {
         indices[i] = ctScan::Int(&pText, &len);
         if (len == 0)
           indices[i] = -1;
         if (*pText == '/')
           pText += 1;
         ++i;
-      } while (i < 3 && *pText != 0);
+      }
+      while (i < 3 && *pText != 0);
 
       *pVert     = indices[0];
       *pTexcoord = indices[1];
@@ -219,12 +256,14 @@ namespace Fractal
 
       bool hasColours = m_colours.size() > 0;
 
-      for (int64_t i = 0; i < m_polygons.size(); ++i) {
-        Polygon &poly = m_polygons[i];
+      for (int64_t i = 0; i < m_polygons.size(); ++i)
+      {
+        Polygon& poly = m_polygons[i];
         int64_t newPolyID = m_pMesh->AddPolygon();
 
         m_pMesh->SetPolygonMaterial(newPolyID, poly.material);
-        for (int64_t v = poly.startVertex; v <= poly.endVertex; ++v) {
+        for (int64_t v = poly.startVertex; v <= poly.endVertex; ++v)
+        {
           Vertex& vert = m_vertices[v];
           m_pMesh->AddPolygonVertex(
             newPolyID,
@@ -239,7 +278,8 @@ namespace Fractal
       }
     }
 
-    ctString ReadProperty(const ctString &line) {
+    ctString ReadProperty(const ctString& line)
+    {
       ctStringSeeker seeker(&line);
       seeker.SkipWhitespace();
       seeker.SeekToWhitespace();
@@ -279,11 +319,13 @@ namespace Fractal
 
   flPIMPL_IMPL(OBJImporter);
 
-  bool OBJImporter::Import(flIN char const * filename) {
+  bool OBJImporter::Import(flIN char const* filename)
+  {
     return Impl()->Import(filename);
   }
 
-  Mesh * OBJImporter::GetResult() {
+  Mesh* OBJImporter::GetResult()
+  {
     return Impl()->m_pMesh;
   }
 }

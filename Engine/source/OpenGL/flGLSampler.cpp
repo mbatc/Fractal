@@ -3,7 +3,7 @@
 
 namespace Fractal
 {
-  GLSampler::GLSampler(API *pAPI)
+  GLSampler::GLSampler(API* pAPI)
     : Sampler(pAPI)
   {
     flVerifyGL(glCreateSamplers, 1, &m_samplerID);
@@ -14,7 +14,7 @@ namespace Fractal
     flVerifyGL(glDeleteSamplers, 1, &m_samplerID);
   }
 
-  Sampler *GLSampler::Create(API *pAPI)
+  Sampler* GLSampler::Create(API* pAPI)
   {
     return flNew GLSampler(pAPI);
   }
@@ -30,7 +30,7 @@ namespace Fractal
     SetWrapModeY(wrap);
   }
 
-  void GLSampler::GetWrapMode(WrapMode *pWrapX, WrapMode *pWrapY) const
+  void GLSampler::GetWrapMode(WrapMode* pWrapX, WrapMode* pWrapY) const
   {
     int32_t xMode = 0;
     int32_t yMode = 0;
@@ -38,8 +38,10 @@ namespace Fractal
     flVerifyGL(glGetSamplerParameteriv, m_samplerID, GL_TEXTURE_WRAP_S, &xMode);
     flVerifyGL(glGetSamplerParameteriv, m_samplerID, GL_TEXTURE_WRAP_T, &yMode);
 
-    if (pWrapX) *pWrapX = GLUtil::GetWrapMode(xMode);
-    if (pWrapY) *pWrapY = GLUtil::GetWrapMode(yMode);
+    if (pWrapX)
+      *pWrapX = GLUtil::GetWrapMode(xMode);
+    if (pWrapY)
+      *pWrapY = GLUtil::GetWrapMode(yMode);
   }
 
   void GLSampler::SetWrapModeX(WrapMode wrap)
@@ -62,7 +64,7 @@ namespace Fractal
     flVerifyGL(glSamplerParameteri, m_samplerID, GL_TEXTURE_MAG_FILTER, GLUtil::ToFilterMode(mode));
   }
 
-  FilterMode GLSampler::GetFilterMinMode(bool *pUseMipmaps) const
+  FilterMode GLSampler::GetFilterMinMode(bool* pUseMipmaps) const
   {
     int32_t mode = 0;
     flVerifyGL(glGetSamplerParameteriv, m_samplerID, GL_TEXTURE_MAG_FILTER, &mode);
@@ -76,17 +78,17 @@ namespace Fractal
     return GLUtil::GetFilterMode(mode);
   }
 
-  void GLSampler::SetBorderColour(Colour *pColour)
+  void GLSampler::SetBorderColour(Colour* pColour)
   {
     flVerifyGL(glSamplerParameterfv, m_samplerID, GL_TEXTURE_BORDER_COLOR, &pColour->r);
   }
 
-  void GLSampler::GetBorderColour(Colour *pColour) const
+  void GLSampler::GetBorderColour(Colour* pColour) const
   {
     flVerifyGL(glGetSamplerParameterfv, m_samplerID, GL_TEXTURE_BORDER_COLOR, &pColour->r);
   }
 
-  void *GLSampler::GetNativeResource()
+  void* GLSampler::GetNativeResource()
   {
     return flNativeFromGLID(m_samplerID);
   }

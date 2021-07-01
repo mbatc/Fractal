@@ -38,8 +38,8 @@ namespace Fractal
   class flEXPORT APIFactory : public Interface
   {
   public:
-    virtual char const *GetIdentifier() const = 0;
-    virtual API *Create(Window *pWindow, RenderTargetOptions *pOptions) = 0;
+    virtual char const* GetIdentifier() const = 0;
+    virtual API* Create(Window* pWindow, RenderTargetOptions* pOptions) = 0;
   };
 
   class flEXPORT API : public Interface
@@ -50,7 +50,7 @@ namespace Fractal
      *
      * @param [in] pFactory A factory object that will create instances of the implementation.
      */
-    static bool RegisterAPI(flIN APIFactory *pFactory);
+    static bool RegisterAPI(flIN APIFactory* pFactory);
 
     /**
      * @brief Get the number of APIs registered.
@@ -60,17 +60,17 @@ namespace Fractal
     /**
      * @brief Get the string identifier for a graphics API.
      */
-    static char const *GetAPIIdentifier(flIN int64_t index);
+    static char const* GetAPIIdentifier(flIN int64_t index);
 
     /**
      * @brief Create a graphics API using it's string identifier
      */
-    static API *Create(char const *apiIdentifier, Window *pWindow, RenderTargetOptions *pOptions = nullptr);
+    static API* Create(char const* apiIdentifier, Window* pWindow, RenderTargetOptions* pOptions = nullptr);
 
     /**
     * @brief Get a pointer the the GPU's state interface.
     */
-    virtual DeviceState *GetState() = 0;
+    virtual DeviceState* GetState() = 0;
 
     /**
      * @brief Execute a render command.
@@ -85,66 +85,66 @@ namespace Fractal
      *
      * @return A pointer to a WindowRenderTarget instance.
      */
-    virtual WindowRenderTarget *CreateWindowRenderTarget(flIN Window *pWindow, flIN RenderTargetOptions *pOptions) = 0;
+    virtual WindowRenderTarget* CreateWindowRenderTarget(flIN Window* pWindow, flIN RenderTargetOptions* pOptions) = 0;
 
     /**
      * @brief
      */
-    virtual TextureRenderTarget *CreateTextureRenderTarget() = 0;
+    virtual TextureRenderTarget* CreateTextureRenderTarget() = 0;
 
     /**
      * @brief
      */
-    virtual VertexArray *CreateVertexArray() = 0;
+    virtual VertexArray* CreateVertexArray() = 0;
 
     /**
      * @brief
      */
-    virtual HardwareBuffer *CreateBuffer(flIN BufferBinding type, flIN BufferUsage bufferUsage) = 0;
+    virtual HardwareBuffer* CreateBuffer(flIN BufferBinding type, flIN BufferUsage bufferUsage) = 0;
 
     /**
      * @brief
      */
-    virtual VertexBuffer *CreateVertexBuffer(flIN int64_t size, flIN void const *pInitialData = nullptr, flIN BufferUsage bufferUsage = BufferUsage_Default) = 0;
+    virtual VertexBuffer* CreateVertexBuffer(flIN int64_t size, flIN void const* pInitialData = nullptr, flIN BufferUsage bufferUsage = BufferUsage_Default) = 0;
 
     /**
      * @brief
      */
-    virtual IndexBuffer *CreateIndexBuffer(flIN int64_t indexCount = 0, uint32_t const *pValues = nullptr, flIN BufferUsage bufferUsage = BufferUsage_Default) = 0;
+    virtual IndexBuffer* CreateIndexBuffer(flIN int64_t indexCount = 0, uint32_t const* pValues = nullptr, flIN BufferUsage bufferUsage = BufferUsage_Default) = 0;
 
     /**
      * @brief
      */
-    virtual UniformBuffer *CreateUniformBuffer(flIN int64_t size, flIN void const *pInitialData = nullptr, flIN BufferUsage bufferUsage = BufferUsage_Default) = 0;
+    virtual UniformBuffer* CreateUniformBuffer(flIN int64_t size, flIN void const* pInitialData = nullptr, flIN BufferUsage bufferUsage = BufferUsage_Default) = 0;
 
     /**
      * @brief
      */
-    virtual Program *CreateProgram() = 0;
+    virtual Program* CreateProgram() = 0;
 
     /**
      * @brief
      */
-    virtual ShaderMaterial *CreateMaterial(flIN Program *pProgram, flIN char const *materialBlock = "Material") = 0;
+    virtual ShaderMaterial* CreateMaterial(flIN Program* pProgram, flIN char const* materialBlock = "Material") = 0;
 
     /**
      * @brief
      */
-    virtual Texture2D *CreateTexture2D(flIN DepthFormat depthFormat) = 0;
+    virtual Texture2D* CreateTexture2D(flIN DepthFormat depthFormat) = 0;
 
     /**
      * @brief
      */
-    virtual Texture2D *CreateTexture2D(flIN PixelFormat pixelFormat = PixelFormat_RGBA, flIN PixelComponentType type = PixelComponentType_UNorm8) = 0;
+    virtual Texture2D* CreateTexture2D(flIN PixelFormat pixelFormat = PixelFormat_RGBA, flIN PixelComponentType type = PixelComponentType_UNorm8) = 0;
 
     /**
      * @brief
      */
-    virtual Sampler *CreateSampler() = 0;
+    virtual Sampler* CreateSampler() = 0;
 
     /**
      * @brief
      */
-    RenderMesh *CreateRenderMesh(flIN Mesh *pMesh);
+    RenderMesh* CreateRenderMesh(flIN Mesh* pMesh);
   };
 }

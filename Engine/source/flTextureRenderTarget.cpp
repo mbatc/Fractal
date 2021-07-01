@@ -2,7 +2,7 @@
 
 namespace Fractal
 {
-    TextureRenderTarget::TextureRenderTarget(API *pAPI)
-      : RenderTarget(pAPI)
-    {}
+  TextureRenderTarget::TextureRenderTarget(API* pAPI)
+    : RenderTarget(pAPI)
+  {}
 }

@@ -11,12 +11,12 @@ namespace Fractal
 
   flPIMPL_IMPL(Window);
 
-  Window::Window(flIN const char *title, flIN Flags flags, flIN DisplayMode displayMode)
+  Window::Window(flIN const char* title, flIN Flags flags, flIN DisplayMode displayMode)
   {
     Impl()->Construct(this, title, flags, displayMode);
   }
 
-  void Window::SetTitle(flIN const char *title)
+  void Window::SetTitle(flIN const char* title)
   {
     return Impl()->SetTitle(title);
   }
@@ -46,7 +46,7 @@ namespace Fractal
     return Impl()->SetRect(posX, posY, width, height);
   }
 
-  const char *Window::GetTitle() const
+  const char* Window::GetTitle() const
   {
     return Impl()->GetTitle();
   }
@@ -66,7 +66,7 @@ namespace Fractal
     return Impl()->GetFlags();
   }
 
-  void Window::GetSize(flOUT int64_t *pWidth, flOUT int64_t *pHeight) const
+  void Window::GetSize(flOUT int64_t* pWidth, flOUT int64_t* pHeight) const
   {
     Impl()->GetSize(pWidth, pHeight);
   }
@@ -81,7 +81,7 @@ namespace Fractal
     return Impl()->GetHeight();
   }
 
-  void Window::GetPosition(flOUT int64_t *pPosX, flOUT int64_t *pPosY) const
+  void Window::GetPosition(flOUT int64_t* pPosX, flOUT int64_t* pPosY) const
   {
     Impl()->GetPosition(pPosX, pPosY);
   }
@@ -96,7 +96,7 @@ namespace Fractal
     return Impl()->GetY();
   }
 
-  void Window::GetRect(flOUT int64_t *pPosX, flOUT int64_t *pPosY, flOUT int64_t *pWidth, flOUT int64_t *pHeight) const
+  void Window::GetRect(flOUT int64_t* pPosX, flOUT int64_t* pPosY, flOUT int64_t* pWidth, flOUT int64_t* pHeight) const
   {
     Impl()->GetRect(pPosX, pPosY, pWidth, pHeight);
   }
@@ -106,22 +106,22 @@ namespace Fractal
     return Impl()->ReceivedEvent(id, reset);
   }
 
-  bool Window::IsEventSource(const Event *pEvent) const
+  bool Window::IsEventSource(const Event* pEvent) const
   {
     return Impl()->IsEventSource(pEvent);
   }
 
-  void *Window::GetNativeHandle() const
+  void* Window::GetNativeHandle() const
   {
     return Impl()->GetNativeHandle();
   }
 
-  WindowRenderTarget *Window::GetRenderTarget() const
+  WindowRenderTarget* Window::GetRenderTarget() const
   {
     return Impl()->GetRenderTarget();
   }
 
-  Window *Window::GetFocusedWindow(flIN FocusFlags focusFlags)
+  Window* Window::GetFocusedWindow(flIN FocusFlags focusFlags)
   {
     return Impl_Window::GetFocusedWindow(focusFlags);
   }

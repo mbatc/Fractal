@@ -102,10 +102,12 @@ namespace Fractal
     return PixelFormat_Unknown;
   }
 
-  bool GLUtil::GetPixelFormat(flIN uint32_t format, flOUT PixelFormat *pFormat, flOUT PixelComponentType *pComponentType)
+  bool GLUtil::GetPixelFormat(flIN uint32_t format, flOUT PixelFormat* pFormat, flOUT PixelComponentType* pComponentType)
   {
-    if (pFormat) *pFormat = GetPixelFormat(format);
-    if (pComponentType) *pComponentType = GetPixelComponentType(format);
+    if (pFormat)
+      *pFormat = GetPixelFormat(format);
+    if (pComponentType)
+      *pComponentType = GetPixelComponentType(format);
     return (!pFormat || *pFormat != PixelFormat_Unknown) && (!pComponentType || *pComponentType != PixelComponentType_Unknown);
   }
 
@@ -188,8 +190,10 @@ namespace Fractal
   AccessFlags GLUtil::GetAccessFlags(flIN uint32_t accessFlags)
   {
     AccessFlags flags = AccessFlag_None;
-    if (flHasFlag(accessFlags, GL_MAP_READ_BIT))  flags = AccessFlags(flags | AccessFlag_Read);
-    if (flHasFlag(accessFlags, GL_MAP_WRITE_BIT)) flags = AccessFlags(flags | AccessFlag_Write);
+    if (flHasFlag(accessFlags, GL_MAP_READ_BIT))
+      flags = AccessFlags(flags | AccessFlag_Read);
+    if (flHasFlag(accessFlags, GL_MAP_WRITE_BIT))
+      flags = AccessFlags(flags | AccessFlag_Write);
     return flags;
   }
 
@@ -217,7 +221,7 @@ namespace Fractal
     return BufferUsage_Default;
   }
 
-  Type GLUtil::GetType(flIN uint32_t dataType, flOUT int64_t *pWidth, flOUT int64_t *pHeight)
+  Type GLUtil::GetType(flIN uint32_t dataType, flOUT int64_t* pWidth, flOUT int64_t* pHeight)
   {
     int64_t width = 1;
     int64_t height = 1;
@@ -261,8 +265,10 @@ namespace Fractal
     case GL_DOUBLE:         type = Type_Float64; break;
     }
 
-    if (pWidth)  *pWidth = width;
-    if (pHeight) *pHeight = width;
+    if (pWidth)
+      *pWidth = width;
+    if (pHeight)
+      *pHeight = width;
 
     return type;
   }
@@ -291,7 +297,7 @@ namespace Fractal
     return WrapMode();
   }
 
-  FilterMode GLUtil::GetFilterMode(flIN uint32_t filterMode, bool *pMipMaps)
+  FilterMode GLUtil::GetFilterMode(flIN uint32_t filterMode, bool* pMipMaps)
   {
     bool       mipmaps = false;
     FilterMode mode = FilterMode_Unknown;
@@ -306,7 +312,8 @@ namespace Fractal
     case GL_LINEAR_MIPMAP_NEAREST:  mode = FilterMode_Nearest; mipmaps = true;  break;
     }
 
-    if (pMipMaps) *pMipMaps = mipmaps;
+    if (pMipMaps)
+      *pMipMaps = mipmaps;
 
     return mode;
   }
@@ -319,35 +326,35 @@ namespace Fractal
   bool GLUtil::Is1DSampler(flIN uint32_t glType)
   {
     return glType == GL_SAMPLER_1D
-      || glType == GL_SAMPLER_1D_SHADOW
-      || glType == GL_INT_SAMPLER_1D
-      || glType == GL_UNSIGNED_INT_SAMPLER_1D;
+           || glType == GL_SAMPLER_1D_SHADOW
+           || glType == GL_INT_SAMPLER_1D
+           || glType == GL_UNSIGNED_INT_SAMPLER_1D;
   }
 
   bool GLUtil::Is2DSampler(flIN uint32_t glType)
   {
     return glType == GL_SAMPLER_2D
-      || glType == GL_SAMPLER_2D_MULTISAMPLE
-      || glType == GL_SAMPLER_2D_SHADOW
-      || glType == GL_SAMPLER_1D_ARRAY
-      || glType == GL_SAMPLER_1D_ARRAY_SHADOW
-      || glType == GL_INT_SAMPLER_2D
-      || glType == GL_INT_SAMPLER_1D_ARRAY
-      || glType == GL_UNSIGNED_INT_SAMPLER_2D
-      || glType == GL_UNSIGNED_INT_SAMPLER_1D_ARRAY;
+           || glType == GL_SAMPLER_2D_MULTISAMPLE
+           || glType == GL_SAMPLER_2D_SHADOW
+           || glType == GL_SAMPLER_1D_ARRAY
+           || glType == GL_SAMPLER_1D_ARRAY_SHADOW
+           || glType == GL_INT_SAMPLER_2D
+           || glType == GL_INT_SAMPLER_1D_ARRAY
+           || glType == GL_UNSIGNED_INT_SAMPLER_2D
+           || glType == GL_UNSIGNED_INT_SAMPLER_1D_ARRAY;
   }
 
   bool GLUtil::Is3DSampler(flIN uint32_t glType)
   {
     return glType == GL_SAMPLER_3D
-      || glType == GL_INT_SAMPLER_3D
-      || glType == GL_UNSIGNED_INT_SAMPLER_3D
-      || glType == GL_SAMPLER_2D_ARRAY
-      || glType == GL_SAMPLER_2D_MULTISAMPLE_ARRAY
-      || glType == GL_INT_SAMPLER_2D_ARRAY
-      || glType == GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY
-      || glType == GL_UNSIGNED_INT_SAMPLER_2D_ARRAY
-      || glType == GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY;
+           || glType == GL_INT_SAMPLER_3D
+           || glType == GL_UNSIGNED_INT_SAMPLER_3D
+           || glType == GL_SAMPLER_2D_ARRAY
+           || glType == GL_SAMPLER_2D_MULTISAMPLE_ARRAY
+           || glType == GL_INT_SAMPLER_2D_ARRAY
+           || glType == GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY
+           || glType == GL_UNSIGNED_INT_SAMPLER_2D_ARRAY
+           || glType == GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY;
   }
 
   uint32_t GLUtil::ToShaderType(flIN ProgramStage stage)
@@ -464,8 +471,10 @@ case PixelComponentType_Float32: return GL_ ## comp ## 32F;\
   uint32_t GLUtil::ToAccessFlags(flIN AccessFlags stage)
   {
     uint32_t glFlags = 0;
-    if (flHasFlag(stage, AccessFlag_Read))  glFlags &= GL_MAP_READ_BIT;
-    if (flHasFlag(stage, AccessFlag_Write)) glFlags &= GL_MAP_WRITE_BIT;
+    if (flHasFlag(stage, AccessFlag_Read))
+      glFlags &= GL_MAP_READ_BIT;
+    if (flHasFlag(stage, AccessFlag_Write))
+      glFlags &= GL_MAP_WRITE_BIT;
     return glFlags;
   }
 

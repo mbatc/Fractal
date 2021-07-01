@@ -5,14 +5,14 @@
 
 namespace Fractal
 {
-  GLVertexBuffer::GLVertexBuffer(API *pAPI, int64_t size, void const *pInitialData, BufferUsage bufferUsage)
+  GLVertexBuffer::GLVertexBuffer(API* pAPI, int64_t size, void const* pInitialData, BufferUsage bufferUsage)
     : VertexBuffer(pAPI)
   {
     m_pBuffer = MakeRef(GetAPI()->CreateBuffer(BufferBinding_Vertices, bufferUsage), false);
     m_pBuffer->Set(pInitialData, size);
   }
 
-  VertexBuffer *GLVertexBuffer::Create(API *pAPI, int64_t size, void const *pInitialData, BufferUsage bufferUsage)
+  VertexBuffer* GLVertexBuffer::Create(API* pAPI, int64_t size, void const* pInitialData, BufferUsage bufferUsage)
   {
     return flNew GLVertexBuffer(pAPI, size, pInitialData, bufferUsage);
   }
@@ -28,7 +28,7 @@ namespace Fractal
     flVerifyGL(glBindBuffer, GL_ARRAY_BUFFER, 0);
   }
 
-  void GLVertexBuffer::SetLayout(VertexElement const *pElements, int64_t elementCount)
+  void GLVertexBuffer::SetLayout(VertexElement const* pElements, int64_t elementCount)
   {
     m_layout.resize(elementCount);
     m_stride = 0;
@@ -59,9 +59,9 @@ namespace Fractal
     return m_layout.size();
   }
 
-  void GLVertexBuffer::GetLayoutElement(int64_t index, VertexElement *pElement) const
+  void GLVertexBuffer::GetLayoutElement(int64_t index, VertexElement* pElement) const
   {
-    Element const &elem = m_layout[index];
+    Element const& elem = m_layout[index];
     pElement->location = elem.location;
     pElement->type = elem.type;
     pElement->width = elem.width;
@@ -69,12 +69,12 @@ namespace Fractal
     pElement->normalize = elem.normalize;
   }
 
-  HardwareBuffer *GLVertexBuffer::GetBuffer()
+  HardwareBuffer* GLVertexBuffer::GetBuffer()
   {
     return m_pBuffer.Get();
   }
 
-  HardwareBuffer const *GLVertexBuffer::GetBuffer() const
+  HardwareBuffer const* GLVertexBuffer::GetBuffer() const
   {
     return m_pBuffer.Get();
   }

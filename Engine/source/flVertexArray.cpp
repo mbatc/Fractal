@@ -2,7 +2,7 @@
 
 namespace Fractal
 {
-    VertexArray::VertexArray(API *pAPI)
-      : APIResource(pAPI)
-    {}
+  VertexArray::VertexArray(API* pAPI)
+    : APIResource(pAPI)
+  {}
 }

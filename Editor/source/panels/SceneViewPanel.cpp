@@ -29,20 +29,23 @@ bool SceneViewPanel::OnStartup()
     OBJImporter importer;
     importer.Import("C:/Users/mickb/OneDrive/Documents/Test Models/Sponza/sponza.obj");
 
-    Mesh *pMesh = importer.GetResult();
+    Mesh* pMesh = importer.GetResult();
     pMesh->Triangulate();
 
     pRenderMesh = MakeRef(pGraphics->CreateRenderMesh(pMesh), false);
 
-    for (int64_t matIdx = 0; matIdx < pMesh->GetMaterialCount(); ++matIdx) {
-      SurfaceMaterial *pMaterialData = pMesh->GetMaterial(matIdx);
+    for (int64_t matIdx = 0; matIdx < pMesh->GetMaterialCount(); ++matIdx)
+    {
+      SurfaceMaterial* pMaterialData = pMesh->GetMaterial(matIdx);
       Ref<ShaderMaterial> pShaderMat = MakeRef(pGraphics->CreateMaterial(pProgram), false);
-      char const * path = pMaterialData->GetTexture("diffuse");
-      if (path != nullptr) {
+      char const* path = pMaterialData->GetTexture("diffuse");
+      if (path != nullptr)
+      {
         bool found = false;
         ctFilename fullPath = ctFile::Find(ctString(pMesh->GetSourceDirectory()) + "/" + path, &found);
 
-        if (found) {
+        if (found)
+        {
           Image image(fullPath.c_str());
 
           Ref<Texture2D> pTexture = MakeRef(pGraphics->CreateTexture2D(PixelFormat_RGBA, PixelComponentType_UNorm8), false);
@@ -111,7 +114,7 @@ void SceneViewPanel::OnRender()
   class RenderVisitor : public Fractal::Visitor<Fractal::Node>
   {
   public:
-    RenderVisitor(Mat4F projection, ctVector<Ref<ShaderMaterial>> const & materials, Ref<Program> pProgram, Ref<RenderMesh> pMesh, API* pAPI)
+    RenderVisitor(Mat4F projection, ctVector<Ref<ShaderMaterial>> const& materials, Ref<Program> pProgram, Ref<RenderMesh> pMesh, API* pAPI)
       : m_projection(projection)
       , m_pProgram(pProgram)
       , m_pGraphics(pAPI)
@@ -119,7 +122,8 @@ void SceneViewPanel::OnRender()
       , m_materials(materials)
     {}
 
-    bool OnEnter(Fractal::Node* pNode) override {
+    bool OnEnter(Fractal::Node* pNode) override
+    {
       if (pNode == pNode->GetScene()->GetRootNode())
         return true;
 
@@ -130,10 +134,11 @@ void SceneViewPanel::OnRender()
         Mat4F mvp = m_projection * (Mat4F)pTransform->GetTransform();
         m_pProgram->SetMat4("mvp", mvp);
 
-        for (int64_t i = 0; i < m_pRenderMesh->GetSubmeshCount(); ++i) {
+        for (int64_t i = 0; i < m_pRenderMesh->GetSubmeshCount(); ++i)
+        {
           m_materials[i]->Bind();
 
-          RenderMesh::SubMesh *pSubMesh = m_pRenderMesh->GetSubmesh(i);
+          RenderMesh::SubMesh* pSubMesh = m_pRenderMesh->GetSubmesh(i);
           m_pGraphics->Render(DrawMode_Triangles, true, pSubMesh->offset, pSubMesh->count);
         }
       }
@@ -179,12 +184,18 @@ Mat4F PerspectiveCamera::ProjectionMatrix()
 void PerspectiveCamera::Update()
 {
   Vec3F velocity;
-  if (m_pKeyboard->GetKeyDown(KC_A)) velocity.x -= 1;
-  if (m_pKeyboard->GetKeyDown(KC_D)) velocity.x += 1;
-  if (m_pKeyboard->GetKeyDown(KC_W)) velocity.z -= 1;
-  if (m_pKeyboard->GetKeyDown(KC_S)) velocity.z += 1;
-  if (m_pKeyboard->GetKeyDown(KC_E)) velocity.y += 1;
-  if (m_pKeyboard->GetKeyDown(KC_Q)) velocity.y -= 1;
+  if (m_pKeyboard->GetKeyDown(KC_A))
+    velocity.x -= 1;
+  if (m_pKeyboard->GetKeyDown(KC_D))
+    velocity.x += 1;
+  if (m_pKeyboard->GetKeyDown(KC_W))
+    velocity.z -= 1;
+  if (m_pKeyboard->GetKeyDown(KC_S))
+    velocity.z += 1;
+  if (m_pKeyboard->GetKeyDown(KC_E))
+    velocity.y += 1;
+  if (m_pKeyboard->GetKeyDown(KC_Q))
+    velocity.y -= 1;
 
   velocity = Mat4F::YawPitchRoll(ypr) * velocity;
 

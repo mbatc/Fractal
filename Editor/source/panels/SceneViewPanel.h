@@ -21,8 +21,8 @@ public:
   Fractal::Vec3D position = { 0, 0, 0 };
   Fractal::Vec3D ypr = { 0, 0, 0 };
 
-  Fractal::Keyboard *m_pKeyboard;
-  Fractal::Mouse *m_pMouse;
+  Fractal::Keyboard* m_pKeyboard;
+  Fractal::Mouse* m_pMouse;
 };
 
 class SceneViewPanel : public Fractal::Panel

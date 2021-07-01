@@ -16,12 +16,12 @@ namespace Fractal
 
   flPIMPL_IMPL(ThreadQueue);
 
-  bool ThreadQueue::Add(flIN Task *pTask)
+  bool ThreadQueue::Add(flIN Task* pTask)
   {
     return Impl()->m_pool.Add(pTask);
   }
 
-  bool ThreadQueue::Add(flIN TaskFunc taskFunc, flIN void *pUserData, flOUT Task **ppTask)
+  bool ThreadQueue::Add(flIN TaskFunc taskFunc, flIN void* pUserData, flOUT Task** ppTask)
   {
     return Impl()->m_pool.Add(taskFunc, pUserData, ppTask);
   }

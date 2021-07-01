@@ -19,28 +19,28 @@ namespace Fractal
   public:
     Module();
 
-    Window * GetMainWindow();
-    
+    Window* GetMainWindow();
+
     Window const* GetMainWindow() const;
 
-    API * GetGraphicsAPI();
+    API* GetGraphicsAPI();
 
-    API * GetGraphicsAPI() const;
+    API* GetGraphicsAPI() const;
 
-    Mouse * GetMouse();
-    
-    Mouse const * GetMouse() const;
+    Mouse* GetMouse();
 
-    Keyboard * GetKeyboard();
-    
-    Keyboard const * GetKeyboard() const;
+    Mouse const* GetMouse() const;
+
+    Keyboard* GetKeyboard();
+
+    Keyboard const* GetKeyboard() const;
 
     virtual bool OnKeyState(Event* pEvent);
-    
-    virtual bool OnMouseMove(Event* pEvent);
-    
-    virtual bool OnMouseState(Event *pEvent);
 
-    virtual bool OnMouseScroll(Event *pEvent);
+    virtual bool OnMouseMove(Event* pEvent);
+
+    virtual bool OnMouseState(Event* pEvent);
+
+    virtual bool OnMouseScroll(Event* pEvent);
   };
 }

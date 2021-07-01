@@ -21,7 +21,7 @@ namespace Fractal
      *
      * This function will increment the internal reference count for this
      * interface instance. Each IncRef() call should have a corresponding
-     * DecRef() call (unless the interface is explicitly destroyed using 
+     * DecRef() call (unless the interface is explicitly destroyed using
      * the Destroy() function, though be careful doing this).
      */
     void IncRef();

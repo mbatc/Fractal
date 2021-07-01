@@ -4,18 +4,18 @@
 
 namespace Fractal
 {
-    class API;
+  class API;
 
-    class Impl_APIResource;
+  class Impl_APIResource;
 
-    class flEXPORT APIResource : public Interface
-    {
-      friend API;
+  class flEXPORT APIResource : public Interface
+  {
+    friend API;
 
-      flPIMPL_DEF(APIResource);
-    public:
-      APIResource(API *pAPI);
+    flPIMPL_DEF(APIResource);
+  public:
+    APIResource(API* pAPI);
 
-      API * GetAPI();
-    };
+    API* GetAPI();
+  };
 }

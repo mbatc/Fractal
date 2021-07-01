@@ -8,13 +8,13 @@
 
 namespace Fractal
 {
-  static ctVector<InputDevice *> _devices;
+  static ctVector<InputDevice*> _devices;
   static ctVector<ctString> _emptyNames;
 
   class Impl_InputDevice
   {
   public:
-    void Construct(InputDevice *pDevice, int64_t buttonCount, int64_t analogCount, InputDeviceServer *pServer)
+    void Construct(InputDevice* pDevice, int64_t buttonCount, int64_t analogCount, InputDeviceServer* pServer)
     {
       // Setup buttons
       m_buttons.resize(buttonCount);
@@ -34,7 +34,7 @@ namespace Fractal
         m_pServer->DecRef();
     }
 
-    InputDevice *m_pDevice = nullptr;
+    InputDevice* m_pDevice = nullptr;
     Ref<InputDeviceServer> m_pServer = nullptr;
 
     ctVector<InputDevice::Button> m_buttons;
@@ -43,22 +43,22 @@ namespace Fractal
 
   flPIMPL_IMPL(InputDevice);
 
-    InputDevice::InputDevice(flIN int64_t buttonCount, flIN int64_t analogCount, flIN InputDeviceServer *pServer)
+  InputDevice::InputDevice(flIN int64_t buttonCount, flIN int64_t analogCount, flIN InputDeviceServer* pServer)
   {
     Impl()->Construct(this, buttonCount, analogCount, pServer);
   }
 
-  void InputDevice::SetServer(flIN InputDeviceServer *pServer)
+  void InputDevice::SetServer(flIN InputDeviceServer* pServer)
   {
     Impl()->m_pServer = MakeRef(pServer, true);
   }
 
-  InputDeviceServer const *InputDevice::GetServer() const
+  InputDeviceServer const* InputDevice::GetServer() const
   {
     return Impl()->m_pServer.Get();
   }
 
-  InputDeviceServer *InputDevice::GetServer()
+  InputDeviceServer* InputDevice::GetServer()
   {
     return Impl()->m_pServer.Get();
   }
@@ -73,22 +73,22 @@ namespace Fractal
     return Impl()->m_analogs.size();
   }
 
-  InputDevice::Button *InputDevice::GetButton(flIN int64_t index)
+  InputDevice::Button* InputDevice::GetButton(flIN int64_t index)
   {
     return index < 0 || index >= GetButtonCount() ? nullptr : &Impl()->m_buttons[index];
   }
 
-  InputDevice::Analog *InputDevice::GetAnalog(flIN int64_t index)
+  InputDevice::Analog* InputDevice::GetAnalog(flIN int64_t index)
   {
     return index < 0 || index >= GetAnalogCount() ? nullptr : &Impl()->m_analogs[index];
   }
 
-  const InputDevice::Button *InputDevice::GetButton(flIN int64_t index) const
+  const InputDevice::Button* InputDevice::GetButton(flIN int64_t index) const
   {
     return index < 0 || index >= GetButtonCount() ? nullptr : &Impl()->m_buttons[index];
   }
 
-  const InputDevice::Analog *InputDevice::GetAnalog(flIN int64_t index) const
+  const InputDevice::Analog* InputDevice::GetAnalog(flIN int64_t index) const
   {
     return index < 0 || index >= GetAnalogCount() ? nullptr : &Impl()->m_analogs[index];
   }
@@ -104,7 +104,7 @@ namespace Fractal
     int64_t updateClock = clock();
 
     // Update buttons
-    for (Button &button : Impl()->m_buttons)
+    for (Button& button : Impl()->m_buttons)
     {
       button.m_pressed = false;
       button.m_released = false;
@@ -114,7 +114,7 @@ namespace Fractal
     }
 
     // Update analogs
-    for (Analog &analog : Impl()->m_analogs)
+    for (Analog& analog : Impl()->m_analogs)
     {
       analog.m_lastValue = analog.m_value;
       analog.m_lastValueTime = analog.m_valueTime;
@@ -124,7 +124,7 @@ namespace Fractal
     // Receive button events
     while (Impl()->m_pServer->GetEvent(&id, &pressed, &timestamp))
     {
-      Button *pButton = GetButton(id);
+      Button* pButton = GetButton(id);
 
       if (pButton)
       {
@@ -147,7 +147,7 @@ namespace Fractal
     bool  addValue = false;
     while (Impl()->m_pServer->GetEvent(&id, &value, &addValue, &timestamp))
     {
-      Analog *pAnalog = GetAnalog(id);
+      Analog* pAnalog = GetAnalog(id);
 
       if (pAnalog)
       {
@@ -166,7 +166,7 @@ namespace Fractal
     return _devices.size();
   }
 
-  InputDevice *InputDevice::GetRegisteredDevice(flIN int64_t index)
+  InputDevice* InputDevice::GetRegisteredDevice(flIN int64_t index)
   {
     return _devices[index];
   }

@@ -7,44 +7,44 @@
 
 namespace Fractal
 {
-    class VertexBuffer;
-    class IndexBuffer;
+  class VertexBuffer;
+  class IndexBuffer;
 
-    class GLVertexArray : public VertexArray
-    {
-      GLVertexArray(API *pAPI);
-    public:
-      ~GLVertexArray();
+  class GLVertexArray : public VertexArray
+  {
+    GLVertexArray(API* pAPI);
+  public:
+    ~GLVertexArray();
 
-      static GLVertexArray* Create(API *pAPI);
+    static GLVertexArray* Create(API* pAPI);
 
-      void Bind() override;
-      void Unbind() override;
+    void Bind() override;
+    void Unbind() override;
 
-      void AddVertexBuffer(flIN VertexBuffer *pBuffer) override;
-      void SetIndexBuffer(flIN IndexBuffer *pBuffer) override;
+    void AddVertexBuffer(flIN VertexBuffer* pBuffer) override;
+    void SetIndexBuffer(flIN IndexBuffer* pBuffer) override;
 
-      void RemoveVertexBuffer(flIN int64_t index) override;
-      int64_t GetVertexBufferCount() override;
+    void RemoveVertexBuffer(flIN int64_t index) override;
+    int64_t GetVertexBufferCount() override;
 
-      VertexBuffer* GetVertexBuffer(flIN int64_t index) override;
-      IndexBuffer* GetIndexBuffer() override;
+    VertexBuffer* GetVertexBuffer(flIN int64_t index) override;
+    IndexBuffer* GetIndexBuffer() override;
 
-      int64_t GetVertexCount() const override;
-      int64_t GetIndexCount() const override;
+    int64_t GetVertexCount() const override;
+    int64_t GetIndexCount() const override;
 
-      void* GetNativeResource() override;
+    void* GetNativeResource() override;
 
-    private:
-      uint32_t m_vao = 0;
-      int64_t  m_numVBOsBounds = 0;
-      int64_t  m_attributeRound = 0;
-      bool     m_rebindVBOs = true;
+  private:
+    uint32_t m_vao = 0;
+    int64_t  m_numVBOsBounds = 0;
+    int64_t  m_attributeRound = 0;
+    bool     m_rebindVBOs = true;
 
-      Ref<IndexBuffer>            m_indexBuffer;
-      ctVector<Ref<VertexBuffer>> m_vertexBuffers;
-      ctVector<uint32_t>          m_boundLocations;
-    };
+    Ref<IndexBuffer>            m_indexBuffer;
+    ctVector<Ref<VertexBuffer>> m_vertexBuffers;
+    ctVector<uint32_t>          m_boundLocations;
+  };
 }
 
 #endif // flGeometry_h__

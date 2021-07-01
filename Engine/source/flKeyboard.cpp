@@ -4,22 +4,22 @@
 
 namespace Fractal
 {
-Keyboard::Keyboard()
-  : InputDevice(KC_Count, 0)
-{}
+  Keyboard::Keyboard()
+    : InputDevice(KC_Count, 0)
+  {}
 
-bool Keyboard::GetKeyDown(flIN KeyCode key) const
-{
-  return GetButton(key)->IsDown();
-}
+  bool Keyboard::GetKeyDown(flIN KeyCode key) const
+  {
+    return GetButton(key)->IsDown();
+  }
 
-bool Keyboard::GetKeyPressed(flIN KeyCode key) const
-{
-  return GetButton(key)->IsPressed();
-}
+  bool Keyboard::GetKeyPressed(flIN KeyCode key) const
+  {
+    return GetButton(key)->IsPressed();
+  }
 
-bool Keyboard::GetKeyReleased(flIN KeyCode key) const
-{
-  return GetButton(key)->IsReleased();
-}
+  bool Keyboard::GetKeyReleased(flIN KeyCode key) const
+  {
+    return GetButton(key)->IsReleased();
+  }
 }

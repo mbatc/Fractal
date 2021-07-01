@@ -109,7 +109,7 @@ namespace Fractal
      * @param [in] analogCount How many analog inputs to allocate for this device
      * @param [in] pServer     The InputDeviceServer to use when updating the input device state.
      */
-    InputDevice(flIN int64_t buttonCount, flIN int64_t analogCount, flIN InputDeviceServer *pServer = nullptr);
+    InputDevice(flIN int64_t buttonCount, flIN int64_t analogCount, flIN InputDeviceServer* pServer = nullptr);
 
     /**
      * @brief Get the number of buttons this InputDevice interface has.
@@ -130,28 +130,28 @@ namespace Fractal
      *
      * @param [in] index The index of the Button, where 0 <= index < GetButtonCount().
      */
-    Button *GetButton(flIN int64_t index);
+    Button* GetButton(flIN int64_t index);
 
     /**
     * @brief Access an analog input in the InputDevice.
     *
     * @param [in] index The index of the an analog input, where 0 <= index < GetAnalogCount().
     */
-    Analog *GetAnalog(flIN int64_t index);
+    Analog* GetAnalog(flIN int64_t index);
 
     /**
     * @brief Immutable access to a button in the InputDevice.
     *
     * @param [in] index The index of the Button, where 0 <= index < GetButtonCount().
     */
-    const Button *GetButton(flIN int64_t index) const;
+    const Button* GetButton(flIN int64_t index) const;
 
     /**
     * @brief Immutable access to an analog input in the InputDevice.
     *
     * @param [in] index The index of the an analog input, where 0 <= index < GetAnalogCount().
     */
-    const Analog *GetAnalog(flIN int64_t index) const;
+    const Analog* GetAnalog(flIN int64_t index) const;
 
     /**
     * @brief Set the input server for this device.
@@ -162,15 +162,15 @@ namespace Fractal
     *
     * @param [in] pServer A pointer to the input server to use.
     */
-    void SetServer(flIN InputDeviceServer *pServer);
+    void SetServer(flIN InputDeviceServer* pServer);
 
     /**
     * @brief Get this input devices event server.
     *
     * @return A pointer to this devices input server.
     */
-    InputDeviceServer *GetServer();
-    InputDeviceServer const *GetServer() const;
+    InputDeviceServer* GetServer();
+    InputDeviceServer const* GetServer() const;
 
     /**
     * @brief Update the input device.
@@ -193,7 +193,7 @@ namespace Fractal
      *
      * @param [in] index The index of the device. This should be >= 0 and < GetRegisteredDeviceCount()
      */
-    static InputDevice *GetRegisteredDevice(flIN int64_t index);
+    static InputDevice* GetRegisteredDevice(flIN int64_t index);
 
   protected:
     /**

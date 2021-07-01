@@ -79,12 +79,12 @@ namespace Fractal
     return &Impl()->m_keyboard;
   }
 
-  Keyboard const * Module::GetKeyboard() const
+  Keyboard const* Module::GetKeyboard() const
   {
     return &Impl()->m_keyboard;
   }
 
-  Mouse const * Module::GetMouse() const
+  Mouse const* Module::GetMouse() const
   {
     return &Impl()->m_mouse;
   }

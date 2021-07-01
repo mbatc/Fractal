@@ -35,13 +35,15 @@ namespace Fractal
 
   public:
     template<typename T, typename... Args>
-    void AddModule(Args&&... args) {
+    void AddModule(Args&& ... args)
+    {
       AddModule(flNew T(std::forward<Args>(args)...), typeid(T).name());
     }
 
     template<typename T>
-    T *GetModule() {
-      return (T *)GetModule(typeid(T).name());
+    T* GetModule()
+    {
+      return (T*)GetModule(typeid(T).name());
     }
 
     /**
@@ -52,26 +54,26 @@ namespace Fractal
     /**
      * @brief Returns a pointer to the applications main window.
      */
-    Window *GetMainWindow();
-    Window const *GetMainWindow() const;
+    Window* GetMainWindow();
+    Window const* GetMainWindow() const;
 
     /**
      * @brief Returns a pointer to the applications graphics API.
      */
-    API *GetGraphicsAPI();
-    API const *GetGraphicsAPI() const;
+    API* GetGraphicsAPI();
+    API const* GetGraphicsAPI() const;
 
     /**
      * @brief Get the global Application instance.
      **/
-    static Application &Get();
+    static Application& Get();
 
   protected:
-    Application(char const *graphicsAPIName);
+    Application(char const* graphicsAPIName);
 
   private:
-    void AddModule(Module *pSystem, char const *name);
-    Module *GetModule(char const *name);
+    void AddModule(Module* pSystem, char const* name);
+    Module* GetModule(char const* name);
 
     int Run(); // Application entry point
   };

@@ -36,17 +36,17 @@ namespace Fractal
     Impl()->polygons.clear();
   }
 
-  char const * Mesh::GetSourcePath()
+  char const* Mesh::GetSourcePath()
   {
     return Impl()->sourcePath.c_str();
   }
 
-  char const * Mesh::GetSourceDirectory()
+  char const* Mesh::GetSourceDirectory()
   {
     return Impl()->sourcePath.Directory().c_str();
   }
 
-  void Mesh::SetSourcePath(flIN char const *path)
+  void Mesh::SetSourcePath(flIN char const* path)
   {
     Impl()->sourcePath = path;
   }
@@ -61,12 +61,12 @@ namespace Fractal
     return Impl()->vertices.data();
   }
 
-  Vertex const * Mesh::GetVertices() const
+  Vertex const* Mesh::GetVertices() const
   {
     return Impl()->vertices.data();
   }
 
-  bool Mesh::GetVertex(flIN int64_t index, flOUT Vertex * pVertex) const
+  bool Mesh::GetVertex(flIN int64_t index, flOUT Vertex* pVertex) const
   {
     if (index < 0 || index >= GetVertexCount())
       return false;
@@ -80,7 +80,7 @@ namespace Fractal
     if (index < 0 || index >= GetVertexCount())
       return false;
 
-    Vertex &vertex = Impl()->vertices[index];
+    Vertex& vertex = Impl()->vertices[index];
     vertex.position = position;
     vertex.normal = normal;
     vertex.texcoord = texcoord;
@@ -88,7 +88,7 @@ namespace Fractal
     return true;
   }
 
-  bool Mesh::SetVertices(flIN int64_t index, flIN Vertex const * pVertices, flIN int64_t count)
+  bool Mesh::SetVertices(flIN int64_t index, flIN Vertex const* pVertices, flIN int64_t count)
   {
     if (index < 0 || index + count > GetVertexCount())
       return false;
@@ -112,14 +112,14 @@ namespace Fractal
     return GetVertexCount() - 1;
   }
 
-  int64_t Mesh::AddVertices(flIN Vertex const * pVertices, flIN int64_t count)
+  int64_t Mesh::AddVertices(flIN Vertex const* pVertices, flIN int64_t count)
   {
     int64_t firstIndex = GetVertexCount();
     Impl()->vertices.insert(Impl()->vertices.size(), pVertices, pVertices + count);
     return firstIndex;
   }
 
-  void Mesh::SetVertices(flIN Vertex const * pVertices, flIN int64_t count)
+  void Mesh::SetVertices(flIN Vertex const* pVertices, flIN int64_t count)
   {
     Impl()->vertices.clear();
     AddVertices(pVertices, count);
@@ -135,12 +135,12 @@ namespace Fractal
     return polyIndex < 0 || polyIndex >= GetPolygonCount() ? 0 : Impl()->polygons[polyIndex].indices.size();
   }
 
-  int64_t * Mesh::GetPolygonVertices(flIN int64_t polyIndex)
+  int64_t* Mesh::GetPolygonVertices(flIN int64_t polyIndex)
   {
     return polyIndex < 0 || polyIndex >= GetPolygonCount() ? nullptr : Impl()->polygons[polyIndex].indices.data();
   }
 
-  int64_t const * Mesh::GetPolygonVertices(flIN int64_t polyIndex) const
+  int64_t const* Mesh::GetPolygonVertices(flIN int64_t polyIndex) const
   {
     return polyIndex < 0 || polyIndex >= GetPolygonCount() ? nullptr : Impl()->polygons[polyIndex].indices.data();
   }
@@ -154,14 +154,14 @@ namespace Fractal
   {
     return polyIndex < 0 || polyIndex >= GetPolygonCount() ? -1 : Impl()->polygons[polyIndex].material;
   }
-  
+
   int64_t Mesh::AddPolygon()
   {
     Impl()->polygons.emplace_back();
     return GetPolygonCount() - 1;
   }
 
-  int64_t Mesh::AddPolygon(flIN int64_t const * pIndices, flIN int64_t vertexCount, flIN int64_t material)
+  int64_t Mesh::AddPolygon(flIN int64_t const* pIndices, flIN int64_t vertexCount, flIN int64_t material)
   {
     Impl()->polygons.emplace_back();
     SetPolygonVertices(GetPolygonCount() - 1, pIndices, vertexCount);
@@ -174,7 +174,7 @@ namespace Fractal
     if (polyIndex < 0 || polyIndex >= GetPolygonCount())
       return false;
 
-    Polygon &poly = Impl()->polygons[polyIndex];
+    Polygon& poly = Impl()->polygons[polyIndex];
     poly.indices.push_back(vertIndex);
     return poly.indices.size() - 1;
   }
@@ -194,7 +194,7 @@ namespace Fractal
     if (polyIndex < 0 || polyIndex >= GetPolygonCount())
       return false;
 
-    Polygon &poly = Impl()->polygons[polyIndex];
+    Polygon& poly = Impl()->polygons[polyIndex];
 
     if (vertIndex < 0 || vertIndex >= poly.indices.size())
       return false;
@@ -203,12 +203,12 @@ namespace Fractal
     return true;
   }
 
-  bool Mesh::SetPolygonVertices(flIN int64_t polyIndex, flIN int64_t const * pIndices, flIN int64_t count)
+  bool Mesh::SetPolygonVertices(flIN int64_t polyIndex, flIN int64_t const* pIndices, flIN int64_t count)
   {
     if (polyIndex < 0 || polyIndex >= GetPolygonCount())
       return false;
 
-    Polygon &poly = Impl()->polygons[polyIndex];
+    Polygon& poly = Impl()->polygons[polyIndex];
     poly.indices.clear();
     poly.indices.insert(0, pIndices, pIndices + count);
     return true;
@@ -230,30 +230,32 @@ namespace Fractal
     return GetMaterialCount() - 1;
   }
 
-  int64_t Mesh::AddMaterial(flIN SurfaceMaterial *pMaterial)
+  int64_t Mesh::AddMaterial(flIN SurfaceMaterial* pMaterial)
   {
     Impl()->materials.push_back(MakeRef(pMaterial, true));
     return GetMaterialCount() - 1;
   }
 
-  int64_t Mesh::FindMaterial(flIN char const * name) const
+  int64_t Mesh::FindMaterial(flIN char const* name) const
   {
     int64_t i = 0;
-    for (auto pMaterial : Impl()->materials) {
-      if (strcmp(pMaterial->GetName(), name)) {
+    for (auto pMaterial : Impl()->materials)
+    {
+      if (strcmp(pMaterial->GetName(), name))
+      {
         return i;
       }
       ++i;
     }
     return -1;
   }
-  
-  SurfaceMaterial * Mesh::GetMaterial(flIN int64_t materialIndex)
+
+  SurfaceMaterial* Mesh::GetMaterial(flIN int64_t materialIndex)
   {
     return Impl()->materials[materialIndex].Get();
   }
 
-  SurfaceMaterial const * Mesh::GetMaterial(flIN int64_t materialIndex) const
+  SurfaceMaterial const* Mesh::GetMaterial(flIN int64_t materialIndex) const
   {
     return Impl()->materials[materialIndex].Get();
   }
@@ -269,9 +271,11 @@ namespace Fractal
 
     newPolygons.reserve(GetPolygonCount());
 
-    for (Polygon &poly : Impl()->polygons) {
+    for (Polygon& poly : Impl()->polygons)
+    {
       int64_t triCount = poly.indices.size() - 2;
-      for (int64_t tri = 0; tri < triCount; ++tri) {
+      for (int64_t tri = 0; tri < triCount; ++tri)
+      {
         Polygon newTri;
         newTri.material = poly.material;
         newTri.indices.push_back(poly.indices[0]);

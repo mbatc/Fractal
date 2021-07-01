@@ -61,14 +61,14 @@ namespace Fractal
      * @param [in] flags       A set of initial flags for this window.
      * @param [in] displayMode The initial display mode for this window (e.g. Windowed or Fullscreen).
      */
-    Window(flIN const char *title, flIN Flags flags, flIN DisplayMode displayMode);
+    Window(flIN const char* title, flIN Flags flags, flIN DisplayMode displayMode);
 
     /**
      * @brief Set the title of the Window.
      *
      * @param [in] title A c-string to set the window title to.
      */
-    void SetTitle(flIN const char *title);
+    void SetTitle(flIN const char* title);
 
     /**
      * @brief Set the display mode of the Window.
@@ -122,7 +122,7 @@ namespace Fractal
      *
      * @return A c-string containing the window title.
      */
-    const char *GetTitle() const;
+    const char* GetTitle() const;
 
     /**
      * @brief Get the windows display mode.
@@ -160,7 +160,7 @@ namespace Fractal
      * @param [out] pWidth  A pointer to an int64 to copy the windows width to. Can be NULL.
      * @param [out] pHeight A pointer to an int64 to copy the windows height to. Can be NULL.
      */
-    void GetSize(flOUT int64_t *pWidth, flOUT int64_t *pHeight) const;
+    void GetSize(flOUT int64_t* pWidth, flOUT int64_t* pHeight) const;
 
     /**
     * @brief Get the width of the window.
@@ -182,7 +182,7 @@ namespace Fractal
      * @param [out] pPosX A pointer to an int64 to copy the X position to. Can be NULL.
      * @param [out] pPosY A pointer to an int64 to copy the Y position to. Can be NULL.
      */
-    void GetPosition(flOUT int64_t *pPosX, flOUT int64_t *pPosY) const;
+    void GetPosition(flOUT int64_t* pPosX, flOUT int64_t* pPosY) const;
 
     /**
     * @brief Get the X position of the window.
@@ -206,7 +206,7 @@ namespace Fractal
      * @param [out] pWidth  A pointer to an int64 to copy the windows width to. Can be NULL.
      * @param [out] pHeight A pointer to an int64 to copy the windows height to. Can be NULL.
      */
-    void GetRect(flOUT int64_t *pPosX, flOUT int64_t *pPosY, flOUT int64_t *pWidth, flOUT int64_t *pHeight) const;
+    void GetRect(flOUT int64_t* pPosX, flOUT int64_t* pPosY, flOUT int64_t* pWidth, flOUT int64_t* pHeight) const;
 
     /**
      * @brief Check if the window has received a system event.
@@ -221,21 +221,21 @@ namespace Fractal
      *
      * @return True if this window is the source of the event.
      */
-    bool IsEventSource(const Event *pEvent) const;
+    bool IsEventSource(const Event* pEvent) const;
 
     /**
      * @brief Get the native OS handle for this window.
      *
      * @return The OS handle.
      */
-    void *GetNativeHandle() const;
+    void* GetNativeHandle() const;
 
     /**
      * @brief Get the Hardware render target for this window.
      *
      * @return A pointer to a WindowRenderTarget for this window.
      */
-    WindowRenderTarget *GetRenderTarget() const;
+    WindowRenderTarget* GetRenderTarget() const;
 
     /**
      * @brief Get a pointer to the window that has focus.
@@ -244,7 +244,7 @@ namespace Fractal
      *
      * @return A pointer to the Window that has focus
      */
-    static Window *GetFocusedWindow(flIN FocusFlags focusFlags);
+    static Window* GetFocusedWindow(flIN FocusFlags focusFlags);
   };
 
   flBITWISE_ENUM_OPERATORS(Window::FocusFlags);

@@ -2,13 +2,14 @@
 
 #include "flApplication.h"
 
-namespace Fractal {
+namespace Fractal
+{
   /**
    * @brief Create the client application. INTERNAL USE ONLY.
-   * 
+   *
    * You need to implement this function to return an application instance
    * for the engine.
-   * 
+   *
    * Do not call this function yourself if you are using Fractals built in entry point.
    */
   extern Application* CreateApplication(char** argv, int argc);
@@ -28,18 +29,18 @@ namespace Fractal {
 
 /**
  * @brief Fractal Engine entry point.
- * 
+ *
  * This is the default main function used to create the client application.
- * 
+ *
  * You may define your own entry point if you wish, but make sure it performs
  * the same steps used in this function.
- * 
+ *
  * Define flNO_ENTRY_POINT before including this file to disable the default entry point.
  */
 int main(char** argv, int argc)
 {
   // Create the application
-  Fractal::Application *pApp = Fractal::CreateApplication(argv, argc);
+  Fractal::Application* pApp = Fractal::CreateApplication(argv, argc);
 
   // Run it and wait for the result
   int result = Fractal::FractalEntryHandler::Run(argv, argc);

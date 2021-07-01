@@ -11,7 +11,8 @@ namespace Fractal
   public:
     BehaviourVisitor(void (NodeBehaviour::* func)()) : m_method(func) {}
 
-    virtual bool OnEnter(flIN Component* pComponent) override {
+    virtual bool OnEnter(flIN Component* pComponent) override
+    {
       NodeBehaviour* pBehaviour = pComponent->As<NodeBehaviour>();
       if (pBehaviour == nullptr)
         return false;
@@ -39,41 +40,49 @@ namespace Fractal
 
   void SceneManager::OnShutdown() {}
 
-  void SceneManager::OnUpdate() {
+  void SceneManager::OnUpdate()
+  {
     BehaviourVisitor visitor(&NodeBehaviour::OnUpdate);
     Impl()->m_activeScene->Visit(nullptr, &visitor);
   }
 
-  void SceneManager::OnRender() {
+  void SceneManager::OnRender()
+  {
     BehaviourVisitor visitor(&NodeBehaviour::OnRender);
     Impl()->m_activeScene->Visit(nullptr, &visitor);
   }
 
-  void SceneManager::OnPreUpdate() {
+  void SceneManager::OnPreUpdate()
+  {
     BehaviourVisitor visitor(&NodeBehaviour::OnPreUpdate);
     Impl()->m_activeScene->Visit(nullptr, &visitor);
   }
 
-  void SceneManager::OnPreRender() {
+  void SceneManager::OnPreRender()
+  {
     BehaviourVisitor visitor(&NodeBehaviour::OnPreRender);
     Impl()->m_activeScene->Visit(nullptr, &visitor);
   }
 
-  void SceneManager::OnPostUpdate() {
+  void SceneManager::OnPostUpdate()
+  {
     BehaviourVisitor visitor(&NodeBehaviour::OnPostUpdate);
     Impl()->m_activeScene->Visit(nullptr, &visitor);
   }
 
-  void SceneManager::OnPostRender() {
+  void SceneManager::OnPostRender()
+  {
     BehaviourVisitor visitor(&NodeBehaviour::OnPostRender);
     Impl()->m_activeScene->Visit(nullptr, &visitor);
   }
 
-  SceneGraph const * SceneManager::ActiveScene() const {
+  SceneGraph const* SceneManager::ActiveScene() const
+  {
     return Impl()->m_activeScene.Get();
   }
 
-  SceneGraph * SceneManager::ActiveScene() {
+  SceneGraph* SceneManager::ActiveScene()
+  {
     return Impl()->m_activeScene.Get();
   }
 }

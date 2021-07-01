@@ -6,7 +6,7 @@
 class ProjectPanel : public Fractal::Panel
 {
 public:
-  ProjectPanel(Fractal::GUIModule *pGUI)
+  ProjectPanel(Fractal::GUIModule* pGUI)
     : Panel(pGUI, "Project")
   {
 

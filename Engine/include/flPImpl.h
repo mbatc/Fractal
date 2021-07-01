@@ -9,7 +9,7 @@
 
 /**
  * @brief Define that declares the PImpl idiom in a class.
- * 
+ *
  * This define can be used within a class declaration to define a basic PImpl implementation.
  * This will define copy and move constructors and assignment operators and a destructor to
  * destruct the internal data.
@@ -28,12 +28,12 @@ private:                                                 \
 
 #define flPIMPL_DEF_MOVE(Class) Class &operator=(Class &&rhs);
 
- /**
-  * @brief Define that implements the PImpl declared in a class.
-  *
-  * This define can be used in a source file to implement a PImpl idiom definition that was
-  * created using the flPIMPL_DEF define.
-  */
+/**
+ * @brief Define that implements the PImpl declared in a class.
+ *
+ * This define can be used in a source file to implement a PImpl idiom definition that was
+ * created using the flPIMPL_DEF define.
+ */
 #define flPIMPL_IMPL(Class)\
 Class::~Class()                            { flDelete flPIMPL(Class); }     \
 Impl_ ## Class * Class::__CreateImpl()     { return flNew Impl_ ## Class; } \

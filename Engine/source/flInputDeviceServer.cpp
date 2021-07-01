@@ -32,7 +32,7 @@ namespace Fractal
 
   InputDeviceServer::InputDeviceServer() {}
 
-  InputDeviceServer *InputDeviceServer::Create()
+  InputDeviceServer* InputDeviceServer::Create()
   {
     return flNew InputDeviceServer;
   }
@@ -47,7 +47,7 @@ namespace Fractal
     Impl()->m_lock.unlock();
   }
 
-  bool InputDeviceServer::GetEvent(flOUT int64_t *pButtonID, flOUT bool *pValue, flOUT int64_t *pTimestamp)
+  bool InputDeviceServer::GetEvent(flOUT int64_t* pButtonID, flOUT bool* pValue, flOUT int64_t* pTimestamp)
   {
     Lock();
     if (Impl()->m_buttonEvents.size() <= 0)
@@ -59,14 +59,17 @@ namespace Fractal
     _flButtonEvent evnt = Impl()->m_buttonEvents.front();
     Impl()->m_buttonEvents.pop_front();
 
-    if (pValue)     *pValue = evnt.pressed;
-    if (pButtonID)  *pButtonID = evnt.id;
-    if (pTimestamp) *pTimestamp = evnt.timestamp;
+    if (pValue)
+      *pValue = evnt.pressed;
+    if (pButtonID)
+      *pButtonID = evnt.id;
+    if (pTimestamp)
+      *pTimestamp = evnt.timestamp;
     Unlock();
     return true;
   }
 
-  bool InputDeviceServer::GetEvent(flOUT int64_t *pAnalogID, flOUT float *pValue, flOUT bool *pAddValue, flOUT int64_t *pTimestamp)
+  bool InputDeviceServer::GetEvent(flOUT int64_t* pAnalogID, flOUT float* pValue, flOUT bool* pAddValue, flOUT int64_t* pTimestamp)
   {
     Lock();
     if (Impl()->m_analogEvents.size() <= 0)
@@ -78,9 +81,12 @@ namespace Fractal
     _flAnalogEvent evnt = Impl()->m_analogEvents.front();
     Impl()->m_analogEvents.pop_front();
 
-    if (pValue)     *pValue = evnt.value;
-    if (pAnalogID)  *pAnalogID = evnt.id;
-    if (pTimestamp) *pTimestamp = evnt.timestamp;
+    if (pValue)
+      *pValue = evnt.value;
+    if (pAnalogID)
+      *pAnalogID = evnt.id;
+    if (pTimestamp)
+      *pTimestamp = evnt.timestamp;
     Unlock();
     return true;
   }

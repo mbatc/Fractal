@@ -12,7 +12,8 @@ namespace Fractal
     ctString name = "";
   };
 
-  static ctVector<ComponentDetails> _components = {
+  static ctVector<ComponentDetails> _components =
+  {
     { true, -1, Component::Type() }
   };
 
@@ -20,12 +21,12 @@ namespace Fractal
 
   static int64_t _nextTypeID = 0;
 
-  bool ComponentRegistry::Register(flIN char const *typeName, flIN int64_t typeID, flIN int64_t baseTypeID)
+  bool ComponentRegistry::Register(flIN char const* typeName, flIN int64_t typeID, flIN int64_t baseTypeID)
   {
     if (typeID >= _components.size())
       _components.resize(typeID + 1);
 
-    ComponentDetails &info = _components[typeID];
+    ComponentDetails& info = _components[typeID];
     if (info.valid)
     {
       flError("Cannot register component '%s'. TypeID (%lld) is already used by '%s'.", typeName, typeID, info.name.c_str());
@@ -44,11 +45,12 @@ namespace Fractal
       return false;
 
     if (_derivedMap.empty())
-    { // Build class hierarchy lookup
+    {
+      // Build class hierarchy lookup
       _derivedMap.resize(ComponentCount());
       for (int64_t i = 0; i < _derivedMap.size(); ++i)
       {
-        ctVector<bool> &isBase = _derivedMap[derivedID];
+        ctVector<bool>& isBase = _derivedMap[derivedID];
         isBase.resize(ComponentCount());
 
         int64_t nextBase = _components[derivedID].baseID;
@@ -68,7 +70,7 @@ namespace Fractal
     return _components.size();
   }
 
-  char const *ComponentRegistry::GetComponentName(flIN int64_t typeID)
+  char const* ComponentRegistry::GetComponentName(flIN int64_t typeID)
   {
     return _components[typeID].name.c_str();
   }

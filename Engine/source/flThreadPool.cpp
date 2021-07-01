@@ -11,11 +11,13 @@ namespace Fractal
     {
       m_running = false;
 
-      for (Thread *pThread : m_threads) pThread->join();
-      for (Thread *pThread : m_threads) flDelete pThread;
+      for (Thread* pThread : m_threads)
+        pThread->join();
+      for (Thread* pThread : m_threads)
+        flDelete pThread;
     }
 
-    void Construct(const int64_t &threadCount)
+    void Construct(const int64_t& threadCount)
     {
       m_running = true;
 
@@ -44,22 +46,22 @@ namespace Fractal
     volatile bool m_isPaused = false;
 
     TaskQueue         m_queue;
-    ctVector<Thread *> m_threads;
+    ctVector<Thread*> m_threads;
   };
 
   flPIMPL_IMPL(ThreadPool);
 
-    ThreadPool::ThreadPool(int64_t threadCount)
+  ThreadPool::ThreadPool(int64_t threadCount)
   {
     Impl()->Construct(threadCount);
   }
 
-  bool ThreadPool::Add(flIN Task *pTask)
+  bool ThreadPool::Add(flIN Task* pTask)
   {
     return Impl()->m_queue.Add(pTask);
   }
 
-  bool ThreadPool::Add(flIN TaskFunc taskFunc, flIN void *pUserData, flOUT Task **ppTask)
+  bool ThreadPool::Add(flIN TaskFunc taskFunc, flIN void* pUserData, flOUT Task** ppTask)
   {
     return Impl()->m_queue.Add(taskFunc, pUserData, ppTask);
   }

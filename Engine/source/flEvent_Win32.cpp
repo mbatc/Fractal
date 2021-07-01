@@ -11,9 +11,9 @@ namespace Fractal
 {
   static int64_t _TranslateKeyCode(int64_t winKey);
 
-  // Event interface factory function
-  // This function will translate NativeEvent's to Fractal engine events
-  void flCCONV Event_Create(flOUT Event *pEvent, flIN NativeEvent *pNativeEvent)
+// Event interface factory function
+// This function will translate NativeEvent's to Fractal engine events
+  void flCCONV Event_Create(flOUT Event* pEvent, flIN NativeEvent* pNativeEvent)
   {
     memset(pEvent, 0, sizeof(Event));
 
@@ -24,7 +24,7 @@ namespace Fractal
 
     switch (pNativeEvent->msg)
     {
-      // System Events
+    // System Events
     case WM_QUIT:
     {
       pEvent->type = E_Type_System;
@@ -43,7 +43,7 @@ namespace Fractal
     {
       pEvent->type = E_Type_Window;
       pEvent->id = E_Wnd_Create;
-      CREATESTRUCT *pCreateInfo = (CREATESTRUCT *)pNativeEvent->lParam;
+      CREATESTRUCT* pCreateInfo = (CREATESTRUCT*)pNativeEvent->lParam;
 
       pEvent->wndCreate.width = pCreateInfo->cx;
       pEvent->wndCreate.height = pCreateInfo->cy;
@@ -71,7 +71,7 @@ namespace Fractal
       pEvent->wndDpiChanged.dpiX = HIWORD(pNativeEvent->wParam);
       pEvent->wndDpiChanged.dpiY = LOWORD(pNativeEvent->wParam);
 
-      RECT *pRect = (RECT *)pNativeEvent->lParam;
+      RECT* pRect = (RECT*)pNativeEvent->lParam;
       pEvent->wndDpiChanged.suggestedHeight = pRect->bottom - pRect->top;
       pEvent->wndDpiChanged.suggestedWidth = pRect->right - pRect->left;
       pEvent->wndDpiChanged.suggestedX = pRect->left;
@@ -83,7 +83,7 @@ namespace Fractal
       pEvent->type = E_Type_Window;
       pEvent->id = E_Wnd_Moving;
 
-      RECT *pRect = (RECT *)pNativeEvent->lParam;
+      RECT* pRect = (RECT*)pNativeEvent->lParam;
       pEvent->wndMoving.x = pRect->left;
       pEvent->wndMoving.y = pRect->top;
     } break;
@@ -93,7 +93,7 @@ namespace Fractal
       pEvent->type = E_Type_Window;
       pEvent->id = E_Wnd_Sizing;
 
-      RECT *pRect = (RECT *)pNativeEvent->lParam;
+      RECT* pRect = (RECT*)pNativeEvent->lParam;
       pEvent->wndSizing.width = pRect->right - pRect->left;
       pEvent->wndSizing.height = pRect->bottom - pRect->top;
     } break;
@@ -111,7 +111,7 @@ namespace Fractal
       pEvent->type = E_Type_Window;
       pEvent->id = E_Wnd_StyleChanged;
 
-      STYLESTRUCT *pStyle = (STYLESTRUCT *)pNativeEvent->lParam;
+      STYLESTRUCT* pStyle = (STYLESTRUCT*)pNativeEvent->lParam;
       pEvent->wndStyleChanged.newStyle = pStyle->styleNew;
       pEvent->wndStyleChanged.oldStyle = pStyle->styleOld;
     } break;
@@ -121,7 +121,7 @@ namespace Fractal
       pEvent->type = E_Type_Window;
       pEvent->id = E_Wnd_RectUpdated;
 
-      WINDOWPOS *pPos = (WINDOWPOS *)pNativeEvent->lParam;
+      WINDOWPOS* pPos = (WINDOWPOS*)pNativeEvent->lParam;
       pEvent->wndRectUpdated.x = pPos->x;
       pEvent->wndRectUpdated.y = pPos->y;
       pEvent->wndRectUpdated.width = pPos->cx;

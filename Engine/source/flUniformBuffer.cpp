@@ -2,7 +2,7 @@
 
 namespace Fractal
 {
-    UniformBuffer::UniformBuffer(API *pAPI)
-      : APIResource(pAPI)
-    {}
+  UniformBuffer::UniformBuffer(API* pAPI)
+    : APIResource(pAPI)
+  {}
 }

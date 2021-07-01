@@ -12,13 +12,13 @@ namespace Fractal
   class flEXPORT WindowRenderTarget : public RenderTarget
   {
   protected:
-    WindowRenderTarget(API *pAPI);
+    WindowRenderTarget(API* pAPI);
 
   public:
     /**
     * @brief Get the window associated with this render target.
     */
-    virtual Window *GetWindow() const = 0;
+    virtual Window* GetWindow() const = 0;
 
     /**
      * @brief Present the back buffer to the window.
@@ -28,6 +28,6 @@ namespace Fractal
     /**
      * @brief Get the native handle to the Device Context
      */
-    virtual void *GetNativeResource() const = 0;
+    virtual void* GetNativeResource() const = 0;
   };
 }

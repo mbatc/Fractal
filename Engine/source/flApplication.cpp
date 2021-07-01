@@ -16,15 +16,15 @@
 
 namespace Fractal
 {
-  // The main application instance
-  typedef void (*EventFunc)(Event *, void *);
+// The main application instance
+  typedef void (*EventFunc)(Event*, void*);
 
   static Application* _pApplication = nullptr;
 
   class Impl_Application
   {
   public:
-    void Construct(Application *pApp, char const * graphicsAPIName)
+    void Construct(Application* pApp, char const* graphicsAPIName)
     {
       // Initialize Fractal
       Initialize();
@@ -32,9 +32,10 @@ namespace Fractal
       m_pApp = pApp;
 
       m_pSystemEvents = MakeRef<EventQueue>();
-      m_pSystemEvents->SetEventCallback([](Event *pEvent, void *pUserData) {
-        ((Impl_Application *)pUserData)->HandleEvent(pEvent);
-        }, this);
+      m_pSystemEvents->SetEventCallback([](Event * pEvent, void* pUserData)
+      {
+        ((Impl_Application*)pUserData)->HandleEvent(pEvent);
+      }, this);
 
       // Create the applications main window and graphics API
       m_pMainWindow = MakeRef<Window>("Main Window", Window::Flag_Default, Window::DM_Windowed);
@@ -50,7 +51,7 @@ namespace Fractal
     }
 
     template<typename ReturnT, typename... Args>
-    bool InvokeBehaviour(ReturnT(ApplicationBehaviour:: *func)(Args...), Args&&... args)
+    bool InvokeBehaviour(ReturnT(ApplicationBehaviour:: *func)(Args...), Args&& ... args)
     {
       (m_pApp->*func)(args...);
       for (int64_t i = 0; i < m_subSystems.size(); ++i)
@@ -125,29 +126,29 @@ namespace Fractal
     Impl()->m_isRunning = false;
   }
 
-  Window *Application::GetMainWindow()
+  Window* Application::GetMainWindow()
   {
     return Impl()->m_pMainWindow.Get();
   }
 
-  Window const * Application::GetMainWindow() const
+  Window const* Application::GetMainWindow() const
   {
-      return Impl()->m_pMainWindow.Get();
+    return Impl()->m_pMainWindow.Get();
   }
 
-  API *Application::GetGraphicsAPI()
+  API* Application::GetGraphicsAPI()
   {
     return Impl()->m_pGraphics.Get();
   }
 
-  API const *Application::GetGraphicsAPI() const
+  API const* Application::GetGraphicsAPI() const
   {
     return Impl()->m_pGraphics.Get();
   }
-  
+
   Application& Application::Get() { return *_pApplication; }
 
-  Application::Application(char const *graphicsAPIName)
+  Application::Application(char const* graphicsAPIName)
   {
     // Set the global application ptr
     _pApplication = this;
@@ -156,15 +157,15 @@ namespace Fractal
     Impl()->Construct(this, graphicsAPIName);
   }
 
-  void Application::AddModule(Module *pSystem, char const *name)
+  void Application::AddModule(Module* pSystem, char const* name)
   {
     if (GetModule(name) == nullptr)
       Impl()->m_subSystems.emplace_back(name, MakeRef(pSystem, true));
   }
 
-  Module* Application::GetModule(char const *name)
+  Module* Application::GetModule(char const* name)
   {
-    for (auto &kvp : Impl()->m_subSystems)
+    for (auto& kvp : Impl()->m_subSystems)
       if (kvp.m_key.compare(name))
         return kvp.m_val;
     return nullptr;

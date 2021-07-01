@@ -9,7 +9,7 @@ namespace Fractal
   class Impl_TaskQueue
   {
   public:
-    bool Add(Ref<Task> const &pTask)
+    bool Add(Ref<Task> const& pTask)
     {
       if (!pTask)
         return false;
@@ -63,15 +63,15 @@ namespace Fractal
 
   flPIMPL_IMPL(TaskQueue);
 
-    class _flGenericTask : public Task
+  class _flGenericTask : public Task
   {
-    _flGenericTask(flIN TaskFunc taskFunc, flIN void *pUserData)
+    _flGenericTask(flIN TaskFunc taskFunc, flIN void* pUserData)
       : m_callback(taskFunc)
       , m_pUserData(pUserData)
     {}
 
   public:
-    static _flGenericTask *Create(flIN TaskFunc taskFunc, flIN void *pUserData)
+    static _flGenericTask* Create(flIN TaskFunc taskFunc, flIN void* pUserData)
     {
       return flNew _flGenericTask(taskFunc, pUserData);
     }
@@ -88,15 +88,15 @@ namespace Fractal
 
   protected:
     TaskFunc m_callback = nullptr;
-    void *m_pUserData = nullptr;
+    void* m_pUserData = nullptr;
   };
 
-  bool TaskQueue::Add(flIN Task *pTask)
+  bool TaskQueue::Add(flIN Task* pTask)
   {
     return Impl()->Add(MakeRef(pTask, true));
   }
 
-  bool TaskQueue::Add(flIN TaskFunc taskFunc, flIN void *pUserData, flOUT Task **ppTask)
+  bool TaskQueue::Add(flIN TaskFunc taskFunc, flIN void* pUserData, flOUT Task** ppTask)
   {
     Ref<Task> pNewTask = MakeRef(_flGenericTask::Create(taskFunc, pUserData), false).StaticCast<Task>();
     if (ppTask)

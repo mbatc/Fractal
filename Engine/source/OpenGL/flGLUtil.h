@@ -32,17 +32,17 @@ namespace Fractal
     GLUtil() = delete;
 
     static PixelComponentType GetPixelComponentType(flIN uint32_t format);
-    static bool          GetPixelFormat(flIN uint32_t format, flOUT PixelFormat *pFormat, flOUT PixelComponentType *pComponentType);
+    static bool          GetPixelFormat(flIN uint32_t format, flOUT PixelFormat* pFormat, flOUT PixelComponentType* pComponentType);
     static PixelFormat   GetPixelFormat(flIN uint32_t pixelFormat);
     static DepthFormat   GetDepthFormat(flIN uint32_t format);
     static ProgramStage  GetProgramStage(flIN uint32_t shader);
     static AccessFlags   GetAccessFlags(flIN uint32_t accessFlags);
     static BufferBinding GetBufferBinding(flIN uint32_t bufferBinding);
     static BufferUsage   GetBufferUsage(flIN uint32_t bufferBinding);
-    static Type          GetType(flIN uint32_t dataType, flOUT int64_t *pWidth, flOUT int64_t *pHeight);
+    static Type          GetType(flIN uint32_t dataType, flOUT int64_t* pWidth, flOUT int64_t* pHeight);
     static TextureType   GetTextureType(flIN uint32_t glType);
     static WrapMode      GetWrapMode(flIN uint32_t wrapMode);
-    static FilterMode    GetFilterMode(flIN uint32_t filterMode, bool *pMipMaps = nullptr);
+    static FilterMode    GetFilterMode(flIN uint32_t filterMode, bool* pMipMaps = nullptr);
 
     static bool IsSamplerType(flIN uint32_t glType);
     static bool Is2DSampler(flIN uint32_t glType);
@@ -64,19 +64,21 @@ namespace Fractal
   };
 
   template<typename... Args, size_t... Indices>
-  std::string TupleToString(std::tuple<Args...> const &args, std::index_sequence<Indices...>)
+  std::string TupleToString(std::tuple<Args...> const& args, std::index_sequence<Indices...>)
   {
     return Fractal::Join(", ", std::get<Indices>(args)...);
   }
 
   template<typename ReturnT, typename... Args, typename... Args2>
-  ReturnT GLAPICall(char const *callingFunc, int line, char const *apiFunc, ReturnT(*func)(Args...), Args2&&... args) {
+  ReturnT GLAPICall(char const* callingFunc, int line, char const* apiFunc, ReturnT(*func)(Args...), Args2&& ... args)
+  {
     class GLLogger
     {
     public:
       GLLogger(std::function<void(GLenum)> onError) : m_onError(onError) {}
 
-      ~GLLogger() {
+      ~GLLogger()
+      {
         GLenum err = glGetError();
         if (err != GL_NO_ERROR)
           m_onError(err);
@@ -87,13 +89,15 @@ namespace Fractal
     };
 
 #ifdef _DEBUG
-    GLLogger logger([callingFunc, line, apiFunc, args = std::make_tuple(args...)](GLenum err) {
-      Log(LogLevel_Error, callingFunc, line, "OpenGL error %d occurred in %s(%s)", err, apiFunc, TupleToString(args, std::make_index_sequence<sizeof...(Args)>{}).c_str());
+    GLLogger logger([callingFunc, line, apiFunc, args = std::make_tuple(args...)](GLenum err)
+    {
+      Log(LogLevel_Error, callingFunc, line, "OpenGL error %d occurred in %s(%s)", err, apiFunc, TupleToString(args, std::make_index_sequence<sizeof...(Args)> {}).c_str());
     });
 #else
-    GLLogger logger([&](GLenum err) {
+    GLLogger logger([&](GLenum err)
+    {
       Log(LogLevel_Error, callingFunc, line, "OpenGL error %d occurred in %s(...)", err, apiFunc);
-      });
+    });
 #endif
 
     return func((Args)std::forward<Args2>(args)...);

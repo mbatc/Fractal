@@ -7,14 +7,16 @@ class GUIVisitor : public Visitor<Node>
 public:
   GUIVisitor(int64_t selectedID) : m_selectedID(selectedID) {}
 
-  virtual bool OnEnter(flIN Node *pNode) {
+  virtual bool OnEnter(flIN Node* pNode)
+  {
     if (pNode == pNode->GetScene()->GetRootNode())
       return true;
 
     Widgets::PushID(pNode->GetID());
 
     bool open = Widgets::BeginTreeNode(pNode->GetName(), m_selectedID == pNode->GetID());
-    if (Widgets::IsItemClicked()) {
+    if (Widgets::IsItemClicked())
+    {
       m_selectedID = m_selectedID == pNode->GetID() ? -1 : pNode->GetID();
     }
 
@@ -24,7 +26,8 @@ public:
     return open;
   }
 
-  virtual void OnLeave(flIN Node *pNode) {
+  virtual void OnLeave(flIN Node* pNode)
+  {
     if (pNode != pNode->GetScene()->GetRootNode())
     {
       Widgets::EndTreeNode();
@@ -35,7 +38,7 @@ public:
   int64_t m_selectedID;
 };
 
-ScenePanel::ScenePanel(GUIModule *pGUI)
+ScenePanel::ScenePanel(GUIModule* pGUI)
   : Panel(pGUI, "Scene")
 {
   m_pSceneManager = Application::Get().GetModule<SceneManager>();
@@ -43,10 +46,11 @@ ScenePanel::ScenePanel(GUIModule *pGUI)
 
 void ScenePanel::OnGUI()
 {
-  EditorModule *pEditor = Application::Get().GetModule<EditorModule>();
-  SceneGraph *pScene = m_pSceneManager->ActiveScene();
-  if (Widgets::Button("Add")) {
-    Node *pNode = pScene->AddNode("New Node", pEditor->m_selectedNode);
+  EditorModule* pEditor = Application::Get().GetModule<EditorModule>();
+  SceneGraph* pScene = m_pSceneManager->ActiveScene();
+  if (Widgets::Button("Add"))
+  {
+    Node* pNode = pScene->AddNode("New Node", pEditor->m_selectedNode);
     pEditor->m_selectedNode = pNode->GetID();
   }
 

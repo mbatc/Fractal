@@ -2,7 +2,7 @@
 
 namespace Fractal
 {
-    IndexBuffer::IndexBuffer(API *pAPI)
-      : APIResource(pAPI)
-    {}
+  IndexBuffer::IndexBuffer(API* pAPI)
+    : APIResource(pAPI)
+  {}
 }

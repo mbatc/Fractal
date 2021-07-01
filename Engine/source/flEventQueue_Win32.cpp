@@ -8,7 +8,7 @@
 
 namespace Fractal
 {
-  static int64_t _ProcessEvents(void *)
+  static int64_t _ProcessEvents(void*)
   {
     MSG msg = { 0 };
     bool active = false;
@@ -28,7 +28,7 @@ namespace Fractal
     return 0;
   }
 
-  ThreadQueue *EventQueue::GetEventThread()
+  ThreadQueue* EventQueue::GetEventThread()
   {
     static ThreadQueue _eventThread;
     static bool _initialised = false;

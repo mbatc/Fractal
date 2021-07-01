@@ -2,7 +2,7 @@
 
 namespace Fractal
 {
-    HardwareBuffer::HardwareBuffer(API *pAPI)
-      : APIResource(pAPI)
-    {}
+  HardwareBuffer::HardwareBuffer(API* pAPI)
+    : APIResource(pAPI)
+  {}
 }

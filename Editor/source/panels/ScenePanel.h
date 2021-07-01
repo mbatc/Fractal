@@ -11,5 +11,5 @@ public:
   virtual void OnGUI() override;
 
 private:
-  Fractal::SceneManager *m_pSceneManager = nullptr;
+  Fractal::SceneManager* m_pSceneManager = nullptr;
 };

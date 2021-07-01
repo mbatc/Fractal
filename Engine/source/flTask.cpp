@@ -14,7 +14,7 @@ namespace Fractal
       return status;
     }
 
-    void SetStatus(Task::Status const &status)
+    void SetStatus(Task::Status const& status)
     {
       Lock();
       m_status = status;

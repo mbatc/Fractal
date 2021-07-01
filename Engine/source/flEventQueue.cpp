@@ -4,8 +4,8 @@
 
 namespace Fractal
 {
-  // TODO: Add thread-safety features
-  static ctPool<Impl_EventQueue *> _eventQueues;
+// TODO: Add thread-safety features
+  static ctPool<Impl_EventQueue*> _eventQueues;
   static std::mutex _eventQueueLock;
 
   class Impl_EventQueue
@@ -32,13 +32,13 @@ namespace Fractal
       m_eventFilter = type;
     }
 
-    void SetFilter(bool (*FilterFunc)(Event *, void *), void *pUserData)
+    void SetFilter(bool (*FilterFunc)(Event*, void*), void* pUserData)
     {
       m_FilterFunc = FilterFunc;
       m_pFilterUserData = pUserData;
     }
 
-    bool PeekEvent(Event *pEvent) const
+    bool PeekEvent(Event* pEvent) const
     {
       if (m_events.size() == 0)
         return false;
@@ -46,7 +46,7 @@ namespace Fractal
       return true;
     }
 
-    bool NextEvent(Event *pEvent)
+    bool NextEvent(Event* pEvent)
     {
       if (m_hasLastEvent)
       {
@@ -64,7 +64,7 @@ namespace Fractal
       return true;
     }
 
-    bool PostEvent(Event *pEvent)
+    bool PostEvent(Event* pEvent)
     {
       if ((pEvent->type & m_eventFilter) == 0 || (m_FilterFunc && !m_FilterFunc(pEvent, m_pFilterUserData)))
         return false;
@@ -82,7 +82,7 @@ namespace Fractal
       return true;
     }
 
-    void SetEventCallback(flIN void(*EventHandler)(Event *, void *), void *pUserData)
+    void SetEventCallback(flIN void(*EventHandler)(Event*, void*), void* pUserData)
     {
       m_EventHandler = EventHandler;
       m_pHandlerUserData = pUserData;
@@ -110,55 +110,55 @@ namespace Fractal
 
     // Filtering
     EventType m_eventFilter = E_Type_All;
-    bool(*m_FilterFunc)(Event *, void *) = nullptr;
-    void *m_pFilterUserData = nullptr;
+    bool(*m_FilterFunc)(Event*, void*) = nullptr;
+    void* m_pFilterUserData = nullptr;
 
     // Event handler callback
-    void(*m_EventHandler)(Event *, void *) = nullptr;
-    void *m_pHandlerUserData = nullptr;
+    void(*m_EventHandler)(Event*, void*) = nullptr;
+    void* m_pHandlerUserData = nullptr;
   };
 
-  // Implement PIMPL idiom
+// Implement PIMPL idiom
   flPIMPL_IMPL(EventQueue);
 
-    bool EventQueue::PostGlobalEvent(flIN Event *pEvent)
+  bool EventQueue::PostGlobalEvent(flIN Event* pEvent)
   {
     bool wasReceived = false;
     _eventQueueLock.lock();
-    for (Impl_EventQueue *pQueue : _eventQueues)
+    for (Impl_EventQueue* pQueue : _eventQueues)
       wasReceived |= pQueue->PostEvent(pEvent);
     _eventQueueLock.unlock();
     return wasReceived;
   }
 
-  // Forward calls to implementation
+// Forward calls to implementation
 
   void EventQueue::SetFilter(flIN EventType type)
   {
     Impl()->SetFilter(type);
   }
 
-  void EventQueue::SetFilter(flIN bool (*FilterFunc)(Event *, void *), void *pUserData)
+  void EventQueue::SetFilter(flIN bool (*FilterFunc)(Event*, void*), void* pUserData)
   {
     Impl()->SetFilter(FilterFunc, pUserData);
   }
 
-  bool EventQueue::PeekEvent(flOUT Event *pEvent) const
+  bool EventQueue::PeekEvent(flOUT Event* pEvent) const
   {
     return Impl()->PeekEvent(pEvent);
   }
 
-  void EventQueue::SetEventCallback(flIN void(*EventHandler)(Event *, void *), void *pUserData)
+  void EventQueue::SetEventCallback(flIN void(*EventHandler)(Event*, void*), void* pUserData)
   {
     Impl()->SetEventCallback(EventHandler, pUserData);
   }
 
-  bool EventQueue::NextEvent(flOUT Event *pEvent)
+  bool EventQueue::NextEvent(flOUT Event* pEvent)
   {
     return Impl()->NextEvent(pEvent);
   }
 
-  bool EventQueue::PostEvent(flIN Event *pEvent)
+  bool EventQueue::PostEvent(flIN Event* pEvent)
   {
     return Impl()->PostEvent(pEvent);
   }

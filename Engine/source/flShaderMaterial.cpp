@@ -2,7 +2,7 @@
 
 namespace Fractal
 {
-    ShaderMaterial::ShaderMaterial(API *pAPI)
-      : APIResource(pAPI)
-    {}
+  ShaderMaterial::ShaderMaterial(API* pAPI)
+    : APIResource(pAPI)
+  {}
 }

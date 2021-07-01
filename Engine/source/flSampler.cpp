@@ -2,7 +2,7 @@
 
 namespace Fractal
 {
-    Sampler::Sampler(API *pAPI)
-      : APIResource(pAPI)
-    {}
+  Sampler::Sampler(API* pAPI)
+    : APIResource(pAPI)
+  {}
 }

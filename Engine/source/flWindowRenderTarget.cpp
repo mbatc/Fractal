@@ -2,7 +2,7 @@
 
 namespace Fractal
 {
-  WindowRenderTarget::WindowRenderTarget(API *pAPI)
+  WindowRenderTarget::WindowRenderTarget(API* pAPI)
     : RenderTarget(pAPI)
   {}
 }

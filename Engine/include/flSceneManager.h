@@ -4,7 +4,7 @@
 
 namespace Fractal
 {
- class SceneGraph;
+  class SceneGraph;
 
   class Impl_SceneManager;
 
@@ -22,7 +22,7 @@ namespace Fractal
     virtual void OnPostUpdate() override;
     virtual void OnPostRender() override;
 
-    SceneGraph * ActiveScene();
-    SceneGraph const * ActiveScene() const;
+    SceneGraph* ActiveScene();
+    SceneGraph const* ActiveScene() const;
   };
 }
