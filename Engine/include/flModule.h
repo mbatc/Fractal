@@ -1,20 +1,13 @@
-#ifndef flSubSystem_h__
-#define flSubSystem_h__
+#pragma once
 
 #include "flApplicationBehaviour.h"
-#include "input/flKeyboard.h"
-#include "input/flMouse.h"
+#include "flKeyboard.h"
+#include "flMouse.h"
 
-namespace flEngine
+namespace Fractal
 {
-  namespace Platform {
-    class Window;
-  }
-
-  namespace Graphics {
-    class API;
-  }
-
+  class Window;
+  class API;
   class Application;
 
   class Impl_Module;
@@ -26,31 +19,28 @@ namespace flEngine
   public:
     Module();
 
-    Platform::Window * GetMainWindow();
-    
-    Platform::Window const* GetMainWindow() const;
+    Window* GetMainWindow();
 
-    Graphics::API * GetGraphicsAPI();
+    Window const* GetMainWindow() const;
 
-    Graphics::API * GetGraphicsAPI() const;
+    API* GetGraphicsAPI();
 
-    Input::Mouse * GetMouse();
-    
-    Input::Mouse const * GetMouse() const;
+    API* GetGraphicsAPI() const;
 
-    Input::Keyboard * GetKeyboard();
-    
-    Input::Keyboard const * GetKeyboard() const;
+    Mouse* GetMouse();
 
-    virtual bool OnKeyState(Platform::Event* pEvent);
-    
-    virtual bool OnMouseMove(Platform::Event* pEvent);
-    
-    virtual bool OnMouseState(Platform::Event *pEvent);
+    Mouse const* GetMouse() const;
 
-    virtual bool OnMouseScroll(Platform::Event *pEvent);
+    Keyboard* GetKeyboard();
+
+    Keyboard const* GetKeyboard() const;
+
+    virtual bool OnKeyState(Event* pEvent);
+
+    virtual bool OnMouseMove(Event* pEvent);
+
+    virtual bool OnMouseState(Event* pEvent);
+
+    virtual bool OnMouseScroll(Event* pEvent);
   };
 }
-
-
-#endif // flSubSystem_h__

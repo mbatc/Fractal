@@ -1,31 +1,32 @@
 #include "flInterface.h"
 
-using namespace flEngine;
-
-Interface::Interface()
-  : m_refCount(1) // Default to 1 for the creator
-{}
-
-Interface::~Interface() {}
-
-void Interface::DecRef()
+namespace Fractal
 {
-  if (this != nullptr && --m_refCount == 0)
-    Destroy();
-}
+  Interface::Interface()
+    : m_refCount(1) // Default to 1 for the creator
+  {}
 
-void Interface::Destroy()
-{
-  flDelete this;
-}
+  Interface::~Interface() {}
 
-void flEngine::Interface::IncRef()
-{
-  if (this != nullptr)
-    ++m_refCount;
-}
+  void Interface::DecRef()
+  {
+    if (this != nullptr && --m_refCount == 0)
+      Destroy();
+  }
 
-int64_t Interface::GetReferenceCount() const
-{
-  return this != nullptr ? m_refCount : 0;
+  void Interface::Destroy()
+  {
+    flDelete this;
+  }
+
+  void Fractal::Interface::IncRef()
+  {
+    if (this != nullptr)
+      ++m_refCount;
+  }
+
+  int64_t Interface::GetReferenceCount() const
+  {
+    return this != nullptr ? m_refCount : 0;
+  }
 }

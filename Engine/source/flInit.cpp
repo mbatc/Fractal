@@ -1,20 +1,11 @@
 #include "flInit.h"
-#include "graphics/flAPI.h"
-#include "graphics/OpenGL/flOpenGL.h"
+#include "flAPI.h"
+#include "OpenGL/flOpenGL.h"
 
-namespace flEngine
+namespace Fractal
 {
-  namespace Graphics
-  {
-    bool Init()
-    {
-      // Add default Graphics API's
-      return OpenGL::RegisterAPI();
-    }
-  }
-
   bool flEXPORT Initialize()
   {
-    return Graphics::Init();
+    return OpenGL::RegisterAPI();
   }
 }

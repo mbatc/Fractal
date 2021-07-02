@@ -3,13 +3,13 @@
 #include "flEngine.h"
 #include "EditorModule.h"
 
-class ScenePanel : public flEngine::GUI::Panel
+class ScenePanel : public Fractal::Panel
 {
 public:
-  ScenePanel(flEngine::GUI::GUIModule* pGUI);
+  ScenePanel(Fractal::GUIModule* pGUI);
 
   virtual void OnGUI() override;
 
 private:
-  flEngine::SceneManager *m_pSceneManager = nullptr;
+  Fractal::SceneManager* m_pSceneManager = nullptr;
 };

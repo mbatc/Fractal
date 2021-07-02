@@ -1,10 +1,10 @@
 #pragma once
 
 #include "flInterface.h"
-#include "math/flMath.h"
-#include "util/flColour.h"
+#include "flMath.h"
+#include "flColour.h"
 
-namespace flEngine
+namespace Fractal
 {
   class Impl_SurfaceMaterial;
 
@@ -15,27 +15,27 @@ namespace flEngine
     /**
      * @brief Create a SurfaceMaterial instance.
      */
-    static SurfaceMaterial * Create();
+    static SurfaceMaterial* Create();
 
     /**
      * @brief Get the name of the SurfaceMaterial.
-     * 
+     *
      * @return The SurfaceMaterial name as a c-string.
      */
-    char const * GetName() const;
+    char const* GetName() const;
 
     /**
      * @brief Set the name of the SurfaceMaterial.
-     * 
+     *
      * @param [in] name The name to assign to the SurfaceMaterial.
      */
     void SetName(flIN char const* name);
 
     /**
      * @brief Get a material value by name.
-     * 
+     *
      * @param [in] name The name of the Material value.
-     * 
+     *
      * @return The material value.
      */
     float GetValue(flIN char const* name) const;
@@ -47,24 +47,24 @@ namespace flEngine
      *
      * @return The material colour.
      */
-    Util::Colour GetColour(flIN char const * name) const;
+    Colour GetColour(flIN char const* name) const;
 
     /**
      * @brief Get a material texture path by name.
-     * 
+     *
      * @param [in] name The name of the Material texture.
-     * 
+     *
      * @return The material texture's file path.
      */
-    char const * GetTexture(flIN char const * name) const;
+    char const* GetTexture(flIN char const* name) const;
 
     /**
      * @brief Set a material value by name.
-     * 
+     *
      * @param [in] name  The name of the Material value.
      * @param [in] value The value to be assigned.
      */
-    void SetValue(flIN char const * name, flIN float value);
+    void SetValue(flIN char const* name, flIN float value);
 
     /**
      * @brief Set a material colour by name.
@@ -72,7 +72,7 @@ namespace flEngine
      * @param [in] name   The name of the Material colour.
      * @param [in] colour The colour to be assigned.
      */
-    void SetColour(flIN char const * name, flIN Util::Colour colour);
+    void SetColour(flIN char const* name, flIN Colour colour);
 
     /**
      * @brief Set a material texture path by name.
@@ -80,7 +80,7 @@ namespace flEngine
      * @param [in] name The name of the Material texture.
      * @param [in] path The file path to be assigned.
      */
-    void SetTexture(flIN char const *name, flIN char const *path);
+    void SetTexture(flIN char const* name, flIN char const* path);
 
     /**
      * @brief Get the number of values in the material.
@@ -91,7 +91,7 @@ namespace flEngine
 
     /**
      * @brief Get the number of colours in the material.
-     * 
+     *
      * @return The number of colours.
      */
     int64_t GetColourCount() const;

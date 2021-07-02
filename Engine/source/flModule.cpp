@@ -2,89 +2,89 @@
 #include "flApplication.h"
 #include "flRef.h"
 
-namespace flEngine
+namespace Fractal
 {
   class Impl_Module
   {
   public:
-    Input::Keyboard m_keyboard;
-    Input::Mouse    m_mouse;
+    Keyboard m_keyboard;
+    Mouse    m_mouse;
   };
 
-  flPIMPL_IMPL(Module)
+  flPIMPL_IMPL(Module);
 
   Module::Module()
   {
-    OnEvent(Platform::E_Kbd_KeyState, &Module::OnKeyState);
-    OnEvent(Platform::E_Mse_Move,     &Module::OnMouseMove);
-    OnEvent(Platform::E_Mse_State,    &Module::OnMouseState);
-    OnEvent(Platform::E_Mse_Scroll,   &Module::OnMouseScroll);
+    OnEvent(E_Kbd_KeyState, &Module::OnKeyState);
+    OnEvent(E_Mse_Move,     &Module::OnMouseMove);
+    OnEvent(E_Mse_State,    &Module::OnMouseState);
+    OnEvent(E_Mse_Scroll,   &Module::OnMouseScroll);
   }
 
-  bool Module::OnKeyState(Platform::Event* pEvent)
+  bool Module::OnKeyState(Event* pEvent)
   {
     Impl()->m_keyboard.GetServer()->SendEvent(pEvent->kbdState.keyCode, pEvent->kbdState.isDown);
     return true;
   }
 
-  bool Module::OnMouseMove(Platform::Event* pEvent)
+  bool Module::OnMouseMove(Event* pEvent)
   {
-    Impl()->m_mouse.GetServer()->SendEvent(Input::MA_XPos, (float)pEvent->mseMove.wndX);
-    Impl()->m_mouse.GetServer()->SendEvent(Input::MA_YPos, (float)pEvent->mseMove.wndY);
+    Impl()->m_mouse.GetServer()->SendEvent(MA_XPos, (float)pEvent->mseMove.wndX);
+    Impl()->m_mouse.GetServer()->SendEvent(MA_YPos, (float)pEvent->mseMove.wndY);
     return true;
   }
 
-  bool Module::OnMouseState(Platform::Event* pEvent)
+  bool Module::OnMouseState(Event* pEvent)
   {
     Impl()->m_mouse.GetServer()->SendEvent(pEvent->mseState.button, pEvent->mseState.isDown);
     return true;
   }
 
-  bool Module::OnMouseScroll(Platform::Event* pEvent)
+  bool Module::OnMouseScroll(Event* pEvent)
   {
     if (pEvent->mseScroll.isHorizontal)
-      Impl()->m_mouse.GetServer()->SendEvent(Input::MA_HScroll, (float)pEvent->mseScroll.amount, true);
+      Impl()->m_mouse.GetServer()->SendEvent(MA_HScroll, (float)pEvent->mseScroll.amount, true);
     else
-      Impl()->m_mouse.GetServer()->SendEvent(Input::MA_VScroll, (float)pEvent->mseScroll.amount, true);
+      Impl()->m_mouse.GetServer()->SendEvent(MA_VScroll, (float)pEvent->mseScroll.amount, true);
     return true;
   }
 
-  flEngine::Platform::Window* Module::GetMainWindow()
+  Window* Module::GetMainWindow()
   {
     return Application::Get().GetMainWindow();
   }
 
-  flEngine::Platform::Window const* Module::GetMainWindow() const
+  Window const* Module::GetMainWindow() const
   {
     return Application::Get().GetMainWindow();
   }
 
-  flEngine::Graphics::API* Module::GetGraphicsAPI()
+  API* Module::GetGraphicsAPI()
   {
     return Application::Get().GetGraphicsAPI();
   }
 
-  flEngine::Graphics::API* Module::GetGraphicsAPI() const
+  API* Module::GetGraphicsAPI() const
   {
     return Application::Get().GetGraphicsAPI();
   }
 
-  Input::Mouse* Module::GetMouse()
+  Mouse* Module::GetMouse()
   {
     return &Impl()->m_mouse;
   }
 
-  Input::Keyboard* Module::GetKeyboard()
+  Keyboard* Module::GetKeyboard()
   {
     return &Impl()->m_keyboard;
   }
 
-  Input::Keyboard const * Module::GetKeyboard() const
+  Keyboard const* Module::GetKeyboard() const
   {
     return &Impl()->m_keyboard;
   }
 
-  Input::Mouse const * Module::GetMouse() const
+  Mouse const* Module::GetMouse() const
   {
     return &Impl()->m_mouse;
   }

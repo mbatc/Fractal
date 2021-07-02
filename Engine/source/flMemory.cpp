@@ -1,23 +1,20 @@
 #include "flMemory.h"
 #include <malloc.h>
 
-namespace flEngine
+namespace Fractal
 {
-  namespace Memory
+  flEXPORT void* Alloc(flIN int64_t size)
   {
-    flEXPORT void *Alloc(flIN int64_t size)
-    {
-      return malloc(size);
-    }
+    return malloc(size);
+  }
 
-    flEXPORT void Free(flIN void *pBuffer)
-    {
-      return free(pBuffer);
-    }
+  flEXPORT void Free(flIN void* pBuffer)
+  {
+    return free(pBuffer);
+  }
 
-    flEXPORT void *Realloc(flIN flOUT void *pBuffer, flIN int64_t size)
-    {
-      return realloc(pBuffer, size);
-    }
+  flEXPORT void* Realloc(flIN flOUT void* pBuffer, flIN int64_t size)
+  {
+    return realloc(pBuffer, size);
   }
 }

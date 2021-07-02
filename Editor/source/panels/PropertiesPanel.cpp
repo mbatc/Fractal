@@ -1,9 +1,6 @@
 #include "PropertiesPanel.h"
 
-using namespace flEngine;
-using namespace flEngine::Scene;
-using namespace flEngine::GUI;
-using namespace flEngine::Math;
+using namespace Fractal;
 
 PropertiesPanel::PropertiesPanel(GUIModule* pGUI)
   : Panel(pGUI, "Properties")
@@ -37,7 +34,7 @@ void PropertiesPanel::OnGUI()
   }
 }
 
-void PropertiesPanel::DrawComponent(flEngine::Scene::Component* pComponent)
+void PropertiesPanel::DrawComponent(Component* pComponent)
 {
   if (pComponent->Is<Transform>())
   {

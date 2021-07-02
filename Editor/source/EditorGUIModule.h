@@ -1,9 +1,9 @@
 #ifndef EditorGUI_h__
 #define EditorGUI_h__
 
-#include "modules/flGUIModule.h"
+#include "flGUIModule.h"
 
-class EditorGUIModule : public flEngine::GUI::GUIModule
+class EditorGUIModule : public Fractal::GUIModule
 {
 public:
   EditorGUIModule() {}

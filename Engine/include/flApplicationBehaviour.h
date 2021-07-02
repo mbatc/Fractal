@@ -1,10 +1,10 @@
 #pragma once
 
-#include "util/flEventDispatcher.h"
+#include "flEventDispatcher.h"
 
-namespace flEngine
+namespace Fractal
 {
-  class flEXPORT ApplicationBehaviour : public Util::EventDispatcher
+  class flEXPORT ApplicationBehaviour : public EventDispatcher
   {
   public:
     /**
@@ -13,7 +13,7 @@ namespace flEngine
      * This function is called when the application starts, after the engine has been initialized.
      *
      * You can override this function to implement any extra functionality your application needs.
-   **/
+    **/
     virtual bool OnStartup();
 
     /**

@@ -1,6 +1,6 @@
 #include "flApplicationBehaviour.h"
 
-namespace flEngine
+namespace Fractal
 {
   bool ApplicationBehaviour::OnStartup()    { return true; }
   void ApplicationBehaviour::OnShutdown()   {}

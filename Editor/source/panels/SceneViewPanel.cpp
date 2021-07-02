@@ -3,14 +3,7 @@
 #include "ctFile.h"
 #include "ctFilename.h"
 
-using namespace flEngine;
-using namespace flEngine::GUI;
-using namespace flEngine::Util;
-using namespace flEngine::Math;
-using namespace flEngine::Input;
-using namespace flEngine::Graphics;
-using namespace flEngine::Platform;
-using namespace flEngine::Scene;
+using namespace Fractal;
 
 SceneViewPanel::SceneViewPanel(GUIModule* pGUI)
   : Panel(pGUI, "Scene View")
@@ -19,7 +12,7 @@ SceneViewPanel::SceneViewPanel(GUIModule* pGUI)
 
 bool SceneViewPanel::OnStartup()
 {
-  Graphics::API* pGraphics = GetGUI()->GetGraphicsAPI();
+  API* pGraphics = GetGUI()->GetGraphicsAPI();
 
   pProgram = MakeRef(pGraphics->CreateProgram(), false);
   pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag", ProgramStage_Fragment);
@@ -36,20 +29,23 @@ bool SceneViewPanel::OnStartup()
     OBJImporter importer;
     importer.Import("C:/Users/mickb/OneDrive/Documents/Test Models/Sponza/sponza.obj");
 
-    Mesh *pMesh = importer.GetResult();
+    Mesh* pMesh = importer.GetResult();
     pMesh->Triangulate();
 
     pRenderMesh = MakeRef(pGraphics->CreateRenderMesh(pMesh), false);
 
-    for (int64_t matIdx = 0; matIdx < pMesh->GetMaterialCount(); ++matIdx) {
-      SurfaceMaterial *pMaterialData = pMesh->GetMaterial(matIdx);
+    for (int64_t matIdx = 0; matIdx < pMesh->GetMaterialCount(); ++matIdx)
+    {
+      SurfaceMaterial* pMaterialData = pMesh->GetMaterial(matIdx);
       Ref<ShaderMaterial> pShaderMat = MakeRef(pGraphics->CreateMaterial(pProgram), false);
-      char const * path = pMaterialData->GetTexture("diffuse");
-      if (path != nullptr) {
+      char const* path = pMaterialData->GetTexture("diffuse");
+      if (path != nullptr)
+      {
         bool found = false;
         ctFilename fullPath = ctFile::Find(ctString(pMesh->GetSourceDirectory()) + "/" + path, &found);
 
-        if (found) {
+        if (found)
+        {
           Image image(fullPath.c_str());
 
           Ref<Texture2D> pTexture = MakeRef(pGraphics->CreateTexture2D(PixelFormat_RGBA, PixelComponentType_UNorm8), false);
@@ -115,10 +111,10 @@ void SceneViewPanel::OnRender()
 
   pState->SetViewport(0, 0, m_target->GetWidth(), m_target->GetHeight());
 
-  class RenderVisitor : public flEngine::Scene::Visitor<flEngine::Scene::Node>
+  class RenderVisitor : public Fractal::Visitor<Fractal::Node>
   {
   public:
-    RenderVisitor(Mat4F projection, ctVector<Ref<ShaderMaterial>> const & materials, Ref<Program> pProgram, Ref<RenderMesh> pMesh, API* pAPI)
+    RenderVisitor(Mat4F projection, ctVector<Ref<ShaderMaterial>> const& materials, Ref<Program> pProgram, Ref<RenderMesh> pMesh, API* pAPI)
       : m_projection(projection)
       , m_pProgram(pProgram)
       , m_pGraphics(pAPI)
@@ -126,21 +122,23 @@ void SceneViewPanel::OnRender()
       , m_materials(materials)
     {}
 
-    bool OnEnter(flEngine::Scene::Node* pNode) override {
+    bool OnEnter(Fractal::Node* pNode) override
+    {
       if (pNode == pNode->GetScene()->GetRootNode())
         return true;
 
-      flEngine::Scene::Transform* pTransform = pNode->GetComponent<flEngine::Scene::Transform>();
+      Fractal::Transform* pTransform = pNode->GetComponent<Fractal::Transform>();
 
       if (pTransform)
       {
         Mat4F mvp = m_projection * (Mat4F)pTransform->GetTransform();
         m_pProgram->SetMat4("mvp", mvp);
 
-        for (int64_t i = 0; i < m_pRenderMesh->GetSubmeshCount(); ++i) {
+        for (int64_t i = 0; i < m_pRenderMesh->GetSubmeshCount(); ++i)
+        {
           m_materials[i]->Bind();
 
-          RenderMesh::SubMesh *pSubMesh = m_pRenderMesh->GetSubmesh(i);
+          RenderMesh::SubMesh* pSubMesh = m_pRenderMesh->GetSubmesh(i);
           m_pGraphics->Render(DrawMode_Triangles, true, pSubMesh->offset, pSubMesh->count);
         }
       }
@@ -164,7 +162,7 @@ void SceneViewPanel::OnRender()
 void SceneViewPanel::OnGUI()
 {
   if (m_target != nullptr)
-    GUI::Widgets::Image(m_target->GetColourTarget(), ContentAreaSize().x, ContentAreaSize().y);
+    Widgets::Image(m_target->GetColourTarget(), ContentAreaSize().x, ContentAreaSize().y);
 }
 
 PerspectiveCamera::PerspectiveCamera(Keyboard* pKeyboard, Mouse* pMouse)
@@ -186,12 +184,18 @@ Mat4F PerspectiveCamera::ProjectionMatrix()
 void PerspectiveCamera::Update()
 {
   Vec3F velocity;
-  if (m_pKeyboard->GetKeyDown(KC_A)) velocity.x -= 1;
-  if (m_pKeyboard->GetKeyDown(KC_D)) velocity.x += 1;
-  if (m_pKeyboard->GetKeyDown(KC_W)) velocity.z -= 1;
-  if (m_pKeyboard->GetKeyDown(KC_S)) velocity.z += 1;
-  if (m_pKeyboard->GetKeyDown(KC_E)) velocity.y += 1;
-  if (m_pKeyboard->GetKeyDown(KC_Q)) velocity.y -= 1;
+  if (m_pKeyboard->GetKeyDown(KC_A))
+    velocity.x -= 1;
+  if (m_pKeyboard->GetKeyDown(KC_D))
+    velocity.x += 1;
+  if (m_pKeyboard->GetKeyDown(KC_W))
+    velocity.z -= 1;
+  if (m_pKeyboard->GetKeyDown(KC_S))
+    velocity.z += 1;
+  if (m_pKeyboard->GetKeyDown(KC_E))
+    velocity.y += 1;
+  if (m_pKeyboard->GetKeyDown(KC_Q))
+    velocity.y -= 1;
 
   velocity = Mat4F::YawPitchRoll(ypr) * velocity;
 

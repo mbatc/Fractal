@@ -1,75 +1,72 @@
-#ifndef fl_Engine_h__
-#define fl_Engine_h__
+#pragma once
 
 // Platform
-#include "platform/flEvent.h"
-#include "platform/flEventQueue.h"
-#include "platform/flWindow.h"
+#include "flEvent.h"
+#include "flEventQueue.h"
+#include "flWindow.h"
 
 // Utility
-#include "util/flTask.h"
-#include "util/flTaskQueue.h"
-#include "util/flImage.h"
-#include "util/flColour.h"
-#include "util/flType.h"
+#include "flTask.h"
+#include "flTaskQueue.h"
+#include "flImage.h"
+#include "flColour.h"
+#include "flType.h"
 #include "flRef.h"
 #include "flLog.h"
 
 // Assets
 #include "flMesh.h"
 #include "flSurfaceMaterial.h"
-#include "importers/flOBJImporter.h"
-#include "importers/flMTLImporter.h"
+#include "flOBJImporter.h"
+#include "flMTLImporter.h"
 
 // Threading
-#include "threads/flThreads.h"
-#include "threads/flThreadPool.h"
-#include "threads/flThreadQueue.h"
+#include "flThreads.h"
+#include "flThreadPool.h"
+#include "flThreadQueue.h"
 
 // Math
-#include "math/flMath.h"
+#include "flMath.h"
 
 // User Input
-#include "input/flKeyboard.h"
-#include "input/flMouse.h"
-#include "input/flInputs.h"
+#include "flKeyboard.h"
+#include "flMouse.h"
+#include "flInputs.h"
 
 // Graphics
-#include "graphics/flAPI.h"
-#include "graphics/flDeviceState.h"
-#include "graphics/flProgram.h"
-#include "graphics/flProgramDetails.h"
-#include "graphics/flVertexArray.h"
-#include "graphics/flHardwareBuffer.h"
-#include "graphics/flIndexBuffer.h"
-#include "graphics/flVertexBuffer.h"
-#include "graphics/flUniformBuffer.h"
-#include "graphics/flRenderTarget.h"
-#include "graphics/flWindowRenderTarget.h"
-#include "graphics/flTextureRenderTarget.h"
-#include "graphics/flTexture.h"
-#include "graphics/flTexture2D.h"
-#include "graphics/flSampler.h"
-#include "graphics/flShaderMaterial.h"
-#include "graphics/flRenderMesh.h"
+#include "flAPI.h"
+#include "flDeviceState.h"
+#include "flProgram.h"
+#include "flProgramDetails.h"
+#include "flVertexArray.h"
+#include "flHardwareBuffer.h"
+#include "flIndexBuffer.h"
+#include "flVertexBuffer.h"
+#include "flUniformBuffer.h"
+#include "flRenderTarget.h"
+#include "flWindowRenderTarget.h"
+#include "flTextureRenderTarget.h"
+#include "flTexture.h"
+#include "flTexture2D.h"
+#include "flSampler.h"
+#include "flShaderMaterial.h"
+#include "flRenderMesh.h"
 
 // Application
 #include "flApplication.h"
 #include "flModule.h"
 
 // GUI
-#include "modules/flGUIModule.h"
-#include "gui/flPanel.h"
-#include "gui/flWidgets.h"
+#include "flGUIModule.h"
+#include "flPanel.h"
+#include "flWidgets.h"
 
 // Scene
-#include "modules/flSceneManager.h"
-#include "scene/flSceneGraph.h"
-#include "scene/flNode.h"
-#include "scene/flComponent.h"
-#include "scene/flTransform.h"
-#include "scene/flNodeBehaviour.h"
-#include "scene/flComponentRegistry.h"
-#include "scene/flVisitor.h"
-
-#endif // fl_Engine_h__
+#include "flSceneManager.h"
+#include "flSceneGraph.h"
+#include "flNode.h"
+#include "flComponent.h"
+#include "flTransform.h"
+#include "flNodeBehaviour.h"
+#include "flComponentRegistry.h"
+#include "flVisitor.h"
