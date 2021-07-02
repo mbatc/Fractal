@@ -1,8 +1,8 @@
 #pragma once
 
+#include "flAPIResource.h"
 #include "flInterface.h"
 #include "flMath.h"
-#include "flAPIResource.h"
 
 namespace Fractal
 {

@@ -50,7 +50,12 @@ void ScenePanel::OnGUI()
   SceneGraph* pScene = m_pSceneManager->ActiveScene();
   if (Widgets::Button("Add"))
   {
-    Node* pNode = pScene->AddNode("New Node", pEditor->m_selectedNode);
+    bool containsNode = pScene->GetNode(pEditor->m_selectedNode) != nullptr;
+
+    Node* pNode = pScene->AddNode("New Node", containsNode ? pEditor->m_selectedNode : pScene->GetRootNode()->GetID());
+
+    m_pSceneManager->Import(pNode, "C:/Users/mickb/OneDrive/Documents/Test Models/Sponza/sponza.obj");
+
     pEditor->m_selectedNode = pNode->GetID();
   }
 

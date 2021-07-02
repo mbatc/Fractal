@@ -37,11 +37,5 @@ public:
 
   PerspectiveCamera m_camera;
 
-  Fractal::Ref<Fractal::Program>        pProgram;
-  Fractal::Ref<Fractal::Sampler>        pSampler;
-  Fractal::Ref<Fractal::RenderMesh>     pRenderMesh;
-
-  ctVector<Fractal::Ref<Fractal::ShaderMaterial>> materials;
-
   Fractal::Ref<Fractal::TextureRenderTarget> m_target;
 };

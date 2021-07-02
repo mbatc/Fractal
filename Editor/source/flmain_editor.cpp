@@ -8,41 +8,42 @@
 #include "SceneViewPanel.h"
 #include "PropertiesPanel.h"
 
-using namespace Fractal;
-
-class FractalEditor : public Fractal::Application
+namespace Fractal
 {
-public:
-  FractalEditor()
-    : Application("OpenGL")
+  class FractalEditor : public Application
   {
-    AddModule<SceneManager>();
-    AddModule<EditorGUIModule>();
-    AddModule<EditorModule>();
+  public:
+    FractalEditor()
+      : Application("OpenGL")
+    {
+      AddModule<SceneManager>();
+      AddModule<EditorGUIModule>();
+      AddModule<EditorModule>();
 
-    auto gui = GetModule<EditorGUIModule>();
-    gui->Open<ScenePanel>();
-    gui->Open<SceneViewPanel>();
-    gui->Open<ProjectPanel>();
-    gui->Open<PropertiesPanel>();
-    gui->AddMenuItem("File/Exit", Exit);
+      auto gui = GetModule<EditorGUIModule>();
+      gui->Open<ScenePanel>();
+      gui->Open<SceneViewPanel>();
+      gui->Open<ProjectPanel>();
+      gui->Open<PropertiesPanel>();
+      gui->AddMenuItem("File/Exit", Exit);
 
-    OnEvent(E_Wnd_Close, &FractalEditor::OnCloseEvent);
-  }
+      OnEvent(E_Wnd_Close, &FractalEditor::OnCloseEvent);
+    }
 
-  bool OnCloseEvent(Event* pEvent)
+    bool OnCloseEvent(Event *pEvent)
+    {
+      Close();
+      return true;
+    }
+
+    static void Exit()
+    {
+      Application::Get().Close();
+    }
+  };
+
+  Application *CreateApplication(char **argv, int argc)
   {
-    Close();
-    return true;
+    return flNew FractalEditor;
   }
-
-  static void Exit()
-  {
-    Application::Get().Close();
-  }
-};
-
-Fractal::Application* Fractal::CreateApplication(char** argv, int argc)
-{
-  return flNew FractalEditor;
 }

@@ -92,7 +92,7 @@ namespace Fractal
     Impl()->m_nodes[nodeID] = pNode;
 
     // Set the nodes parent transform
-    Node* pParent = Impl()->m_nodes.GetOr(parentID, Impl()->m_root.Get());
+    Node* pParent = Impl()->m_nodes.GetOr(parentID, nullptr);
     if (pParent)
       pNode->GetComponent<Transform>()->SetParent(pParent->GetComponent<Transform>());
 

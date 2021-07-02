@@ -12,56 +12,6 @@ SceneViewPanel::SceneViewPanel(GUIModule* pGUI)
 
 bool SceneViewPanel::OnStartup()
 {
-  API* pGraphics = GetGUI()->GetGraphicsAPI();
-
-  pProgram = MakeRef(pGraphics->CreateProgram(), false);
-  pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag", ProgramStage_Fragment);
-  pProgram->SetShaderFromFile("../../Engine/assets/shader-library/transform.vert", ProgramStage_Vertex);
-  pProgram->Compile();
-
-  pSampler = MakeRef(pGraphics->CreateSampler(), false);
-  pSampler->SetWrapMode(WrapMode_Mirror);
-  pSampler->SetFilterMinMode(FilterMode_Linear, true);
-
-  // Construct a simple cube
-  {
-    // Create vertex and index buffers
-    OBJImporter importer;
-    importer.Import("C:/Users/mickb/OneDrive/Documents/Test Models/Sponza/sponza.obj");
-
-    Mesh* pMesh = importer.GetResult();
-    pMesh->Triangulate();
-
-    pRenderMesh = MakeRef(pGraphics->CreateRenderMesh(pMesh), false);
-
-    for (int64_t matIdx = 0; matIdx < pMesh->GetMaterialCount(); ++matIdx)
-    {
-      SurfaceMaterial* pMaterialData = pMesh->GetMaterial(matIdx);
-      Ref<ShaderMaterial> pShaderMat = MakeRef(pGraphics->CreateMaterial(pProgram), false);
-      char const* path = pMaterialData->GetTexture("diffuse");
-      if (path != nullptr)
-      {
-        bool found = false;
-        ctFilename fullPath = ctFile::Find(ctString(pMesh->GetSourceDirectory()) + "/" + path, &found);
-
-        if (found)
-        {
-          Image image(fullPath.c_str());
-
-          Ref<Texture2D> pTexture = MakeRef(pGraphics->CreateTexture2D(PixelFormat_RGBA, PixelComponentType_UNorm8), false);
-          pTexture->SetFromImage(&image);
-          pTexture->GenerateMipMaps();
-
-          pShaderMat->SetTexture("texture0", pTexture);
-        }
-      }
-
-      pShaderMat->SetValue("albedo0", pMaterialData->GetColour("diffuse"));
-      pShaderMat->Apply();
-      materials.push_back(pShaderMat);
-    }
-  }
-
   return true;
 }
 
@@ -100,9 +50,6 @@ void SceneViewPanel::OnRender()
   DeviceState* pState = GetGUI()->GetGraphicsAPI()->GetState();
   pState->SetFeatureEnabled(DeviceFeature_DepthTest, true);
 
-  pRenderMesh->GetVertexArray()->Bind();
-  pProgram->Bind();
-
   Window* pWindow = GetGUI()->GetMainWindow();
   API* pGraphics = GetGUI()->GetGraphicsAPI();
 
@@ -111,34 +58,34 @@ void SceneViewPanel::OnRender()
 
   pState->SetViewport(0, 0, m_target->GetWidth(), m_target->GetHeight());
 
-  class RenderVisitor : public Fractal::Visitor<Fractal::Node>
+  class RenderVisitor : public Visitor<Component>
   {
   public:
-    RenderVisitor(Mat4F projection, ctVector<Ref<ShaderMaterial>> const& materials, Ref<Program> pProgram, Ref<RenderMesh> pMesh, API* pAPI)
+    RenderVisitor(Mat4F projection, API* pAPI)
       : m_projection(projection)
-      , m_pProgram(pProgram)
       , m_pGraphics(pAPI)
-      , m_pRenderMesh(pMesh)
-      , m_materials(materials)
     {}
 
-    bool OnEnter(Fractal::Node* pNode) override
+    bool OnEnter(Component * pComponent) override
     {
-      if (pNode == pNode->GetScene()->GetRootNode())
-        return true;
+      MeshRenderer *pMesh = pComponent->As<MeshRenderer>();
+      if (pMesh == nullptr)
+        return false;
 
-      Fractal::Transform* pTransform = pNode->GetComponent<Fractal::Transform>();
+      Transform* pTransform = pMesh->GetNode()->GetTransform();
 
       if (pTransform)
       {
         Mat4F mvp = m_projection * (Mat4F)pTransform->GetTransform();
-        m_pProgram->SetMat4("mvp", mvp);
-
-        for (int64_t i = 0; i < m_pRenderMesh->GetSubmeshCount(); ++i)
+        pMesh->GetMesh()->GetVertexArray()->Bind();
+        for (int64_t subMesh = 0; subMesh < pMesh->GetSubMeshCount(); ++subMesh)
         {
-          m_materials[i]->Bind();
-
-          RenderMesh::SubMesh* pSubMesh = m_pRenderMesh->GetSubmesh(i);
+          Program        *pShader   = pMesh->GetShader(subMesh);
+          ShaderMaterial *pMaterial = pMesh->GetMaterial(subMesh);
+          pShader->SetMat4("mvp", mvp);
+          pShader->Bind();
+          pMaterial->Bind();
+          RenderMesh::SubMesh const *pSubMesh  = pMesh->GetSubMesh(subMesh);
           m_pGraphics->Render(DrawMode_Triangles, true, pSubMesh->offset, pSubMesh->count);
         }
       }
@@ -147,16 +94,13 @@ void SceneViewPanel::OnRender()
     }
 
     Mat4F m_projection;
-    Ref<Program> m_pProgram;
-    Ref<RenderMesh> m_pRenderMesh;
-    ctVector<Ref<ShaderMaterial>> m_materials;
     API* m_pGraphics;
   };
 
   SceneGraph* pScene = Application::Get().GetModule<SceneManager>()->ActiveScene();
-  RenderVisitor renderVisitor(projection, materials, pProgram, pRenderMesh, pGraphics);
+  RenderVisitor renderVisitor(projection, pGraphics);
 
-  pScene->Traverse(&renderVisitor, nullptr);
+  pScene->Traverse(nullptr, &renderVisitor);
 }
 
 void SceneViewPanel::OnGUI()

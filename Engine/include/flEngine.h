@@ -70,3 +70,6 @@
 #include "flNodeBehaviour.h"
 #include "flComponentRegistry.h"
 #include "flVisitor.h"
+#include "flMeshRenderer.h"
+#include "flCamera.h"
+#include "flLight.h"
