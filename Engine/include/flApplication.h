@@ -6,8 +6,9 @@
 namespace Fractal
 {
   struct Event;
-  class Window;
 
+  class Window;
+  class Task;
   class API;
 
   class Impl_Application;
@@ -62,6 +63,35 @@ namespace Fractal
      */
     API* GetGraphicsAPI();
     API const* GetGraphicsAPI() const;
+
+    /**
+     * @brief Get the ID of the applications main thread.
+     */
+    static int64_t MainThreadID();
+
+    /**
+     * @brief Await the completion of a task.
+     *
+     * The task will be executed on the main thread. If this function is
+     * called from the applications main thread, the task will be executed
+     * immediately.
+     *
+     * @param [in] pTask The task to execute.
+     */
+    static Task* EnqueueTask(flIN Task *pTask);
+
+    /**
+     * @brief Await the completion of a task.
+     *
+     * The task will be executed on the main thread. If this function is
+     * called from the applications main thread, the task will be executed
+     * immediately.
+     *
+     * @param [in] pTask The task to execute.
+     * 
+     * @return The result returned by the task.
+     */
+    static int64_t Await(flIN Task* pTask);
 
     /**
      * @brief Get the global Application instance.

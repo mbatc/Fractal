@@ -6,6 +6,7 @@
 namespace Fractal
 {
   class Panel;
+  class GUIStyleSheet;
 
   class Impl_GUIModule;
 
@@ -38,6 +39,9 @@ namespace Fractal
      * @param [in] func The command function to call.
      */
     void AddMenuItem(flIN char const* name, flIN MenuCommandFunc func);
+
+    GUIStyleSheet* GetStyle();
+    GUIStyleSheet const* GetStyle() const;
 
     virtual void OnUpdate() override;
     virtual void OnRender() override;

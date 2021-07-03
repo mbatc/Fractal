@@ -1,12 +1,14 @@
 #pragma once
 
 #include "flInterface.h"
+#include "flRef.h"
 
 namespace Fractal
 {
   class Impl_Task;
 
   class flEXPORT Task : public Interface
+
   {
     flPIMPL_DEF(Task);
 
@@ -41,7 +43,7 @@ namespace Fractal
      *
      * @return The return value of the task.
      */
-    int64_t Wait();
+    int64_t Await();
 
     /**
      * @brief The Task implementation function
@@ -86,29 +88,6 @@ namespace Fractal
     virtual bool OnReset();
 
     /**
-     * @brief Explicitly destroy the Task instance.
-     *
-     * As this function implements the Interface class, the DecRef() function should
-     * be preferred over calling this directly.
-     *
-     * This needs to be implemented so that tasks passed between module boundaries
-     * can be safely destroyed. This is because when adding a task to a queue in the Engine,
-     * that queue may take ownership of the Task instance. Therefor, to safely destroy the
-     * instance, it MUST be freed in the module in which it was created (i.e. the module that
-     * defined the object).
-     *
-     * Most implementations of this function will be
-     *
-     *    void MyTaskBase::Destroy() { delete this; }
-     *
-     * It is recommended that a module that implements may tasks should create a base class that
-     * implements this function once.
-     *
-     * See Interface::Destroy for further information.
-     */
-    virtual void Destroy() override = 0;
-
-    /**
      * @brief Get the current status of the task.
      *
      * @return The current status of the task.
@@ -122,4 +101,27 @@ namespace Fractal
      */
     int64_t GetResult() const;
   };
+
+  /**
+   * @brief Create an Task instance from a callable object.
+   *
+   * The callable object must return an int64_t and take no parameters.
+   */
+  template<typename Lambda> Ref<Task> MakeTask(Lambda&& lambda)
+  {
+    class Wrapper : public Task
+    {
+    public:
+      virtual int64_t DoTask() override
+      {
+        return m_func();
+      }
+
+      Wrapper(Lambda func) : m_func(func) {}
+
+      Lambda m_func;
+    };
+
+    return MakeRef(flNew(flAllocT(Wrapper, 1)) Wrapper(lambda), false).StaticCast<Task>();
+  }
 }

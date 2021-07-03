@@ -3,6 +3,10 @@
 #include "flConfig.h"
 #include <mutex>
 
+#ifdef Yield
+#undef Yield
+#endif
+
 namespace Fractal
 {
   /**
@@ -25,10 +29,20 @@ namespace Fractal
    *
    * @param [in] milli How long to sleep for in milliseconds
    */
-  void flEXPORT Sleep(flIN int64_t milli);
+  flEXPORT void Sleep(flIN int64_t milli);
 
   /**
   * @brief Attempt to reschedule this thread, so that another may be run.
   */
-  void flEXPORT Yield();
+  flEXPORT void Yield();
+
+  /**
+   * @brief Get the number of concurrent CPU threads supported.
+   */
+  flEXPORT int64_t GetCPUThreadCount();
+
+  /**
+   * @brief Get the ID of the current thread.
+   */
+  flEXPORT int64_t GetThreadID();
 }

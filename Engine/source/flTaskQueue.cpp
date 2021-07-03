@@ -76,11 +76,6 @@ namespace Fractal
       return flNew _flGenericTask(taskFunc, pUserData);
     }
 
-    virtual void Destroy() override
-    {
-      flDelete this;
-    }
-
     int64_t DoTask() override
     {
       return m_callback(m_pUserData);
@@ -90,6 +85,11 @@ namespace Fractal
     TaskFunc m_callback = nullptr;
     void* m_pUserData = nullptr;
   };
+
+  TaskQueue* TaskQueue::Create()
+  {
+    return flNew TaskQueue;
+  }
 
   bool TaskQueue::Add(flIN Task* pTask)
   {

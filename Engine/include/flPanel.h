@@ -1,10 +1,12 @@
 #pragma once
 
 #include "flApplicationBehaviour.h"
+#include "flMath.h"
 
 namespace Fractal
 {
   class GUIModule;
+  class GUIStyleSheet;
 
   class Impl_Panel;
 
@@ -69,5 +71,9 @@ namespace Fractal
      * @return A const pointer to the GUI.
      */
     GUIModule const* GetGUI() const;
+
+    GUIStyleSheet * GetStyle();
+
+    GUIStyleSheet const* GetStyle() const;
   };
 }

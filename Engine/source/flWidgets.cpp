@@ -80,9 +80,9 @@ namespace Fractal
       ImGui::Image(ImTextureID(pTexture), ImVec2((float)width, (float)height), ImVec2(0, 1), ImVec2(1, 0));
     }
 
-    flEXPORT bool BeginTreeNode(flIN char const* name, flIN bool isSelected)
+    flEXPORT bool BeginTreeNode(flIN char const* name, flIN bool isSelected, flIN bool isLeaf)
     {
-      return ImGui::TreeNodeEx(name, (ImGuiTreeNodeFlags_Selected * isSelected) | ImGuiTreeNodeFlags_OpenOnArrow);
+      return ImGui::TreeNodeEx(name, (ImGuiTreeNodeFlags_Selected * isSelected) | (isLeaf ? ImGuiTreeNodeFlags_Leaf : ImGuiTreeNodeFlags_OpenOnArrow));
     }
 
     flEXPORT void EndTreeNode()
@@ -93,6 +93,11 @@ namespace Fractal
     flEXPORT bool IsItemClicked()
     {
       return ImGui::IsItemClicked();
+    }
+
+    flEXPORT void SameLine()
+    {
+      return ImGui::SameLine();
     }
   }
 }

@@ -94,7 +94,7 @@ namespace Fractal
     return result;
   }
 
-  int64_t Task::Wait()
+  int64_t Task::Await()
   {
     return Impl()->Wait();
   }

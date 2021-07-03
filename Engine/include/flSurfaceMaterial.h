@@ -83,7 +83,7 @@ namespace Fractal
      *
      * @return The texture's file path.
      */
-    char const *GetTexture(flIN int64_t index) const;
+    char const* GetTexture(flIN int64_t index) const;
 
     /**
      * @brief Set a material value by name.
@@ -131,16 +131,7 @@ namespace Fractal
      * @param [in] index The index of the texture.
      * @param [in] path  The file path to be assigned.
      */
-    void SetTexture(flIN int64_t index, flIN char const *path);
-
-    /**
-     * @brief Get the index of a material value.
-     * 
-     * @param [in] name The name of the texture.
-     * 
-     * @return The index of the texture.
-     */
-    int64_t FindValue(flIN char const *name) const;
+    void SetTexture(flIN int64_t index, flIN char const* path);
 
     /**
      * @brief Get the index of a material value.
@@ -149,7 +140,7 @@ namespace Fractal
      *
      * @return The index of the texture.
      */
-    int64_t FindColour(flIN char const *name) const;
+    int64_t FindValue(flIN char const* name) const;
 
     /**
      * @brief Get the index of a material value.
@@ -158,7 +149,16 @@ namespace Fractal
      *
      * @return The index of the texture.
      */
-    int64_t FindTexture(flIN char const *name) const;
+    int64_t FindColour(flIN char const* name) const;
+
+    /**
+     * @brief Get the index of a material value.
+     *
+     * @param [in] name The name of the texture.
+     *
+     * @return The index of the texture.
+     */
+    int64_t FindTexture(flIN char const* name) const;
 
     /**
      * @brief Get the number of values in the material.
@@ -188,7 +188,7 @@ namespace Fractal
      *
      * @return The Value name as a c-string.
      */
-    char const * GetValueName(flIN int64_t index) const;
+    char const* GetValueName(flIN int64_t index) const;
 
     /**
      * @brief Get the name of a Colour at the specified index.
@@ -197,16 +197,16 @@ namespace Fractal
      *
      * @return The Colour name as a c-string.
      */
-    char const * GetColourName(flIN int64_t index) const;
+    char const* GetColourName(flIN int64_t index) const;
 
     /**
      * @brief Get the name of a Texture at the specified index.
      *
      * @param [in] index The index of the Value.
-     * 
+     *
      * @return The Texture name as a c-string.
      */
-    char const * GetTextureName(flIN int64_t index) const;
+    char const* GetTextureName(flIN int64_t index) const;
   };
 
   /**
@@ -219,11 +219,11 @@ namespace Fractal
      */
     struct Phong
     {
-      static char const *diffuse;
-      static char const *ambient;
-      static char const *specular;
-      static char const *normal;
-      static char const *alpha;
+      static char const* diffuse;
+      static char const* ambient;
+      static char const* specular;
+      static char const* normal;
+      static char const* alpha;
     };
 
     /**
@@ -231,12 +231,13 @@ namespace Fractal
      */
     struct PBR
     {
-      static char const *albedo;
-      static char const *ambient;
-      static char const *roughness;
-      static char const *metalness;
-      static char const *alpha;
-      static char const *ao;
+      static char const* albedo;
+      static char const* emissive;
+      static char const* roughness;
+      static char const* metalness;
+      static char const* alpha;
+      static char const* ao;
+      static char const* normal;
     };
   };
 }

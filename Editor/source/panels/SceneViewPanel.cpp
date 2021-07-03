@@ -8,7 +8,14 @@ using namespace Fractal;
 SceneViewPanel::SceneViewPanel(GUIModule* pGUI)
   : Panel(pGUI, "Scene View")
   , m_camera(pGUI->GetKeyboard(), pGUI->GetMouse())
-{}
+{
+  GetStyle()->Set(
+    {
+      { GUIStyle_WindowPadding, Vec2F(0, 0)},
+      { GUIStyle_WindowBorderSize, 0.0f }
+    }
+  );
+}
 
 bool SceneViewPanel::OnStartup()
 {
@@ -66,9 +73,9 @@ void SceneViewPanel::OnRender()
       , m_pGraphics(pAPI)
     {}
 
-    bool OnEnter(Component * pComponent) override
+    bool OnEnter(Component* pComponent) override
     {
-      MeshRenderer *pMesh = pComponent->As<MeshRenderer>();
+      MeshRenderer* pMesh = pComponent->As<MeshRenderer>();
       if (pMesh == nullptr)
         return false;
 
@@ -80,12 +87,12 @@ void SceneViewPanel::OnRender()
         pMesh->GetMesh()->GetVertexArray()->Bind();
         for (int64_t subMesh = 0; subMesh < pMesh->GetSubMeshCount(); ++subMesh)
         {
-          Program        *pShader   = pMesh->GetShader(subMesh);
-          ShaderMaterial *pMaterial = pMesh->GetMaterial(subMesh);
+          Program*        pShader   = pMesh->GetShader(subMesh);
+          ShaderMaterial* pMaterial = pMesh->GetMaterial(subMesh);
           pShader->SetMat4("mvp", mvp);
           pShader->Bind();
           pMaterial->Bind();
-          RenderMesh::SubMesh const *pSubMesh  = pMesh->GetSubMesh(subMesh);
+          RenderMesh::SubMesh const* pSubMesh  = pMesh->GetSubMesh(subMesh);
           m_pGraphics->Render(DrawMode_Triangles, true, pSubMesh->offset, pSubMesh->count);
         }
       }

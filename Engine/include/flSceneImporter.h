@@ -16,6 +16,6 @@ namespace Fractal
     /**
      * @brief Import a file.
      */
-    virtual bool Import(Node* pNode, char const *filepath, void *pUserData) = 0;
+    virtual bool Import(Node* pNode, char const* filepath, void* pUserData) = 0;
   };
 }

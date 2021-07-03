@@ -8,11 +8,13 @@ namespace Fractal
 
   class Impl_TaskQueue;
 
-  class flEXPORT TaskQueue
+  class flEXPORT TaskQueue : public Interface
   {
     flPIMPL_DEF(TaskQueue);
 
   public:
+    static TaskQueue* Create();
+
     /**
      * @brief Add a task to the queue.
      *

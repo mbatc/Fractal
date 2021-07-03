@@ -30,7 +30,7 @@ namespace Fractal
       OnEvent(E_Wnd_Close, &FractalEditor::OnCloseEvent);
     }
 
-    bool OnCloseEvent(Event *pEvent)
+    bool OnCloseEvent(Event* pEvent)
     {
       Close();
       return true;
@@ -42,7 +42,7 @@ namespace Fractal
     }
   };
 
-  Application *CreateApplication(char **argv, int argc)
+  Application* CreateApplication(char** argv, int argc)
   {
     return flNew FractalEditor;
   }

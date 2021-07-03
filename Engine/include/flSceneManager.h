@@ -27,12 +27,12 @@ namespace Fractal
     /**
      * @brief Import a file into the active scene.
      */
-    Node* Import(char const * filepath);
+    Node* Import(char const* filepath);
 
     /**
      * @brief Import a file into an existing node.
      */
-    bool Import(Node *pNode, char const *filepath);
+    bool Import(Node* pNode, char const* filepath);
 
     // Module event functions
     virtual bool OnStartup() override;

@@ -46,7 +46,7 @@ namespace Fractal
 
   flPIMPL_IMPL(SceneManager);
 
-  SceneGraph *SceneManager::ActiveScene()
+  SceneGraph* SceneManager::ActiveScene()
   {
     return Impl()->m_activeScene.Get();
   }
@@ -56,9 +56,9 @@ namespace Fractal
     return Impl()->m_activeScene.Get();
   }
 
-  Node* SceneManager::Import(char const *filepath)
+  Node* SceneManager::Import(char const* filepath)
   {
-    Node *pNode = ActiveScene()->AddNode();
+    Node* pNode = ActiveScene()->AddNode();
     if (!Import(pNode, filepath))
     {
       ActiveScene()->RemoveNode(pNode->GetID());
@@ -68,7 +68,7 @@ namespace Fractal
     return pNode;
   }
 
-  bool SceneManager::Import(Node *pNode, char const *filepath)
+  bool SceneManager::Import(Node* pNode, char const* filepath)
   {
     ctFilename fullPath = ctString(filepath).to_lower();
     fullPath = fullPath.ResolveFullPath();
@@ -78,7 +78,7 @@ namespace Fractal
     if (importer == nullptr)
       return false;
 
-    if (importer->Import(pNode, fullPath.c_str(), nullptr))
+    if (!importer->Import(pNode, fullPath.c_str(), nullptr))
       return false;
 
     return true;
@@ -91,36 +91,36 @@ namespace Fractal
   void SceneManager::OnUpdate()
   {
     BehaviourVisitor visitor(&NodeBehaviour::OnUpdate);
-    Impl()->m_activeScene->Visit(nullptr, &visitor);
+    Impl()->m_activeScene->Traverse(nullptr, &visitor);
   }
 
   void SceneManager::OnRender()
   {
     BehaviourVisitor visitor(&NodeBehaviour::OnRender);
-    Impl()->m_activeScene->Visit(nullptr, &visitor);
+    Impl()->m_activeScene->Traverse(nullptr, &visitor);
   }
 
   void SceneManager::OnPreUpdate()
   {
     BehaviourVisitor visitor(&NodeBehaviour::OnPreUpdate);
-    Impl()->m_activeScene->Visit(nullptr, &visitor);
+    Impl()->m_activeScene->Traverse(nullptr, &visitor);
   }
 
   void SceneManager::OnPreRender()
   {
     BehaviourVisitor visitor(&NodeBehaviour::OnPreRender);
-    Impl()->m_activeScene->Visit(nullptr, &visitor);
+    Impl()->m_activeScene->Traverse(nullptr, &visitor);
   }
 
   void SceneManager::OnPostUpdate()
   {
     BehaviourVisitor visitor(&NodeBehaviour::OnPostUpdate);
-    Impl()->m_activeScene->Visit(nullptr, &visitor);
+    Impl()->m_activeScene->Traverse(nullptr, &visitor);
   }
 
   void SceneManager::OnPostRender()
   {
     BehaviourVisitor visitor(&NodeBehaviour::OnPostRender);
-    Impl()->m_activeScene->Visit(nullptr, &visitor);
+    Impl()->m_activeScene->Traverse(nullptr, &visitor);
   }
 }

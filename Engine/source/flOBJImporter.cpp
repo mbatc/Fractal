@@ -163,7 +163,7 @@ namespace Fractal
 
       ctStringReader reader(&file);
 
-      while (reader.Available() > 0)
+      while (!reader.EndOfFile())
       {
         ctString const& line = reader.ReadLine();
         ctStringSeeker seeker(&line);
@@ -284,7 +284,18 @@ namespace Fractal
       seeker.SkipWhitespace();
       seeker.SeekToWhitespace();
       seeker.SkipWhitespace();
-      return ctString(seeker.Text()).trim("\"");
+
+      ctString token = seeker.Text();
+      while (token.starts_with("-"))
+      {
+        seeker.SeekToWhitespace();
+        seeker.SkipWhitespace();
+        seeker.SeekToWhitespace();
+        seeker.SkipWhitespace();
+        token = seeker.Text();
+      }
+
+      return token.trim("\"");
     }
 
     struct Vertex

@@ -2,6 +2,8 @@
 
 #include "flLog.h"
 #include "flSampler.h"
+#include "flThreads.h"
+#include "flApplication.h"
 
 #include "GL/glew.h"
 #include "GL/wglew.h"
@@ -88,20 +90,20 @@ namespace Fractal
       std::tuple<Args...> m_args;
     };
 
-#ifdef _DEBUG
     GLLogger logger([callingFunc, line, apiFunc, args = std::make_tuple(args...)](GLenum err)
     {
       Log(LogLevel_Error, callingFunc, line, "OpenGL error %d occurred in %s(%s)", err, apiFunc, TupleToString(args, std::make_index_sequence<sizeof...(Args)> {}).c_str());
     });
-#else
-    GLLogger logger([&](GLenum err)
-    {
-      Log(LogLevel_Error, callingFunc, line, "OpenGL error %d occurred in %s(...)", err, apiFunc);
-    });
-#endif
+
+    if (GetThreadID() != Application::MainThreadID())
+      flFail("OpenGL '%s' function was not called on the main thread", apiFunc);
 
     return func((Args)std::forward<Args2>(args)...);
   }
 }
 
-#define flVerifyGL(func, ...)  Fractal::GLAPICall(__FUNCTION__, __LINE__, #func, func, __VA_ARGS__)
+#ifdef _DEBUG
+#define flVerifyGL(func, ...) Fractal::GLAPICall(__FUNCTION__, __LINE__, #func, func, __VA_ARGS__)
+#else
+#define flVerifyGL(func, ...) func(__VA_ARGS__)
+#endif

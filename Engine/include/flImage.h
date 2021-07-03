@@ -1,6 +1,6 @@
 #pragma once
 
-#include "flPImpl.h"
+#include "flInterface.h"
 #include "flMath.h"
 #include "flColour.h"
 
@@ -15,7 +15,7 @@ namespace Fractal
 
   class Impl_Image;
 
-  class flEXPORT Image
+  class flEXPORT Image : public Interface
   {
     flPIMPL_DEF(Image);
     flPIMPL_DEF_MOVE(Image);
@@ -27,6 +27,11 @@ namespace Fractal
     Image(flIN const Colour* pPixels, flIN int64_t width, flIN int64_t height);
     Image(flIN const ColourU32* pPixels, flIN int64_t width, flIN int64_t height);
     Image(flIN int64_t width, flIN int64_t height, flIN ColourU32 initialColour = ColourU32_Black);
+
+    template<typename... Args>
+    static Image* Create(Args&& ... args) {
+      flNew(flAllocT(Image, 1)) Image(std::forward<Args>(args)...);
+    }
 
     void SetData(flIN ColourU32* pPixels, flIN int64_t width, flIN int64_t height);
 

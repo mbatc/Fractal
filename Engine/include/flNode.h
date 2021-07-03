@@ -65,6 +65,11 @@ namespace Fractal
     Node const* GetParent() const;
 
     /**
+     * @brief Set this nodes parent
+     */
+    void SetParent(flIN Node* pParent);
+
+    /**
      * @brief Get a child of this node
      *
      * @param [in] index The index of the child to retrieve, where 0 <= index < GetChildCount().

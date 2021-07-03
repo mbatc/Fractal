@@ -7,10 +7,13 @@
 #include "flInit.h"
 #include "flRef.h"
 #include "flWindowRenderTarget.h"
+#include "flLog.h"
+#include "flTime.h"
+
 #include "ctVector.h"
 #include "ctString.h"
 #include "ctKeyValue.h"
-#include "flLog.h"
+#include "ctTimespan.h"
 
 #include <functional>
 
@@ -40,6 +43,9 @@ namespace Fractal
       // Create the applications main window and graphics API
       m_pMainWindow = MakeRef<Window>("Main Window", Window::Flag_Default, Window::DM_Windowed);
       m_pGraphics   = MakeRef(API::Create(graphicsAPIName, m_pMainWindow.Get()), false);
+
+      m_taskQueue = MakeRef<TaskQueue>();
+      m_mainThreadID = GetThreadID();
     }
 
     void HandleEvent(Event* pEvent)
@@ -106,6 +112,27 @@ namespace Fractal
       InvokeBehaviour(&ApplicationBehaviour::OnPostRender);
     }
 
+    void BeginFrame()
+    {
+      m_frameStartTime = HighResClock();
+    }
+
+    void EndFrame()
+    {
+      uint64_t frameDuration = HighResClock() - m_frameStartTime;
+      int64_t millis = frameDuration / 1000000ull;
+      if (millis < 16)
+        Sleep(millis - 16);
+    }
+
+    void ProcessQueuedTasks()
+    {
+      uint64_t allocatedTime = 1000000; // 1 ms
+      uint64_t start = HighResClock();
+      while (HighResClock() - start < allocatedTime && m_taskQueue->HasNext())
+        m_taskQueue->RunNext();
+    }
+
     // Application state
     Application* m_pApp      = nullptr;
     bool         m_isRunning = true;
@@ -115,8 +142,13 @@ namespace Fractal
     Ref<Window>        m_pMainWindow   = nullptr;
     Ref<EventQueue>    m_pSystemEvents = nullptr;
 
+    int64_t m_mainThreadID = 0;
+    Ref<TaskQueue> m_taskQueue; // The applications task queue. These are executed on the main thread
+
     // Custom application sub systems
     ctVector<ctKeyValue<ctString, Ref<Module>>> m_subSystems;
+
+    uint64_t m_frameStartTime;
   };
 
   flPIMPL_IMPL(Application);
@@ -146,7 +178,30 @@ namespace Fractal
     return Impl()->m_pGraphics.Get();
   }
 
+  Task* Application::EnqueueTask(flIN Task* pTask)
+  {
+    Application& app = Get();
+
+    if (GetThreadID() == app.MainThreadID())
+      pTask->DoTask();
+    else
+      app.Impl()->m_taskQueue->Add(pTask);
+
+
+    return pTask;
+  }
+
+  int64_t Application::Await(flIN Task* pTask)
+  {
+    return EnqueueTask(pTask)->Await();
+  }
+
   Application& Application::Get() { return *_pApplication; }
+
+  int64_t Application::MainThreadID()
+  {
+    return Get().Impl()->m_mainThreadID;
+  }
 
   Application::Application(char const* graphicsAPIName)
   {
@@ -181,6 +236,8 @@ namespace Fractal
 
     while (Impl()->m_isRunning)
     {
+      Impl()->BeginFrame();
+
       Inputs::Update(); // Push input events
 
       Impl()->PreUpdate();
@@ -191,9 +248,12 @@ namespace Fractal
       Impl()->PreRender();
       Impl()->Render();
       Impl()->PostRender();
+
+      Impl()->ProcessQueuedTasks();
+
       GetMainWindow()->GetRenderTarget()->Swap();
 
-      Sleep(1);
+      Impl()->EndFrame();
     }
 
     Impl()->Shutdown();

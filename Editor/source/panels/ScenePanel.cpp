@@ -59,6 +59,33 @@ void ScenePanel::OnGUI()
     pEditor->m_selectedNode = pNode->GetID();
   }
 
+  if (Widgets::Button("Import"))
+  {
+    GetGlobalThreadPool()->Add(
+      MakeTask([=]() {
+        SystemDialog::OpenFile dialog(false, true);
+        if (dialog.Show(0))
+        {
+          for (int64_t i = 0; i < dialog.GetSelectedCount(); ++i)
+          {
+            Node* pNode = nullptr;
+            // Need to add the node on the main thread
+            Application::Await(MakeTask([&]() { pNode = m_pSceneManager->ActiveScene()->AddNode(); return 0; }));
+
+            if (pNode == nullptr)
+              return -1;
+
+            m_pSceneManager->Import(pNode, dialog.GetSelected(i));
+
+            Application::Await(MakeTask([&]() { pNode->SetParent(pScene->GetRootNode()); return 0; }));
+          }
+        }
+
+        return 0;
+      })
+    );
+  }
+
   Widgets::Separator();
 
   GUIVisitor visitor(pEditor->m_selectedNode);

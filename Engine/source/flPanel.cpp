@@ -1,6 +1,9 @@
-#include "flMath.h"
 #include "flPanel.h"
+#include "flGUIStyle.h"
+#include "flRef.h"
+
 #include "imgui/imgui.h"
+
 #include "ctString.h"
 
 namespace Fractal
@@ -16,6 +19,7 @@ namespace Fractal
     Vec2F m_size;
     Vec2F m_contentAreaSize;
     GUIModule* m_pGUI = nullptr;
+    Ref<GUIStyleSheet> m_pStyleSheet;
   };
 
   flPIMPL_IMPL(Panel);
@@ -24,6 +28,7 @@ namespace Fractal
   {
     Impl()->m_name = name;
     Impl()->m_pGUI = pGUI;
+    Impl()->m_pStyleSheet = MakeRef<GUIStyleSheet>();
   }
 
   void Panel::Update()
@@ -71,5 +76,14 @@ namespace Fractal
   GUIModule const* Panel::GetGUI() const
   {
     return Impl()->m_pGUI;
+  }
+  GUIStyleSheet* Panel::GetStyle()
+  {
+    return Impl()->m_pStyleSheet;
+  }
+
+  GUIStyleSheet const* Panel::GetStyle() const
+  {
+    return Impl()->m_pStyleSheet;
   }
 }

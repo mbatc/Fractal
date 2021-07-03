@@ -1,7 +1,7 @@
 #ifndef EditorGUI_h__
 #define EditorGUI_h__
 
-#include "flGUIModule.h"
+#include "flEngine.h"
 
 class EditorGUIModule : public Fractal::GUIModule
 {

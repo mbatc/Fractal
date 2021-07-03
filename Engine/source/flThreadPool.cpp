@@ -56,6 +56,11 @@ namespace Fractal
     Impl()->Construct(threadCount);
   }
 
+  ThreadPool* ThreadPool::Create(flIN int64_t threadCount)
+  {
+    return flNew ThreadPool(threadCount);
+  }
+
   bool ThreadPool::Add(flIN Task* pTask)
   {
     return Impl()->m_queue.Add(pTask);
@@ -90,5 +95,18 @@ namespace Fractal
   int64_t ThreadPool::GetCount() const
   {
     return Impl()->m_queue.GetCount();
+  }
+
+  static ThreadPool* _pGlobalThreadPool = nullptr;
+  static int64_t _globalWorkerCount = GetCPUThreadCount();
+
+  ThreadPool* GetGlobalThreadPool()
+  {
+    if (_pGlobalThreadPool == nullptr)
+    {
+      _pGlobalThreadPool = ThreadPool::Create(_globalWorkerCount);
+    }
+
+    return _pGlobalThreadPool;
   }
 }

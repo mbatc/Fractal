@@ -40,9 +40,9 @@ public:
     _Add(key, value);
   }
 
-  void AddOrSet(int64_t const &index, T const &value)
+  void AddOrSet(int64_t const& index, T const& value)
   {
-    T *pValue = TryGet(index);
+    T* pValue = TryGet(index);
     if (pValue)
     {
       *pValue = value;
@@ -58,9 +58,9 @@ public:
     return pValue ? *pValue : defaultValue;
   }
 
-  T GetValueOr(int64_t const &index, T const &defaultValue) const
+  T GetValueOr(int64_t const& index, T const& defaultValue) const
   {
-    T const *pValue = TryGet(index);
+    T const* pValue = TryGet(index);
     return pValue ? *pValue : defaultValue;
   }
 
@@ -152,9 +152,9 @@ namespace Fractal
     return pTexPath ? pTexPath->c_str() : "";
   }
 
-  char const *SurfaceMaterial::GetTexture(flIN int64_t index) const
+  char const* SurfaceMaterial::GetTexture(flIN int64_t index) const
   {
-    ctString const *pTexPath = Impl()->m_textures.TryGet(index);
+    ctString const* pTexPath = Impl()->m_textures.TryGet(index);
     return pTexPath ? pTexPath->c_str() : "";
   }
 
@@ -165,7 +165,7 @@ namespace Fractal
 
   void SurfaceMaterial::SetValue(flIN int64_t index, flIN float value)
   {
-    float *pValue = Impl()->m_values.TryGet(index);
+    float* pValue = Impl()->m_values.TryGet(index);
     if (pValue != nullptr)
       *pValue = value;
   }
@@ -177,7 +177,7 @@ namespace Fractal
 
   void SurfaceMaterial::SetColour(flIN int64_t index, flIN Colour colour)
   {
-    Colour *pColour = Impl()->m_colours.TryGet(index);
+    Colour* pColour = Impl()->m_colours.TryGet(index);
     if (pColour != nullptr)
       *pColour = colour;
   }
@@ -187,24 +187,24 @@ namespace Fractal
     Impl()->m_textures.AddOrSet(name, path);
   }
 
-  void SurfaceMaterial::SetTexture(flIN int64_t index, flIN char const *path)
+  void SurfaceMaterial::SetTexture(flIN int64_t index, flIN char const* path)
   {
-    ctString *pPath = Impl()->m_textures.TryGet(index);
+    ctString* pPath = Impl()->m_textures.TryGet(index);
     if (pPath != nullptr)
       *pPath = path;
   }
 
-  int64_t SurfaceMaterial::FindValue(flIN char const *name) const
+  int64_t SurfaceMaterial::FindValue(flIN char const* name) const
   {
     return Impl()->m_values.Find(name);
   }
 
-  int64_t SurfaceMaterial::FindColour(flIN char const *name) const
+  int64_t SurfaceMaterial::FindColour(flIN char const* name) const
   {
     return Impl()->m_colours.Find(name);
   }
 
-  int64_t SurfaceMaterial::FindTexture(flIN char const *name) const
+  int64_t SurfaceMaterial::FindTexture(flIN char const* name) const
   {
     return Impl()->m_textures.Find(name);
   }
@@ -224,31 +224,32 @@ namespace Fractal
     return Impl()->m_textures.size();
   }
 
-  char const *SurfaceMaterial::GetValueName(flIN int64_t index) const
+  char const* SurfaceMaterial::GetValueName(flIN int64_t index) const
   {
     return index < 0 || index >= GetValueCount() ? "" : Impl()->m_values.GetKeys()[index].c_str();
   }
 
-  char const *SurfaceMaterial::GetColourName(flIN int64_t index) const
+  char const* SurfaceMaterial::GetColourName(flIN int64_t index) const
   {
     return index < 0 || index >= GetColourCount() ? "" : Impl()->m_colours.GetKeys()[index].c_str();
   }
 
-  char const *SurfaceMaterial::GetTextureName(flIN int64_t index) const
+  char const* SurfaceMaterial::GetTextureName(flIN int64_t index) const
   {
     return index < 0 || index >= GetTextureCount() ? "" : Impl()->m_textures.GetKeys()[index].c_str();
   }
 
-  char const *MaterialProperty::Phong::diffuse  = "diffuse";
-  char const *MaterialProperty::Phong::ambient  = "ambient";
-  char const *MaterialProperty::Phong::specular = "specular";
-  char const *MaterialProperty::Phong::normal   = "normal";
-  char const *MaterialProperty::Phong::alpha    = "alpha";
+  char const* MaterialProperty::Phong::diffuse  = "diffuse";
+  char const* MaterialProperty::Phong::ambient  = "ambient";
+  char const* MaterialProperty::Phong::specular = "specular";
+  char const* MaterialProperty::Phong::normal   = "normal";
+  char const* MaterialProperty::Phong::alpha    = "alpha";
 
-  char const *MaterialProperty::PBR::albedo     = "albedo";
-  char const *MaterialProperty::PBR::ambient    = "ambient";
-  char const *MaterialProperty::PBR::roughness  = "roughness";
-  char const *MaterialProperty::PBR::metalness  = "metalness";
-  char const *MaterialProperty::PBR::alpha      = "alpha";
-  char const *MaterialProperty::PBR::ao         = "ao";
+  char const* MaterialProperty::PBR::albedo     = "albedo";
+  char const* MaterialProperty::PBR::emissive   = "emissive";
+  char const* MaterialProperty::PBR::roughness  = "roughness";
+  char const* MaterialProperty::PBR::metalness  = "metalness";
+  char const* MaterialProperty::PBR::alpha      = "alpha";
+  char const* MaterialProperty::PBR::ao         = "ao";
+  char const* MaterialProperty::PBR::normal     = "normal";
 }

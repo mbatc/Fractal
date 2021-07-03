@@ -13,6 +13,6 @@ out vec4 fsout_colour0;
 
 void main()
 {
-  fsout_colour0 = texture(diffuseMap0, vsout_texcoord0) * vsout_colour0 * diffuseColour0;
+  fsout_colour0 = texture(diffuseMap0, vec2(vsout_texcoord0.x, 1 - vsout_texcoord0.y)) * vsout_colour0 * diffuseColour0;
   fsout_colour0.a = 1;
 }

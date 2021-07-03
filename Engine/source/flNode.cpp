@@ -53,6 +53,11 @@ namespace Fractal
     return GetTransform()->GetParent()->GetNode();
   }
 
+  void Node::SetParent(flIN Node* pParent)
+  {
+    GetTransform()->SetParent(pParent->GetTransform());
+  }
+
   Node* Node::GetChild(flIN int64_t index)
   {
     return GetTransform()->GetChild(index)->GetNode();
