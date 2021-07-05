@@ -100,11 +100,33 @@ namespace Fractal
         ImGuiCol_TextDisabled
       };
 
+    case GUIColour_MenuBar:
+      return {
+        ImGuiCol_MenuBarBg
+      };
+
+    case GUIColour_WindowTitle:
+      return {
+        ImGuiCol_TitleBg
+      };
+
+    case GUIColour_WindowTitleActive:
+      return {
+        ImGuiCol_TitleBgActive
+      };
+
+    case GUIColour_WindowBackground:
+      return {
+        ImGuiCol_WindowBg,
+        ImGuiCol_ChildBg
+      };
+
     case GUIColour_Item:
       return {
         ImGuiCol_Button,
         ImGuiCol_Header,
         ImGuiCol_Separator,
+        ImGuiCol_SliderGrab,
         ImGuiCol_ResizeGrip
       };
 
@@ -113,21 +135,17 @@ namespace Fractal
         ImGuiCol_ButtonActive,
         ImGuiCol_HeaderActive,
         ImGuiCol_ResizeGripActive,
-        ImGuiCol_SeparatorActive
+        ImGuiCol_SliderGrabActive,
+        ImGuiCol_SeparatorActive,
+        ImGuiCol_CheckMark
       };
 
     case GUIColour_ItemHovered:
       return {
         ImGuiCol_ButtonHovered,
         ImGuiCol_HeaderHovered,
-        ImGuiCol_SeparatorHovered,
-        ImGuiCol_ResizeGripHovered
-      };
-
-    case GUIColour_WindowBackground:
-      return {
-        ImGuiCol_WindowBg,
-        ImGuiCol_ChildBg
+        ImGuiCol_ResizeGripHovered,
+        ImGuiCol_SeparatorHovered
       };
 
     case GUIColour_Input:

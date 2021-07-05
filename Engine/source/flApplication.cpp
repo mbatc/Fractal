@@ -34,6 +34,9 @@ namespace Fractal
 
       m_pApp = pApp;
 
+      m_taskQueue = MakeRef<TaskQueue>();
+      m_mainThreadID = GetThreadID();
+
       m_pSystemEvents = MakeRef<EventQueue>();
       m_pSystemEvents->SetEventCallback([](Event * pEvent, void* pUserData)
       {
@@ -42,10 +45,9 @@ namespace Fractal
 
       // Create the applications main window and graphics API
       m_pMainWindow = MakeRef<Window>("Main Window", Window::Flag_Default, Window::DM_Windowed);
-      m_pGraphics   = MakeRef(API::Create(graphicsAPIName, m_pMainWindow.Get()), false);
-
-      m_taskQueue = MakeRef<TaskQueue>();
-      m_mainThreadID = GetThreadID();
+      RenderTargetOptions opts;
+      opts.sampleCount = 4; // Enable multisampling
+      m_pGraphics = MakeRef(API::Create(graphicsAPIName, m_pMainWindow.Get(), &opts), false);
     }
 
     void HandleEvent(Event* pEvent)

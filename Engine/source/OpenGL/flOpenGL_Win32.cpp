@@ -109,6 +109,9 @@ namespace Fractal
     glEnable(GL_DEBUG_OUTPUT);
     glDebugMessageCallback(_ErrorMessageCallback, 0);
 #endif
+
+    m_pState->SetFeatureEnabled(DeviceFeature_Multisampling, true);
+    m_pState->SetFeatureEnabled(DeviceFeature_DepthTest, true);
   }
 }
 

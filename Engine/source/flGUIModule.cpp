@@ -4,6 +4,7 @@
 
 #include "flAPI.h"
 #include "flTexture.h"
+#include "flSampler.h"
 #include "flTexture2D.h"
 #include "flVertexArray.h"
 #include "flVertexBuffer.h"
@@ -137,7 +138,10 @@ namespace Fractal
       m_vertexArray->AddVertexBuffer(m_vertexBuffer);
       m_vertexArray->SetIndexBuffer(m_indexBuffer);
 
-      io.Fonts->AddFontDefault();
+      ImFontConfig config;
+      config.OversampleH = 1;
+      config.OversampleV = 1;
+      io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/segoeui.ttf", 16, 0, 0);
       io.Fonts->Build();
 
       uint8_t* pPixels = nullptr;
@@ -151,10 +155,15 @@ namespace Fractal
 
       m_fontTexture = MakeRef(pTex, false);
 
-      m_shader = MakeRef(pGraphics->CreateProgram(), false);
-      m_shader->SetShader(_vertSrc, ProgramStage_Vertex);
-      m_shader->SetShader(_fragSrc, ProgramStage_Fragment);
-      m_shader->Compile();
+
+      m_pShader = MakeRef(pGraphics->CreateProgram(), false);
+      m_pShader->SetShader(_vertSrc, ProgramStage_Vertex);
+      m_pShader->SetShader(_fragSrc, ProgramStage_Fragment);
+      m_pShader->Compile();
+
+      m_pSampler = MakeRef(pGraphics->CreateSampler(), false);
+      m_pSampler->SetFilterMinMode(FilterMode_Linear, false);
+      m_pSampler->SetFilterMagMode(FilterMode_Nearest);
 
       m_pSelf->OnEvent(E_Kbd_ASCII, &Impl_GUIModule::OnInputChar);
     }
@@ -299,8 +308,9 @@ namespace Fractal
     Ref<VertexBuffer> m_vertexBuffer;
     Ref<IndexBuffer>  m_indexBuffer;
     Ref<VertexArray>  m_vertexArray;
-    Ref<Program>      m_shader;
-    Ref<ShaderMaterial>     m_material;
+    Ref<Program>      m_pShader;
+    Ref<Sampler>      m_pSampler;
+    Ref<ShaderMaterial> m_material;
     Ref<Texture2D>    m_fontTexture;
 
     ctVector<ImDrawVert> m_vertexData;
@@ -426,10 +436,11 @@ namespace Fractal
     pState->SetViewport(0, 0, pWindow->GetWidth(), pWindow->GetHeight());
 
     // Bind and update program
-    Ref<Program> pProgram = Impl()->m_shader;
+    Ref<Program> pProgram = Impl()->m_pShader;
     pProgram->Bind();
     pProgram->SetMat4("projection", projection.Transpose());
     pProgram->SetInt("mainTexture", 0);
+    pProgram->SetSampler(0, Impl()->m_pSampler);
 
     Impl()->UpdateDrawBuffers(pDrawData);
 
@@ -456,7 +467,7 @@ namespace Fractal
           (int64_t)glClipRect.z,
           (int64_t)glClipRect.w);
 
-        pProgram->SetTexture(0, (Texture*)cmd.TextureId);
+        pProgram->SetTexture(0, (Texture *)cmd.TextureId);
         pGraphics->Render(DrawMode_Triangles, true, elementOffset, cmd.ElemCount);
         elementOffset += cmd.ElemCount;
       }
