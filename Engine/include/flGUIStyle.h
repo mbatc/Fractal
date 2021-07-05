@@ -31,7 +31,7 @@ namespace Fractal
     GUIStyle_ButtonTextAlign,     // ImVec2    ButtonTextAlign
     GUIStyle_SelectableTextAlign, // ImVec2    SelectableTextAlign
   };
-  
+
   // ImGuiCol_Text,
   // ImGuiCol_TextDisabled,
   // ImGuiCol_WindowBg,              // Background of normal windows
@@ -135,9 +135,10 @@ namespace Fractal
   public:
     static GUIStyleSheet* Create();
 
-    void Set(GUIStyleElement const * pElements, int64_t count);
+    void Set(GUIStyleElement const* pElements, int64_t count);
 
-    inline void Set(std::initializer_list<GUIStyleElement> const& styles) {
+    inline void Set(std::initializer_list<GUIStyleElement> const& styles)
+    {
       Set(styles.begin(), styles.size());
     }
   };
@@ -148,6 +149,6 @@ namespace Fractal
   {
     flPIMPL_DEF(GUIStyleScope);
   public:
-    GUIStyleScope(GUIStyleSheet *pStyleSheet);
+    GUIStyleScope(GUIStyleSheet* pStyleSheet);
   };
 }

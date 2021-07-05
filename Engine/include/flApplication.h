@@ -78,7 +78,7 @@ namespace Fractal
      *
      * @param [in] pTask The task to execute.
      */
-    static Task* EnqueueTask(flIN Task *pTask);
+    static Task* EnqueueTask(flIN Task* pTask);
 
     /**
      * @brief Await the completion of a task.
@@ -88,7 +88,7 @@ namespace Fractal
      * immediately.
      *
      * @param [in] pTask The task to execute.
-     * 
+     *
      * @return The result returned by the task.
      */
     static int64_t Await(flIN Task* pTask);

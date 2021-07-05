@@ -29,7 +29,8 @@ namespace Fractal
     Image(flIN int64_t width, flIN int64_t height, flIN ColourU32 initialColour = ColourU32_Black);
 
     template<typename... Args>
-    static Image* Create(Args&& ... args) {
+    static Image* Create(Args&& ... args)
+    {
       flNew(flAllocT(Image, 1)) Image(std::forward<Args>(args)...);
     }
 

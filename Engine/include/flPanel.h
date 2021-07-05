@@ -72,7 +72,7 @@ namespace Fractal
      */
     GUIModule const* GetGUI() const;
 
-    GUIStyleSheet * GetStyle();
+    GUIStyleSheet* GetStyle();
 
     GUIStyleSheet const* GetStyle() const;
   };

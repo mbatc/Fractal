@@ -337,124 +337,124 @@ namespace Fractal
 
     flErrorIf(path.size() < 2, "There must be at least 2 items in the menu command path. (e.g. file/save)");
 
-    if (path.size() >= 2)
+if (path.size() >= 2)
+{
+  Impl_GUIModule::Menu* pDest = nullptr;
+  for (int64_t i = 0; i < path.size() - 1; ++i)
+    pDest = &Impl()->m_menus.GetOrAdd(path[i]);
+
+  if (pDest && !pDest->commands.Contains(path.back()))
+    pDest->commands.Add(path.back(), func);
+  else
+    flError("Menu command '%s' already exists", name);
+}
+}
+
+GUIStyleSheet* GUIModule::GetStyle()
+{
+  return Impl()->m_pStyleSheet;
+}
+
+GUIStyleSheet const* GUIModule::GetStyle() const
+{
+  return Impl()->m_pStyleSheet;
+}
+
+void GUIModule::OnUpdate()
+{
+  for (Ref<Panel>& panel : Impl()->m_panels)
+    panel->OnUpdate();
+
+  Impl()->BeginFrame();
+
+  Vec2F windowSize = { GetMainWindow()->GetWidth(), GetMainWindow()->GetHeight() };
+
+
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
+  {
+    GUIStyleScope globalStyle(Impl()->m_pStyleSheet);
+
+    if (ImGui::Begin("MainDockspace", 0,
+                     ImGuiWindowFlags_NoBringToFrontOnFocus |
+                     ImGuiWindowFlags_NoMove |
+                     ImGuiWindowFlags_NoResize |
+                     ImGuiWindowFlags_NoTitleBar |
+                     ImGuiWindowFlags_MenuBar
+                    ))
     {
-      Impl_GUIModule::Menu* pDest = nullptr;
-      for (int64_t i = 0; i < path.size() - 1; ++i)
-        pDest = &Impl()->m_menus.GetOrAdd(path[i]);
 
-      if (pDest && !pDest->commands.Contains(path.back()))
-        pDest->commands.Add(path.back(), func);
-      else
-        flError("Menu command '%s' already exists", name);
-    }
-  }
-
-  GUIStyleSheet* GUIModule::GetStyle()
-  {
-    return Impl()->m_pStyleSheet;
-  }
-
-  GUIStyleSheet const* GUIModule::GetStyle() const
-  {
-    return Impl()->m_pStyleSheet;
-  }
-
-  void GUIModule::OnUpdate()
-  {
-    for (Ref<Panel>& panel : Impl()->m_panels)
-      panel->OnUpdate();
-
-    Impl()->BeginFrame();
-
-    Vec2F windowSize = { GetMainWindow()->GetWidth(), GetMainWindow()->GetHeight() };
-
-
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
-    {
-      GUIStyleScope globalStyle(Impl()->m_pStyleSheet);
-
-      if (ImGui::Begin("MainDockspace", 0,
-        ImGuiWindowFlags_NoBringToFrontOnFocus |
-        ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoResize |
-        ImGuiWindowFlags_NoTitleBar |
-        ImGuiWindowFlags_MenuBar
-      ))
+      if (ImGui::BeginMenuBar())
       {
-
-        if (ImGui::BeginMenuBar())
-        {
-          for (auto& menu : Impl()->m_menus)
-            Impl()->DrawMenu(menu.m_key, &menu.m_val);
-          ImGui::EndMenuBar();
-        }
-
-        ImGuiID id = ImGui::GetID("Dockspace");
-        ImGui::DockSpace(id);
-
-        ImGui::SetWindowPos(ImVec2(0, 0));
-        ImGui::SetWindowSize(ImVec2(windowSize.x, windowSize.y));
-        for (Ref<Panel>& panel : Impl()->m_panels)
-        {
-          GUIStyleScope panelStyle(panel->GetStyle());
-          panel->Update();
-        }
+        for (auto& menu : Impl()->m_menus)
+          Impl()->DrawMenu(menu.m_key, &menu.m_val);
+        ImGui::EndMenuBar();
       }
-      ImGui::End();
+
+      ImGuiID id = ImGui::GetID("Dockspace");
+      ImGui::DockSpace(id);
+
+      ImGui::SetWindowPos(ImVec2(0, 0));
+      ImGui::SetWindowSize(ImVec2(windowSize.x, windowSize.y));
+      for (Ref<Panel>& panel : Impl()->m_panels)
+      {
+        GUIStyleScope panelStyle(panel->GetStyle());
+        panel->Update();
+      }
     }
-    ImGui::PopStyleVar(1);
-
-    Impl()->EndFrame();
+    ImGui::End();
   }
+  ImGui::PopStyleVar(1);
 
-  void GUIModule::OnRender()
-  {
-    for (Ref<Panel>& panel : Impl()->m_panels)
-      panel->OnRender();
+  Impl()->EndFrame();
+}
 
-    GetMainWindow()->GetRenderTarget()->Bind();
+void GUIModule::OnRender()
+{
+  for (Ref<Panel>& panel : Impl()->m_panels)
+    panel->OnRender();
 
-    ImDrawData* pDrawData = ImGui::GetDrawData();
+  GetMainWindow()->GetRenderTarget()->Bind();
 
-    Mat4F projection = Mat4F::Ortho(
-      pDrawData->DisplayPos.x,
-      pDrawData->DisplayPos.x + pDrawData->DisplaySize.x,
-      pDrawData->DisplayPos.y,
-      pDrawData->DisplayPos.y + pDrawData->DisplaySize.y,
-      -1.0f, 1.0f
-    );
+  ImDrawData* pDrawData = ImGui::GetDrawData();
 
-    API* pGraphics = Application::Get().GetGraphicsAPI();
-    Window* pWindow = Application::Get().GetMainWindow();
+  Mat4F projection = Mat4F::Ortho(
+                       pDrawData->DisplayPos.x,
+                       pDrawData->DisplayPos.x + pDrawData->DisplaySize.x,
+                       pDrawData->DisplayPos.y,
+                       pDrawData->DisplayPos.y + pDrawData->DisplaySize.y,
+                       -1.0f, 1.0f
+                     );
 
-    DeviceState* pState = pGraphics->GetState();
-    pState->SetFeatureEnabled(DeviceFeature_StencilTest, true);
-    pState->SetFeatureEnabled(DeviceFeature_ScissorTest, true);
-    pState->SetFeatureEnabled(DeviceFeature_DepthTest, false);
-    pState->SetFeatureEnabled(DeviceFeature_Blend, true);
-    pState->SetViewport(0, 0, pWindow->GetWidth(), pWindow->GetHeight());
+  API* pGraphics = Application::Get().GetGraphicsAPI();
+  Window* pWindow = Application::Get().GetMainWindow();
+
+  DeviceState* pState = pGraphics->GetState();
+  pState->SetFeatureEnabled(DeviceFeature_StencilTest, true);
+  pState->SetFeatureEnabled(DeviceFeature_ScissorTest, true);
+  pState->SetFeatureEnabled(DeviceFeature_DepthTest, false);
+  pState->SetFeatureEnabled(DeviceFeature_Blend, true);
+  pState->SetViewport(0, 0, pWindow->GetWidth(), pWindow->GetHeight());
 
     // Bind and update program
-    Ref<Program> pProgram = Impl()->m_pShader;
-    pProgram->Bind();
-    pProgram->SetMat4("projection", projection.Transpose());
-    pProgram->SetInt("mainTexture", 0);
-    pProgram->SetSampler(0, Impl()->m_pSampler);
+  Ref<Program> pProgram = Impl()->m_pShader;
+  pProgram->Bind();
+  pProgram->SetMat4("projection", projection.Transpose());
+  pProgram->SetInt("mainTexture", 0);
+  pProgram->SetSampler(0, Impl()->m_pSampler);
 
-    Impl()->UpdateDrawBuffers(pDrawData);
+  Impl()->UpdateDrawBuffers(pDrawData);
 
-    // Bind geometry
-    Impl()->m_vertexArray->Bind();
+  // Bind geometry
+  Impl()->m_vertexArray->Bind();
 
-    ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+  ImVec2 displaySize = ImGui::GetIO().DisplaySize;
 
-    int64_t elementOffset = 0;
-    for (int i = 0; i < pDrawData->CmdListsCount; ++i)
+  int64_t elementOffset = 0;
+  for (int i = 0; i < pDrawData->CmdListsCount; ++i)
+  {
+    ImDrawList* pCmdList = pDrawData->CmdLists[i];
+    for (ImDrawCmd const& cmd : pCmdList->CmdBuffer)
     {
-      ImDrawList* pCmdList = pDrawData->CmdLists[i];
-      for (ImDrawCmd const& cmd : pCmdList->CmdBuffer)
-      {
         ImVec4 glClipRect;
         glClipRect.x = cmd.ClipRect.x;
         glClipRect.y = displaySize.y - cmd.ClipRect.w;
@@ -471,79 +471,79 @@ namespace Fractal
         pGraphics->Render(DrawMode_Triangles, true, elementOffset, cmd.ElemCount);
         elementOffset += cmd.ElemCount;
       }
-    }
-
-    pState->SetFeatureEnabled(DeviceFeature_ScissorTest, false);
-    pState->SetFeatureEnabled(DeviceFeature_Blend, false);
-    pState->SetFeatureEnabled(DeviceFeature_DepthTest, true);
-    pState->SetFeatureEnabled(DeviceFeature_StencilTest, false);
-
-    // Unbind the vertex array
-    Impl()->m_vertexArray->Unbind();
   }
 
-  bool GUIModule::OnStartup()
-  {
-    bool success = true;
-    for (Ref<Panel>& panel : Impl()->m_panels)
-      success &= panel->OnStartup();
-    return success;
-  }
+  pState->SetFeatureEnabled(DeviceFeature_ScissorTest, false);
+  pState->SetFeatureEnabled(DeviceFeature_Blend, false);
+  pState->SetFeatureEnabled(DeviceFeature_DepthTest, true);
+  pState->SetFeatureEnabled(DeviceFeature_StencilTest, false);
 
-  void GUIModule::OnShutdown()
-  {
-    for (Ref<Panel>& panel : Impl()->m_panels)
-      panel->OnShutdown();
-  }
+  // Unbind the vertex array
+  Impl()->m_vertexArray->Unbind();
+}
 
-  void GUIModule::OnPreUpdate()
-  {
-    for (Ref<Panel>& panel : Impl()->m_panels)
-      panel->OnPreUpdate();
-  }
+bool GUIModule::OnStartup()
+{
+  bool success = true;
+  for (Ref<Panel>& panel : Impl()->m_panels)
+    success &= panel->OnStartup();
+  return success;
+}
 
-  void GUIModule::OnPreRender()
-  {
-    for (Ref<Panel>& panel : Impl()->m_panels)
-      panel->OnPreRender();
-  }
+void GUIModule::OnShutdown()
+{
+  for (Ref<Panel>& panel : Impl()->m_panels)
+    panel->OnShutdown();
+}
 
-  void GUIModule::OnPostUpdate()
-  {
-    for (Ref<Panel>& panel : Impl()->m_panels)
-      panel->OnPostUpdate();
-  }
+void GUIModule::OnPreUpdate()
+{
+  for (Ref<Panel>& panel : Impl()->m_panels)
+    panel->OnPreUpdate();
+}
 
-  void GUIModule::OnPostRender()
-  {
-    for (Ref<Panel>& panel : Impl()->m_panels)
-      panel->OnPostRender();
-  }
+void GUIModule::OnPreRender()
+{
+  for (Ref<Panel>& panel : Impl()->m_panels)
+    panel->OnPreRender();
+}
 
-  bool GUIModule::OnKeyState(Event* pEvent)
-  {
-    Module::OnKeyState(pEvent);
+void GUIModule::OnPostUpdate()
+{
+  for (Ref<Panel>& panel : Impl()->m_panels)
+    panel->OnPostUpdate();
+}
 
-    return Impl()->OnKeyState(pEvent);
-  }
+void GUIModule::OnPostRender()
+{
+  for (Ref<Panel>& panel : Impl()->m_panels)
+    panel->OnPostRender();
+}
 
-  bool GUIModule::OnMouseState(Event* pEvent)
-  {
-    Module::OnMouseState(pEvent);
+bool GUIModule::OnKeyState(Event* pEvent)
+{
+  Module::OnKeyState(pEvent);
 
-    return Impl()->OnMouseState(pEvent);
-  }
+  return Impl()->OnKeyState(pEvent);
+}
 
-  bool GUIModule::OnMouseScroll(Event* pEvent)
-  {
-    Module::OnMouseScroll(pEvent);
+bool GUIModule::OnMouseState(Event* pEvent)
+{
+  Module::OnMouseState(pEvent);
 
-    return !ImGui::GetIO().WantCaptureMouse;
-  }
+  return Impl()->OnMouseState(pEvent);
+}
 
-  void GUIModule::Open(Panel* pPanel)
-  {
-    Impl()->m_panels.push_back(MakeRef(pPanel, true));
-  }
+bool GUIModule::OnMouseScroll(Event* pEvent)
+{
+  Module::OnMouseScroll(pEvent);
+
+  return !ImGui::GetIO().WantCaptureMouse;
+}
+
+void GUIModule::Open(Panel* pPanel)
+{
+  Impl()->m_panels.push_back(MakeRef(pPanel, true));
+}
 }
 

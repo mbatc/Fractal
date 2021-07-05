@@ -59,7 +59,7 @@ namespace Fractal
     {
       for (GUIStyleElement& element : pStyleSheet->Impl()->elements)
       {
-        float const * f = element.values;
+        float const* f = element.values;
         switch (element.type)
         {
         case GUIStyleElement::Type_Colour: coloursPushed += PushColour(element.elementID, Vec4F(f[0], f[1], f[2], f[3]));   break;
@@ -71,8 +71,10 @@ namespace Fractal
 
     ~Impl_GUIStyleScope()
     {
-      if (coloursPushed > 0) ImGui::PopStyleColor((int)coloursPushed);
-      if (stylesPushed > 0)  ImGui::PopStyleVar((int)stylesPushed);
+      if (coloursPushed > 0)
+        ImGui::PopStyleColor((int)coloursPushed);
+      if (stylesPushed > 0)
+        ImGui::PopStyleVar((int)stylesPushed);
     }
 
     int64_t coloursPushed = 0;
@@ -91,12 +93,14 @@ namespace Fractal
     switch (colourID)
     {
     case GUIColour_Text:
-      return {
+      return
+      {
         ImGuiCol_Text
       };
 
     case GUIColour_TextDisabled:
-      return {
+      return
+      {
         ImGuiCol_TextDisabled
       };
 
@@ -122,7 +126,8 @@ namespace Fractal
       };
 
     case GUIColour_Item:
-      return {
+      return
+      {
         ImGuiCol_Button,
         ImGuiCol_Header,
         ImGuiCol_Separator,
@@ -131,7 +136,8 @@ namespace Fractal
       };
 
     case GUIColour_ItemActive:
-      return {
+      return
+      {
         ImGuiCol_ButtonActive,
         ImGuiCol_HeaderActive,
         ImGuiCol_ResizeGripActive,
@@ -141,35 +147,41 @@ namespace Fractal
       };
 
     case GUIColour_ItemHovered:
-      return {
+      return
+      {
         ImGuiCol_ButtonHovered,
         ImGuiCol_HeaderHovered,
-        ImGuiCol_ResizeGripHovered,
-        ImGuiCol_SeparatorHovered
+        ImGuiCol_SeparatorHovered,
+        ImGuiCol_ResizeGripHovered
       };
 
     case GUIColour_Input:
-      return {
+      return
+      {
         ImGuiCol_FrameBg
       };
 
     case GUIColour_InputActive:
-      return {
+      return
+      {
         ImGuiCol_FrameBgActive
       };
 
     case GUIColour_InputHovered:
-      return {
+      return
+      {
         ImGuiCol_FrameBgHovered
       };
 
     case GUIColour_Border:
-      return {
+      return
+      {
         ImGuiCol_Border
       };
 
     case GUIColour_BorderShadow:
-      return {
+      return
+      {
         ImGuiCol_BorderShadow
       };
     }

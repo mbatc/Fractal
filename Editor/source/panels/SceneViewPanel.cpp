@@ -10,10 +10,10 @@ SceneViewPanel::SceneViewPanel(GUIModule* pGUI)
   , m_camera(pGUI->GetKeyboard(), pGUI->GetMouse())
 {
   GetStyle()->Set(
-    {
-      { GUIStyle_WindowPadding, Vec2F(0, 0)},
-      { GUIStyle_WindowBorderSize, 0.0f }
-    }
+  {
+    { GUIStyle_WindowPadding, Vec2F(0, 0)},
+    { GUIStyle_WindowBorderSize, 0.0f }
+  }
   );
 }
 

@@ -15,6 +15,7 @@
 #include "ctKeyValue.h"
 #include "ctTimespan.h"
 
+#include <windows.h>
 #include <functional>
 
 namespace Fractal
@@ -32,22 +33,30 @@ namespace Fractal
       // Initialize Fractal
       Initialize();
 
+      flInfo("Initialising Application");
       m_pApp = pApp;
-
       m_taskQueue = MakeRef<TaskQueue>();
       m_mainThreadID = GetThreadID();
 
+      flInfo("  Initialising Event System");
       m_pSystemEvents = MakeRef<EventQueue>();
       m_pSystemEvents->SetEventCallback([](Event * pEvent, void* pUserData)
       {
         ((Impl_Application*)pUserData)->HandleEvent(pEvent);
       }, this);
 
+      flInfo("  Creating main window");
       // Create the applications main window and graphics API
       m_pMainWindow = MakeRef<Window>("Main Window", Window::Flag_Default, Window::DM_Windowed);
+
+      flInfo("  Creating Graphics API (%s)", graphicsAPIName);
       RenderTargetOptions opts;
       opts.sampleCount = 4; // Enable multisampling
       m_pGraphics = MakeRef(API::Create(graphicsAPIName, m_pMainWindow.Get(), &opts), false);
+
+      char cwd[1024] = {0};
+      GetCurrentDirectoryA(1024, cwd);
+      flInfo("CWD '%s", cwd);
     }
 
     void HandleEvent(Event* pEvent)

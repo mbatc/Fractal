@@ -27,14 +27,15 @@ namespace Fractal
     OBJImporter meshImporter;
     if (!meshImporter.Import(filepath))
       return false;
-    
+
     Application& app = Application::Get();
     API* pGraphics = app.GetGraphicsAPI();
 
     Ref<Program> pProgram;
 
     // TODO: Load a shader based on the material
-    Ref<Task> pProgramLoadTask = MakeRef(Application::EnqueueTask(MakeTask([&]() {
+    Ref<Task> pProgramLoadTask = MakeRef(Application::EnqueueTask(MakeTask([&]()
+    {
       pProgram = MakeRef(pGraphics->CreateProgram(), false);
       pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag", ProgramStage_Fragment);
       pProgram->SetShaderFromFile("../../Engine/assets/shader-library/transform.vert", ProgramStage_Vertex);
@@ -60,7 +61,8 @@ namespace Fractal
     {
       SurfaceMaterial* pMaterialData = pMesh->GetMaterial(materialIndex);
       Ref<ShaderMaterial> pShaderMaterial;
-      Application::Await(MakeTask([&]() {
+      Application::Await(MakeTask([&]()
+      {
         pShaderMaterial = MakeRef(pGraphics->CreateMaterial(pProgram), false);
         return 0;
       }));
@@ -77,7 +79,8 @@ namespace Fractal
           Ref<Image> pImage = MakeRef<Image>(fullPath.c_str());
 
           Ref<Texture2D> pTexture;
-          Application::Await(MakeTask([&]() {
+          Application::Await(MakeTask([&]()
+          {
             pTexture = MakeRef(pGraphics->CreateTexture2D(PixelFormat_RGBA, PixelComponentType_UNorm8), false);
             return 0;
           }));
@@ -87,7 +90,8 @@ namespace Fractal
             pTexture
           );
 
-          loadTasks.push_back(MakeRef(Application::EnqueueTask(MakeTask([=] () {
+          loadTasks.push_back(MakeRef(Application::EnqueueTask(MakeTask([ = ]()
+          {
             pTexture->SetFromImage(pImage);
             pTexture->GenerateMipMaps();
             return 0;
@@ -109,7 +113,7 @@ namespace Fractal
           pMaterialData->GetValue(valueIndex)
         );
 
-      loadTasks.push_back(MakeRef(Application::EnqueueTask(MakeTask([=]() mutable { pShaderMaterial->Apply(); return 0; })), true));
+      loadTasks.push_back(MakeRef(Application::EnqueueTask(MakeTask([ = ]() mutable { pShaderMaterial->Apply(); return 0; })), true));
 
       // Add shader and material to the renderer
       pRenderer->SetMaterial(materialIndex, pShaderMaterial);
@@ -117,7 +121,7 @@ namespace Fractal
     }
 
     // Await tasks to be executed on the main thread
-    for (auto &pTask : loadTasks)
+    for (auto& pTask : loadTasks)
       pTask->Await();
 
     return true;
