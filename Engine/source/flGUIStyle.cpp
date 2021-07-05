@@ -105,22 +105,26 @@ namespace Fractal
       };
 
     case GUIColour_MenuBar:
-      return {
+      return
+      {
         ImGuiCol_MenuBarBg
       };
 
     case GUIColour_WindowTitle:
-      return {
+      return
+      {
         ImGuiCol_TitleBg
       };
 
     case GUIColour_WindowTitleActive:
-      return {
+      return
+      {
         ImGuiCol_TitleBgActive
       };
 
     case GUIColour_WindowBackground:
-      return {
+      return
+      {
         ImGuiCol_WindowBg,
         ImGuiCol_ChildBg
       };

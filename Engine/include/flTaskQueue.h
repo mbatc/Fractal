@@ -4,8 +4,6 @@
 
 namespace Fractal
 {
-  typedef int64_t(*TaskFunc)(void*);
-
   class Impl_TaskQueue;
 
   class flEXPORT TaskQueue : public Interface

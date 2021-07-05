@@ -54,7 +54,7 @@ void main()
 
 )";
 
-static char const* _fragSrc = R"(
+static char const *_fragSrc = R"(
 #version 330
 
 in vec2 vs_texcoord0;
@@ -79,10 +79,10 @@ namespace Fractal
     struct Menu
     {
       ctHashMap<ctString, Menu> menus;
-      ctHashMap<ctString, GUIModule::MenuCommandFunc> commands;
+      ctHashMap<ctString, Ref<Task>> commands;
     };
 
-    void Construct(GUIModule* pSelf)
+    void Construct(GUIModule *pSelf)
     {
       m_pStyleSheet = MakeRef<GUIStyleSheet>();
 
@@ -93,9 +93,9 @@ namespace Fractal
       m_pMouse = pSelf->GetMouse();
 
       // Setup back-end capabilities flags
-      ImGuiIO& io = ImGui::GetIO();
-      io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;         // We can honor GetMouseCursor() values (optional)
-      io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;          // We can honor io.WantSetMousePos requests (optional, rarely used)
+      ImGuiIO &io = ImGui::GetIO();
+      io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors; // We can honor GetMouseCursor() values (optional)
+      io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;  // We can honor io.WantSetMousePos requests (optional, rarely used)
       io.BackendPlatformName = "Fractal Engine";
 
       io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -123,17 +123,15 @@ namespace Fractal
       io.KeyMap[ImGuiKey_Y] = KC_Y;
       io.KeyMap[ImGuiKey_Z] = KC_Z;
 
-      API* pGraphics = Application::Get().GetGraphicsAPI();
+      API *pGraphics = Application::Get().GetGraphicsAPI();
       m_indexBuffer = MakeRef(pGraphics->CreateIndexBuffer(0, 0, BufferUsage_Dynamic), false);
       m_vertexBuffer = MakeRef(pGraphics->CreateVertexBuffer(0, 0, BufferUsage_Dynamic), false);
       m_vertexArray = MakeRef(pGraphics->CreateVertexArray(), false);
 
       ImDrawVert vert;
-      m_vertexBuffer->SetLayout({
-        { 0, Type_Float32, 2 },
-        { 1, Type_Float32, 2 },
-        { 2, Type_UInt8,   4, true }
-        });
+      m_vertexBuffer->SetLayout({{0, Type_Float32, 2},
+                                 {1, Type_Float32, 2},
+                                 {2, Type_UInt8, 4, true}});
 
       m_vertexArray->AddVertexBuffer(m_vertexBuffer);
       m_vertexArray->SetIndexBuffer(m_indexBuffer);
@@ -144,17 +142,16 @@ namespace Fractal
       io.Fonts->AddFontFromFileTTF("C:/Windows/Fonts/segoeui.ttf", 16, 0, 0);
       io.Fonts->Build();
 
-      uint8_t* pPixels = nullptr;
+      uint8_t *pPixels = nullptr;
       int w, h, bpp;
       io.Fonts->GetTexDataAsRGBA32(&pPixels, &w, &h, &bpp);
-      Texture2D* pTex = pGraphics->CreateTexture2D();
+      Texture2D *pTex = pGraphics->CreateTexture2D();
       PixelBufferDesc desc;
       CreatePixelBufferDesc(&desc, PixelFormat_RGBA, PixelComponentType_UNorm8, w, h);
       pTex->Set(pPixels, &desc);
       io.Fonts->SetTexID((ImTextureID)pTex);
 
       m_fontTexture = MakeRef(pTex, false);
-
 
       m_pShader = MakeRef(pGraphics->CreateProgram(), false);
       m_pShader->SetShader(_vertSrc, ProgramStage_Vertex);
@@ -170,11 +167,11 @@ namespace Fractal
 
     void BeginFrame()
     {
-      ImGuiIO& io = ImGui::GetIO();
+      ImGuiIO &io = ImGui::GetIO();
       IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
 
       // Setup display size (every frame to accommodate for window resizing)
-      Window* pWindow = Application::Get().GetMainWindow();
+      Window *pWindow = Application::Get().GetMainWindow();
       io.DisplaySize = ImVec2((float)pWindow->GetWidth(), (float)pWindow->GetHeight());
 
       // Setup time step
@@ -198,7 +195,7 @@ namespace Fractal
 
     void UpdateKeyboard()
     {
-      ImGuiIO& io = ImGui::GetIO();
+      ImGuiIO &io = ImGui::GetIO();
 
       // Read keyboard modifiers inputs
       io.KeyCtrl = m_pKeyboard->GetKeyDown(KC_Control);
@@ -209,7 +206,7 @@ namespace Fractal
 
     void UpdateMouse()
     {
-      ImGuiIO& io = ImGui::GetIO();
+      ImGuiIO &io = ImGui::GetIO();
 
       // Update OS mouse cursor with the cursor requested by imgui
       ImGuiMouseCursor mouse_cursor = io.MouseDrawCursor ? ImGuiMouseCursor_None : ImGui::GetMouseCursor();
@@ -232,24 +229,26 @@ namespace Fractal
       // TODO: change to correct mouse cursor
     }
 
-    void UpdateDrawBuffers(ImDrawData* pDrawData)
+    void UpdateDrawBuffers(ImDrawData *pDrawData)
     {
       m_vertexBuffer->GetBuffer()->Resize(sizeof(ImDrawVert) * pDrawData->TotalVtxCount, true);
       m_indexBuffer->GetBuffer()->Resize(sizeof(ImDrawIdx) * pDrawData->TotalIdxCount, true);
 
-      if (m_vertexBuffer->GetVertexCount() == 0) return;
-      if (m_indexBuffer->GetIndexCount() == 0)   return;
+      if (m_vertexBuffer->GetVertexCount() == 0)
+        return;
+      if (m_indexBuffer->GetIndexCount() == 0)
+        return;
 
-      ImDrawVert* pVertexData = (ImDrawVert*)m_vertexBuffer->GetBuffer()->Map(AccessFlag_Write);
-      ImDrawIdx* pIndexData = (ImDrawIdx*)m_indexBuffer->GetBuffer()->Map(AccessFlag_Write);
+      ImDrawVert *pVertexData = (ImDrawVert *)m_vertexBuffer->GetBuffer()->Map(AccessFlag_Write);
+      ImDrawIdx *pIndexData = (ImDrawIdx *)m_indexBuffer->GetBuffer()->Map(AccessFlag_Write);
 
       // Concat all vertex buffers into a single array
       int64_t vertexOffset = 0;
       int64_t indexOffset = 0;
       for (int i = 0; i < pDrawData->CmdListsCount; ++i)
       {
-        ImDrawList* pDrawList = pDrawData->CmdLists[i];
-        for (int const& idx : pDrawList->IdxBuffer)
+        ImDrawList *pDrawList = pDrawData->CmdLists[i];
+        for (int const &idx : pDrawList->IdxBuffer)
           *(pIndexData++) = ImDrawIdx(idx + vertexOffset);
 
         int vtxCount = pDrawList->VtxBuffer.size();
@@ -261,62 +260,66 @@ namespace Fractal
       m_indexBuffer->GetBuffer()->Unmap();
     }
 
-    bool OnKeyState(Event* pEvent)
+    bool OnKeyState(Event *pEvent)
     {
       ImGui::GetIO().KeysDown[pEvent->kbdState.keyCode] = pEvent->kbdState.isDown;
 
       return !ImGui::GetIO().WantCaptureKeyboard;
     }
 
-    bool OnMouseState(Event* pEvent)
+    bool OnMouseState(Event *pEvent)
     {
       ImGui::GetIO().MouseDown[pEvent->mseState.button] = pEvent->mseState.isDown;
 
       return !ImGui::GetIO().WantCaptureMouse;
     }
 
-    bool OnInputChar(Event* pEvent)
+    bool OnInputChar(Event *pEvent)
     {
       ImGui::GetIO().AddInputCharacter(pEvent->kbdASCII.character);
 
       return !ImGui::GetIO().WantTextInput;
     }
 
-    void DrawMenu(ctString const& name, Menu* pMenu)
+    void DrawMenu(ctString const &name, Menu *pMenu)
     {
       if (ImGui::BeginMenu(name.c_str()))
       {
         // Draw commands
-        for (auto& kvp : pMenu->commands)
+        for (auto &kvp : pMenu->commands)
           if (ImGui::MenuItem(kvp.m_key.c_str()))
-            kvp.m_val();
+          {
+            kvp.m_val->Run();
+            kvp.m_val->Reset();
+          }
 
         // Draw the sub menus
-        for (auto& kvp : pMenu->menus)
+        for (auto &kvp : pMenu->menus)
           DrawMenu(name, &kvp.m_val);
+
         ImGui::EndMenu();
       }
     }
 
-    Keyboard* m_pKeyboard;
-    Mouse* m_pMouse;
+    Keyboard *m_pKeyboard;
+    Mouse *m_pMouse;
 
-    ImGuiContext* m_pContext = 0;
+    ImGuiContext *m_pContext = 0;
     ImGuiMouseCursor m_lastCursor = ImGuiMouseCursor_Arrow;
-    ctVector<Ref<Panel>> m_panels;
+    ctVector<ctKeyValue<int64_t, Ref<Panel>>> m_panels;
 
     Ref<VertexBuffer> m_vertexBuffer;
-    Ref<IndexBuffer>  m_indexBuffer;
-    Ref<VertexArray>  m_vertexArray;
-    Ref<Program>      m_pShader;
-    Ref<Sampler>      m_pSampler;
+    Ref<IndexBuffer> m_indexBuffer;
+    Ref<VertexArray> m_vertexArray;
+    Ref<Program> m_pShader;
+    Ref<Sampler> m_pSampler;
     Ref<ShaderMaterial> m_material;
-    Ref<Texture2D>    m_fontTexture;
+    Ref<Texture2D> m_fontTexture;
 
     ctVector<ImDrawVert> m_vertexData;
-    ctVector<ImDrawIdx>  m_indexData;
+    ctVector<ImDrawIdx> m_indexData;
 
-    GUIModule* m_pSelf = nullptr;
+    GUIModule *m_pSelf = nullptr;
     Ref<GUIStyleSheet> m_pStyleSheet;
 
     std::chrono::steady_clock::time_point m_lastTime = std::chrono::steady_clock::now();
@@ -331,7 +334,7 @@ namespace Fractal
     Impl()->Construct(this);
   }
 
-  void GUIModule::AddMenuItem(flIN char const* name, flIN MenuCommandFunc func)
+  void GUIModule::AddMenuItem(flIN char const *name, flIN Task *pTask)
   {
     ctVector<ctString> path = ctString::_split(name, '/', true);
 
@@ -344,7 +347,7 @@ if (path.size() >= 2)
     pDest = &Impl()->m_menus.GetOrAdd(path[i]);
 
   if (pDest && !pDest->commands.Contains(path.back()))
-    pDest->commands.Add(path.back(), func);
+    pDest->commands.Add(path.back(), MakeRef(pTask, true));
   else
     flError("Menu command '%s' already exists", name);
 }
@@ -362,13 +365,12 @@ GUIStyleSheet const* GUIModule::GetStyle() const
 
 void GUIModule::OnUpdate()
 {
-  for (Ref<Panel>& panel : Impl()->m_panels)
+  for (auto &[group, panel] : Impl()->m_panels)
     panel->OnUpdate();
 
   Impl()->BeginFrame();
 
-  Vec2F windowSize = { GetMainWindow()->GetWidth(), GetMainWindow()->GetHeight() };
-
+  Vec2F windowSize = {GetMainWindow()->GetWidth(), GetMainWindow()->GetHeight()};
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
   {
@@ -379,8 +381,7 @@ void GUIModule::OnUpdate()
                      ImGuiWindowFlags_NoMove |
                      ImGuiWindowFlags_NoResize |
                      ImGuiWindowFlags_NoTitleBar |
-                     ImGuiWindowFlags_MenuBar
-                    ))
+                     ImGuiWindowFlags_MenuBar))
     {
 
       if (ImGui::BeginMenuBar())
@@ -395,7 +396,7 @@ void GUIModule::OnUpdate()
 
       ImGui::SetWindowPos(ImVec2(0, 0));
       ImGui::SetWindowSize(ImVec2(windowSize.x, windowSize.y));
-      for (Ref<Panel>& panel : Impl()->m_panels)
+      for (auto &[group, panel] : Impl()->m_panels)
       {
         GUIStyleScope panelStyle(panel->GetStyle());
         panel->Update();
@@ -410,7 +411,7 @@ void GUIModule::OnUpdate()
 
 void GUIModule::OnRender()
 {
-  for (Ref<Panel>& panel : Impl()->m_panels)
+  for (auto &[group, panel] : Impl()->m_panels)
     panel->OnRender();
 
   GetMainWindow()->GetRenderTarget()->Bind();
@@ -422,8 +423,7 @@ void GUIModule::OnRender()
                        pDrawData->DisplayPos.x + pDrawData->DisplaySize.x,
                        pDrawData->DisplayPos.y,
                        pDrawData->DisplayPos.y + pDrawData->DisplaySize.y,
-                       -1.0f, 1.0f
-                     );
+                       -1.0f, 1.0f);
 
   API* pGraphics = Application::Get().GetGraphicsAPI();
   Window* pWindow = Application::Get().GetMainWindow();
@@ -435,7 +435,7 @@ void GUIModule::OnRender()
   pState->SetFeatureEnabled(DeviceFeature_Blend, true);
   pState->SetViewport(0, 0, pWindow->GetWidth(), pWindow->GetHeight());
 
-    // Bind and update program
+  // Bind and update program
   Ref<Program> pProgram = Impl()->m_pShader;
   pProgram->Bind();
   pProgram->SetMat4("projection", projection.Transpose());
@@ -455,22 +455,22 @@ void GUIModule::OnRender()
     ImDrawList* pCmdList = pDrawData->CmdLists[i];
     for (ImDrawCmd const& cmd : pCmdList->CmdBuffer)
     {
-        ImVec4 glClipRect;
-        glClipRect.x = cmd.ClipRect.x;
-        glClipRect.y = displaySize.y - cmd.ClipRect.w;
-        glClipRect.z = cmd.ClipRect.z - cmd.ClipRect.x;
-        glClipRect.w = cmd.ClipRect.w - cmd.ClipRect.y;
+      ImVec4 glClipRect;
+      glClipRect.x = cmd.ClipRect.x;
+      glClipRect.y = displaySize.y - cmd.ClipRect.w;
+      glClipRect.z = cmd.ClipRect.z - cmd.ClipRect.x;
+      glClipRect.w = cmd.ClipRect.w - cmd.ClipRect.y;
 
-        pGraphics->GetState()->SetScissorRect(
-          (int64_t)glClipRect.x,
-          (int64_t)glClipRect.y,
-          (int64_t)glClipRect.z,
-          (int64_t)glClipRect.w);
+      pGraphics->GetState()->SetScissorRect(
+        (int64_t)glClipRect.x,
+        (int64_t)glClipRect.y,
+        (int64_t)glClipRect.z,
+        (int64_t)glClipRect.w);
 
-        pProgram->SetTexture(0, (Texture *)cmd.TextureId);
-        pGraphics->Render(DrawMode_Triangles, true, elementOffset, cmd.ElemCount);
-        elementOffset += cmd.ElemCount;
-      }
+      pProgram->SetTexture(0, (Texture*)cmd.TextureId);
+      pGraphics->Render(DrawMode_Triangles, true, elementOffset, cmd.ElemCount);
+      elementOffset += cmd.ElemCount;
+    }
   }
 
   pState->SetFeatureEnabled(DeviceFeature_ScissorTest, false);
@@ -485,38 +485,38 @@ void GUIModule::OnRender()
 bool GUIModule::OnStartup()
 {
   bool success = true;
-  for (Ref<Panel>& panel : Impl()->m_panels)
+  for (auto &[group, panel] : Impl()->m_panels)
     success &= panel->OnStartup();
   return success;
 }
 
 void GUIModule::OnShutdown()
 {
-  for (Ref<Panel>& panel : Impl()->m_panels)
+  for (auto &[group, panel] : Impl()->m_panels)
     panel->OnShutdown();
 }
 
 void GUIModule::OnPreUpdate()
 {
-  for (Ref<Panel>& panel : Impl()->m_panels)
+  for (auto &[group, panel] : Impl()->m_panels)
     panel->OnPreUpdate();
 }
 
 void GUIModule::OnPreRender()
 {
-  for (Ref<Panel>& panel : Impl()->m_panels)
+  for (auto &[group, panel] : Impl()->m_panels)
     panel->OnPreRender();
 }
 
 void GUIModule::OnPostUpdate()
 {
-  for (Ref<Panel>& panel : Impl()->m_panels)
+  for (auto &[group, panel] : Impl()->m_panels)
     panel->OnPostUpdate();
 }
 
 void GUIModule::OnPostRender()
 {
-  for (Ref<Panel>& panel : Impl()->m_panels)
+  for (auto &[group, panel] : Impl()->m_panels)
     panel->OnPostRender();
 }
 
@@ -541,9 +541,24 @@ bool GUIModule::OnMouseScroll(Event* pEvent)
   return !ImGui::GetIO().WantCaptureMouse;
 }
 
-void GUIModule::Open(Panel* pPanel)
+void GUIModule::AddPanel(int64_t group, Panel* pPanel)
 {
-  Impl()->m_panels.push_back(MakeRef(pPanel, true));
-}
+  Impl()->m_panels.push_back({group, MakeRef(pPanel, true)});
+  pPanel->OnCreate();
 }
 
+void GUIModule::OpenPanel(int64_t group)
+{
+  Panel* pPanel = GetPanel(group);
+  if (pPanel != nullptr)
+    pPanel->Open();
+}
+
+Panel* GUIModule::GetPanel(int64_t group)
+{
+  for (auto &[panelGroup, pPanel] : Impl()->m_panels)
+    if (panelGroup == group)
+      return pPanel.Get();
+  return nullptr;
+}
+}

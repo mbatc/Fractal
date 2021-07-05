@@ -6,7 +6,8 @@
 class EditorGUIModule : public Fractal::GUIModule
 {
 public:
-  EditorGUIModule() {
+  EditorGUIModule()
+  {
     /*
     colors[ImGuiCol_Text] = ImVec4(0.95f, 0.96f, 0.98f, 1.00f);
     colors[ImGuiCol_TextDisabled] = ImVec4(0.36f, 0.42f, 0.47f, 1.00f);
@@ -58,7 +59,8 @@ public:
     colors[ImGuiCol_ModalWindowDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.35f);
     */
 
-    GetStyle()->Set({
+    GetStyle()->Set(
+    {
       { Fractal::GUIColour_Text,              {0.95f, 0.96f, 0.98f, 1.00f} },
       { Fractal::GUIColour_TextDisabled,      {0.15f, 0.18f, 0.22f, 1.00f} },
 

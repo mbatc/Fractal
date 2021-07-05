@@ -66,6 +66,10 @@
 #include "flPanel.h"
 #include "flWidgets.h"
 
+// Built in panels
+#include "tools/flGUIExamplePanel.h"
+#include "tools/flGUIMetricsPanel.h"
+
 // Scene
 #include "flSceneManager.h"
 #include "flSceneGraph.h"

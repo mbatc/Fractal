@@ -20,7 +20,7 @@ namespace Fractal
       Set(pInterface, incRef);
     }
 
-    template<typename T2, std::enable_if_t<std::is_convertible_v<T*, T2*>, int> = 0>
+    template < typename T2, std::enable_if_t < !std::is_convertible_v<T*, T2*>, int > = 0 >
     explicit Ref(T2* pInterface, bool incRef)
     {
       Set(pInterface, incRef);

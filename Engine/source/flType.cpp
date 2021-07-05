@@ -93,5 +93,11 @@ namespace Fractal
     case Type_Float64: return _Convert<double>(pDest, pSrc, srcType, count);
     }
   }
+
+  int64_t GetNextTypeID()
+  {
+    static int64_t nextID = 0;
+    return nextID++;
+  }
 }
 

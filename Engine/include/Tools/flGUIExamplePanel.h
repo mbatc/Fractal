@@ -4,17 +4,13 @@
 
 namespace Fractal
 {
-  class Impl_GUIExamplePanel;
-
-  class GUIExamplePanel : public Panel
+  class flEXPORT GUIExamplePanel : public Panel
   {
-    flPIMPL_DEF(GUIExamplePanel);
-
   public:
-    GUIExamplePanel(GUIModule *pModule);
+    GUIExamplePanel(GUIModule* pModule);
 
-    ~GUIExamplePanel();
-
+    virtual bool Begin() override;
+    virtual void End() override;
     virtual void OnGUI() override;
   };
 }

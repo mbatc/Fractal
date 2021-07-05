@@ -12,4 +12,3 @@ namespace Fractal
     virtual bool Import(Node* pNode, char const* filepath, void* pUserData) override;
   };
 }
-  

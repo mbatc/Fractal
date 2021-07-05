@@ -70,11 +70,14 @@ namespace Fractal
     // Return result if the task has already been complete
     if (Impl()->m_status == Status_Complete)
     {
-      result = Impl()->GetResult();
+      result = Impl()->m_result;
     }
     else if (Impl()->m_status == Status_Running)
     {
+      Impl()->Unlock();
       result = Impl()->Wait();
+
+      return result;
     }
     else
     {
@@ -114,7 +117,7 @@ namespace Fractal
 
   bool Task::OnReset()
   {
-    return false;
+    return true;
   }
 
   Task::Status Task::GetStatus() const

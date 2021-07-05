@@ -18,6 +18,7 @@ namespace Fractal
     Vec2F m_pos;
     Vec2F m_size;
     Vec2F m_contentAreaSize;
+    bool  m_isOpen = false;
     GUIModule* m_pGUI = nullptr;
     Ref<GUIStyleSheet> m_pStyleSheet;
   };
@@ -31,25 +32,59 @@ namespace Fractal
     Impl()->m_pStyleSheet = MakeRef<GUIStyleSheet>();
   }
 
-  void Panel::Update()
+  bool Panel::Begin()
   {
-    ImGui::Begin((Impl()->m_name + "##" + ctString(Impl()->m_id)).c_str());
+    if (!Impl()->m_isOpen)
+      return false;
 
-    ImVec2 contentAreaMin = ImGui::GetWindowContentRegionMin();
-    ImVec2 contentAreaMax = ImGui::GetWindowContentRegionMax();
+    ImGui::Begin((Impl()->m_name + "##" + ctString(Impl()->m_id)).c_str(), &Impl()->m_isOpen);
+    return true;
+  }
 
-    Impl()->m_pos  = { ImGui::GetWindowPos().x, ImGui::GetWindowPos().y };
-    Impl()->m_size = { ImGui::GetWindowWidth(), ImGui::GetWindowHeight() };
-    Impl()->m_contentAreaSize =
-    {
-      contentAreaMax.x - contentAreaMin.x,
-      contentAreaMax.y - contentAreaMin.y
-    };
-
-    OnGUI();
-
+  void Panel::End()
+  {
     ImGui::End();
   }
+
+  void Panel::Open()
+  {
+    Impl()->m_isOpen = true;
+  }
+
+  void Panel::Close()
+  {
+    Impl()->m_isOpen = false;
+  }
+
+  bool Panel::IsOpen() const
+  {
+    return Impl()->m_isOpen;
+  }
+
+  void Panel::Update()
+  {
+    if (Begin())
+    {
+      ImVec2 contentAreaMin = ImGui::GetWindowContentRegionMin();
+      ImVec2 contentAreaMax = ImGui::GetWindowContentRegionMax();
+
+      Impl()->m_pos = {ImGui::GetWindowPos().x, ImGui::GetWindowPos().y};
+      Impl()->m_size = {ImGui::GetWindowWidth(), ImGui::GetWindowHeight()};
+      Impl()->m_contentAreaSize =
+      {
+        contentAreaMax.x - contentAreaMin.x,
+        contentAreaMax.y - contentAreaMin.y
+      };
+
+      OnGUI();
+      End();
+    }
+  }
+
+  void Panel::OnCreate()  {}
+  void Panel::OnOpen()    {}
+  void Panel::OnClose()   {}
+  void Panel::OnDestroy() {}
 
   Vec2F Panel::Position()
   {

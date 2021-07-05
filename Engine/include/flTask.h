@@ -5,10 +5,11 @@
 
 namespace Fractal
 {
+  typedef int64_t (*TaskFunc)(void*);
+
   class Impl_Task;
 
   class flEXPORT Task : public Interface
-
   {
     flPIMPL_DEF(Task);
 
@@ -107,7 +108,8 @@ namespace Fractal
    *
    * The callable object must return an int64_t and take no parameters.
    */
-  template<typename Lambda> Ref<Task> MakeTask(Lambda&& lambda)
+  template <typename Lambda>
+  Ref<Task> MakeTask(Lambda&& lambda)
   {
     class Wrapper : public Task
     {
@@ -122,6 +124,24 @@ namespace Fractal
       Lambda m_func;
     };
 
-    return MakeRef(flNew(flAllocT(Wrapper, 1)) Wrapper(lambda), false).StaticCast<Task>();
+    return MakeRef<Wrapper>(lambda).StaticCast<Task>();
+  }
+
+  inline Ref<Task> MakeTask(TaskFunc func, void* pUserData = nullptr)
+  {
+    class Wrapper : public Task
+    {
+    public:
+      Wrapper(TaskFunc func, void* pUserData)
+        : m_pUserData(pUserData), m_func(func)
+      {}
+
+      virtual int64_t DoTask() override { return m_func(m_pUserData); }
+
+      void* m_pUserData = 0;
+      TaskFunc m_func = 0;
+    };
+
+    return MakeRef<Wrapper>(func, pUserData).StaticCast<Task>();
   }
 }

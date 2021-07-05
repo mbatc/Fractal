@@ -3,17 +3,19 @@
 
 namespace Fractal
 {
-  GUIExamplePanel::GUIExamplePanel(GUIModule *pModule)
+  GUIExamplePanel::GUIExamplePanel(GUIModule* pModule)
     : Panel(pModule, "Example Panel")
   {}
 
-  GUIExamplePanel::~GUIExamplePanel()
-  {
-
-  }
+  // Do nothing because it is handled by ShowDemoWindow
+  bool GUIExamplePanel::Begin() { return IsOpen(); }
+  void GUIExamplePanel::End()   {}
 
   void GUIExamplePanel::OnGUI()
   {
-    ImGui::ShowDemoWindow();
+    bool open = true;
+    ImGui::ShowDemoWindow(&open);
+    if (!open)
+      Close();
   }
 }

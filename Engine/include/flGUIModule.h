@@ -5,6 +5,7 @@
 
 namespace Fractal
 {
+  class Task;
   class Panel;
   class GUIStyleSheet;
 
@@ -15,22 +16,10 @@ namespace Fractal
     flPIMPL_DEF(GUIModule);
 
   public:
-    typedef void (*MenuCommandFunc)();
-
     GUIModule();
 
-    /**
-     * @brief Open a new panel in the GUI.
-     *
-     * T must be a subclass of Panel, and it's constructor must take a GUISystem* as the first parameter.
-     *
-     * Arguments passed to this function are forwarded to T's constructor following the GUISystem*.
-     */
-    template<typename T, typename... Args>
-    void Open(Args&& ... args)
-    {
-      Open(MakeRef(flNew(flAllocT(T, 1)) T(this, std::forward<Args>(args)...), false).Get());
-    }
+    GUIStyleSheet* GetStyle();
+    GUIStyleSheet const* GetStyle() const;
 
     /**
      * @brief Add a command to the menu bar.
@@ -38,10 +27,7 @@ namespace Fractal
      * @param [in] name The command path.
      * @param [in] func The command function to call.
      */
-    void AddMenuItem(flIN char const* name, flIN MenuCommandFunc func);
-
-    GUIStyleSheet* GetStyle();
-    GUIStyleSheet const* GetStyle() const;
+    void AddMenuItem(flIN char const* name, flIN Task* pTask);
 
     virtual void OnUpdate() override;
     virtual void OnRender() override;
@@ -59,7 +45,41 @@ namespace Fractal
     virtual bool OnMouseState(Event* pEvent) override;
     virtual bool OnMouseScroll(Event* pEvent) override;
 
-  protected:
-    void Open(Panel* pPanel);
+    /**
+     * @brief Add a new panel in the GUI.
+     *
+     * T must be a subclass of Panel, and it's constructor must take a GUISystem* as the first parameter.
+     *
+     * Arguments passed to this function are forwarded to T's constructor following the GUISystem*.
+     */
+    template<typename T, typename... Args>
+    void AddPanel(Args&& ... args)
+    {
+      AddPanel(TypeID<T>(), MakeRef<T>(this, std::forward<Args>(args)...).Get());
+    }
+
+    template<typename T>
+    T* GetPanel()
+    {
+      return GetPanel(TypeID<T>());
+    }
+
+    /**
+     * @brief Open a new panel in the GUI.
+     *
+     * T must be a subclass of Panel, and it's constructor must take a GUISystem* as the first parameter.
+     *
+     * Arguments passed to this function are forwarded to T's constructor following the GUISystem*.
+     */
+    template<typename T, typename... Args>
+    void OpenPanel()
+    {
+      OpenPanel(TypeID<T>());
+    }
+
+  private:
+    void AddPanel(int64_t group, Panel* pPanel);
+    void OpenPanel(int64_t group);
+    Panel* GetPanel(int64_t group);
   };
 }
