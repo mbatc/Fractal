@@ -1,4 +1,3 @@
-#include "flNodeBehaviour.h"
 #include "flSceneImporter.h"
 #include "flSceneManager.h"
 #include "flSceneGraph.h"
@@ -15,19 +14,15 @@ namespace Fractal
   class BehaviourVisitor : public Visitor<Component>
   {
   public:
-    BehaviourVisitor(void (NodeBehaviour::* func)()) : m_method(func) {}
+    BehaviourVisitor(void (Component::* func)()) : m_method(func) {}
 
     virtual bool OnEnter(flIN Component* pComponent) override
     {
-      NodeBehaviour* pBehaviour = pComponent->As<NodeBehaviour>();
-      if (pBehaviour == nullptr)
-        return false;
-
-      (pBehaviour->*m_method)();
+      (pComponent->*m_method)();
       return true;
     }
 
-    void (NodeBehaviour::*m_method)(); // The method to invoke on the behavior
+    void (Component::*m_method)(); // The method to invoke on the behavior
   };
 
   class Impl_SceneManager
@@ -90,37 +85,37 @@ namespace Fractal
 
   void SceneManager::OnUpdate()
   {
-    BehaviourVisitor visitor(&NodeBehaviour::OnUpdate);
+    BehaviourVisitor visitor(&Component::OnUpdate);
     Impl()->m_activeScene->Traverse(nullptr, &visitor);
   }
 
   void SceneManager::OnRender()
   {
-    BehaviourVisitor visitor(&NodeBehaviour::OnRender);
+    BehaviourVisitor visitor(&Component::OnRender);
     Impl()->m_activeScene->Traverse(nullptr, &visitor);
   }
 
   void SceneManager::OnPreUpdate()
   {
-    BehaviourVisitor visitor(&NodeBehaviour::OnPreUpdate);
+    BehaviourVisitor visitor(&Component::OnPreUpdate);
     Impl()->m_activeScene->Traverse(nullptr, &visitor);
   }
 
   void SceneManager::OnPreRender()
   {
-    BehaviourVisitor visitor(&NodeBehaviour::OnPreRender);
+    BehaviourVisitor visitor(&Component::OnPreRender);
     Impl()->m_activeScene->Traverse(nullptr, &visitor);
   }
 
   void SceneManager::OnPostUpdate()
   {
-    BehaviourVisitor visitor(&NodeBehaviour::OnPostUpdate);
+    BehaviourVisitor visitor(&Component::OnPostUpdate);
     Impl()->m_activeScene->Traverse(nullptr, &visitor);
   }
 
   void SceneManager::OnPostRender()
   {
-    BehaviourVisitor visitor(&NodeBehaviour::OnPostRender);
+    BehaviourVisitor visitor(&Component::OnPostRender);
     Impl()->m_activeScene->Traverse(nullptr, &visitor);
   }
 }

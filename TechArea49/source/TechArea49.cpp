@@ -20,10 +20,10 @@ public:
   float testFloat = 10.0f;
 };
 
-class PerspectiveCamera
+class EditorPerspectiveCamera
 {
 public:
-  PerspectiveCamera(Keyboard *pKeyboard, Mouse *pMouse)
+  EditorPerspectiveCamera(Keyboard *pKeyboard, Mouse *pMouse)
   {
     m_pKeyboard = pKeyboard;
     m_pMouse    = pMouse;
@@ -216,7 +216,7 @@ public:
 
   SceneGraph m_scene;
 
-  PerspectiveCamera m_camera;
+  EditorPerspectiveCamera m_camera;
 };
 
 class EditorApplication : public Fractal::Application

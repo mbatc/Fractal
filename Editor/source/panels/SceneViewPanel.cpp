@@ -65,49 +65,8 @@ void SceneViewPanel::OnRender()
 
   pState->SetViewport(0, 0, m_target->GetWidth(), m_target->GetHeight());
 
-  class RenderVisitor : public Visitor<Component>
-  {
-  public:
-    RenderVisitor(Mat4F projection, API* pAPI)
-      : m_projection(projection)
-      , m_pGraphics(pAPI)
-    {}
-
-    bool OnEnter(Component* pComponent) override
-    {
-      MeshRenderer* pMesh = pComponent->As<MeshRenderer>();
-      if (pMesh == nullptr)
-        return false;
-
-      Transform* pTransform = pMesh->GetNode()->GetTransform();
-
-      if (pTransform)
-      {
-        Mat4F mvp = m_projection * (Mat4F)pTransform->GetTransform();
-        pMesh->GetMesh()->GetVertexArray()->Bind();
-        for (int64_t subMesh = 0; subMesh < pMesh->GetSubMeshCount(); ++subMesh)
-        {
-          Program*        pShader   = pMesh->GetShader(subMesh);
-          ShaderMaterial* pMaterial = pMesh->GetMaterial(subMesh);
-          pShader->SetMat4("mvp", mvp);
-          pShader->Bind();
-          pMaterial->Bind();
-          RenderMesh::SubMesh const* pSubMesh  = pMesh->GetSubMesh(subMesh);
-          m_pGraphics->Render(DrawMode_Triangles, true, pSubMesh->offset, pSubMesh->count);
-        }
-      }
-
-      return true;
-    }
-
-    Mat4F m_projection;
-    API* m_pGraphics;
-  };
-
   SceneGraph* pScene = Application::Get().GetModule<SceneManager>()->ActiveScene();
-  RenderVisitor renderVisitor(projection, pGraphics);
 
-  pScene->Traverse(nullptr, &renderVisitor);
 }
 
 void SceneViewPanel::OnGUI()
@@ -116,23 +75,23 @@ void SceneViewPanel::OnGUI()
     Widgets::Image(m_target->GetColourTarget(), ContentAreaSize().x, ContentAreaSize().y);
 }
 
-PerspectiveCamera::PerspectiveCamera(Keyboard* pKeyboard, Mouse* pMouse)
+EditorPerspectiveCamera::EditorPerspectiveCamera(Keyboard* pKeyboard, Mouse* pMouse)
 {
   m_pKeyboard = pKeyboard;
   m_pMouse = pMouse;
 }
 
-Mat4F PerspectiveCamera::ViewMatrix()
+Mat4F EditorPerspectiveCamera::ViewMatrix()
 {
   return (Mat4F::Translation(position) * Mat4F::YawPitchRoll(ypr)).Inverse();
 }
 
-Mat4F PerspectiveCamera::ProjectionMatrix()
+Mat4F EditorPerspectiveCamera::ProjectionMatrix()
 {
   return Mat4F::Projection(width / height, FOV, nearPlane, height);
 }
 
-void PerspectiveCamera::Update()
+void EditorPerspectiveCamera::Update()
 {
   Vec3F velocity;
   if (m_pKeyboard->GetKeyDown(KC_A))

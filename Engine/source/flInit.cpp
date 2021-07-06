@@ -3,12 +3,14 @@
 
 namespace Fractal
 {
-  bool flEXPORT Initialize()
+  bool Initialize()
   {
     bool result = true;
 
     result &=
       MeshRenderer::Register()
+      && Light::Register()
+      && Camera::Register()
       && Transform::Register();
 
     result &= OpenGL::RegisterAPI();

@@ -3,10 +3,10 @@
 #include "flEngine.h"
 #include "ctVector.h"
 
-class PerspectiveCamera
+class EditorPerspectiveCamera
 {
 public:
-  PerspectiveCamera(Fractal::Keyboard* pKeyboard, Fractal::Mouse* pMouse);
+  EditorPerspectiveCamera(Fractal::Keyboard* pKeyboard, Fractal::Mouse* pMouse);
 
   Fractal::Mat4F ViewMatrix();
   Fractal::Mat4F ProjectionMatrix();
@@ -35,7 +35,7 @@ public:
   virtual void OnRender() override;
   virtual void OnGUI() override;
 
-  PerspectiveCamera m_camera;
+  EditorPerspectiveCamera m_camera;
 
   Fractal::Ref<Fractal::TextureRenderTarget> m_target;
 };

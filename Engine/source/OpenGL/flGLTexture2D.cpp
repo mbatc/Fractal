@@ -1,5 +1,7 @@
 #include "flGLTexture2D.h"
 #include "flGLUtil.h"
+#include "flApplication.h"
+#include "flTask.h"
 
 namespace Fractal
 {
@@ -46,7 +48,12 @@ namespace Fractal
 
   GLTexture2D::~GLTexture2D()
   {
-    flVerifyGL(glDeleteTextures, 1, &m_texID);
+    Application::EnqueueTask(MakeTask([texID = m_texID]()
+    {
+      flVerifyGL(glDeleteTextures, 1, &texID);
+      return 0;
+    }
+                                     ));
   }
 
   void GLTexture2D::Bind()

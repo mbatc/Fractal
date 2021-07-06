@@ -50,6 +50,20 @@ namespace Fractal
     void SetName(flIN char const* name);
 
     /**
+     * @brief Check if the node is active.
+     */
+    bool IsActive() const;
+
+    void SetActive(flIN bool active);
+
+    /**
+     * @brief Check if the node should be visible.
+     */
+    bool IsVisible() const;
+
+    void SetVisible(flIN bool visible);
+
+    /**
      * @brief Get the number of components attached to this node.
      *
      * @return The number of components attached to the node.

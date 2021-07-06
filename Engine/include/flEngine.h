@@ -76,7 +76,6 @@
 #include "flNode.h"
 #include "flComponent.h"
 #include "flTransform.h"
-#include "flNodeBehaviour.h"
 #include "flComponentRegistry.h"
 #include "flVisitor.h"
 #include "flMeshRenderer.h"

@@ -48,6 +48,36 @@ namespace Fractal
 
   public:
     /**
+     * @brief Called on the Update step.
+     */
+    virtual void OnUpdate();
+
+    /**
+     * @brief Called before the update step.
+     */
+    virtual void OnPreUpdate();
+
+    /**
+     * @brief Called after the Update step.
+     */
+    virtual void OnPostUpdate();
+
+    /**
+     * @brief Called on the Render step.
+     */
+    virtual void OnRender();
+
+    /**
+     * @brief Called before the Render step.
+     */
+    virtual void OnPreRender();
+
+    /**
+     * @brief Called after the Render step.
+     */
+    virtual void OnPostRender();
+
+    /**
      * @brief Get the string ID of the component class.
      */
     static char const* Type()   { return "Unknown"; }
