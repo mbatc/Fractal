@@ -32,6 +32,11 @@ namespace Fractal
     static bool IsBase(flIN int64_t baseID, flIN int64_t derivedID);
 
     /**
+     * @brief Get the ID of the components base type.
+     */
+    static int64_t GetBaseTypeID(flIN int64_t derivedID);
+
+    /**
      * @brief Get the number of registered component types.
      */
     static int64_t ComponentCount();

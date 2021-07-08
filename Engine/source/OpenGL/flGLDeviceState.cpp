@@ -17,10 +17,11 @@ namespace Fractal
     GLenum glFeature = GL_NONE;
     switch (feature)
     {
-    case DeviceFeature_Blend:       glFeature = GL_BLEND; break;
-    case DeviceFeature_DepthTest:   glFeature = GL_DEPTH_TEST;   break;
-    case DeviceFeature_StencilTest: glFeature = GL_STENCIL_TEST; break;
-    case DeviceFeature_ScissorTest: glFeature = GL_SCISSOR_TEST; break;
+    case DeviceFeature_Blend:         glFeature = GL_BLEND; break;
+    case DeviceFeature_DepthTest:     glFeature = GL_DEPTH_TEST;   break;
+    case DeviceFeature_StencilTest:   glFeature = GL_STENCIL_TEST; break;
+    case DeviceFeature_ScissorTest:   glFeature = GL_SCISSOR_TEST; break;
+    case DeviceFeature_Multisampling: glFeature = GL_MULTISAMPLE; break;
     }
 
     GLboolean value;
@@ -39,9 +40,10 @@ namespace Fractal
       flVerifyGL(glBlendEquationSeparate, GL_FUNC_ADD, GL_FUNC_ADD);
       flVerifyGL(glBlendFuncSeparate, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
       break;
-    case DeviceFeature_DepthTest:   glFeature = GL_DEPTH_TEST;   break;
-    case DeviceFeature_StencilTest: glFeature = GL_STENCIL_TEST; break;
-    case DeviceFeature_ScissorTest: glFeature = GL_SCISSOR_TEST; break;
+    case DeviceFeature_DepthTest:     glFeature = GL_DEPTH_TEST;   break;
+    case DeviceFeature_StencilTest:   glFeature = GL_STENCIL_TEST; break;
+    case DeviceFeature_ScissorTest:   glFeature = GL_SCISSOR_TEST; break;
+    case DeviceFeature_Multisampling: glFeature = GL_MULTISAMPLE; break;
     }
 
     if (glFeature == GL_NONE)

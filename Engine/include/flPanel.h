@@ -1,10 +1,12 @@
 #pragma once
 
 #include "flApplicationBehaviour.h"
+#include "flMath.h"
 
 namespace Fractal
 {
   class GUIModule;
+  class GUIStyleSheet;
 
   class Impl_Panel;
 
@@ -21,6 +23,15 @@ namespace Fractal
      */
     Panel(flIN GUIModule* pGUI, flIN char const* name);
 
+    void Open();
+
+    void Close();
+
+    bool IsOpen() const;
+
+    virtual bool Begin();
+    virtual void End();
+
     /**
      * @brief Update the Panel.
      *
@@ -34,6 +45,14 @@ namespace Fractal
      * This is called within a valid GUI window context. Draw any required widgets here.
      */
     virtual void OnGUI() = 0;
+
+    virtual void OnCreate();
+
+    virtual void OnOpen();
+
+    virtual void OnClose();
+
+    virtual void OnDestroy();
 
     /**
      * @brief Get the position of the window.
@@ -69,5 +88,9 @@ namespace Fractal
      * @return A const pointer to the GUI.
      */
     GUIModule const* GetGUI() const;
+
+    GUIStyleSheet* GetStyle();
+
+    GUIStyleSheet const* GetStyle() const;
   };
 }

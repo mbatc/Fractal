@@ -50,19 +50,24 @@ namespace Fractal
       _derivedMap.resize(ComponentCount());
       for (int64_t i = 0; i < _derivedMap.size(); ++i)
       {
-        ctVector<bool>& isBase = _derivedMap[derivedID];
-        isBase.resize(ComponentCount());
+        ctVector<bool>& isBase = _derivedMap[i];
+        isBase.resize(ComponentCount(), false);
 
-        int64_t nextBase = _components[derivedID].baseID;
+        int64_t nextBase = _components[i].baseID;
         while (nextBase != -1)
         {
-          _derivedMap[nextBase] = true;
+          isBase[nextBase] = true;
           nextBase = _components[nextBase].baseID;
         }
       }
     }
 
     return _derivedMap[derivedID][baseID];
+  }
+
+  int64_t ComponentRegistry::GetBaseTypeID(flIN int64_t derivedID)
+  {
+    return derivedID >= 0 && derivedID < _components.size() ? _components[derivedID].baseID : -1;
   }
 
   int64_t ComponentRegistry::ComponentCount()

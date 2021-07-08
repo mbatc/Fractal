@@ -7,11 +7,15 @@
 #include "flInit.h"
 #include "flRef.h"
 #include "flWindowRenderTarget.h"
+#include "flLog.h"
+#include "flTime.h"
+
 #include "ctVector.h"
 #include "ctString.h"
 #include "ctKeyValue.h"
-#include "flLog.h"
+#include "ctTimespan.h"
 
+#include <windows.h>
 #include <functional>
 
 namespace Fractal
@@ -29,17 +33,30 @@ namespace Fractal
       // Initialize Fractal
       Initialize();
 
+      flInfo("Initialising Application");
       m_pApp = pApp;
+      m_taskQueue = MakeRef<TaskQueue>();
+      m_mainThreadID = GetThreadID();
 
+      flInfo("Initialising Event System");
       m_pSystemEvents = MakeRef<EventQueue>();
       m_pSystemEvents->SetEventCallback([](Event * pEvent, void* pUserData)
       {
         ((Impl_Application*)pUserData)->HandleEvent(pEvent);
       }, this);
 
+      flInfo("Creating main window");
       // Create the applications main window and graphics API
       m_pMainWindow = MakeRef<Window>("Main Window", Window::Flag_Default, Window::DM_Windowed);
-      m_pGraphics   = MakeRef(API::Create(graphicsAPIName, m_pMainWindow.Get()), false);
+
+      flInfo("Creating Graphics API (%s)", graphicsAPIName);
+      RenderTargetOptions opts;
+      opts.sampleCount = 4; // Enable multisampling
+      m_pGraphics = MakeRef(API::Create(graphicsAPIName, m_pMainWindow.Get(), &opts), false);
+
+      char cwd[1024] = {0};
+      GetCurrentDirectoryA(1024, cwd);
+      flInfo("CWD '%s", cwd);
     }
 
     void HandleEvent(Event* pEvent)
@@ -96,8 +113,8 @@ namespace Fractal
 
     void Render()
     {
-      m_pApp->GetMainWindow()->GetRenderTarget()->Bind();
-      m_pApp->GetMainWindow()->GetRenderTarget()->Clear();
+      GetMainWindow()->GetRenderTarget()->Bind();
+      GetMainWindow()->GetRenderTarget()->Clear();
       InvokeBehaviour(&ApplicationBehaviour::OnRender);
     }
 
@@ -106,17 +123,43 @@ namespace Fractal
       InvokeBehaviour(&ApplicationBehaviour::OnPostRender);
     }
 
+    void BeginFrame()
+    {
+      m_frameStartTime = HighResClock();
+    }
+
+    void EndFrame()
+    {
+      uint64_t frameDuration = HighResClock() - m_frameStartTime;
+      int64_t millis = frameDuration / 1000000ull;
+      if (millis < 16)
+        Sleep(millis - 16);
+    }
+
+    void ProcessQueuedTasks()
+    {
+      uint64_t allocatedTime = 1000000; // 1 ms
+      uint64_t start = HighResClock();
+      while (HighResClock() - start < allocatedTime && m_taskQueue->HasNext())
+        m_taskQueue->RunNext();
+    }
+
     // Application state
     Application* m_pApp      = nullptr;
     bool         m_isRunning = true;
 
     // Core components of an application
-    Ref<API> m_pGraphics     = nullptr;
-    Ref<Window>        m_pMainWindow   = nullptr;
-    Ref<EventQueue>    m_pSystemEvents = nullptr;
+    Ref<API>        m_pGraphics     = nullptr;
+    Ref<Window>     m_pMainWindow   = nullptr;
+    Ref<EventQueue> m_pSystemEvents = nullptr;
+
+    int64_t m_mainThreadID = 0;
+    Ref<TaskQueue> m_taskQueue; // The applications task queue. These are executed on the main thread
 
     // Custom application sub systems
     ctVector<ctKeyValue<ctString, Ref<Module>>> m_subSystems;
+
+    uint64_t m_frameStartTime;
   };
 
   flPIMPL_IMPL(Application);
@@ -126,27 +169,26 @@ namespace Fractal
     Impl()->m_isRunning = false;
   }
 
-  Window* Application::GetMainWindow()
+  Task* Application::EnqueueTask(flIN Task* pTask)
   {
-    return Impl()->m_pMainWindow.Get();
+    Application *pApp = GetApplication();
+    if (GetThreadID() == MainThreadID())
+      pTask->DoTask();
+    else
+      pApp->Impl()->m_taskQueue->Add(pTask);
+
+    return pTask;
   }
 
-  Window const* Application::GetMainWindow() const
+  int64_t Application::Await(flIN Task* pTask)
   {
-    return Impl()->m_pMainWindow.Get();
+    return EnqueueTask(pTask)->Await();
   }
 
-  API* Application::GetGraphicsAPI()
+  int64_t Application::MainThreadID()
   {
-    return Impl()->m_pGraphics.Get();
+    return GetApplication()->Impl()->m_mainThreadID;
   }
-
-  API const* Application::GetGraphicsAPI() const
-  {
-    return Impl()->m_pGraphics.Get();
-  }
-
-  Application& Application::Get() { return *_pApplication; }
 
   Application::Application(char const* graphicsAPIName)
   {
@@ -181,6 +223,8 @@ namespace Fractal
 
     while (Impl()->m_isRunning)
     {
+      Impl()->BeginFrame();
+
       Inputs::Update(); // Push input events
 
       Impl()->PreUpdate();
@@ -191,12 +235,30 @@ namespace Fractal
       Impl()->PreRender();
       Impl()->Render();
       Impl()->PostRender();
+
+      Impl()->ProcessQueuedTasks();
+
       GetMainWindow()->GetRenderTarget()->Swap();
 
-      Sleep(1);
+      Impl()->EndFrame();
     }
 
     Impl()->Shutdown();
     return 0;
+  }
+  
+  Window * GetMainWindow()
+  {
+    return GetApplication()->Impl()->m_pMainWindow;
+  }
+
+  API * GetGraphicsAPI()
+  {
+    return GetApplication()->Impl()->m_pGraphics;
+  }
+
+  Application * GetApplication()
+  {
+    return _pApplication;
   }
 }

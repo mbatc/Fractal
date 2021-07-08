@@ -10,6 +10,7 @@ namespace Fractal
     DeviceFeature_StencilTest,
     DeviceFeature_ScissorTest,
     DeviceFeature_Blend,
+    DeviceFeature_Multisampling,
     DeviceFeature_Count,
   };
 

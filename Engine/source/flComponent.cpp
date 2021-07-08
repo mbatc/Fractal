@@ -11,6 +11,14 @@ namespace Fractal
 
   flPIMPL_IMPL(Component);
 
+  void Component::OnUpdate()     {}
+  void Component::OnPreUpdate()  {}
+  void Component::OnPostUpdate() {}
+
+  void Component::OnRender()     {}
+  void Component::OnPreRender()  {}
+  void Component::OnPostRender() {}
+
   int64_t Component::GetNextTypeID()
   {
     static int64_t typeID = 1;

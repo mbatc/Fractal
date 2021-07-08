@@ -114,6 +114,6 @@ namespace Fractal
      *
      * @return The ThreadQueue used to process system events.
      */
-    static ThreadQueue* GetEventThread();
+    static ThreadQueue* flCCONV GetEventThread();
   };
 }

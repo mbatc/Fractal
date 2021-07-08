@@ -1,6 +1,9 @@
-#include "flMath.h"
 #include "flPanel.h"
+#include "flGUIStyle.h"
+#include "flRef.h"
+
 #include "imgui/imgui.h"
+
 #include "ctString.h"
 
 namespace Fractal
@@ -15,7 +18,9 @@ namespace Fractal
     Vec2F m_pos;
     Vec2F m_size;
     Vec2F m_contentAreaSize;
+    bool  m_isOpen = false;
     GUIModule* m_pGUI = nullptr;
+    Ref<GUIStyleSheet> m_pStyleSheet;
   };
 
   flPIMPL_IMPL(Panel);
@@ -24,27 +29,62 @@ namespace Fractal
   {
     Impl()->m_name = name;
     Impl()->m_pGUI = pGUI;
+    Impl()->m_pStyleSheet = MakeRef<GUIStyleSheet>();
+  }
+
+  bool Panel::Begin()
+  {
+    if (!Impl()->m_isOpen)
+      return false;
+
+    ImGui::Begin((Impl()->m_name + "##" + ctString(Impl()->m_id)).c_str(), &Impl()->m_isOpen);
+    return true;
+  }
+
+  void Panel::End()
+  {
+    ImGui::End();
+  }
+
+  void Panel::Open()
+  {
+    Impl()->m_isOpen = true;
+  }
+
+  void Panel::Close()
+  {
+    Impl()->m_isOpen = false;
+  }
+
+  bool Panel::IsOpen() const
+  {
+    return Impl()->m_isOpen;
   }
 
   void Panel::Update()
   {
-    ImGui::Begin((Impl()->m_name + "##" + ctString(Impl()->m_id)).c_str());
-
-    ImVec2 contentAreaMin = ImGui::GetWindowContentRegionMin();
-    ImVec2 contentAreaMax = ImGui::GetWindowContentRegionMax();
-
-    Impl()->m_pos  = { ImGui::GetWindowPos().x, ImGui::GetWindowPos().y };
-    Impl()->m_size = { ImGui::GetWindowWidth(), ImGui::GetWindowHeight() };
-    Impl()->m_contentAreaSize =
+    if (Begin())
     {
-      contentAreaMax.x - contentAreaMin.x,
-      contentAreaMax.y - contentAreaMin.y
-    };
+      ImVec2 contentAreaMin = ImGui::GetWindowContentRegionMin();
+      ImVec2 contentAreaMax = ImGui::GetWindowContentRegionMax();
 
-    OnGUI();
+      Impl()->m_pos = {ImGui::GetWindowPos().x, ImGui::GetWindowPos().y};
+      Impl()->m_size = {ImGui::GetWindowWidth(), ImGui::GetWindowHeight()};
+      Impl()->m_contentAreaSize =
+      {
+        contentAreaMax.x - contentAreaMin.x,
+        contentAreaMax.y - contentAreaMin.y
+      };
 
-    ImGui::End();
+      OnGUI();
+      End();
+    }
   }
+
+  void Panel::OnCreate()  {}
+  void Panel::OnOpen()    {}
+  void Panel::OnClose()   {}
+  void Panel::OnDestroy() {}
 
   Vec2F Panel::Position()
   {
@@ -71,5 +111,14 @@ namespace Fractal
   GUIModule const* Panel::GetGUI() const
   {
     return Impl()->m_pGUI;
+  }
+  GUIStyleSheet* Panel::GetStyle()
+  {
+    return Impl()->m_pStyleSheet;
+  }
+
+  GUIStyleSheet const* Panel::GetStyle() const
+  {
+    return Impl()->m_pStyleSheet;
   }
 }

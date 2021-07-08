@@ -17,7 +17,9 @@ namespace Fractal
     flPIMPL_DEF(ThreadPool);
 
   public:
-    ThreadPool(int64_t threadCount);
+    ThreadPool(flIN int64_t threadCount);
+
+    static ThreadPool* Create(flIN int64_t threadCount);
 
     /**
      * @brief Add a task to the queue.
@@ -70,4 +72,9 @@ namespace Fractal
      */
     int64_t GetCount() const;
   };
+
+  /**
+   * @brief A shared thread pool for the engine.
+   */
+  flEXPORT ThreadPool* flCCONV GetGlobalThreadPool();
 }

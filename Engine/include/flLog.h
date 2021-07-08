@@ -147,4 +147,4 @@ namespace Fractal
  *
  * This function causes a debug break.
  */
-#define flFail(message, ...) Fractal::Fail(message, __FUNCTION__, __LINE__, , __VA_ARGS__)
+#define flFail(message, ...) Fractal::Fail(__FUNCTION__, __LINE__, message, __VA_ARGS__)

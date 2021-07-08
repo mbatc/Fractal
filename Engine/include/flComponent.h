@@ -16,18 +16,17 @@ static int64_t       TypeID() { static int64_t id = Component::GetNextTypeID(); 
 static int64_t       BaseID() { return BaseClass::TypeID(); }                                \
 virtual char const * GetType()   const override  { return ClassName::Type(); }               \
 virtual int64_t      GetTypeID() const override  { return ClassName::TypeID(); }             \
-private:                                                                                     \
 static bool Register() {                                                                     \
   static bool done = false;                                                                  \
   static bool result = false;                                                                \
   if (!done) {                                                                               \
     result |= BaseClass::Register();                                                         \
-    result |= Fractal::ComponentRegistry::Register<ClassName>();                     \
+    result |= Fractal::ComponentRegistry::Register<ClassName>();                             \
     done = true;                                                                             \
   }                                                                                          \
   return result;                                                                             \
 }                                                                                            \
-bool __registered = ClassName::Register();
+private:
 
 namespace Fractal
 {
@@ -48,6 +47,36 @@ namespace Fractal
     flPIMPL_DEF(Component);
 
   public:
+    /**
+     * @brief Called on the Update step.
+     */
+    virtual void OnUpdate();
+
+    /**
+     * @brief Called before the update step.
+     */
+    virtual void OnPreUpdate();
+
+    /**
+     * @brief Called after the Update step.
+     */
+    virtual void OnPostUpdate();
+
+    /**
+     * @brief Called on the Render step.
+     */
+    virtual void OnRender();
+
+    /**
+     * @brief Called before the Render step.
+     */
+    virtual void OnPreRender();
+
+    /**
+     * @brief Called after the Render step.
+     */
+    virtual void OnPostRender();
+
     /**
      * @brief Get the string ID of the component class.
      */

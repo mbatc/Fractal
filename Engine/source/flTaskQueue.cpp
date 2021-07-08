@@ -28,16 +28,17 @@ namespace Fractal
 
     int64_t RunNext()
     {
-      if (!HasNext())
-        return -1;
-
       m_lock->lock();
-      Ref<Task> pNextTask = m_tasks.front();
-      m_tasks.pop_front();
+      Ref<Task> pNextTask;
+      if (m_tasks.size() > 0)
+      {
+        pNextTask = m_tasks.front();
+        m_tasks.pop_front();
+      }
       m_lock->unlock();
-
+      
       int64_t result = -1;
-      if (pNextTask)
+      if (pNextTask != nullptr)
         result = pNextTask->Run();
 
       return result;
@@ -76,11 +77,6 @@ namespace Fractal
       return flNew _flGenericTask(taskFunc, pUserData);
     }
 
-    virtual void Destroy() override
-    {
-      flDelete this;
-    }
-
     int64_t DoTask() override
     {
       return m_callback(m_pUserData);
@@ -90,6 +86,11 @@ namespace Fractal
     TaskFunc m_callback = nullptr;
     void* m_pUserData = nullptr;
   };
+
+  TaskQueue* TaskQueue::Create()
+  {
+    return flNew TaskQueue;
+  }
 
   bool TaskQueue::Add(flIN Task* pTask)
   {

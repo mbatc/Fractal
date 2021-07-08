@@ -48,27 +48,7 @@ namespace Fractal
       Impl()->m_mouse.GetServer()->SendEvent(MA_VScroll, (float)pEvent->mseScroll.amount, true);
     return true;
   }
-
-  Window* Module::GetMainWindow()
-  {
-    return Application::Get().GetMainWindow();
-  }
-
-  Window const* Module::GetMainWindow() const
-  {
-    return Application::Get().GetMainWindow();
-  }
-
-  API* Module::GetGraphicsAPI()
-  {
-    return Application::Get().GetGraphicsAPI();
-  }
-
-  API* Module::GetGraphicsAPI() const
-  {
-    return Application::Get().GetGraphicsAPI();
-  }
-
+  
   Mouse* Module::GetMouse()
   {
     return &Impl()->m_mouse;

@@ -6,8 +6,9 @@
 namespace Fractal
 {
   struct Event;
-  class Window;
 
+  class Window;
+  class Task;
   class API;
 
   class Impl_Application;
@@ -52,22 +53,34 @@ namespace Fractal
     void Close();
 
     /**
-     * @brief Returns a pointer to the applications main window.
+     * @brief Get the ID of the applications main thread.
      */
-    Window* GetMainWindow();
-    Window const* GetMainWindow() const;
+    static int64_t MainThreadID();
 
     /**
-     * @brief Returns a pointer to the applications graphics API.
+     * @brief Await the completion of a task.
+     *
+     * The task will be executed on the main thread. If this function is
+     * called from the applications main thread, the task will be executed
+     * immediately.
+     *
+     * @param [in] pTask The task to execute.
      */
-    API* GetGraphicsAPI();
-    API const* GetGraphicsAPI() const;
+    static Task* EnqueueTask(flIN Task* pTask);
 
     /**
-     * @brief Get the global Application instance.
-     **/
-    static Application& Get();
-
+     * @brief Await the completion of a task.
+     *
+     * The task will be executed on the main thread. If this function is
+     * called from the applications main thread, the task will be executed
+     * immediately.
+     *
+     * @param [in] pTask The task to execute.
+     *
+     * @return The result returned by the task.
+     */
+    static int64_t Await(flIN Task* pTask);
+    
   protected:
     Application(char const* graphicsAPIName);
 
@@ -77,4 +90,19 @@ namespace Fractal
 
     int Run(); // Application entry point
   };
+  
+  /**
+   * @brief Returns a pointer to the applications main window.
+   */
+  flEXPORT Window * flCCONV GetMainWindow();
+
+  /**
+   * @brief Returns a pointer to the applications graphics API.
+   */
+  flEXPORT API * flCCONV GetGraphicsAPI();
+
+  /**
+   * @brief Get the global Application instance.
+   **/
+  flEXPORT Application * flCCONV GetApplication();
 }

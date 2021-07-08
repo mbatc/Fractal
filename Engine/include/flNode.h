@@ -50,6 +50,20 @@ namespace Fractal
     void SetName(flIN char const* name);
 
     /**
+     * @brief Check if the node is active.
+     */
+    bool IsActive() const;
+
+    void SetActive(flIN bool active);
+
+    /**
+     * @brief Check if the node should be visible.
+     */
+    bool IsVisible() const;
+
+    void SetVisible(flIN bool visible);
+
+    /**
      * @brief Get the number of components attached to this node.
      *
      * @return The number of components attached to the node.
@@ -63,6 +77,11 @@ namespace Fractal
      */
     Node* GetParent();
     Node const* GetParent() const;
+
+    /**
+     * @brief Set this nodes parent
+     */
+    void SetParent(flIN Node* pParent);
 
     /**
      * @brief Get a child of this node
@@ -80,6 +99,8 @@ namespace Fractal
      * @return The number of children.
      */
     int64_t GetChildCount() const;
+
+    bool RemoveChild(flIN int64_t index);
 
     /**
      * @brief Get a pointer to the SceneGraph that this Node belongs to.

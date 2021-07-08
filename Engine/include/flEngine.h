@@ -1,11 +1,14 @@
 #pragma once
 
 // Platform
+#include "flConfig.h"
 #include "flEvent.h"
 #include "flEventQueue.h"
 #include "flWindow.h"
+#include "flSystemDialog.h"
 
 // Utility
+#include "flString.h"
 #include "flTask.h"
 #include "flTaskQueue.h"
 #include "flImage.h"
@@ -13,6 +16,7 @@
 #include "flType.h"
 #include "flRef.h"
 #include "flLog.h"
+#include "flTime.h"
 
 // Assets
 #include "flMesh.h"
@@ -58,8 +62,13 @@
 
 // GUI
 #include "flGUIModule.h"
+#include "flGUIStyle.h"
 #include "flPanel.h"
 #include "flWidgets.h"
+
+// Built in panels
+#include "tools/flGUIExamplePanel.h"
+#include "tools/flGUIMetricsPanel.h"
 
 // Scene
 #include "flSceneManager.h"
@@ -67,6 +76,10 @@
 #include "flNode.h"
 #include "flComponent.h"
 #include "flTransform.h"
-#include "flNodeBehaviour.h"
 #include "flComponentRegistry.h"
 #include "flVisitor.h"
+#include "flMeshRenderer.h"
+#include "flCamera.h"
+#include "flLight.h"
+
+#include "flSceneRenderer.h"

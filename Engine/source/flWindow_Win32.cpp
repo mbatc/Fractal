@@ -149,7 +149,7 @@ namespace Fractal
     }, &createData, &pCreateTask);
 
     // Wait for the task to complete
-    pCreateTask->Wait();
+    pCreateTask->Await();
     pCreateTask->DecRef();
   }
 
@@ -453,7 +453,7 @@ namespace Fractal
       return 0ll;
     }, &tskData, &pTask);
 
-    pTask->Wait();
+    pTask->Await();
     pTask->DecRef();
 
     return tskData.pWindow;

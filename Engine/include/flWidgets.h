@@ -72,10 +72,24 @@ namespace Fractal
      */
     flEXPORT void Image(flIN Texture2D* pTexture, flIN float width, flIN float height);
 
-    flEXPORT bool BeginTreeNode(flIN char const* name, flIN bool isSelected = false);
+    /**
+     * @brief Begin a tree node
+     */
+    flEXPORT bool BeginTreeNode(flIN char const* name, flIN bool isSelected = false, flIN bool isLeaf = false);
 
+    /**
+     * @brief End a tree node
+     */
     flEXPORT void EndTreeNode();
 
+    /**
+     * @brief Check if the last item was clicked
+     */
     flEXPORT bool IsItemClicked();
+
+    /**
+     * @brief Draw the next widget on the same line as the previous
+     */
+    flEXPORT void SameLine();
   }
 }

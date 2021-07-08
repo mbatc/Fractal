@@ -20,7 +20,7 @@ namespace Fractal
       Set(pInterface, incRef);
     }
 
-    template<typename T2, std::enable_if_t<std::is_convertible_v<T*, T2*>, int> = 0>
+    template < typename T2, std::enable_if_t < !std::is_convertible_v<T*, T2*>, int > = 0 >
     explicit Ref(T2* pInterface, bool incRef)
     {
       Set(pInterface, incRef);
@@ -47,54 +47,28 @@ namespace Fractal
       Set(nullptr);
     }
 
-    T& operator*()
-    {
-      return *Get();
-    }
-
-    T* operator->()
+    T* operator->() const
     {
       return Get();
     }
 
-    T const& operator*() const
+    T& operator*() const
     {
       return *Get();
     }
 
-    T const* operator->() const
-    {
-      return Get();
-    }
-
-    T* Get()
-    {
-      return (T*)m_pInterface;
-    }
-
-    T const* Get() const
+    T* Get() const
     {
       return (T*)m_pInterface;
     }
 
     template<typename T2>
-    T2* As()
-    {
-      return (T2 const*)m_pInterface
-    };
-
-    template<typename T2>
-    T2 const* As() const
+    T2* As() const
     {
       return (T2*)m_pInterface
     };
 
-    operator T* ()
-    {
-      return Get();
-    }
-
-    operator T const* () const
+    operator T* () const
     {
       return Get();
     }
@@ -105,13 +79,13 @@ namespace Fractal
     }
 
     template<typename T2>
-    Ref<T2> StaticCast()
+    Ref<T2> StaticCast() const
     {
       return Ref<T2>(static_cast<T2*>(Get()), true);
     }
 
     template<typename T2>
-    Ref<T2> DynamicCast()
+    Ref<T2> DynamicCast() const
     {
       return Ref<T2>(dynamic_cast<T2*>(Get()), true);
     }

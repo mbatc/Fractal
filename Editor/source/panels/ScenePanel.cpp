@@ -41,17 +41,59 @@ public:
 ScenePanel::ScenePanel(GUIModule* pGUI)
   : Panel(pGUI, "Scene")
 {
-  m_pSceneManager = Application::Get().GetModule<SceneManager>();
+  m_pSceneManager = GetApplication()->GetModule<SceneManager>();
 }
 
 void ScenePanel::OnGUI()
 {
-  EditorModule* pEditor = Application::Get().GetModule<EditorModule>();
+  EditorModule* pEditor = GetApplication()->GetModule<EditorModule>();
   SceneGraph* pScene = m_pSceneManager->ActiveScene();
   if (Widgets::Button("Add"))
   {
-    Node* pNode = pScene->AddNode("New Node", pEditor->m_selectedNode);
+    bool containsNode = pScene->GetNode(pEditor->m_selectedNode) != nullptr;
+    Node* pNode = pScene->AddNode("New Node", containsNode ? pEditor->m_selectedNode : pScene->GetRootNode()->GetID());
     pEditor->m_selectedNode = pNode->GetID();
+  }
+
+  Widgets::SameLine();
+
+  if (Widgets::Button("Import"))
+  {
+    GetGlobalThreadPool()->Add(
+      MakeTask([ = ]()
+    {
+      SystemDialog::OpenFile dialog(false, true);
+      if (dialog.Show(0))
+      {
+        for (int64_t i = 0; i < dialog.GetSelectedCount(); ++i)
+        {
+          Node* pNode = nullptr;
+          // Need to add the node on the main thread
+          Application::Await(MakeTask([&]() { pNode = m_pSceneManager->ActiveScene()->AddNode(); return 0; }));
+
+          if (pNode == nullptr)
+            return -1;
+
+          m_pSceneManager->Import(pNode, dialog.GetSelected(i));
+
+          Application::Await(MakeTask([&]() { pNode->SetParent(pScene->GetRootNode()); return 0; }));
+        }
+      }
+
+      return 0;
+    })
+    );
+  }
+
+  Widgets::SameLine();
+
+  if (pEditor->m_selectedNode != -1)
+  {
+    if (Widgets::Button("Delete"))
+    {
+      m_pSceneManager->ActiveScene()->RemoveNode(pEditor->m_selectedNode);
+      pEditor->m_selectedNode = -1;
+    }
   }
 
   Widgets::Separator();

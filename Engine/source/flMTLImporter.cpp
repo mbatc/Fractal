@@ -90,24 +90,24 @@ namespace Fractal
         // Properties
         if (prop.compare("Ka", atSCO_None))
         {
-          ReadColour(tokens, "ambient");
+          ReadColour(tokens, MaterialProperty::Phong::ambient);
         }
         else if (prop.compare("Kd", atSCO_None))
         {
-          ReadColour(tokens, "diffuse");
+          ReadColour(tokens, MaterialProperty::Phong::diffuse);
         }
         else if (prop.compare("Ks", atSCO_None))
         {
-          ReadColour(tokens, "specular");
+          ReadColour(tokens, MaterialProperty::Phong::specular);
         }
         else if (prop.compare("d", atSCO_None))
         {
-          ReadValue(tokens, "alpha");
+          ReadValue(tokens, MaterialProperty::Phong::alpha);
         }
         else if (prop.compare("Tr", atSCO_None))
         {
-          ReadValue(tokens, "alpha");
-          pActiveMat->SetValue("alpha", 1 - pActiveMat->GetValue("alpha"));
+          ReadValue(tokens, MaterialProperty::Phong::alpha);
+          pActiveMat->SetValue(MaterialProperty::Phong::alpha, 1 - pActiveMat->GetValue(MaterialProperty::Phong::alpha));
         }
         else if (prop.compare("Ni", atSCO_None))
         {
@@ -115,11 +115,11 @@ namespace Fractal
         }
         else if (prop.compare("Pr", atSCO_None))
         {
-          ReadValue(tokens, "roughness");
+          ReadValue(tokens, MaterialProperty::PBR::roughness);
         }
         else if (prop.compare("Pm", atSCO_None))
         {
-          ReadValue(tokens, "metalness");
+          ReadValue(tokens, MaterialProperty::PBR::metalness);
         }
         else if (prop.compare("Ps", atSCO_None))
         {
@@ -127,28 +127,28 @@ namespace Fractal
         }
         else if (prop.compare("Ke", atSCO_None))
         {
-          ReadColour(tokens, "emissive");
+          ReadColour(tokens, MaterialProperty::PBR::emissive);
         }
         // Maps
         else if (prop.compare("map_Ka", atSCO_None))
         {
-          ReadTexture(line, "ambient");
+          ReadTexture(line, MaterialProperty::Phong::ambient);
         }
         else if (prop.compare("map_Kd", atSCO_None))
         {
-          ReadTexture(line, "diffuse");
+          ReadTexture(line, MaterialProperty::Phong::diffuse);
         }
         else if (prop.compare("map_Ks", atSCO_None))
         {
-          ReadTexture(line, "specular");
+          ReadTexture(line, MaterialProperty::Phong::specular);
         }
         else if (prop.compare("map_d", atSCO_None))
         {
-          ReadTexture(line, "alpha");
+          ReadTexture(line, MaterialProperty::Phong::alpha);
         }
         else if (prop.compare("map_bump", atSCO_None) || prop.compare("bump", atSCO_None))
         {
-          ReadTexture(line, "bump");
+          ReadTexture(line, MaterialProperty::Phong::normal);
         }
         else if (prop.compare("map_Disp", atSCO_None) || prop.compare("disp", atSCO_None))
         {
@@ -156,15 +156,15 @@ namespace Fractal
         }
         else if (prop.compare("norm", atSCO_None))
         {
-          ReadTexture(line, "normal");
+          ReadTexture(line, MaterialProperty::PBR::normal);
         }
         else if (prop.compare("map_Pr", atSCO_None))
         {
-          ReadTexture(line, "roughness");
+          ReadTexture(line, MaterialProperty::PBR::roughness);
         }
         else if (prop.compare("map_Pm", atSCO_None))
         {
-          ReadTexture(line, "metalness");
+          ReadTexture(line, MaterialProperty::PBR::metalness);
         }
         else if (prop.compare("map_Ps", atSCO_None))
         {
@@ -172,7 +172,7 @@ namespace Fractal
         }
         else if (prop.compare("map_Ke", atSCO_None))
         {
-          ReadTexture(line, "emissive");
+          ReadTexture(line, MaterialProperty::PBR::emissive);
         }
         // else if (prop.compare("map_RMA", atSCO_None)) {
         //   ReadTexture(line, "roughness");
@@ -231,7 +231,18 @@ namespace Fractal
       seeker.SkipWhitespace();
       seeker.SeekToWhitespace();
       seeker.SkipWhitespace();
-      return ctString(seeker.Text()).trim("\"");
+
+      ctString token = seeker.Text();
+      while (token.starts_with("-"))
+      {
+        seeker.SeekToWhitespace();
+        seeker.SkipWhitespace();
+        seeker.SeekToWhitespace();
+        seeker.SkipWhitespace();
+        token = seeker.Text();
+      }
+
+      return token.trim("\"");
     }
 
     Ref<SurfaceMaterial> GetMaterial(ctString const& name)

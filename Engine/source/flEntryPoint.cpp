@@ -3,7 +3,7 @@
 
 int Fractal::FractalEntryHandler::Run(char** argv, int argc)
 {
-  Application& app = Application::Get();
-  int result = app.Run();
+  Application *pApp = GetApplication();
+  int result = pApp->Run();
   return result;
 }

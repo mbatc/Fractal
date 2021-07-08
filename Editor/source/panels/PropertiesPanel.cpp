@@ -8,8 +8,8 @@ PropertiesPanel::PropertiesPanel(GUIModule* pGUI)
 
 void PropertiesPanel::OnGUI()
 {
-  EditorModule* pEditor = Application::Get().GetModule<EditorModule>();
-  SceneManager* pSceneSystem = Application::Get().GetModule<SceneManager>();
+  EditorModule* pEditor = GetApplication()->GetModule<EditorModule>();
+  SceneManager* pSceneSystem = GetApplication()->GetModule<SceneManager>();
 
   Node* pNode = pSceneSystem->ActiveScene()->GetNode(pEditor->m_selectedNode);
 

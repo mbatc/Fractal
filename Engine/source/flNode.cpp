@@ -11,7 +11,9 @@ namespace Fractal
   public:
     ctString name;
 
-    int64_t id;
+    int64_t id = -1;
+    bool isVisible = true;
+    bool isActive  = true;
 
     ctVector<Ref<Component>> components;
 
@@ -43,6 +45,26 @@ namespace Fractal
     Impl()->name = name;
   }
 
+  bool Node::IsVisible() const
+  {
+    return Impl()->isVisible;
+  }
+
+  void Node::SetVisible(flIN bool visible)
+  {
+    Impl()->isVisible = visible;
+  }
+
+  bool Node::IsActive() const
+  {
+    return Impl()->isActive;
+  }
+
+  void Node::SetActive(flIN bool active)
+  {
+    Impl()->isActive = active;
+  }
+
   Node* Node::GetParent()
   {
     return GetTransform()->GetParent()->GetNode();
@@ -51,6 +73,11 @@ namespace Fractal
   Node const* Node::GetParent() const
   {
     return GetTransform()->GetParent()->GetNode();
+  }
+
+  void Node::SetParent(flIN Node* pParent)
+  {
+    GetTransform()->SetParent(pParent != nullptr ? pParent->GetTransform() : nullptr);
   }
 
   Node* Node::GetChild(flIN int64_t index)
