@@ -56,10 +56,10 @@ namespace Fractal
 
     /**
      * @brief Remove a node from the scene.
-     * 
+     *
      * @param [in] pNode the node to remove.
      */
-    bool RemoveNode(flIN Node *pNode);
+    bool RemoveNode(flIN Node* pNode);
 
     /**
      * @brief Get the IDs of all the nodes in the scene.

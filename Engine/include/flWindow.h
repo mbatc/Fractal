@@ -32,10 +32,10 @@ namespace Fractal
      */
     enum FocusFlags : int64_t
     {
-      FF_None = 0,      ///< The window has no input focus
+      FF_None = 0,          ///< The window has no input focus
       FF_Keyboard = 1 << 0, ///< The window has keyboard focus
-      FF_Mouse = 1 << 1, ///< The window has mouse focus
-      FF_Grabbed = 1 << 2, ///< Did the window just gain focus
+      FF_Mouse = 1 << 1,    ///< The window has mouse focus
+      FF_Grabbed = 1 << 2,  ///< Did the window just gain focus
       FF_Count = 3          ///< Number of window focus flags
     };
 
@@ -44,13 +44,15 @@ namespace Fractal
      */
     enum Flags : int64_t
     {
-      Flag_None = 0,      ///< Special No-Flags value
-      Flag_Visible = 1 << 0, ///< The window is visible
-      Flag_Resizable = 1 << 1, ///< The window can be resized using the borders
+      Flag_None = 0,            ///< Special No-Flags value
+      Flag_Visible = 1 << 0,    ///< The window is visible
+      Flag_Resizable = 1 << 1,  ///< The window can be resized using the borders
       Flag_Borderless = 1 << 2, ///< The window has a border
-      Flag_Minimized = 1 << 3, ///< The window is minimized
-      Flag_Maximized = 1 << 4, ///< The window is maximized
-      Flag_Count = 5,       ///< Number of window flags
+      Flag_Minimized = 1 << 3,  ///< The window is minimized
+      Flag_Maximized = 1 << 4,  ///< The window is maximized
+      Flag_TopMost = 1 << 5,    ///< The window is always draw on top on non top-most windows.
+      Flag_NoIcon = 1 << 6,     ///< The window does not have an icon on the task bar.
+      Flag_Count = 7,           ///< Number of window flags
       Flag_Default = Flag_Visible | Flag_Resizable, ///< The default window flags
     };
 
@@ -60,8 +62,19 @@ namespace Fractal
      * @param [in] title       A c-string to use as the title. This will be copied so it may be destroyed after calling this function.
      * @param [in] flags       A set of initial flags for this window.
      * @param [in] displayMode The initial display mode for this window (e.g. Windowed or Fullscreen).
+     * @param [in] pParent
      */
-    Window(flIN const char* title, flIN Flags flags, flIN DisplayMode displayMode);
+    static Window* Create(flIN const char* title, flIN Flags flags, flIN DisplayMode displayMode, Window* pParent = nullptr);
+
+    /**
+     * @brief Create a new window.
+     *
+     * @param [in] title       A c-string to use as the title. This will be copied so it may be destroyed after calling this function.
+     * @param [in] flags       A set of initial flags for this window.
+     * @param [in] displayMode The initial display mode for this window (e.g. Windowed or Fullscreen).
+     * @param [in] pParent
+     */
+    Window(flIN const char* title, flIN Flags flags, flIN DisplayMode displayMode, Window* pParent = nullptr);
 
     /**
      * @brief Set the title of the Window.
@@ -118,6 +131,16 @@ namespace Fractal
     void SetRect(flIN int64_t posX, flIN int64_t posY, flIN int64_t width, flIN int64_t height);
 
     /**
+     * @brief Set this windows parent.
+     */
+    void SetParent(flIN Window* pParent);
+
+    /**
+     * @brief Get this windows parent.
+     */
+    Window* GetParent() const;
+
+    /**
      * @brief Get the window title.
      *
      * @return A c-string containing the window title.
@@ -152,6 +175,28 @@ namespace Fractal
      * @return The Flags for this window.
      */
     Flags GetFlags() const;
+
+    /**
+     * @brief Update the windows Flags.
+     *
+     * @param [in] flags The new flags to apply to the window
+     */
+    void SetFlags(flIN Flags flags);
+
+    /**
+     * @brief Add flags to the window.
+     */
+    void AddFlags(flIN Flags flags);
+
+    /**
+     * @brief Remove flags from the window.
+     */
+    void RemoveFlags(flIN Flags flags);
+
+    /**
+     * @brief Bring the window to the front of focus
+     */
+    void BringToFocus();
 
     /**
      * @brief Get the size of the window.
@@ -245,6 +290,8 @@ namespace Fractal
      * @return A pointer to the Window that has focus
      */
     static Window* GetFocusedWindow(flIN FocusFlags focusFlags);
+
+    static Window* GetForegroundWindow();
   };
 
   flBITWISE_ENUM_OPERATORS(Window::FocusFlags);

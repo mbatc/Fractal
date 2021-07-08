@@ -24,19 +24,64 @@ namespace Fractal
 
   static Window* _GetWindowFromHandle(HWND hWnd);
 
-  void Impl_Window::Construct(Window* pWindow, const char* title, Window::Flags flags, Window::DisplayMode displayMode)
+  Window::Flags _GetFlagsFromStyle(LONG style)
+  {
+    Window::Flags flags = Window::Flag_None;
+    if (style & WS_POPUP)
+      flags = flags | Window::Flag_Borderless;
+    return flags;
+  }
+
+  Window::Flags _GetFlagsFromStyleEx(LONG style)
+  {
+    Window::Flags flags = Window::Flag_None;
+    if (style & WS_EX_TOOLWINDOW)
+      flags = flags | Window::Flag_NoIcon;
+    if (style & WS_EX_TOPMOST)
+      flags = flags | Window::Flag_TopMost;
+    return flags;
+  }
+
+  LONG _GetStyleFromFlags(Window::Flags flags)
+  {
+    LONG style = 0;
+    if (flags & Window::Flag_Borderless)
+      style |=  WS_POPUP;
+    else
+      style |= WS_OVERLAPPEDWINDOW;
+    return style;
+  }
+
+  LONG _GetStyleExFromFlags(Window::Flags flags)
+  {
+    LONG style = 0;
+    if (flags & Window::Flag_TopMost)
+      style |= WS_EX_TOPMOST;
+
+    if (flags & Window::Flag_NoIcon)
+      style |= WS_EX_TOOLWINDOW;
+    else
+      style |= WS_EX_APPWINDOW;
+
+    return style;
+  }
+
+  void Impl_Window::Construct(Window* pWindow, const char* title, Window::Flags flags, Window::DisplayMode displayMode, Window* pParent)
   {
     HINSTANCE hInstance = ::GetModuleHandle(NULL);
 
     // Setup the event filter, so we only receive events for this window
-    m_events.SetFilter([](Event * pEvent, void* pUserData)
+    m_events.SetFilter(
+      [](Event * pEvent, void* pUserData)
     {
       Impl_Window* pWnd = (Impl_Window*)pUserData;
       return pWnd->IsEventSource(pEvent) || pEvent->nativeEvent.hWnd == nullptr;
-    }, this);
+    },
+    this);
 
     // Setup the event callback
-    m_events.SetEventCallback([](Event * pEvent, void* pUserData)
+    m_events.SetEventCallback(
+      [](Event * pEvent, void* pUserData)
     {
       Impl_Window* pWnd = (Impl_Window*)pUserData;
       pWnd->m_receivedEvents[pEvent->id] = true;
@@ -50,19 +95,21 @@ namespace Fractal
           _pHoveredWindow = nullptr;
         break;
       }
-    }, this);
+    },
+    this);
 
     _windowInitLock.lock();
     if (_windowInitCount++ == 0)
     {
       // Create the window class for flEngine win32 windows
-      EventQueue::GetEventThread()->Add([](void* pUserData)
+      EventQueue::GetEventThread()->Add(MakeTask(
+                                          [ = ]()
       {
-        WNDCLASSEX wndCls = { 0 };
+        WNDCLASSEX wndCls = {0};
         wndCls.cbSize = sizeof(WNDCLASSEX);
         wndCls.style = 0;
         wndCls.lpfnWndProc = _flWindowProc;
-        wndCls.hInstance = (HINSTANCE)pUserData;
+        wndCls.hInstance = hInstance;
         wndCls.hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
         wndCls.hCursor = ::LoadCursor(NULL, IDC_ARROW);
         wndCls.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
@@ -72,11 +119,11 @@ namespace Fractal
         _atom = RegisterClassEx(&wndCls);
 
         return 0ll;
-      }, hInstance);
+      }));
     }
     _windowInitLock.unlock();
 
-    Create(pWindow, title, flags, hInstance);
+    Create(pWindow, title, flags, hInstance, pParent);
   }
 
   Impl_Window::~Impl_Window()
@@ -90,67 +137,49 @@ namespace Fractal
 
     if (--_windowInitCount == 0)
     {
-      EventQueue::GetEventThread()->Add([](void*)
+      EventQueue::GetEventThread()->Add(MakeTask(
+                                          [ = ]()
       {
         UnregisterClass(_windowClsName.c_str(), ::GetModuleHandle(NULL));
         return 0ll;
-      });
+      }));
     }
     _windowInitLock.unlock();
   }
 
-  void Impl_Window::Create(Window* pWindow, const char* title, Window::Flags flags, void* hInstance)
+  void Impl_Window::Create(Window* pWindow, const char* title, Window::Flags flags, void* hInstance, Window* pParent)
   {
-    Task* pCreateTask = nullptr;
-
-    // Create the window on the System event thread
-    struct CreateData
-    {
-      Window* pWindow;
-      void** ppHandle;
-      const char* title;
-      Window::Flags flags;
-      HINSTANCE     hInstance;
-    };
-
-    CreateData createData;
-    createData.pWindow = pWindow;
-    createData.ppHandle = &m_hWnd;
-    createData.title = title;
-    createData.flags = flags;
-    createData.hInstance = (HINSTANCE)hInstance;
-
     // Create the window
-    EventQueue::GetEventThread()->Add([](void* pUserData)
+    Ref<Task> pCreateTask = MakeTask(
+                              [ = ]()
     {
-      CreateData* pCreateData = (CreateData*)pUserData;
-
       // TODO: Add error reporting
-      *pCreateData->ppHandle = CreateWindowEx(
-                                 WS_EX_OVERLAPPEDWINDOW,
-                                 _windowClsName.c_str(),
-                                 pCreateData->title,
-                                 WS_OVERLAPPEDWINDOW,
-                                 CW_USEDEFAULT, CW_USEDEFAULT,
-                                 CW_USEDEFAULT, CW_USEDEFAULT,
-                                 0,
-                                 0,
-                                 pCreateData->hInstance,
-                                 0);
+      m_hWnd = CreateWindowEx(
+                 _GetStyleExFromFlags(flags),
+                 _windowClsName.c_str(),
+                 title,
+                 _GetStyleFromFlags(flags),
+                 CW_USEDEFAULT, CW_USEDEFAULT,
+                 CW_USEDEFAULT, CW_USEDEFAULT,
+                 pParent == nullptr ? 0 : (HWND)pParent->GetNativeHandle(),
+                 0,
+                 (HINSTANCE)hInstance,
+                 0);
 
-      _windowLookup.Add(*pCreateData->ppHandle, pCreateData->pWindow);
+      _windowLookup.Add(m_hWnd, pWindow);
 
       int show = SW_HIDE;
 
-      ::UpdateWindow((HWND)*pCreateData->ppHandle);
-      if ((pCreateData->flags & Window::Flag_Visible) > 0)
-        ::ShowWindow((HWND)*pCreateData->ppHandle, SW_SHOW);
+      ::UpdateWindow((HWND)m_hWnd);
+      if ((flags & Window::Flag_Visible) > 0)
+        ::ShowWindow((HWND)m_hWnd, SW_SHOW);
       return 0ll;
-    }, &createData, &pCreateTask);
+    });
+
+    EventQueue::GetEventThread()->Add(pCreateTask);
 
     // Wait for the task to complete
     pCreateTask->Await();
-    pCreateTask->DecRef();
   }
 
   void Impl_Window::Destroy()
@@ -158,12 +187,14 @@ namespace Fractal
     if (!m_hWnd)
       return;
 
-    EventQueue::GetEventThread()->Add([](void* pHandle)
+    EventQueue::GetEventThread()->Add(
+      [](void* pHandle)
     {
       ::DestroyWindow((HWND)pHandle);
       _windowLookup.Remove(pHandle);
       return 0ll;
-    }, m_hWnd);
+    },
+    m_hWnd);
   }
 
   Window* Impl_Window::GetFocusedWindow(Window::FocusFlags focusFlags)
@@ -179,7 +210,6 @@ namespace Fractal
     else
       pMouseWnd = _GetWindowFromHandle(capturedWindow);
 
-
     bool keyboard = (focusFlags & Window::FF_Keyboard) > 0;
     bool mouse = (focusFlags & Window::FF_Mouse) > 0;
     if (keyboard && mouse)
@@ -189,6 +219,19 @@ namespace Fractal
     else if (mouse)
       return pMouseWnd;
     return nullptr;
+  }
+
+  void Impl_Window::BringToFocus()
+  {
+    HWND hWnd = (HWND)m_hWnd;
+    ::BringWindowToTop(hWnd);
+    ::SetForegroundWindow(hWnd);
+    ::SetFocus(hWnd);
+  }
+
+  Window* Impl_Window::GetForegroundWindow()
+  {
+    return _GetWindowFromHandle(::GetForegroundWindow());
   }
 
   void Impl_Window::SetTitle(const char* title)
@@ -213,17 +256,19 @@ namespace Fractal
       m_windowedState.style = ::GetWindowLong(hWnd, GWL_STYLE);
       m_windowedState.exStyle = ::GetWindowLong(hWnd, GWL_EXSTYLE);
 
-      GetRect(&m_windowedState.x,
-              &m_windowedState.y,
-              &m_windowedState.width,
-              &m_windowedState.height);
+      GetRect(
+        &m_windowedState.x,
+        &m_windowedState.y,
+        &m_windowedState.width,
+        &m_windowedState.height);
     }
 
     switch (mode)
     {
     case Window::DM_Fullscreen:
     {
-    } break;
+    }
+    break;
     case Window::DM_FullscreenWindowed:
     {
       // Set new window style and size.
@@ -236,7 +281,8 @@ namespace Fractal
       ::GetMonitorInfo(::MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST), &monitorInfo);
       RECT windowRect(monitorInfo.rcMonitor); // TODO: Add a Monitor API to the engine
       ::SetWindowPos(hWnd, NULL, windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-    } break;
+    }
+    break;
     case Window::DM_Windowed:
     {
       // Restore window sizes
@@ -249,7 +295,8 @@ namespace Fractal
       // Restore maximized state
       if (m_windowedState.maximized)
         ::SendMessage(hWnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
-    } break;
+    }
+    break;
     }
 
     m_displayMode = mode;
@@ -272,21 +319,36 @@ namespace Fractal
 
   void Impl_Window::SetSize(int64_t width, int64_t height)
   {
-    RECT rect = { 0 };
-    rect.left = 0;          rect.top = 0;
-    rect.right = (int)width; rect.bottom = (int)height;
-    AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, false);
+    RECT rect = {0};
+    rect.left = 0;
+    rect.top = 0;
+    rect.right = (int)width;
+    rect.bottom = (int)height;
+    ::AdjustWindowRectEx(&rect, GetWindowLong((HWND)m_hWnd, GWL_STYLE), false, GetWindowLong((HWND)m_hWnd, GWL_EXSTYLE));
     ::SetWindowPos((HWND)m_hWnd, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
   }
 
   void Impl_Window::SetPosition(int64_t posX, int64_t posY)
   {
+    RECT rect = { (LONG)posX, (LONG)posY, (LONG)posX, (LONG)posY };
+    ::AdjustWindowRectEx(&rect, GetWindowLong((HWND)m_hWnd, GWL_STYLE), FALSE, GetWindowLong((HWND)m_hWnd, GWL_EXSTYLE));
     ::SetWindowPos((HWND)m_hWnd, 0, (int)posX, (int)posY, 0, 0, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
   }
 
   void Impl_Window::SetRect(int64_t posX, int64_t posY, int64_t width, int64_t height)
   {
     ::SetWindowPos((HWND)m_hWnd, 0, (int)posX, (int)posY, (int)width, (int)height, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
+  }
+
+  void Impl_Window::SetParent(Window* pParent)
+  {
+    ::SetParent((HWND)m_hWnd, pParent == nullptr ? 0 : (HWND)pParent->GetNativeHandle());
+  }
+
+  Window* Impl_Window::GetParent() const
+  {
+    HWND hParent = ::GetParent((HWND)m_hWnd);
+    return _GetWindowFromHandle(hParent);
   }
 
   const char* Impl_Window::GetTitle() const
@@ -322,22 +384,56 @@ namespace Fractal
     flags = flags | (::IsWindowVisible(hWnd) ? Window::Flag_Visible : Window::Flag_None);
     flags = flags | (::IsZoomed(hWnd) ? Window::Flag_Maximized : Window::Flag_None);
     flags = flags | (::IsIconic(hWnd) ? Window::Flag_Minimized : Window::Flag_None);
+    flags = flags | _GetFlagsFromStyle(GetWindowLong(hWnd, GWL_EXSTYLE));
+    flags = flags | _GetFlagsFromStyle(GetWindowLong(hWnd, GWL_STYLE));
     return flags;
+  }
+
+  void Impl_Window::SetFlags(flIN Window::Flags flags)
+  {
+    HWND hWnd = (HWND)m_hWnd;
+    LONG style   = _GetStyleFromFlags(flags);
+    LONG exStyle = _GetStyleExFromFlags(flags);
+
+    ::SetWindowLong(hWnd, GWL_EXSTYLE, exStyle);
+    ::SetWindowLong(hWnd, GWL_STYLE, style);
+
+    if (!(flags & Window::Flag_Visible))
+      ::ShowWindow(hWnd, SW_HIDE);
+    else
+    {
+      if (flags & Window::Flag_Minimized)
+        ::ShowWindow(hWnd, SW_SHOWMINIMIZED);
+      else if (flags & Window::Flag_Maximized)
+        ::ShowWindow(hWnd, SW_SHOWMAXIMIZED);
+      else                                     ::ShowWindow(hWnd, SW_SHOW);
+    }
+  }
+
+  void Impl_Window::AddFlags(flIN Window::Flags flags)
+  {
+    SetFlags(GetFlags() | flags);
+  }
+
+  void Impl_Window::RemoveFlags(flIN Window::Flags flags)
+  {
+    SetFlags(GetFlags() & ~flags);
   }
 
   void Impl_Window::GetRect(int64_t* pPosX, int64_t* pPosY, int64_t* pWidth, int64_t* pHeight) const
   {
     RECT rect = { 0 };
     ::GetClientRect((HWND)m_hWnd, &rect);
-
+    POINT tl = {0, 0};
+    ::ClientToScreen((HWND)m_hWnd, &tl);
     if (pPosX)
-      *pPosX = rect.left;
+      *pPosX = tl.x;
     if (pPosY)
-      *pPosY = rect.top;
+      *pPosY = tl.y;
     if (pWidth)
-      *pWidth = rect.right - rect.left;
+      *pWidth = rect.right;
     if (pHeight)
-      *pHeight = rect.bottom - rect.top;
+      *pHeight = rect.bottom;
   }
 
   void Impl_Window::GetSize(int64_t* pWidth, int64_t* pHeight) const
@@ -434,29 +530,19 @@ namespace Fractal
 
   static Window* _GetWindowFromHandle(HWND hWnd)
   {
-    struct TaskData
+    Window* pWindow;
+    Ref<Task> pTask = MakeTask(
+                        [&]()
     {
-      HWND hWnd;
-      Window* pWindow;
-    };
-
-    TaskData tskData = { 0 };
-    tskData.hWnd = hWnd;
-    Task* pTask = nullptr;
-
-    EventQueue::GetEventThread()->Add([](void* pUserData)
-    {
-      TaskData* pData = (TaskData*)pUserData;
-      Window** ppWindow = _windowLookup.TryGet(pData->hWnd);
-      if (ppWindow)
-        pData->pWindow = *ppWindow;
+      pWindow = _windowLookup.GetOr(hWnd, nullptr);
       return 0ll;
-    }, &tskData, &pTask);
+    });
+
+    EventQueue::GetEventThread()->Add(pTask);
 
     pTask->Await();
-    pTask->DecRef();
 
-    return tskData.pWindow;
+    return pWindow;
   }
 }
 

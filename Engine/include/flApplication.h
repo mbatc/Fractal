@@ -80,7 +80,7 @@ namespace Fractal
      * @return The result returned by the task.
      */
     static int64_t Await(flIN Task* pTask);
-    
+
   protected:
     Application(char const* graphicsAPIName);
 
@@ -90,19 +90,19 @@ namespace Fractal
 
     int Run(); // Application entry point
   };
-  
+
   /**
    * @brief Returns a pointer to the applications main window.
    */
-  flEXPORT Window * flCCONV GetMainWindow();
+  flEXPORT Window* flCCONV GetMainWindow();
 
   /**
    * @brief Returns a pointer to the applications graphics API.
    */
-  flEXPORT API * flCCONV GetGraphicsAPI();
+  flEXPORT API* flCCONV GetGraphicsAPI();
 
   /**
    * @brief Get the global Application instance.
    **/
-  flEXPORT Application * flCCONV GetApplication();
+  flEXPORT Application* flCCONV GetApplication();
 }

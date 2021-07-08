@@ -23,6 +23,8 @@
 #include "flRef.h"
 #include "flGUIStyle.h"
 
+#include "flDisplay.h"
+
 #include "ctHashMap.h"
 #include "ctString.h"
 
@@ -96,6 +98,11 @@ namespace Fractal
       ImGuiIO &io = ImGui::GetIO();
       io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors; // We can honor GetMouseCursor() values (optional)
       io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;  // We can honor io.WantSetMousePos requests (optional, rarely used)
+      io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
+      io.BackendFlags |= ImGuiBackendFlags_PlatformHasViewports;
+      io.BackendFlags |= ImGuiBackendFlags_RendererHasViewports;
+      // io.BackendFlags |= ImGuiBackendFlags_HasMouseHoveredViewport;
+
       io.BackendPlatformName = "Fractal Engine";
 
       io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
@@ -122,6 +129,8 @@ namespace Fractal
       io.KeyMap[ImGuiKey_X] = KC_X;
       io.KeyMap[ImGuiKey_Y] = KC_Y;
       io.KeyMap[ImGuiKey_Z] = KC_Z;
+
+      InitPlatformInterface();
 
       API *pGraphics = GetGraphicsAPI();
       m_indexBuffer = MakeRef(pGraphics->CreateIndexBuffer(0, 0, BufferUsage_Dynamic), false);
@@ -167,6 +176,9 @@ namespace Fractal
 
     void BeginFrame()
     {
+      ImGuiViewport *main_viewport = ImGui::GetMainViewport();
+      main_viewport->PlatformHandle = GetMainWindow();
+
       ImGuiIO &io = ImGui::GetIO();
       IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
 
@@ -190,6 +202,8 @@ namespace Fractal
 
     void EndFrame()
     {
+      ImGui::EndFrame();
+      ImGui::UpdatePlatformWindows();
       ImGui::Render();
     }
 
@@ -227,37 +241,6 @@ namespace Fractal
     void UpdateMouseCursor()
     {
       // TODO: change to correct mouse cursor
-    }
-
-    void UpdateDrawBuffers(ImDrawData *pDrawData)
-    {
-      m_vertexBuffer->GetBuffer()->Resize(sizeof(ImDrawVert) * pDrawData->TotalVtxCount, true);
-      m_indexBuffer->GetBuffer()->Resize(sizeof(ImDrawIdx) * pDrawData->TotalIdxCount, true);
-
-      if (m_vertexBuffer->GetVertexCount() == 0)
-        return;
-      if (m_indexBuffer->GetIndexCount() == 0)
-        return;
-
-      ImDrawVert *pVertexData = (ImDrawVert *)m_vertexBuffer->GetBuffer()->Map(AccessFlag_Write);
-      ImDrawIdx *pIndexData = (ImDrawIdx *)m_indexBuffer->GetBuffer()->Map(AccessFlag_Write);
-
-      // Concat all vertex buffers into a single array
-      int64_t vertexOffset = 0;
-      int64_t indexOffset = 0;
-      for (int i = 0; i < pDrawData->CmdListsCount; ++i)
-      {
-        ImDrawList *pDrawList = pDrawData->CmdLists[i];
-        for (int const &idx : pDrawList->IdxBuffer)
-          *(pIndexData++) = ImDrawIdx(idx + vertexOffset);
-
-        int vtxCount = pDrawList->VtxBuffer.size();
-        memcpy(pVertexData + vertexOffset, pDrawList->VtxBuffer.begin(), vtxCount * sizeof(ImDrawVert));
-        vertexOffset += vtxCount;
-      }
-
-      m_vertexBuffer->GetBuffer()->Unmap();
-      m_indexBuffer->GetBuffer()->Unmap();
     }
 
     bool OnKeyState(Event *pEvent)
@@ -299,6 +282,276 @@ namespace Fractal
 
         ImGui::EndMenu();
       }
+    }
+
+    void UpdateMonitors()
+    {
+      Ref<DisplayList> pDisplays = MakeRef(Display::EnumerateDisplays(), false);
+
+      ImGuiPlatformIO &io = ImGui::GetPlatformIO();
+      io.Monitors.clear();
+      for (int64_t i = 0; i < pDisplays->GetDisplayCount(); ++i)
+      {
+        Display const *pDisplay = pDisplays->GetDisplay(i);
+        pDisplay->GetPosition();
+
+        ImGuiPlatformMonitor imMonitor;
+        imMonitor.MainPos = ImVec2((float)pDisplay->GetPosition().x, (float)pDisplay->GetPosition().y);
+        imMonitor.MainSize = ImVec2((float)pDisplay->GetSize().x, (float)pDisplay->GetSize().y);
+        imMonitor.WorkPos = ImVec2((float)pDisplay->GetWorkAreaPosition().x, (float)pDisplay->GetWorkAreaPosition().y);
+        imMonitor.WorkSize = ImVec2((float)pDisplay->GetWorkAreaSize().x, (float)pDisplay->GetWorkAreaSize().y);
+        imMonitor.DpiScale = (float)pDisplay->GetDPIScale();
+
+        if (pDisplay->IsPrimaryMonitor())
+          io.Monitors.push_front(imMonitor);
+        else
+          io.Monitors.push_back(imMonitor);
+      }
+    }
+    
+    static Window::Flags GetWindowFlags(ImGuiViewportFlags vpFlags)
+    {
+      Window::Flags wndFlags;
+      if (vpFlags & ImGuiViewportFlags_NoDecoration)
+        wndFlags = wndFlags | Window::Flag_Borderless;
+      if (vpFlags & ImGuiViewportFlags_NoTaskBarIcon)
+        wndFlags = wndFlags | Window::Flag_NoIcon;
+      if (vpFlags & ImGuiViewportFlags_TopMost)
+        wndFlags = wndFlags | Window::Flag_TopMost;
+      return wndFlags;
+    }
+
+    static void CreateWindow(ImGuiViewport* vp)
+    {
+      Window *pParent = NULL;
+      if (vp->ParentViewportId != 0)
+        if (ImGuiViewport* parent_viewport = ImGui::FindViewportByID(vp->ParentViewportId))
+          pParent = (Window*)parent_viewport->PlatformHandle;
+
+      vp->PlatformRequestResize = false;
+      vp->PlatformHandle = vp->PlatformHandleRaw = Window::Create(
+        "Untitled",
+        GetWindowFlags(vp->Flags),
+        Window::DM_Windowed,
+        pParent);
+
+      GetGraphicsAPI()->CreateWindowRenderTarget((Window*)vp->PlatformHandle, nullptr);
+    }
+
+    static void DestroyWindow(ImGuiViewport* vp)
+    {
+      Window *pWindow = (Window*)vp->PlatformHandle;
+      if (pWindow != nullptr)
+      {
+        if (pWindow->GetFocusFlags() & Window::FF_Mouse)
+        {
+          pWindow->SetFocus(Window::FF_Mouse, false);
+          GetMainWindow()->SetFocus(Window::FF_Mouse, true);
+        }
+        pWindow->DecRef();
+      }
+
+      vp->PlatformUserData = vp->PlatformHandle = NULL;
+    }
+
+    static void ShowWindow(ImGuiViewport* vp)
+    {
+      Window *pWindow = (Window*)vp->PlatformHandle;
+      pWindow->AddFlags(Window::Flag_Visible);
+    }
+    
+    static void SetWindowPos(ImGuiViewport* vp, ImVec2 pos)
+    {
+      Window *pWindow = (Window*)vp->PlatformHandle;
+      pWindow->SetPosition((int64_t)pos.x, (int64_t)pos.y);
+    }
+    
+    static ImVec2 GetWindowPos(ImGuiViewport* vp)
+    {
+      Window *pWindow = (Window*)vp->PlatformHandle;
+      ImVec2 pos = { (float)pWindow->GetX(), (float)pWindow->GetY() };
+      return pos;
+    }
+    
+    static void SetWindowSize(ImGuiViewport* vp, ImVec2 size)
+    {
+      Window *pWindow = (Window*)vp->PlatformHandle;
+      pWindow->SetSize((int64_t)size.x, (int64_t)size.y);
+    }
+    
+    static ImVec2 GetWindowSize(ImGuiViewport* vp)
+    {
+      Window *pWindow = (Window*)vp->PlatformHandle;
+      ImVec2 size = { (float)pWindow->GetWidth(), (float)pWindow->GetHeight() };
+      return size;
+    }
+    
+    static void SetWindowFocus(ImGuiViewport* vp)
+    {
+      Window *pWindow = (Window*)vp->PlatformHandle;
+      pWindow->BringToFocus();
+    }
+    
+    static bool GetWindowFocus(ImGuiViewport* vp)
+    {
+      return Window::GetForegroundWindow() == vp->PlatformHandle;
+    }
+    
+    static bool GetWindowMinimized(ImGuiViewport* vp)
+    {
+      Window *pWindow = (Window*)vp->PlatformHandle;
+      return pWindow->GetFlags() & Window::Flag_Minimized;
+    }
+    
+    static void SetWindowTitle(ImGuiViewport* vp, const char* title)
+    {
+      Window *pWindow = (Window*)vp->PlatformHandle;
+      pWindow->SetTitle(title);
+    }
+    
+    static void SetWindowAlpha(ImGuiViewport* vp, float alpha) { vp, alpha; }
+
+    static void RenderWindow(ImGuiViewport* vp, void* render_arg)
+    {
+      Window *pWindow = (Window*)vp->PlatformHandle;
+      pWindow->GetRenderTarget()->Bind();
+    }
+
+    static void SwapBuffers(ImGuiViewport* vp, void* render_arg)
+    {
+      Window *pWindow = (Window*)vp->PlatformHandle;
+      pWindow->GetRenderTarget()->Swap();
+    }
+
+    static float GetWindowDpiScale(ImGuiViewport* vp)
+    {
+      return 1.0f;
+    }
+
+    void InitPlatformInterface()
+    {
+      UpdateMonitors();
+
+      // Register platform interface (will be coupled with a renderer interface)
+      ImGuiPlatformIO &platform_io = ImGui::GetPlatformIO();
+      platform_io.Platform_CreateWindow = CreateWindow;
+      platform_io.Platform_DestroyWindow = DestroyWindow;
+      platform_io.Platform_ShowWindow = ShowWindow;
+      platform_io.Platform_SetWindowPos = SetWindowPos;
+      platform_io.Platform_GetWindowPos = GetWindowPos;
+      platform_io.Platform_SetWindowSize = SetWindowSize;
+      platform_io.Platform_GetWindowSize = GetWindowSize;
+      platform_io.Platform_SetWindowFocus = SetWindowFocus;
+      platform_io.Platform_GetWindowFocus = GetWindowFocus;
+      platform_io.Platform_GetWindowMinimized = GetWindowMinimized;
+      platform_io.Platform_SetWindowTitle = SetWindowTitle;
+      platform_io.Platform_SetWindowAlpha = SetWindowAlpha;
+      platform_io.Platform_GetWindowDpiScale = GetWindowDpiScale; // FIXME-DPI
+      // platform_io.Platform_SetImeInputPos = ImGui_ImplWin32_SetImeInputPos;
+    }
+
+    void UpdateDrawBuffers(ImDrawData *pDrawData)
+    {
+      m_vertexBuffer->GetBuffer()->Resize(sizeof(ImDrawVert) * pDrawData->TotalVtxCount, true);
+      m_indexBuffer->GetBuffer()->Resize(sizeof(ImDrawIdx) * pDrawData->TotalIdxCount, true);
+
+      if (m_vertexBuffer->GetVertexCount() == 0)
+        return;
+      if (m_indexBuffer->GetIndexCount() == 0)
+        return;
+
+      ImDrawVert *pVertexData = (ImDrawVert *)m_vertexBuffer->GetBuffer()->Map(AccessFlag_Write);
+      ImDrawIdx *pIndexData = (ImDrawIdx *)m_indexBuffer->GetBuffer()->Map(AccessFlag_Write);
+
+      // Concat all vertex buffers into a single array
+      int64_t vertexOffset = 0;
+      int64_t indexOffset = 0;
+      for (int i = 0; i < pDrawData->CmdListsCount; ++i)
+      {
+        ImDrawList *pDrawList = pDrawData->CmdLists[i];
+        for (int const &idx : pDrawList->IdxBuffer)
+          *(pIndexData++) = ImDrawIdx(idx + vertexOffset);
+
+        int vtxCount = pDrawList->VtxBuffer.size();
+        memcpy(pVertexData + vertexOffset, pDrawList->VtxBuffer.begin(), vtxCount * sizeof(ImDrawVert));
+        vertexOffset += vtxCount;
+      }
+
+      m_vertexBuffer->GetBuffer()->Unmap();
+      m_indexBuffer->GetBuffer()->Unmap();
+    }
+
+    void Render(ImDrawData *pDrawData)
+    {
+      Mat4F projection = Mat4F::Ortho(
+          pDrawData->DisplayPos.x,
+          pDrawData->DisplayPos.x + pDrawData->DisplaySize.x,
+          pDrawData->DisplayPos.y,
+          pDrawData->DisplayPos.y + pDrawData->DisplaySize.y,
+          -1.0f, 1.0f);
+
+      API *pGraphics = GetGraphicsAPI();
+      Window *pWindow = (Window*)pDrawData->OwnerViewport->PlatformHandle;
+      pWindow->GetRenderTarget()->Bind();
+      if (pWindow != GetMainWindow())
+        pWindow->GetRenderTarget()->Clear();
+
+      DeviceState *pState = pGraphics->GetState();
+      pState->SetFeatureEnabled(DeviceFeature_StencilTest, true);
+      pState->SetFeatureEnabled(DeviceFeature_ScissorTest, true);
+      pState->SetFeatureEnabled(DeviceFeature_DepthTest, false);
+      pState->SetFeatureEnabled(DeviceFeature_Blend, true);
+      pState->SetViewport(0, 0, pWindow->GetWidth(), pWindow->GetHeight());
+      pState->SetScissorRect(0, 0, pWindow->GetWidth(), pWindow->GetHeight());
+
+      // Bind and update program
+      Ref<Program> pProgram = m_pShader;
+      pProgram->Bind();
+      pProgram->SetMat4("projection", projection.Transpose());
+      pProgram->SetInt("mainTexture", 0);
+      pProgram->SetSampler(0, m_pSampler);
+
+      UpdateDrawBuffers(pDrawData);
+
+      // Bind geometry
+      m_vertexArray->Bind();
+
+      ImVec2 displaySize = pDrawData->DisplaySize;
+
+      int64_t elementOffset = 0;
+      for (int i = 0; i < pDrawData->CmdListsCount; ++i)
+      {
+        ImDrawList *pCmdList = pDrawData->CmdLists[i];
+        for (ImDrawCmd const &cmd : pCmdList->CmdBuffer)
+        {
+          ImVec4 glClipRect;
+          glClipRect.x = cmd.ClipRect.x - pDrawData->DisplayPos.x;
+          glClipRect.y = displaySize.y - (cmd.ClipRect.w - pDrawData->DisplayPos.y);
+          glClipRect.z = cmd.ClipRect.z - cmd.ClipRect.x;
+          glClipRect.w = cmd.ClipRect.w - cmd.ClipRect.y;
+
+          pGraphics->GetState()->SetScissorRect(
+              (int64_t)glClipRect.x,
+              (int64_t)glClipRect.y,
+              (int64_t)glClipRect.z,
+              (int64_t)glClipRect.w);
+
+          pProgram->SetTexture(0, (Texture *)cmd.TextureId);
+          pGraphics->Render(DrawMode_Triangles, true, elementOffset, cmd.ElemCount);
+          elementOffset += cmd.ElemCount;
+        }
+      }
+
+      pState->SetFeatureEnabled(DeviceFeature_ScissorTest, false);
+      pState->SetFeatureEnabled(DeviceFeature_Blend, false);
+      pState->SetFeatureEnabled(DeviceFeature_DepthTest, true);
+      pState->SetFeatureEnabled(DeviceFeature_StencilTest, false);
+
+      // Unbind the vertex array
+      m_vertexArray->Unbind();
+
+      if (pWindow != GetMainWindow())
+        pWindow->GetRenderTarget()->Swap();
     }
 
     Keyboard *m_pKeyboard;
@@ -370,11 +623,16 @@ void GUIModule::OnUpdate()
 
   Impl()->BeginFrame();
 
-  Vec2F windowSize = {GetMainWindow()->GetWidth(), GetMainWindow()->GetHeight()};
+  ImVec2 windowSize = ImGui::GetIO().DisplaySize;
+  ImVec2 windowPos  = {0, 0}; // ImGui::GetIO().DisplaySize;
 
   ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0);
   {
     GUIStyleScope globalStyle(Impl()->m_pStyleSheet);
+
+    ImGui::SetNextWindowPos(ImGui::GetMainViewport()->Pos);
+    ImGui::SetNextWindowSize(ImGui::GetMainViewport()->Size);
+    ImGui::SetNextWindowViewport(ImGui::GetMainViewport()->ID);
 
     if (ImGui::Begin("MainDockspace", 0,
                      ImGuiWindowFlags_NoBringToFrontOnFocus |
@@ -394,8 +652,6 @@ void GUIModule::OnUpdate()
       ImGuiID id = ImGui::GetID("Dockspace");
       ImGui::DockSpace(id);
 
-      ImGui::SetWindowPos(ImVec2(0, 0));
-      ImGui::SetWindowSize(ImVec2(windowSize.x, windowSize.y));
       for (auto &[group, panel] : Impl()->m_panels)
       {
         GUIStyleScope panelStyle(panel->GetStyle());
@@ -414,72 +670,10 @@ void GUIModule::OnRender()
   for (auto &[group, panel] : Impl()->m_panels)
     panel->OnRender();
 
-  GetMainWindow()->GetRenderTarget()->Bind();
-
-  ImDrawData* pDrawData = ImGui::GetDrawData();
-
-  Mat4F projection = Mat4F::Ortho(
-                       pDrawData->DisplayPos.x,
-                       pDrawData->DisplayPos.x + pDrawData->DisplaySize.x,
-                       pDrawData->DisplayPos.y,
-                       pDrawData->DisplayPos.y + pDrawData->DisplaySize.y,
-                       -1.0f, 1.0f);
-
-  API* pGraphics = GetGraphicsAPI();
-  Window* pWindow = GetMainWindow();
-
-  DeviceState* pState = pGraphics->GetState();
-  pState->SetFeatureEnabled(DeviceFeature_StencilTest, true);
-  pState->SetFeatureEnabled(DeviceFeature_ScissorTest, true);
-  pState->SetFeatureEnabled(DeviceFeature_DepthTest, false);
-  pState->SetFeatureEnabled(DeviceFeature_Blend, true);
-  pState->SetViewport(0, 0, pWindow->GetWidth(), pWindow->GetHeight());
-
-  // Bind and update program
-  Ref<Program> pProgram = Impl()->m_pShader;
-  pProgram->Bind();
-  pProgram->SetMat4("projection", projection.Transpose());
-  pProgram->SetInt("mainTexture", 0);
-  pProgram->SetSampler(0, Impl()->m_pSampler);
-
-  Impl()->UpdateDrawBuffers(pDrawData);
-
-  // Bind geometry
-  Impl()->m_vertexArray->Bind();
-
-  ImVec2 displaySize = ImGui::GetIO().DisplaySize;
-
-  int64_t elementOffset = 0;
-  for (int i = 0; i < pDrawData->CmdListsCount; ++i)
-  {
-    ImDrawList* pCmdList = pDrawData->CmdLists[i];
-    for (ImDrawCmd const& cmd : pCmdList->CmdBuffer)
-    {
-      ImVec4 glClipRect;
-      glClipRect.x = cmd.ClipRect.x;
-      glClipRect.y = displaySize.y - cmd.ClipRect.w;
-      glClipRect.z = cmd.ClipRect.z - cmd.ClipRect.x;
-      glClipRect.w = cmd.ClipRect.w - cmd.ClipRect.y;
-
-      pGraphics->GetState()->SetScissorRect(
-        (int64_t)glClipRect.x,
-        (int64_t)glClipRect.y,
-        (int64_t)glClipRect.z,
-        (int64_t)glClipRect.w);
-
-      pProgram->SetTexture(0, (Texture*)cmd.TextureId);
-      pGraphics->Render(DrawMode_Triangles, true, elementOffset, cmd.ElemCount);
-      elementOffset += cmd.ElemCount;
-    }
-  }
-
-  pState->SetFeatureEnabled(DeviceFeature_ScissorTest, false);
-  pState->SetFeatureEnabled(DeviceFeature_Blend, false);
-  pState->SetFeatureEnabled(DeviceFeature_DepthTest, true);
-  pState->SetFeatureEnabled(DeviceFeature_StencilTest, false);
-
-  // Unbind the vertex array
-  Impl()->m_vertexArray->Unbind();
+  ImGuiPlatformIO& platform_io = ImGui::GetPlatformIO();
+  for (int i = 0; i < platform_io.Viewports.Size; i++)
+    if ((platform_io.Viewports[i]->Flags & ImGuiViewportFlags_Minimized) == 0)
+      Impl()->Render(platform_io.Viewports[i]->DrawData);
 }
 
 bool GUIModule::OnStartup()

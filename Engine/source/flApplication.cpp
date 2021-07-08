@@ -50,9 +50,7 @@ namespace Fractal
       m_pMainWindow = MakeRef<Window>("Main Window", Window::Flag_Default, Window::DM_Windowed);
 
       flInfo("Creating Graphics API (%s)", graphicsAPIName);
-      RenderTargetOptions opts;
-      opts.sampleCount = 4; // Enable multisampling
-      m_pGraphics = MakeRef(API::Create(graphicsAPIName, m_pMainWindow.Get(), &opts), false);
+      m_pGraphics = MakeRef(API::Create(graphicsAPIName, m_pMainWindow.Get(), nullptr), false);
 
       char cwd[1024] = {0};
       GetCurrentDirectoryA(1024, cwd);
@@ -171,7 +169,7 @@ namespace Fractal
 
   Task* Application::EnqueueTask(flIN Task* pTask)
   {
-    Application *pApp = GetApplication();
+    Application* pApp = GetApplication();
     if (GetThreadID() == MainThreadID())
       pTask->DoTask();
     else
@@ -246,18 +244,18 @@ namespace Fractal
     Impl()->Shutdown();
     return 0;
   }
-  
-  Window * GetMainWindow()
+
+  Window* GetMainWindow()
   {
     return GetApplication()->Impl()->m_pMainWindow;
   }
 
-  API * GetGraphicsAPI()
+  API* GetGraphicsAPI()
   {
     return GetApplication()->Impl()->m_pGraphics;
   }
 
-  Application * GetApplication()
+  Application* GetApplication()
   {
     return _pApplication;
   }

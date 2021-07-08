@@ -29,8 +29,8 @@ namespace Fractal
 
   bool Module::OnMouseMove(Event* pEvent)
   {
-    Impl()->m_mouse.GetServer()->SendEvent(MA_XPos, (float)pEvent->mseMove.wndX);
-    Impl()->m_mouse.GetServer()->SendEvent(MA_YPos, (float)pEvent->mseMove.wndY);
+    Impl()->m_mouse.GetServer()->SendEvent(MA_XPos, (float)pEvent->mseMove.screenX);
+    Impl()->m_mouse.GetServer()->SendEvent(MA_YPos, (float)pEvent->mseMove.screenY);
     return true;
   }
 
@@ -48,7 +48,7 @@ namespace Fractal
       Impl()->m_mouse.GetServer()->SendEvent(MA_VScroll, (float)pEvent->mseScroll.amount, true);
     return true;
   }
-  
+
   Mouse* Module::GetMouse()
   {
     return &Impl()->m_mouse;

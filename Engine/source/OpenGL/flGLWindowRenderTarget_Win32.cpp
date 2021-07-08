@@ -142,8 +142,9 @@ namespace Fractal
       Window::Flags flags = m_pWindow->GetFlags();
 
       // Recreate the window
+      Window* pParent = m_pWindow->GetParent();
       m_pWindow->Impl()->Destroy();
-      m_pWindow->Impl()->Create(m_pWindow, title, flags, GetModuleHandle(NULL));
+      m_pWindow->Impl()->Create(m_pWindow, title, flags, GetModuleHandle(NULL), pParent);
     }
 
     PIXELFORMATDESCRIPTOR pfd = { 0 };

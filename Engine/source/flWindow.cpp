@@ -11,9 +11,14 @@ namespace Fractal
 
   flPIMPL_IMPL(Window);
 
-  Window::Window(flIN const char* title, flIN Flags flags, flIN DisplayMode displayMode)
+  Window* Window::Create(flIN const char* title, flIN Flags flags, flIN DisplayMode displayMode, flIN Window* pParent)
   {
-    Impl()->Construct(this, title, flags, displayMode);
+    return flNew Window(title, flags, displayMode, pParent);
+  }
+
+  Window::Window(flIN const char* title, flIN Flags flags, flIN DisplayMode displayMode, flIN Window* pParent)
+  {
+    Impl()->Construct(this, title, flags, displayMode, pParent);
   }
 
   void Window::SetTitle(flIN const char* title)
@@ -46,6 +51,16 @@ namespace Fractal
     return Impl()->SetRect(posX, posY, width, height);
   }
 
+  void Window::SetParent(flIN Window* pParent)
+  {
+    return Impl()->SetParent(pParent);
+  }
+
+  Window* Window::GetParent() const
+  {
+    return Impl()->GetParent();
+  }
+
   const char* Window::GetTitle() const
   {
     return Impl()->GetTitle();
@@ -64,6 +79,21 @@ namespace Fractal
   Window::Flags Window::GetFlags() const
   {
     return Impl()->GetFlags();
+  }
+
+  void Window::SetFlags(flIN Flags flags)
+  {
+    return Impl()->SetFlags(flags);
+  }
+
+  void Window::AddFlags(flIN Flags flags)
+  {
+    return Impl()->AddFlags(flags);
+  }
+
+  void Window::RemoveFlags(flIN Flags flags)
+  {
+    return Impl()->RemoveFlags(flags);
   }
 
   void Window::GetSize(flOUT int64_t* pWidth, flOUT int64_t* pHeight) const
@@ -106,6 +136,11 @@ namespace Fractal
     return Impl()->ReceivedEvent(id, reset);
   }
 
+  void Window::BringToFocus()
+  {
+    return Impl()->BringToFocus();
+  }
+
   bool Window::IsEventSource(const Event* pEvent) const
   {
     return Impl()->IsEventSource(pEvent);
@@ -124,5 +159,10 @@ namespace Fractal
   Window* Window::GetFocusedWindow(flIN FocusFlags focusFlags)
   {
     return Impl_Window::GetFocusedWindow(focusFlags);
+  }
+
+  Window* Window::GetForegroundWindow()
+  {
+    return Impl_Window::GetForegroundWindow();
   }
 }
