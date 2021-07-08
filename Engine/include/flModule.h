@@ -19,14 +19,6 @@ namespace Fractal
   public:
     Module();
 
-    Window* GetMainWindow();
-
-    Window const* GetMainWindow() const;
-
-    API* GetGraphicsAPI();
-
-    API* GetGraphicsAPI() const;
-
     Mouse* GetMouse();
 
     Mouse const* GetMouse() const;

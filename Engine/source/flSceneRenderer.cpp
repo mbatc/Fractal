@@ -4,7 +4,15 @@
 #include "flNode.h"
 #include "flLog.h"
 
+#include "flShaderMaterial.h"
+#include "flVertexArray.h"
+#include "flProgram.h"
+
+#include "flApplication.h"
+#include "flAPI.h"
+
 #include "flMeshRenderer.h"
+#include "flTransform.h"
 #include "flCamera.h"
 #include "flLight.h"
 
@@ -17,6 +25,19 @@ namespace Fractal
   class Impl_SceneRenderer
   {
   public:
+    struct RenderJob
+    {
+      Mat4D modelMat;
+
+      int64_t elementOffset = 0;
+      int64_t elementCount  = 0;
+
+      Ref<VertexArray>    pVertexArray;
+
+      Ref<Program>        pShader;
+      Ref<ShaderMaterial> pMaterial;
+    };
+
     Impl_SceneRenderer()
     {
       AddHandler(Camera::TypeID(),       HandleCamera);
@@ -43,6 +64,7 @@ namespace Fractal
     {
       if (m_handlerLookup.empty())
       {
+        m_handlerLookup.resize(ComponentRegistry::ComponentCount());
         for (int64_t id = 0; id < ComponentRegistry::ComponentCount(); ++id)
         {
           int64_t handlerType = id;
@@ -63,18 +85,23 @@ namespace Fractal
 
       if (pTransform)
       {
-        // Mat4F mvp = m_projection * (Mat4F)pTransform->GetTransform();
-        // pMesh->GetMesh()->GetVertexArray()->Bind();
-        // for (int64_t subMesh = 0; subMesh < pMesh->GetSubMeshCount(); ++subMesh)
-        // {
-        //   Program*        pShader   = pMesh->GetShader(subMesh);
-        //   ShaderMaterial* pMaterial = pMesh->GetMaterial(subMesh);
-        //   pShader->SetMat4("mvp", mvp);
-        //   pShader->Bind();
-        //   pMaterial->Bind();
-        //   RenderMesh::SubMesh const* pSubMesh  = pMesh->GetSubMesh(subMesh);
-        //   m_pGraphics->Render(DrawMode_Triangles, true, pSubMesh->offset, pSubMesh->count);
-        // }
+        RenderJob job;
+        job.modelMat     = pTransform->GetTransform();
+        job.pVertexArray = MakeRef(pMesh->GetMesh()->GetVertexArray(), true);
+
+        for (int64_t subMesh = 0; subMesh < pMesh->GetSubMeshCount(); ++subMesh)
+        {
+          Program*        pShader   = pMesh->GetShader(subMesh);
+          ShaderMaterial* pMaterial = pMesh->GetMaterial(subMesh);
+          RenderMesh::SubMesh const* pSubMesh = pMesh->GetSubMesh(subMesh);
+
+          job.pShader       = MakeRef(pShader, true);
+          job.pMaterial     = MakeRef(pMaterial, true);
+          job.elementOffset = pSubMesh->offset;
+          job.elementCount  = pSubMesh->count;
+
+          pRenderer->Impl()->m_renderQueue.push_back(job);
+        }
       }
     }
 
@@ -88,6 +115,7 @@ namespace Fractal
       Camera* pCamera = (Camera*)pComponent;
     }
 
+    ctVector<RenderJob>        m_renderQueue;
     ctVector<int64_t>          m_handlerLookup; // Handler to use for each component type
     ctVector<ComponentHandler> m_handler;   // Handler functions
 
@@ -139,8 +167,38 @@ namespace Fractal
     Impl()->Handle(pComponent);
   }
 
-  void SceneRenderer::End()
-  {
+  void SceneRenderer::End() {}
 
+  void SceneRenderer::Draw(flIN Mat4D viewMatrix, flIN Mat4D projMat)
+  {
+    VertexArray    *pActiveVertexArray = nullptr;
+    Program        *pActiveProgram     = nullptr;
+    ShaderMaterial *pActiveMaterial    = nullptr;
+
+    API *pGraphics = GetGraphicsAPI();
+
+    for (auto &job : Impl()->m_renderQueue)
+    {
+      if (job.pVertexArray != pActiveVertexArray)
+      {
+        pActiveVertexArray = job.pVertexArray;
+        pActiveVertexArray->Bind();
+      }
+
+      if (job.pShader != pActiveProgram)
+      {
+        pActiveProgram = job.pShader;
+        pActiveProgram->Bind();
+      }
+
+      if (job.pMaterial != pActiveMaterial)
+      {
+        pActiveMaterial = job.pMaterial;
+        pActiveMaterial->Bind();
+      }
+
+      pActiveProgram->SetMat4("mvp", projMat * viewMatrix * job.modelMat);
+      pGraphics->Render(DrawMode_Triangles, pActiveVertexArray->GetIndexBuffer() != nullptr, job.elementOffset, job.elementCount);
+    }
   }
 }

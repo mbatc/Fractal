@@ -77,7 +77,7 @@ namespace Fractal
 
   void Node::SetParent(flIN Node* pParent)
   {
-    GetTransform()->SetParent(pParent->GetTransform());
+    GetTransform()->SetParent(pParent != nullptr ? pParent->GetTransform() : nullptr);
   }
 
   Node* Node::GetChild(flIN int64_t index)

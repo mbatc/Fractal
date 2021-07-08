@@ -123,7 +123,7 @@ namespace Fractal
       io.KeyMap[ImGuiKey_Y] = KC_Y;
       io.KeyMap[ImGuiKey_Z] = KC_Z;
 
-      API *pGraphics = Application::Get().GetGraphicsAPI();
+      API *pGraphics = GetGraphicsAPI();
       m_indexBuffer = MakeRef(pGraphics->CreateIndexBuffer(0, 0, BufferUsage_Dynamic), false);
       m_vertexBuffer = MakeRef(pGraphics->CreateVertexBuffer(0, 0, BufferUsage_Dynamic), false);
       m_vertexArray = MakeRef(pGraphics->CreateVertexArray(), false);
@@ -171,7 +171,7 @@ namespace Fractal
       IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
 
       // Setup display size (every frame to accommodate for window resizing)
-      Window *pWindow = Application::Get().GetMainWindow();
+      Window *pWindow = GetMainWindow();
       io.DisplaySize = ImVec2((float)pWindow->GetWidth(), (float)pWindow->GetHeight());
 
       // Setup time step
@@ -425,8 +425,8 @@ void GUIModule::OnRender()
                        pDrawData->DisplayPos.y + pDrawData->DisplaySize.y,
                        -1.0f, 1.0f);
 
-  API* pGraphics = Application::Get().GetGraphicsAPI();
-  Window* pWindow = Application::Get().GetMainWindow();
+  API* pGraphics = GetGraphicsAPI();
+  Window* pWindow = GetMainWindow();
 
   DeviceState* pState = pGraphics->GetState();
   pState->SetFeatureEnabled(DeviceFeature_StencilTest, true);

@@ -41,12 +41,12 @@ public:
 ScenePanel::ScenePanel(GUIModule* pGUI)
   : Panel(pGUI, "Scene")
 {
-  m_pSceneManager = Application::Get().GetModule<SceneManager>();
+  m_pSceneManager = GetApplication()->GetModule<SceneManager>();
 }
 
 void ScenePanel::OnGUI()
 {
-  EditorModule* pEditor = Application::Get().GetModule<EditorModule>();
+  EditorModule* pEditor = GetApplication()->GetModule<EditorModule>();
   SceneGraph* pScene = m_pSceneManager->ActiveScene();
   if (Widgets::Button("Add"))
   {

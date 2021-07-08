@@ -67,7 +67,7 @@ namespace Fractal
 
     Ref<Node> m_root;
 
-    ctHashMap<int64_t, Node*> m_nodes;
+    ctHashMap<int64_t, Ref<Node>> m_nodes;
 
     std::default_random_engine m_idGenerator;
   };
@@ -89,7 +89,7 @@ namespace Fractal
     Node* pNode = flNew Node(this, nodeID, name);
     pNode->AddComponent<Transform>();
 
-    Impl()->m_nodes[nodeID] = pNode;
+    Impl()->m_nodes[nodeID] = MakeRef(pNode, true);
 
     // Set the nodes parent transform
     Node* pParent = Impl()->m_nodes.GetOr(parentID, nullptr);
@@ -124,11 +124,21 @@ namespace Fractal
     return Impl()->m_nodes.Size();
   }
 
-  void SceneGraph::RemoveNode(flIN int64_t id)
+  bool SceneGraph::RemoveNode(flIN int64_t id)
   {
-    Node* pNode = GetNode(id);
-    if (Impl()->m_nodes.Remove(id))
-      pNode->DecRef();
+    return RemoveNode(GetNode(id));
+  }
+
+  bool SceneGraph::RemoveNode(flIN Node *pNode)
+  {
+    if (pNode == nullptr || pNode->GetScene() != this)
+      return false;
+
+    for (int64_t child = 0; child < pNode->GetChildCount(); ++child)
+      RemoveNode(pNode->GetChild(child));
+    pNode->SetParent(nullptr);
+    Impl()->m_nodes.Remove(pNode->GetID());
+    return true;
   }
 
   void SceneGraph::GetNodeIDs(flOUT int64_t* pIDs) const

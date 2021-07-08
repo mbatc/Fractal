@@ -81,3 +81,5 @@
 #include "flMeshRenderer.h"
 #include "flCamera.h"
 #include "flLight.h"
+
+#include "flSceneRenderer.h"

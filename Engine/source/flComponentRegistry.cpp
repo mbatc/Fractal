@@ -65,7 +65,7 @@ namespace Fractal
     return _derivedMap[derivedID][baseID];
   }
 
-  static int64_t GetBaseTypeID(flIN int64_t derivedID)
+  int64_t ComponentRegistry::GetBaseTypeID(flIN int64_t derivedID)
   {
     return derivedID >= 0 && derivedID < _components.size() ? _components[derivedID].baseID : -1;
   }

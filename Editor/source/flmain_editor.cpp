@@ -53,26 +53,26 @@ namespace Fractal
 
     static int64_t Exit(void*)
     {
-      Application::Get().Close();
+      GetApplication()->Close();
       return 0;
     }
 
     static int64_t ShowDemoWindow(void*)
     {
-      Application::Get().GetModule<EditorGUIModule>()->OpenPanel<GUIExamplePanel>();
+      GetApplication()->GetModule<EditorGUIModule>()->OpenPanel<GUIExamplePanel>();
       return 0;
     }
 
     static int64_t ShowMetricsWindow(void*)
     {
-      Application::Get().GetModule<EditorGUIModule>()->OpenPanel<GUIMetricsPanel>();
+      GetApplication()->GetModule<EditorGUIModule>()->OpenPanel<GUIMetricsPanel>();
       return 0;
     }
 
     template<typename T>
     static int64_t ShowPanel()
     {
-      Application::Get().GetModule<EditorGUIModule>()->OpenPanel<T>();
+      GetApplication()->GetModule<EditorGUIModule>()->OpenPanel<T>();
       return 0;
     }
   };

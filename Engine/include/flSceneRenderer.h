@@ -1,6 +1,7 @@
 #pragma once
 
 #include "flInterface.h"
+#include "flMath.h"
 
 namespace Fractal
 {
@@ -10,7 +11,7 @@ namespace Fractal
 
   class Impl_SceneRenderer;
 
-  class SceneRenderer : public Interface
+  class flEXPORT SceneRenderer : public Interface
   {
     flPIMPL_DEF(SceneRenderer);
 
@@ -24,7 +25,7 @@ namespace Fractal
 
     void Clear();
 
-    void Draw();
+    void Draw(flIN Mat4D viewMatrix, flIN Mat4D projMat);
   };
 }
 

@@ -147,5 +147,9 @@ namespace Fractal
      * Get a child of this Transform using an index, where 0 <= index < GetChildCount().
      */
     Transform const* GetChild(flIN int64_t index) const;
+
+    bool RemoveChild(Transform const * pTransform);
+
+    bool RemoveChild(flIN int64_t index);
   };
 }

@@ -28,16 +28,17 @@ namespace Fractal
 
     int64_t RunNext()
     {
-      if (!HasNext())
-        return -1;
-
       m_lock->lock();
-      Ref<Task> pNextTask = m_tasks.front();
-      m_tasks.pop_front();
+      Ref<Task> pNextTask;
+      if (m_tasks.size() > 0)
+      {
+        pNextTask = m_tasks.front();
+        m_tasks.pop_front();
+      }
       m_lock->unlock();
-
+      
       int64_t result = -1;
-      if (pNextTask)
+      if (pNextTask != nullptr)
         result = pNextTask->Run();
 
       return result;

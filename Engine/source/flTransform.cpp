@@ -310,5 +310,15 @@ namespace Fractal
   {
     return Impl()->children[index].Get();
   }
+
+  bool Transform::RemoveChild(flIN int64_t index)
+  {
+    if (index < 0 || index >= GetChildCount())
+      return false;
+
+    Transform *pTransform = Impl()->children[index];
+    pTransform->SetParent(nullptr);
+    return true;
+  }
 }
 

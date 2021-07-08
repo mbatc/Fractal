@@ -28,8 +28,7 @@ namespace Fractal
     if (!meshImporter.Import(filepath))
       return false;
 
-    Application& app = Application::Get();
-    API* pGraphics = app.GetGraphicsAPI();
+    API* pGraphics = GetGraphicsAPI();
 
     Ref<Program> pProgram;
 

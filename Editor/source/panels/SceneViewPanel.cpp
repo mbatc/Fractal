@@ -40,7 +40,7 @@ void SceneViewPanel::OnUpdate()
     m_target = nullptr;
     if (opts.width > 0 && opts.height > 0)
     {
-      m_target = MakeRef(GetGUI()->GetGraphicsAPI()->CreateTextureRenderTarget(), false);
+      m_target = MakeRef(GetGraphicsAPI()->CreateTextureRenderTarget(), false);
       m_target->SetFormat(&opts);
     }
   }
@@ -54,19 +54,21 @@ void SceneViewPanel::OnRender()
   m_target->Bind();
   m_target->Clear(0xFFFFFFFF);
 
-  DeviceState* pState = GetGUI()->GetGraphicsAPI()->GetState();
+  DeviceState* pState = GetGraphicsAPI()->GetState();
   pState->SetFeatureEnabled(DeviceFeature_DepthTest, true);
 
-  Window* pWindow = GetGUI()->GetMainWindow();
-  API* pGraphics = GetGUI()->GetGraphicsAPI();
-
-  // Draw to the first window
-  Mat4F projection = m_camera.ProjectionMatrix() * m_camera.ViewMatrix();
+  Window* pWindow = GetMainWindow();
+  API* pGraphics = GetGraphicsAPI();
 
   pState->SetViewport(0, 0, m_target->GetWidth(), m_target->GetHeight());
 
-  SceneGraph* pScene = Application::Get().GetModule<SceneManager>()->ActiveScene();
+  SceneGraph* pScene = GetApplication()->GetModule<SceneManager>()->ActiveScene();
 
+  SceneRenderer renderer;
+  renderer.Begin(pScene);
+  renderer.Submit(pScene->GetRootNode());
+  renderer.End();
+  renderer.Draw(m_camera.ViewMatrix(), m_camera.ProjectionMatrix());
 }
 
 void SceneViewPanel::OnGUI()

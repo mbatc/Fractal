@@ -38,18 +38,18 @@ namespace Fractal
       m_taskQueue = MakeRef<TaskQueue>();
       m_mainThreadID = GetThreadID();
 
-      flInfo("  Initialising Event System");
+      flInfo("Initialising Event System");
       m_pSystemEvents = MakeRef<EventQueue>();
       m_pSystemEvents->SetEventCallback([](Event * pEvent, void* pUserData)
       {
         ((Impl_Application*)pUserData)->HandleEvent(pEvent);
       }, this);
 
-      flInfo("  Creating main window");
+      flInfo("Creating main window");
       // Create the applications main window and graphics API
       m_pMainWindow = MakeRef<Window>("Main Window", Window::Flag_Default, Window::DM_Windowed);
 
-      flInfo("  Creating Graphics API (%s)", graphicsAPIName);
+      flInfo("Creating Graphics API (%s)", graphicsAPIName);
       RenderTargetOptions opts;
       opts.sampleCount = 4; // Enable multisampling
       m_pGraphics = MakeRef(API::Create(graphicsAPIName, m_pMainWindow.Get(), &opts), false);
@@ -113,8 +113,8 @@ namespace Fractal
 
     void Render()
     {
-      m_pApp->GetMainWindow()->GetRenderTarget()->Bind();
-      m_pApp->GetMainWindow()->GetRenderTarget()->Clear();
+      GetMainWindow()->GetRenderTarget()->Bind();
+      GetMainWindow()->GetRenderTarget()->Clear();
       InvokeBehaviour(&ApplicationBehaviour::OnRender);
     }
 
@@ -149,9 +149,9 @@ namespace Fractal
     bool         m_isRunning = true;
 
     // Core components of an application
-    Ref<API> m_pGraphics     = nullptr;
-    Ref<Window>        m_pMainWindow   = nullptr;
-    Ref<EventQueue>    m_pSystemEvents = nullptr;
+    Ref<API>        m_pGraphics     = nullptr;
+    Ref<Window>     m_pMainWindow   = nullptr;
+    Ref<EventQueue> m_pSystemEvents = nullptr;
 
     int64_t m_mainThreadID = 0;
     Ref<TaskQueue> m_taskQueue; // The applications task queue. These are executed on the main thread
@@ -169,35 +169,13 @@ namespace Fractal
     Impl()->m_isRunning = false;
   }
 
-  Window* Application::GetMainWindow()
-  {
-    return Impl()->m_pMainWindow.Get();
-  }
-
-  Window const* Application::GetMainWindow() const
-  {
-    return Impl()->m_pMainWindow.Get();
-  }
-
-  API* Application::GetGraphicsAPI()
-  {
-    return Impl()->m_pGraphics.Get();
-  }
-
-  API const* Application::GetGraphicsAPI() const
-  {
-    return Impl()->m_pGraphics.Get();
-  }
-
   Task* Application::EnqueueTask(flIN Task* pTask)
   {
-    Application& app = Get();
-
-    if (GetThreadID() == app.MainThreadID())
+    Application *pApp = GetApplication();
+    if (GetThreadID() == MainThreadID())
       pTask->DoTask();
     else
-      app.Impl()->m_taskQueue->Add(pTask);
-
+      pApp->Impl()->m_taskQueue->Add(pTask);
 
     return pTask;
   }
@@ -207,11 +185,9 @@ namespace Fractal
     return EnqueueTask(pTask)->Await();
   }
 
-  Application& Application::Get() { return *_pApplication; }
-
   int64_t Application::MainThreadID()
   {
-    return Get().Impl()->m_mainThreadID;
+    return GetApplication()->Impl()->m_mainThreadID;
   }
 
   Application::Application(char const* graphicsAPIName)
@@ -269,5 +245,20 @@ namespace Fractal
 
     Impl()->Shutdown();
     return 0;
+  }
+  
+  Window * GetMainWindow()
+  {
+    return GetApplication()->Impl()->m_pMainWindow;
+  }
+
+  API * GetGraphicsAPI()
+  {
+    return GetApplication()->Impl()->m_pGraphics;
+  }
+
+  Application * GetApplication()
+  {
+    return _pApplication;
   }
 }

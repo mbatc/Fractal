@@ -100,6 +100,8 @@ namespace Fractal
      */
     int64_t GetChildCount() const;
 
+    bool RemoveChild(flIN int64_t index);
+
     /**
      * @brief Get a pointer to the SceneGraph that this Node belongs to.
      *

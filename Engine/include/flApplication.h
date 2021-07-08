@@ -53,18 +53,6 @@ namespace Fractal
     void Close();
 
     /**
-     * @brief Returns a pointer to the applications main window.
-     */
-    Window* GetMainWindow();
-    Window const* GetMainWindow() const;
-
-    /**
-     * @brief Returns a pointer to the applications graphics API.
-     */
-    API* GetGraphicsAPI();
-    API const* GetGraphicsAPI() const;
-
-    /**
      * @brief Get the ID of the applications main thread.
      */
     static int64_t MainThreadID();
@@ -92,12 +80,7 @@ namespace Fractal
      * @return The result returned by the task.
      */
     static int64_t Await(flIN Task* pTask);
-
-    /**
-     * @brief Get the global Application instance.
-     **/
-    static Application& Get();
-
+    
   protected:
     Application(char const* graphicsAPIName);
 
@@ -107,4 +90,19 @@ namespace Fractal
 
     int Run(); // Application entry point
   };
+  
+  /**
+   * @brief Returns a pointer to the applications main window.
+   */
+  flEXPORT Window * flCCONV GetMainWindow();
+
+  /**
+   * @brief Returns a pointer to the applications graphics API.
+   */
+  flEXPORT API * flCCONV GetGraphicsAPI();
+
+  /**
+   * @brief Get the global Application instance.
+   **/
+  flEXPORT Application * flCCONV GetApplication();
 }
