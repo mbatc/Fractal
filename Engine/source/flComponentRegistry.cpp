@@ -10,6 +10,8 @@ namespace Fractal
     bool     valid = false;
     int64_t  baseID = -1;
     ctString name = "";
+    ComponentAllocator   allocator;
+    ComponentDeallocator deallocator;
   };
 
   static ctVector<ComponentDetails> _components =
@@ -21,7 +23,7 @@ namespace Fractal
 
   static int64_t _nextTypeID = 0;
 
-  bool ComponentRegistry::Register(flIN char const* typeName, flIN int64_t typeID, flIN int64_t baseTypeID)
+  bool ComponentRegistry::Register(flIN char const* typeName, flIN int64_t typeID, flIN int64_t baseTypeID, flIN ComponentAllocator allocator, flIN ComponentDeallocator deallocator)
   {
     if (typeID >= _components.size())
       _components.resize(typeID + 1);
@@ -34,8 +36,10 @@ namespace Fractal
     }
 
     _derivedMap.clear();
-    info.name = typeName;
-    info.baseID = baseTypeID;
+    info.name        = typeName;
+    info.baseID      = baseTypeID;
+    info.allocator   = allocator;
+    info.deallocator = deallocator;
     return true;
   }
 
@@ -79,8 +83,34 @@ namespace Fractal
   {
     return _components[typeID].name.c_str();
   }
+
+  int64_t ComponentRegistry::GetTypeID(flIN char const * typeName)
+  {
+    for (int64_t i = 0; i < _components.size(); ++i)
+      if (strcmp(_components[i].name, typeName) == 0)
+        return i;
+    return -1;
+  }
+
   int64_t ComponentRegistry::NextTypeID()
   {
     return ++_nextTypeID;
+  }
+
+  Component *ComponentRegistry::Create(flIN int64_t typeID)
+  {
+    if (_components[typeID].allocator == nullptr)
+    {
+      flError("Cannot instantiate component '%s'. Allocator is null.", GetComponentName(typeID));
+      return nullptr;
+    }
+
+    return _components[typeID].allocator();
+  }
+
+  void ComponentRegistry::Destroy(Component *pComponent)
+  {
+    int64_t typeID = pComponent->GetTypeID();
+    _components[typeID].deallocator(pComponent);
   }
 }

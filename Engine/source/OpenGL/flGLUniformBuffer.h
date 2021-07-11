@@ -12,7 +12,7 @@ namespace Fractal
 
     static UniformBuffer* Create(API* pAPI, int64_t size, void const* pData, BufferUsage bufferUsage);
 
-    void Bind(flIN int64_t index) override;
+    void Bind(flIN int64_t index, flIN bool storageBuffer) override;
     void Unbind() override;
 
     HardwareBuffer* GetBuffer() override;

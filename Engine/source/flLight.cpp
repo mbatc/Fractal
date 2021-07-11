@@ -6,9 +6,12 @@ namespace Fractal
   {
   public:
     LightType type     = LightType_Sun;
-    Colour    colour   = ColourU32_White;
+    Colour    diffuse  = ColourU32_White;
+    Colour    ambient  = ColourU32_White;
     double    strength = 1;
     double    falloff  = 1;
+    double    innerConeAngle = ctDegs2Rads(25);
+    double    outerConeAngle = ctDegs2Rads(30);
   };
 
   flPIMPL_IMPL(Light);
@@ -18,9 +21,14 @@ namespace Fractal
     Impl()->type = type;
   }
 
-  void Light::SetColour(flIN Colour colour)
+  void Light::SetDiffuse(flIN Colour colour)
   {
-    Impl()->colour = colour;
+    Impl()->diffuse = colour;
+  }
+
+  void Light::SetAmbient(flIN Colour colour)
+  {
+    Impl()->ambient = colour;
   }
 
   void Light::SetStrength(flIN double strength)
@@ -33,14 +41,29 @@ namespace Fractal
     Impl()->falloff = falloff;
   }
 
+  void Light::SetInnerConeAngle(flIN double angleRads)
+  {
+    Impl()->innerConeAngle = angleRads;
+  }
+
+  void Light::SetOuterConeAngle(flIN double angleRads)
+  {
+    Impl()->outerConeAngle = angleRads;
+  }
+
   LightType Light::GetLightType() const
   {
     return Impl()->type;
   }
 
-  Colour Light::GetColour() const
+  Colour Light::GetDiffuse() const
   {
-    return Impl()->colour;
+    return Impl()->diffuse;
+  }
+
+  Colour Light::GetAmbient() const
+  {
+    return Impl()->ambient;
   }
 
   double Light::GetStrength() const
@@ -51,5 +74,15 @@ namespace Fractal
   double Light::GetFalloff() const
   {
     return Impl()->falloff;
+  }
+
+  double Light::GetInnerConeAngle() const
+  {
+    return Impl()->innerConeAngle;
+  }
+
+  double Light::GetOuterConeAngle() const
+  {
+    return Impl()->outerConeAngle;
   }
 }

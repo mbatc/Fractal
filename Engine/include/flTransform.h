@@ -45,6 +45,21 @@ namespace Fractal
     QuatD GetOrientation();
 
     /**
+     * @brief Get the forward direction in world space.
+     */
+    Vec3D GetForward();
+
+    /**
+     * @brief Get the right direction in world space.
+     */
+    Vec3D GetRight();
+
+    /**
+     * @brief Get the up direction in world space.
+     */
+    Vec3D GetUp();
+
+    /**
      * @brief Set the global transform using a transformation matrix.
      */
     void SetTransform(flIN Mat4D transform);

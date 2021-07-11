@@ -26,6 +26,7 @@ workspace "Fractal"
     inlining        "Default"
     floatingpoint   "Fast"
     editandcontinue "On"
+    buildoptions    { "/MP" }
     defines         { "DEBUG"}
 
   -- Setup global properties for the Release configuration
@@ -37,16 +38,21 @@ workspace "Fractal"
     floatingpoint   "Fast"
     editandcontinue "Off"
     flags           { "LinkTimeOptimization" }
+    buildoptions    { "/MP" }
     defines         { "NDEBUG" }
 
   -- Project Flags
-  flags { "FatalWarnings" }
-  flags { "MultiProcessorCompile" }
+  flags {
+    "FatalWarnings",
+    "MultiProcessorCompile"
+  }
 
   -- Linker options
-  linkoptions { "/ignore:4006" }
-  linkoptions { "/ignore:4221" }
-  linkoptions { "/ignore:4075" }
+  linkoptions {
+    "/ignore:4006",
+    "/ignore:4221",
+    "/ignore:4075"
+  }
 
   win32Build = os.target() == "windows"
   linuxBuild = os.target() == "linux"

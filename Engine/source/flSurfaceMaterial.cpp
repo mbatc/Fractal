@@ -244,6 +244,7 @@ namespace Fractal
   char const* MaterialProperty::Phong::specular = "specular";
   char const* MaterialProperty::Phong::normal   = "normal";
   char const* MaterialProperty::Phong::alpha    = "alpha";
+  char const* MaterialProperty::Phong::specularPower = "specularPower";
 
   char const* MaterialProperty::PBR::albedo     = "albedo";
   char const* MaterialProperty::PBR::emissive   = "emissive";

@@ -224,6 +224,7 @@ namespace Fractal
       static char const* specular;
       static char const* normal;
       static char const* alpha;
+      static char const* specularPower;
     };
 
     /**

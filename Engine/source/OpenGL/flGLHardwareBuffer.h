@@ -7,8 +7,9 @@ namespace Fractal
   class GLHardwareBuffer : public HardwareBuffer
   {
     GLHardwareBuffer(API* pAPI, BufferBinding binding, BufferUsage flags);
-
   public:
+    ~GLHardwareBuffer();
+
     static GLHardwareBuffer* Create(API* pAPI, BufferBinding binding, BufferUsage usage);
 
     bool Resize(int64_t size, bool discardData) override;

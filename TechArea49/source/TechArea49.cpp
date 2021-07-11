@@ -103,7 +103,7 @@ public:
 
     API* pGraphics = GetGraphicsAPI();
 
-    Ref<UniformBuffer> pUniformBuffer = MakeRef<UniformBuffer>();
+    Ref<UniformBuffer> pUniformBuffer = MakeRef(pGraphics->CreateUniformBuffer(0), false);
     StructuredBuffer<Matrices> buffer(pUniformBuffer->GetBuffer());
 
     pProgram = MakeRef(pGraphics->CreateProgram(), false);
@@ -210,7 +210,7 @@ public:
     Mat4F projection = m_camera.ProjectionMatrix() * m_camera.ViewMatrix();
     Mat4F mvp = projection * modelMat;
 
-    pMaterial->Bind();
+    pMaterial->Bind(0);
     pState->SetViewport(0, 0, GetMainWindow()->GetWidth(), GetMainWindow()->GetHeight());
 
     pProgram->SetMat4("mvp", mvp);

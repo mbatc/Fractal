@@ -36,7 +36,7 @@ namespace Fractal
     Ref<Task> pProgramLoadTask = MakeRef(Application::EnqueueTask(MakeTask([&]()
     {
       pProgram = MakeRef(pGraphics->CreateProgram(), false);
-      pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag", ProgramStage_Fragment);
+      pProgram->SetShaderFromFile("../../Engine/assets/shader-library/lighting.frag", ProgramStage_Fragment);
       pProgram->SetShaderFromFile("../../Engine/assets/shader-library/transform.vert", ProgramStage_Vertex);
       pProgram->Compile();
       return 0;

@@ -104,6 +104,10 @@ namespace Fractal
         {
           ReadValue(tokens, MaterialProperty::Phong::alpha);
         }
+        else if (prop.compare("Ns", atSCO_None))
+        {
+          ReadValue(tokens, MaterialProperty::Phong::specularPower);
+        }
         else if (prop.compare("Tr", atSCO_None))
         {
           ReadValue(tokens, MaterialProperty::Phong::alpha);

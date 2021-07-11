@@ -176,6 +176,21 @@ namespace Fractal
     return Impl()->Evaluated().orientation;
   }
 
+  Vec3D Transform::GetForward()
+  {
+    return GetOrientation().Rotate(Vec3D(0, 0, 1));
+  }
+
+  Vec3D Transform::GetRight()
+  {
+    return GetOrientation().Rotate(Vec3D(1, 0, 0));
+  }
+
+  Vec3D Transform::GetUp()
+  {
+    return GetOrientation().Rotate(Vec3D(0, 1, 0));
+  }
+
   Mat4D Transform::GetLocalTransform()
   {
     return Impl()->Evaluated().GetLocalTransform();

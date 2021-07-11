@@ -9,6 +9,7 @@ out vec4 vsout_position0;
 out vec4 vsout_colour0;
 out vec2 vsout_texcoord0;
 out vec3 vsout_normal0;
+out vec3 vsout_cameraPosition0;
 
 layout(binding = 0, std140) uniform Camera
 {
@@ -30,5 +31,7 @@ void main()
   vsout_colour0   = colour0;
   vsout_texcoord0 = texcoord0;
   vsout_normal0   = normalize((normalMat * vec4(normal0, 1)).xyz);
+  vsout_cameraPosition0 = (camMat * vec4(0,0,0,1)).xyz;
+
   gl_Position = mvp * vec4(position0, 1);
 }
