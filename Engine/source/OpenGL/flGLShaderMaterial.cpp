@@ -1,4 +1,5 @@
 #include "flUniformBuffer.h"
+#include "flHardwareBuffer.h"
 #include "flProgram.h"
 #include "flTexture.h"
 #include "flSampler.h"

@@ -1,6 +1,7 @@
 #include "flAPI.h"
 #include "flGLUniformBuffer.h"
 #include "flGLUtil.h"
+#include "flHardwareBuffer.h"
 
 namespace Fractal
 {

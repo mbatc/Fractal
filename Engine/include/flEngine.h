@@ -47,6 +47,7 @@
 #include "flIndexBuffer.h"
 #include "flVertexBuffer.h"
 #include "flUniformBuffer.h"
+#include "flStructuredBuffer.h"
 #include "flRenderTarget.h"
 #include "flWindowRenderTarget.h"
 #include "flTextureRenderTarget.h"

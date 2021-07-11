@@ -1,5 +1,6 @@
 #include "flSceneRenderer.h"
 #include "flUniformBuffer.h"
+#include "flStructuredBuffer.h"
 #include "flSceneGraph.h"
 #include "flComponent.h"
 #include "flNode.h"
