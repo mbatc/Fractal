@@ -52,13 +52,14 @@ namespace Fractal
 
   void GLShaderMaterial::Apply()
   {
-    if (m_shaderData != m_activeShaderData)
+    if (m_uniformBuffer != nullptr && m_shaderData != m_activeShaderData)
       m_uniformBuffer->GetBuffer()->Set(m_shaderData.data(), m_shaderData.size());
   }
 
-  void GLShaderMaterial::Bind()
+  void GLShaderMaterial::Bind(int64_t blockIndex)
   {
-    m_uniformBuffer->Bind(m_blockIndex);
+    if (m_uniformBuffer != nullptr)
+      m_uniformBuffer->Bind(blockIndex);
 
     for (auto& kvp : m_textures)
     {

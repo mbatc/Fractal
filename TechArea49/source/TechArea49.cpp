@@ -76,6 +76,12 @@ public:
   Mouse    *m_pMouse;
 };
 
+struct Matrices
+{
+  Mat4F view;
+  Mat4F proj;
+};
+
 class EditorModule : public Module
 {
 public:
@@ -96,6 +102,9 @@ public:
     // Logging::SetLogLevel(Logging::LogLevel_Warning);
 
     API* pGraphics = GetGraphicsAPI();
+
+    Ref<UniformBuffer> pUniformBuffer = MakeRef<UniformBuffer>();
+    StructuredBuffer<Matrices> buffer(pUniformBuffer->GetBuffer());
 
     pProgram = MakeRef(pGraphics->CreateProgram(), false);
     pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag", ProgramStage_Fragment);

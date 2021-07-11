@@ -123,6 +123,7 @@ namespace Fractal
     uint32_t m_programID = 0;
     Shader   m_shaders[ProgramStage_Count];
     bool     m_compiled = false;
+    bool     m_failed = false;
     ctVector<Resource> m_resources[ResourceType_Count];
   };
 }

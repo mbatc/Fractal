@@ -1,4 +1,5 @@
 #include "flSceneRenderer.h"
+#include "flUniformBuffer.h"
 #include "flSceneGraph.h"
 #include "flComponent.h"
 #include "flNode.h"
@@ -20,6 +21,14 @@
 
 namespace Fractal
 {
+  enum UniformBufferSlot
+  {
+    UBS_Camera = 0,
+    UBS_Model = 1,
+    UBS_Material = 2,
+    UBS_Count,
+  };
+
   typedef void(*ComponentHandler)(SceneRenderer* pRenderer, Component* pComponent);
 
   class Impl_SceneRenderer
@@ -39,6 +48,10 @@ namespace Fractal
     };
 
     Impl_SceneRenderer()
+      : m_cameraBuffer(MakeRef(GetGraphicsAPI()->CreateUniformBuffer(0), false))
+      , m_modelBuffer(MakeRef(GetGraphicsAPI()->CreateUniformBuffer(0), false))
+      , m_camera(m_cameraBuffer->GetBuffer())
+      , m_model(m_modelBuffer->GetBuffer())
     {
       AddHandler(Camera::TypeID(),       HandleCamera);
       AddHandler(MeshRenderer::TypeID(), HandleMesh);
@@ -115,6 +128,26 @@ namespace Fractal
       Camera* pCamera = (Camera*)pComponent;
     }
 
+    struct ModelData
+    {
+      Mat4F modelMat;
+      Mat4F normalMat;
+      Mat4F mvp;
+    };
+
+    struct CameraData
+    {
+      Mat4F camMat;
+      Mat4F viewMat;
+      Mat4F projMat;
+    };
+
+    Ref<UniformBuffer> m_cameraBuffer;
+    Ref<UniformBuffer> m_modelBuffer;
+
+    StructuredBuffer<ModelData>  m_model;
+    StructuredBuffer<CameraData> m_camera;
+
     ctVector<RenderJob>        m_renderQueue;
     ctVector<int64_t>          m_handlerLookup; // Handler to use for each component type
     ctVector<ComponentHandler> m_handler;   // Handler functions
@@ -171,6 +204,12 @@ namespace Fractal
 
   void SceneRenderer::Draw(flIN Mat4D viewMatrix, flIN Mat4D projMat)
   {
+    Impl()->m_camera->viewMat = viewMatrix.Transpose();
+    Impl()->m_camera->camMat  = viewMatrix.Transpose().Inverse();
+    Impl()->m_camera->projMat = projMat.Transpose();
+    Impl()->m_camera.Upload();
+    Impl()->m_cameraBuffer->Bind(UBS_Camera);
+
     VertexArray    *pActiveVertexArray = nullptr;
     Program        *pActiveProgram     = nullptr;
     ShaderMaterial *pActiveMaterial    = nullptr;
@@ -179,6 +218,12 @@ namespace Fractal
 
     for (auto &job : Impl()->m_renderQueue)
     {
+      Impl()->m_model->modelMat = job.modelMat.Transpose();
+      Impl()->m_model->normalMat = job.modelMat.Inverse();
+      Impl()->m_model->mvp = (projMat * viewMatrix * job.modelMat).Transpose();
+      Impl()->m_model.Upload();
+      Impl()->m_modelBuffer->Bind(UBS_Model);
+
       if (job.pVertexArray != pActiveVertexArray)
       {
         pActiveVertexArray = job.pVertexArray;
@@ -188,17 +233,20 @@ namespace Fractal
       if (job.pShader != pActiveProgram)
       {
         pActiveProgram = job.pShader;
-        pActiveProgram->Bind();
+        if (pActiveProgram->Compile())
+          pActiveProgram->Bind();
+        else
+          pActiveProgram = nullptr;
       }
 
       if (job.pMaterial != pActiveMaterial)
       {
         pActiveMaterial = job.pMaterial;
-        pActiveMaterial->Bind();
+        pActiveMaterial->Bind(UBS_Material);
       }
 
-      pActiveProgram->SetMat4("mvp", projMat * viewMatrix * job.modelMat);
-      pGraphics->Render(DrawMode_Triangles, pActiveVertexArray->GetIndexBuffer() != nullptr, job.elementOffset, job.elementCount);
+      if (pActiveMaterial != nullptr && pActiveProgram != nullptr && pActiveVertexArray != nullptr)
+        pGraphics->Render(DrawMode_Triangles, pActiveVertexArray->GetIndexBuffer() != nullptr, job.elementOffset, job.elementCount);
     }
   }
 }

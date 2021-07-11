@@ -286,7 +286,7 @@ namespace Fractal
   bool GLProgram::Compile()
   {
     if (m_compiled)
-      return true;
+      return !m_failed;
 
     bool success = true;
     for (int64_t stage = 0; stage < ProgramStage_Count; ++stage)
@@ -294,7 +294,11 @@ namespace Fractal
         success &= CompileShader(&m_shaders[stage], (ProgramStage)stage);
 
     if (!success) // Compiling shaders failed
+    {
+      m_failed   = true;
+      m_compiled = true;
       return false;
+    }
 
     int status = 0;
     flVerifyGL(glLinkProgram, m_programID);
@@ -303,23 +307,25 @@ namespace Fractal
     {
       int logLen = 0;
       ctVector<char> logBuffer;
-      logBuffer.resize(logLen + 1, 0);
-
       // Get the length of the compilation log
       flVerifyGL(glGetProgramiv, m_programID, GL_INFO_LOG_LENGTH, &logLen);
 
+      // Resize log buffer
+      logBuffer.resize(logLen + 1, 0);
+
       // Get the compilation log
-      flVerifyGL(glGetProgramInfoLog, m_programID, logLen, &logLen, logBuffer.data());
+      flVerifyGL(glGetProgramInfoLog, m_programID, logLen, nullptr, logBuffer.data());
 
       // TODO: Report in error compilation log
       flError("Failed to link shader: %s", logBuffer.data());
-
+      m_failed   = true;
+      m_compiled = true;
       return false; // TODO: Report GL error
     }
 
     // Get shader details
     Reflect();
-
+    m_failed   = false;
     m_compiled = true;
     return true;
   }
@@ -363,13 +369,15 @@ namespace Fractal
       // GL error, report error
       int logLen = 0;
       ctVector<char> logBuffer;
-      logBuffer.resize(logLen + 1, 0);
 
       // Get the length of the compilation log
       flVerifyGL(glGetShaderiv, pShader->glID, GL_INFO_LOG_LENGTH, &logLen);
 
+      // Resize log buffer
+      logBuffer.resize(logLen + 1, 0);
+
       // Get the compilation log
-      flVerifyGL(glGetShaderInfoLog, pShader->glID, logLen, &logLen, logBuffer.data());
+      flVerifyGL(glGetShaderInfoLog, pShader->glID, logLen, nullptr, logBuffer.data());
 
       flError("Shader Compilation Failed: %s", logBuffer.data());
 
@@ -480,8 +488,6 @@ namespace Fractal
         pUniformResource->blockIndex  = blockIndex;
         pUniformResource->location    = -1;
       }
-
-      flVerifyGL(glUniformBlockBinding, m_programID, (uint32_t)block, (uint32_t)block);
     }
   }
 }

@@ -21,7 +21,7 @@ namespace Fractal
     static ShaderMaterial* Create(API* pAPI, Program* pProgram, char const* blockName = "Material");
 
     virtual void Apply() override;
-    virtual void Bind() override;
+    virtual void Bind(int64_t blockIndex) override;
     virtual bool SetValue(char const* name, float value) override;
     virtual bool SetValue(char const* name, float const* pValues, int64_t componentCount) override;
     virtual bool SetTexture(char const* name, Texture* pTexture) override;

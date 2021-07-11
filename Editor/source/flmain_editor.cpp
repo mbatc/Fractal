@@ -43,11 +43,56 @@ namespace Fractal
       gui->AddMenuItem("Window/Properties",  MakeTask(ShowPanel<PropertiesPanel>));
 
       OnEvent(E_Wnd_Close, &FractalEditor::OnCloseEvent);
+      OnEvent(E_Kbd_KeyState, &FractalEditor::OnKey);
+    }
+
+    void OnUpdate()
+    {
+      if (m_reloadShaders)
+      {
+        SceneGraph *pScene = GetModule<SceneManager>()->ActiveScene();
+        for (int64_t id : pScene->GetNodeIDs())
+        {
+          Node *pNode = pScene->GetNode(id);
+          MeshRenderer *pMesh = pNode->GetComponent<MeshRenderer>();
+          if (pMesh != nullptr)
+            for (int64_t i = 0; i < pMesh->GetSubMeshCount(); ++i)
+              pMesh->GetShader(i)->Reload();
+        }
+
+        for (int64_t id : pScene->GetNodeIDs())
+        {
+          Node *pNode = pScene->GetNode(id);
+          MeshRenderer *pMesh = pNode->GetComponent<MeshRenderer>();
+          if (pMesh)
+            for (int64_t i = 0; i < pMesh->GetSubMeshCount(); ++i)
+              pMesh->GetShader(i)->Compile();
+        }
+
+        m_reloadShaders = false;
+      }
     }
 
     bool OnCloseEvent(Event* pEvent)
     {
       Close();
+      return true;
+    }
+
+    bool OnKey(Event *pEvent)
+    {
+      static bool allowReload = true;
+      if (pEvent->kbdState.keyCode == KC_Apostraphe)
+      {
+        if (pEvent->kbdState.isDown)
+        {
+          m_reloadShaders |= allowReload;
+          allowReload = false;
+        }
+        else
+          allowReload = true;
+      }
+
       return true;
     }
 
@@ -75,7 +120,10 @@ namespace Fractal
       GetApplication()->GetModule<EditorGUIModule>()->OpenPanel<T>();
       return 0;
     }
+
+    bool m_reloadShaders = false;
   };
+
 
   Application* CreateApplication(char** argv, int argc)
   {
