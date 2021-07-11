@@ -3,6 +3,7 @@
 #include "flSceneGraph.h"
 #include "flNode.h"
 #include "ctString.h"
+#include "flLog.h"
 
 namespace Fractal
 {
@@ -100,8 +101,24 @@ namespace Fractal
     return Impl()->components.size();
   }
 
+  Component* Node::AddComponent(flIN int64_t typeID)
+  {
+    return AddComponent(ComponentRegistry::Create(typeID));
+  }
+
+  Component* Node::AddComponent(flIN char const * typeName)
+  {
+    return AddComponent(ComponentRegistry::Create(ComponentRegistry::GetTypeID(typeName)));
+  }
+
   Component* Node::AddComponent(flIN Component* pNewComponent)
   {
+    if (pNewComponent == nullptr)
+    {
+      flError("Cannot add component. pNewComponent is null");
+      return nullptr;
+    }
+
     for (Ref<Component> const& pComponent : Impl()->components)
     {
       if (pComponent->GetType() == pNewComponent->GetType())

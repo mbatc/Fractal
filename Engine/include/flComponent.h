@@ -30,7 +30,9 @@ private:
 
 namespace Fractal
 {
+  class SceneGraph;
   class Node;
+  class Transform;
 
   class Impl_Component;
 
@@ -123,6 +125,42 @@ namespace Fractal
      * @return A const pointer to the Node.
      */
     Node const* GetNode() const;
+
+    /**
+     * @brief Get the transform component of the Node.
+     * 
+     * This is a helper function and is equivalent to GetNode()->GetTransform() 
+     * 
+     * @return A pointer to the transform component.
+     */
+    Transform * GetTransform();
+
+    /**
+     * @brief Get the transform component of the Node. (const)
+     * 
+     * This is a helper function and is equivalent to GetNode()->GetTransform() 
+     * 
+     * @return A const pointer to the transform component.
+     */
+    Transform const * GetTransform() const;
+
+    /**
+     * @brief Get the SceneGraph this components Node belongs to.
+     * 
+     * This is a helper function and is equivalent to GetNode()->GetScene() 
+     * 
+     * @return A pointer to the SceneGraph.
+     */
+    SceneGraph * GetScene();
+
+    /**
+     * @brief Get the SceneGraph this components Node belongs to. (const)
+     * 
+     * This is a helper function and is equivalent to GetNode()->GetScene() 
+     * 
+     * @return A const pointer to the SceneGraph.
+     */
+    SceneGraph const * GetScene() const;
 
     /**
      * @brief Check if a component instance is of a specific component type.

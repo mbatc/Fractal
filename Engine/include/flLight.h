@@ -24,18 +24,29 @@ namespace Fractal
   public:
     void SetLightType(flIN LightType type);
 
-    void SetColour(flIN Colour colour);
+    void SetDiffuse(flIN Colour colour);
+
+    void SetAmbient(flIN Colour colour);
 
     void SetStrength(flIN double strength);
 
     void SetFalloff(flIN double falloff);
 
+    void SetInnerConeAngle(flIN double angleRads);
+    void SetOuterConeAngle(flIN double angleRads);
+
     LightType GetLightType() const;
 
-    Colour GetColour() const;
+    Colour GetDiffuse() const;
+    
+    Colour GetAmbient() const;
 
     double GetStrength() const;
 
     double GetFalloff() const;
+
+    double GetInnerConeAngle() const;
+
+    double GetOuterConeAngle() const;
   };
 }

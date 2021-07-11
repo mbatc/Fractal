@@ -17,7 +17,7 @@ namespace Fractal
 
   public:
     virtual void Apply() = 0;
-    virtual void Bind() = 0;
+    virtual void Bind(flIN int64_t blockIndex) = 0;
 
     virtual bool SetValue(flIN char const* name, flIN float value) = 0;
     virtual bool SetValue(flIN char const* name, flIN float const* pValues, flIN int64_t componentCount) = 0;

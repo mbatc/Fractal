@@ -85,10 +85,10 @@ void ScenePanel::OnGUI()
     );
   }
 
-  Widgets::SameLine();
-
   if (pEditor->m_selectedNode != -1)
   {
+    Widgets::SameLine();
+    
     if (Widgets::Button("Delete"))
     {
       m_pSceneManager->ActiveScene()->RemoveNode(pEditor->m_selectedNode);

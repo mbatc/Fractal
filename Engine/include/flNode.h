@@ -150,6 +150,12 @@ namespace Fractal
     bool RemoveComponentByType(flIN char const* typeName);
 
     /**
+     * @brief Add a new component to the node.
+     */
+    Component* AddComponent(flIN int64_t typeID);
+    Component* AddComponent(flIN char const * typeName);
+
+    /**
      * @brief Add a component to the node.
      *
      * @param args... Arguments to be forwarded to the Component's constructor.

@@ -23,13 +23,27 @@ void PropertiesPanel::OnGUI()
     pNode->SetName(buffer.data());
 
     Widgets::Separator();
+    if (Widgets::BeginMenu("Add Component"))
+    {
+      for (int64_t i = 0; i < ComponentRegistry::ComponentCount(); ++i)
+      {
+        if (pNode->GetComponentByType(i) == nullptr)
+        {
+          char const * componentTypeName = ComponentRegistry::GetComponentName(i);
+          if (Widgets::Selectable(componentTypeName, false))
+            pNode->AddComponent(componentTypeName);
+        }
+      }
+
+      Widgets::EndMenu();
+    }
+    Widgets::Separator();
     for (int64_t i = 0; i < pNode->GetComponentCount(); ++i)
     {
       Component* pComponent = pNode->GetComponent(i);
-      Widgets::Label(pComponent->GetType());
-      Widgets::Separator();
+      if (!Widgets::CollapsingHeader(pComponent->GetType()))
+        continue;
       DrawComponent(pComponent);
-      Widgets::Separator();
     }
   }
 }
@@ -71,5 +85,68 @@ void PropertiesPanel::DrawComponent(Component* pComponent)
         pTransform->SetOrientation(QuatD(rot.x, rot.y, rot.z));
       }
     }
+  }
+
+  if (pComponent->Is<MeshRenderer>())
+  {
+    MeshRenderer *pMesh = pComponent->As<MeshRenderer>();
+  }
+
+  if (pComponent->Is<Light>())
+  {
+    Light *pLight = pComponent->As<Light>();
+
+    static char const * lightTypeName[LightType_Count] = { "Sun", "Point Light", "Spot Light" };
+
+    if (Widgets::BeginDropdownBox("Light Type", lightTypeName[pLight->GetLightType()]))
+    {
+      for (int64_t i = 0; i < LightType_Count; ++i)
+        if (Widgets::Selectable(lightTypeName[i], i == pLight->GetLightType()))
+          pLight->SetLightType(LightType(i));
+      Widgets::EndDropdownBox();
+    }
+
+    // Get the properties
+    Colour diffuse   = pLight->GetDiffuse();
+    Colour ambient   = pLight->GetAmbient();
+    double strength  = pLight->GetStrength();
+    double falloff   = pLight->GetFalloff();
+    double innerConeAngle = ctRads2Degs(pLight->GetInnerConeAngle());
+    double outerConeAngle = ctRads2Degs(pLight->GetOuterConeAngle());
+
+    // Draw inputs for each light type
+    switch (pLight->GetLightType())
+    {
+    case LightType_Sun:
+      Widgets::Input("Colour",   &diffuse);
+      Widgets::Input("Ambient",  &ambient);
+      Widgets::Input("Strength", &strength);
+      break;
+    case LightType_Point:
+      Widgets::Input("Colour",   &diffuse);
+      Widgets::Input("Strength", &strength);
+      Widgets::Input("Falloff",  &falloff);
+      break;
+    case LightType_Spot:
+      Widgets::Input("Colour",   &diffuse);
+      Widgets::Input("Strength", &strength);
+      Widgets::Input("Falloff",  &falloff);
+      Widgets::Input("Inner Cone Angle", &innerConeAngle);
+      Widgets::Input("Outer Cone Angle", &outerConeAngle);
+      break;
+    }
+
+    // Apply changes
+    pLight->SetDiffuse(diffuse);
+    pLight->SetAmbient(ambient);
+    pLight->SetStrength(strength);
+    pLight->SetFalloff(falloff);
+    pLight->SetInnerConeAngle(ctDegs2Rads(innerConeAngle));
+    pLight->SetOuterConeAngle(ctDegs2Rads(outerConeAngle));
+  }
+
+  if (pComponent->Is<Camera>())
+  {
+    Camera *pCamera = pComponent->As<Camera>();
   }
 }

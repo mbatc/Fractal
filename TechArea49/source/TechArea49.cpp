@@ -76,6 +76,12 @@ public:
   Mouse    *m_pMouse;
 };
 
+struct Matrices
+{
+  Mat4F view;
+  Mat4F proj;
+};
+
 class EditorModule : public Module
 {
 public:
@@ -96,6 +102,9 @@ public:
     // Logging::SetLogLevel(Logging::LogLevel_Warning);
 
     API* pGraphics = GetGraphicsAPI();
+
+    Ref<UniformBuffer> pUniformBuffer = MakeRef(pGraphics->CreateUniformBuffer(0), false);
+    StructuredBuffer<Matrices> buffer(pUniformBuffer->GetBuffer());
 
     pProgram = MakeRef(pGraphics->CreateProgram(), false);
     pProgram->SetShaderFromFile("../../Engine/assets/shader-library/textured.frag", ProgramStage_Fragment);
@@ -201,7 +210,7 @@ public:
     Mat4F projection = m_camera.ProjectionMatrix() * m_camera.ViewMatrix();
     Mat4F mvp = projection * modelMat;
 
-    pMaterial->Bind();
+    pMaterial->Bind(0);
     pState->SetViewport(0, 0, GetMainWindow()->GetWidth(), GetMainWindow()->GetHeight());
 
     pProgram->SetMat4("mvp", mvp);

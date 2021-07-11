@@ -28,16 +28,3 @@ namespace Fractal
     void Draw(flIN Mat4D viewMatrix, flIN Mat4D projMat);
   };
 }
-
-/*
-SceneRenderer renderer;
-
-renderer.Clear();
-renderer.Begin(pScene);           // Begin rendering from a scene
-renderer.Submit(pSomeRandomNode); // Submit a node from the scene
-renderer.End();                   // Finished drawing from this scene
-
-// Actually do the render - sends GPU commands
-renderer.Draw(viewMatrix, projectionMatrix);
-
-*/

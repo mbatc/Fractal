@@ -1,6 +1,7 @@
 #include "flAPI.h"
 #include "flGLUniformBuffer.h"
 #include "flGLUtil.h"
+#include "flHardwareBuffer.h"
 
 namespace Fractal
 {
@@ -16,9 +17,12 @@ namespace Fractal
     return flNew GLUniformBuffer(pAPI, size, pData, bufferUsage);
   }
 
-  void GLUniformBuffer::Bind(flIN int64_t index)
+  void GLUniformBuffer::Bind(flIN int64_t index, flIN bool storageBuffer)
   {
-    flVerifyGL(glBindBufferRange, GL_UNIFORM_BUFFER, (GLuint)index, flNativeToGLID(m_pBuffer->GetNativeResource()), 0, m_pBuffer->GetSize());
+    if (storageBuffer)
+      flVerifyGL(glBindBufferRange, GL_SHADER_STORAGE_BUFFER, (GLuint)index, flNativeToGLID(m_pBuffer->GetNativeResource()), 0, m_pBuffer->GetSize());
+    else
+      flVerifyGL(glBindBufferRange, GL_UNIFORM_BUFFER, (GLuint)index, flNativeToGLID(m_pBuffer->GetNativeResource()), 0, m_pBuffer->GetSize());
     m_boundIndex = index;
   }
 

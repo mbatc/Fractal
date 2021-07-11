@@ -17,6 +17,11 @@ namespace Fractal
     m_glUsageFlags = GLUtil::ToBufferUsage(usage);
   }
 
+  GLHardwareBuffer::~GLHardwareBuffer()
+  {
+    flVerifyGL(glDeleteBuffers, 1, &m_bufferID);
+  }
+
   bool GLHardwareBuffer::Resize(int64_t size, bool discardData)
   {
     bool success = true;

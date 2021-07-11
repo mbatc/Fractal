@@ -60,6 +60,8 @@ namespace Fractal
     return stream.str();
   }
 
+  inline std::string Repr(std::nullptr_t const &) { return "nullptr"; }
+
   inline std::string Repr(int8_t   const& o)    { return std::to_string(o); }
   inline std::string Repr(int16_t  const& o)    { return std::to_string(o); }
   inline std::string Repr(int32_t  const& o)    { return std::to_string(o); }

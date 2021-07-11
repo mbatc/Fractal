@@ -37,6 +37,26 @@ namespace Fractal
     return Impl()->m_pNode;
   }
 
+  Transform *Component::GetTransform()
+  {
+    return Impl()->m_pNode->GetTransform();
+  }
+
+  Transform const *Component::GetTransform() const
+  {
+    return Impl()->m_pNode->GetTransform();
+  }
+
+  SceneGraph *Component::GetScene()
+  {
+    return Impl()->m_pNode->GetScene();
+  }
+
+  SceneGraph const *Component::GetScene() const
+  {
+    return Impl()->m_pNode->GetScene();
+  }
+
   void Component::SetNode(Node* pParent)
   {
     Impl()->m_pNode = pParent;
