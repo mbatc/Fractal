@@ -11,7 +11,7 @@ namespace Fractal
 
   flPIMPL_IMPL(Window);
 
-  Window::Window(flIN const char* title, flIN Flags flags, flIN DisplayMode displayMode)
+  Window::Window(flIN const char* title, flIN WindowFlags flags, flIN WindowDisplayMode displayMode)
   {
     Impl()->Construct(this, title, flags, displayMode);
   }
@@ -21,12 +21,12 @@ namespace Fractal
     return Impl()->SetTitle(title);
   }
 
-  void Window::SetDisplayMode(flIN DisplayMode mode)
+  void Window::SetDisplayMode(flIN WindowDisplayMode mode)
   {
     return Impl()->SetDisplayMode(mode);
   }
 
-  void Window::SetFocus(flIN FocusFlags flags, flIN bool focused)
+  void Window::SetFocus(flIN WindowFocusFlags flags, flIN bool focused)
   {
     return Impl()->SetFocus(flags, focused);
   }
@@ -51,17 +51,17 @@ namespace Fractal
     return Impl()->GetTitle();
   }
 
-  Window::DisplayMode Window::GetDisplayMode() const
+  WindowDisplayMode Window::GetDisplayMode() const
   {
     return Impl()->GetDisplayMode();
   }
 
-  Window::FocusFlags Window::GetFocusFlags() const
+  WindowFocusFlags Window::GetFocusFlags() const
   {
     return Impl()->GetFocusFlags();
   }
 
-  Window::Flags Window::GetFlags() const
+  WindowFlags Window::GetFlags() const
   {
     return Impl()->GetFlags();
   }
@@ -121,8 +121,13 @@ namespace Fractal
     return Impl()->GetRenderTarget();
   }
 
-  Window* Window::GetFocusedWindow(flIN FocusFlags focusFlags)
+  Window* Window::GetFocusedWindow(flIN WindowFocusFlags focusFlags)
   {
     return Impl_Window::GetFocusedWindow(focusFlags);
   }
+}
+
+Fractal::Window* Fractal_CreateWindow(flIN const char* title, flIN Fractal::WindowFlags flags, flIN Fractal::WindowDisplayMode displayMode)
+{
+  return flNew Fractal::Window(title, flags, displayMode);
 }

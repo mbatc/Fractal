@@ -171,13 +171,13 @@ namespace Fractal
 
   void SceneRenderer::Draw(flIN Mat4D viewMatrix, flIN Mat4D projMat)
   {
-    VertexArray    *pActiveVertexArray = nullptr;
-    Program        *pActiveProgram     = nullptr;
-    ShaderMaterial *pActiveMaterial    = nullptr;
+    VertexArray*    pActiveVertexArray = nullptr;
+    Program*        pActiveProgram     = nullptr;
+    ShaderMaterial* pActiveMaterial    = nullptr;
 
-    API *pGraphics = GetGraphicsAPI();
+    API* pGraphics = GetGraphicsAPI();
 
-    for (auto &job : Impl()->m_renderQueue)
+    for (auto& job : Impl()->m_renderQueue)
     {
       if (job.pVertexArray != pActiveVertexArray)
       {

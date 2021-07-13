@@ -47,7 +47,7 @@ namespace Fractal
 
       flInfo("Creating main window");
       // Create the applications main window and graphics API
-      m_pMainWindow = MakeRef<Window>("Main Window", Window::Flag_Default, Window::DM_Windowed);
+      m_pMainWindow = MakeRef<Window>("Main Window", Flag_Default, DM_Windowed);
 
       flInfo("Creating Graphics API (%s)", graphicsAPIName);
       RenderTargetOptions opts;
@@ -171,7 +171,7 @@ namespace Fractal
 
   Task* Application::EnqueueTask(flIN Task* pTask)
   {
-    Application *pApp = GetApplication();
+    Application* pApp = GetApplication();
     if (GetThreadID() == MainThreadID())
       pTask->DoTask();
     else
@@ -246,18 +246,18 @@ namespace Fractal
     Impl()->Shutdown();
     return 0;
   }
-  
-  Window * GetMainWindow()
+
+  Window* GetMainWindow()
   {
     return GetApplication()->Impl()->m_pMainWindow;
   }
 
-  API * GetGraphicsAPI()
+  API* GetGraphicsAPI()
   {
     return GetApplication()->Impl()->m_pGraphics;
   }
 
-  Application * GetApplication()
+  Application* GetApplication()
   {
     return _pApplication;
   }

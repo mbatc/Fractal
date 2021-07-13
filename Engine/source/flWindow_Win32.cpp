@@ -24,7 +24,7 @@ namespace Fractal
 
   static Window* _GetWindowFromHandle(HWND hWnd);
 
-  void Impl_Window::Construct(Window* pWindow, const char* title, Window::Flags flags, Window::DisplayMode displayMode)
+  void Impl_Window::Construct(Window* pWindow, const char* title, WindowFlags flags, WindowDisplayMode displayMode)
   {
     HINSTANCE hInstance = ::GetModuleHandle(NULL);
 
@@ -99,7 +99,7 @@ namespace Fractal
     _windowInitLock.unlock();
   }
 
-  void Impl_Window::Create(Window* pWindow, const char* title, Window::Flags flags, void* hInstance)
+  void Impl_Window::Create(Window* pWindow, const char* title, WindowFlags flags, void* hInstance)
   {
     Task* pCreateTask = nullptr;
 
@@ -109,7 +109,7 @@ namespace Fractal
       Window* pWindow;
       void** ppHandle;
       const char* title;
-      Window::Flags flags;
+      WindowFlags flags;
       HINSTANCE     hInstance;
     };
 
@@ -143,7 +143,7 @@ namespace Fractal
       int show = SW_HIDE;
 
       ::UpdateWindow((HWND)*pCreateData->ppHandle);
-      if ((pCreateData->flags & Window::Flag_Visible) > 0)
+      if ((pCreateData->flags & Flag_Visible) > 0)
         ::ShowWindow((HWND)*pCreateData->ppHandle, SW_SHOW);
       return 0ll;
     }, &createData, &pCreateTask);
@@ -166,7 +166,7 @@ namespace Fractal
     }, m_hWnd);
   }
 
-  Window* Impl_Window::GetFocusedWindow(Window::FocusFlags focusFlags)
+  Window* Impl_Window::GetFocusedWindow(WindowFocusFlags focusFlags)
   {
     HWND capturedWindow = ::GetCapture();
     HWND focusedWindow = ::GetFocus();
@@ -180,8 +180,8 @@ namespace Fractal
       pMouseWnd = _GetWindowFromHandle(capturedWindow);
 
 
-    bool keyboard = (focusFlags & Window::FF_Keyboard) > 0;
-    bool mouse = (focusFlags & Window::FF_Mouse) > 0;
+    bool keyboard = (focusFlags & FF_Keyboard) > 0;
+    bool mouse = (focusFlags & FF_Mouse) > 0;
     if (keyboard && mouse)
       return pKeyboardWnd == pMouseWnd ? pKeyboardWnd : nullptr;
     else if (keyboard)
@@ -196,16 +196,16 @@ namespace Fractal
     ::SetWindowText((HWND)m_hWnd, title);
   }
 
-  void Impl_Window::SetDisplayMode(Window::DisplayMode mode)
+  void Impl_Window::SetDisplayMode(WindowDisplayMode mode)
   {
     if (m_displayMode == mode)
       return;
 
     HWND hWnd = (HWND)m_hWnd;
-    if (m_displayMode == Window::DM_Windowed)
+    if (m_displayMode == DM_Windowed)
     {
       // Store the windowed window state
-      m_windowedState.maximized = (GetFlags() & Window::Flag_Maximized) > 0;
+      m_windowedState.maximized = (GetFlags() & Flag_Maximized) > 0;
 
       if (m_windowedState.maximized)
         ::SendMessage(hWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
@@ -221,10 +221,10 @@ namespace Fractal
 
     switch (mode)
     {
-    case Window::DM_Fullscreen:
+    case DM_Fullscreen:
     {
     } break;
-    case Window::DM_FullscreenWindowed:
+    case DM_FullscreenWindowed:
     {
       // Set new window style and size.
       ::SetWindowLong(hWnd, GWL_STYLE, (LONG)m_windowedState.style & ~(WS_CAPTION | WS_THICKFRAME));
@@ -237,7 +237,7 @@ namespace Fractal
       RECT windowRect(monitorInfo.rcMonitor); // TODO: Add a Monitor API to the engine
       ::SetWindowPos(hWnd, NULL, windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
     } break;
-    case Window::DM_Windowed:
+    case DM_Windowed:
     {
       // Restore window sizes
       ::SetWindowLong(hWnd, GWL_STYLE, (LONG)m_windowedState.style);
@@ -255,13 +255,13 @@ namespace Fractal
     m_displayMode = mode;
   }
 
-  void Impl_Window::SetFocus(Window::FocusFlags flags, bool focused)
+  void Impl_Window::SetFocus(WindowFocusFlags flags, bool focused)
   {
     HWND hWnd = (HWND)m_hWnd;
-    if (flags & Window::FF_Mouse)
+    if (flags & FF_Mouse)
       ::SetFocus(focused ? hWnd : 0);
 
-    if (flags & Window::FF_Keyboard)
+    if (flags & FF_Keyboard)
     {
       if (focused)
         ::SetCapture(hWnd);
@@ -298,30 +298,30 @@ namespace Fractal
     return m_pWndTitleBuffer->data();
   }
 
-  Window::DisplayMode Impl_Window::GetDisplayMode() const
+  WindowDisplayMode Impl_Window::GetDisplayMode() const
   {
     return m_displayMode;
   }
 
-  Window::FocusFlags Impl_Window::GetFocusFlags() const
+  WindowFocusFlags Impl_Window::GetFocusFlags() const
   {
-    Window* pKeyboard = GetFocusedWindow(Window::FF_Keyboard);
-    Window* pMouse = GetFocusedWindow(Window::FF_Mouse);
-    Window::FocusFlags flags = Window::FF_None;
+    Window* pKeyboard = GetFocusedWindow(FF_Keyboard);
+    Window* pMouse = GetFocusedWindow(FF_Mouse);
+    WindowFocusFlags flags = FF_None;
     if (pKeyboard && pKeyboard->pImplWindow == this)
-      flags = flags | Window::FF_Keyboard;
+      flags = flags | FF_Keyboard;
     if (pMouse && pMouse->pImplWindow == this)
-      flags = flags | Window::FF_Keyboard;
+      flags = flags | FF_Keyboard;
     return flags;
   }
 
-  Window::Flags Impl_Window::GetFlags() const
+  WindowFlags Impl_Window::GetFlags() const
   {
     HWND hWnd = (HWND)m_hWnd;
-    Window::Flags flags = Window::Flag_None;
-    flags = flags | (::IsWindowVisible(hWnd) ? Window::Flag_Visible : Window::Flag_None);
-    flags = flags | (::IsZoomed(hWnd) ? Window::Flag_Maximized : Window::Flag_None);
-    flags = flags | (::IsIconic(hWnd) ? Window::Flag_Minimized : Window::Flag_None);
+    WindowFlags flags = Flag_None;
+    flags = flags | (::IsWindowVisible(hWnd) ? Flag_Visible : Flag_None);
+    flags = flags | (::IsZoomed(hWnd) ? Flag_Maximized : Flag_None);
+    flags = flags | (::IsIconic(hWnd) ? Flag_Minimized : Flag_None);
     return flags;
   }
 

@@ -15,7 +15,7 @@ public:
 
   float nearPlane = 0.01;
   float farPlane = 100;
-  float FOV = ctDegs2Radsf(50);
+  float FOV = Fractal::Degs2Radsf(50);
   float width = 1;
   float height = 1;
   Fractal::Vec3D position = { 0, 0, 0 };

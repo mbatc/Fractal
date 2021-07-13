@@ -16,6 +16,7 @@ namespace Fractal
     FractalEditor()
       : Application("OpenGL")
     {
+      // AddModule<PluginManager>();
       AddModule<SceneManager>();
       AddModule<EditorGUIModule>();
       AddModule<EditorModule>();

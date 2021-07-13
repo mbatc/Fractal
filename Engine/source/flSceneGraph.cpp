@@ -129,7 +129,7 @@ namespace Fractal
     return RemoveNode(GetNode(id));
   }
 
-  bool SceneGraph::RemoveNode(flIN Node *pNode)
+  bool SceneGraph::RemoveNode(flIN Node* pNode)
   {
     if (pNode == nullptr || pNode->GetScene() != this)
       return false;

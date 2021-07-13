@@ -107,13 +107,13 @@ namespace Fractal
      * @return Returns true if the event was added to any of the existing EventQueue's.
      *         If no event queue accepted the event, false is returned.
      */
-    static bool flCCONV PostGlobalEvent(flIN Event* pEvent);
+    static bool PostGlobalEvent(flIN Event* pEvent);
 
     /**
      * @brief Get the system event thread.
      *
      * @return The ThreadQueue used to process system events.
      */
-    static ThreadQueue* flCCONV GetEventThread();
+    static ThreadQueue* GetEventThread();
   };
 }

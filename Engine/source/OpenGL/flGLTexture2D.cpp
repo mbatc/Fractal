@@ -88,7 +88,7 @@ namespace Fractal
 
   bool GLTexture2D::Set(void* pPixels, const PixelBufferDesc* pBufferDesc, int64_t widthOffset, int64_t heightOffset, int64_t depthOffset, int64_t mipMap)
   {
-    ctUnused(depthOffset);
+    flUNUSED(depthOffset);
 
     uint32_t fmt, type;
     if (!GetGLFormat(pBufferDesc, nullptr, &fmt, &type))
@@ -148,7 +148,7 @@ namespace Fractal
 
   int64_t GLTexture2D::GetMipMapCount() const
   {
-    return m_hasMipMaps ? int64_t(1 + floor(log2((double)ctMax(GetWidth(), GetHeight(), GetDepth())))) : 1;
+    return m_hasMipMaps ? int64_t(1 + floor(log2((double)Max(GetWidth(), GetHeight(), GetDepth())))) : 1;
   }
 
   int64_t GLTexture2D::GetWidth(int64_t mipMap) const

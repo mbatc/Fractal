@@ -36,7 +36,7 @@ namespace Fractal
         m_tasks.pop_front();
       }
       m_lock->unlock();
-      
+
       int64_t result = -1;
       if (pNextTask != nullptr)
         result = pNextTask->Run();

@@ -139,7 +139,7 @@ namespace Fractal
     {
       // Get some properties of the window
       const char* title = m_pWindow->GetTitle();
-      Window::Flags flags = m_pWindow->GetFlags();
+      WindowFlags flags = m_pWindow->GetFlags();
 
       // Recreate the window
       m_pWindow->Impl()->Destroy();

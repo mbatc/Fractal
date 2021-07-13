@@ -48,7 +48,7 @@ namespace Fractal
       Impl()->m_mouse.GetServer()->SendEvent(MA_VScroll, (float)pEvent->mseScroll.amount, true);
     return true;
   }
-  
+
   Mouse* Module::GetMouse()
   {
     return &Impl()->m_mouse;

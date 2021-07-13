@@ -66,7 +66,7 @@ public:
 
   float nearPlane = 0.01;
   float farPlane  = 100;
-  float FOV       = ctDegs2Radsf(50);
+  float FOV       = Degs2Radsf(50);
   float width     = 1;
   float height    = 1;
   Vec3D position  = { 0, 0, 0 };
@@ -181,7 +181,7 @@ public:
 
   virtual void OnPostUpdate()
   {
-    pMaterial->SetValue("albedo0", Vec4F((float)abs(ctSin(clock() / 1000.0)), (float)abs(ctCos(clock() / 1000.0)), 0, 1));
+    pMaterial->SetValue("albedo0", Vec4F((float)abs(Sin(clock() / 1000.0)), (float)abs(Cos(clock() / 1000.0)), 0, 1));
     pMaterial->Apply();
   }
 

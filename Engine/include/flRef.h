@@ -65,7 +65,7 @@ namespace Fractal
     template<typename T2>
     T2* As() const
     {
-      return (T2*)m_pInterface
+      return (T2*)m_pInterface;
     };
 
     operator T* () const

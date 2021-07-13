@@ -31,7 +31,7 @@ namespace Fractal
     template<typename... Args>
     static Image* Create(Args&& ... args)
     {
-      flNew(flAllocT(Image, 1)) Image(std::forward<Args>(args)...);
+      return flNew(flAllocT(Image, 1)) Image(std::forward<Args>(args)...);
     }
 
     void SetData(flIN ColourU32* pPixels, flIN int64_t width, flIN int64_t height);

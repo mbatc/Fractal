@@ -11,20 +11,20 @@ namespace Fractal
   public:
     ~Impl_Window();
 
-    void Construct(Window* pWindow, const char* title, Window::Flags flags, Window::DisplayMode displayMode);
+    void Construct(Window* pWindow, const char* title, WindowFlags flags, WindowDisplayMode displayMode);
 
     void SetTitle(const char* title);
-    void SetDisplayMode(Window::DisplayMode mode);
-    void SetFocus(Window::FocusFlags flags, bool focused);
+    void SetDisplayMode(WindowDisplayMode mode);
+    void SetFocus(WindowFocusFlags flags, bool focused);
     void SetSize(int64_t width, int64_t height);
     void SetPosition(int64_t posX, int64_t posY);
     void SetRect(int64_t posX, int64_t posY, int64_t width, int64_t height);
 
     const char* GetTitle() const;
 
-    Window::DisplayMode GetDisplayMode() const;
-    Window::FocusFlags GetFocusFlags() const;
-    Window::Flags GetFlags() const;
+    WindowDisplayMode GetDisplayMode() const;
+    WindowFocusFlags GetFocusFlags() const;
+    WindowFlags GetFlags() const;
 
     void GetRect(int64_t* pPosX, int64_t* pPosY, int64_t* pWidth, int64_t* pHeight) const;
 
@@ -49,16 +49,16 @@ namespace Fractal
     bool BindRenderTarget(WindowRenderTarget* pTarget);
     void UnbindRenderTarget();
 
-    void Create(Window* pWindow, const char* title, Window::Flags flags, void* hInstance);
+    void Create(Window* pWindow, const char* title, WindowFlags flags, void* hInstance);
     void Destroy();
 
-    static Window* GetFocusedWindow(Window::FocusFlags focusFlags);
+    static Window* GetFocusedWindow(WindowFocusFlags focusFlags);
 
   protected:
     EventQueue m_events;
     bool m_receivedEvents[Event_Count] = { 0 };
 
-    Window::DisplayMode m_displayMode = Window::DM_Windowed;
+    WindowDisplayMode m_displayMode = DM_Windowed;
 
     WindowRenderTarget* m_pRenderTarget = nullptr;
 

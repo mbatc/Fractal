@@ -4,12 +4,11 @@
 #include "flMath.h"
 #include "flProgramDetails.h"
 #include "flAPIResource.h"
+#include "flTexture.h"
 
 namespace Fractal
 {
-  enum TextureType;
   class Sampler;
-  class Texture;
   class VertexArray;
   class HardwareBuffer;
 

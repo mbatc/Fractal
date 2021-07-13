@@ -316,7 +316,7 @@ namespace Fractal
     if (index < 0 || index >= GetChildCount())
       return false;
 
-    Transform *pTransform = Impl()->children[index];
+    Transform* pTransform = Impl()->children[index];
     pTransform->SetParent(nullptr);
     return true;
   }

@@ -1,33 +1,33 @@
 #pragma once
 
 #include "flConfig.h"
-#include "../../ctools/modules/math/include/LinearAlgebra/ctQuaternion.h"
-#include "../../ctools/modules/math/include/LinearAlgebra/ctMatrix4.h"
-#include "../../ctools/modules/math/include/LinearAlgebra/ctVector2.h"
-#include "../../ctools/modules/math/include/LinearAlgebra/ctVector3.h"
-#include "../../ctools/modules/math/include/LinearAlgebra/ctVector4.h"
+#include "math/flQuaternion.h"
+#include "math/flMatrix4.h"
+#include "math/flVector2.h"
+#include "math/flVector3.h"
+#include "math/flVector4.h"
 
 namespace Fractal
 {
-  typedef flEXPORT ctVector2<int32_t>   Vec2I;
-  typedef flEXPORT ctVector3<int32_t>   Vec3I;
-  typedef flEXPORT ctVector4<int32_t>   Vec4I;
+  typedef flEXPORT Vector2<int32_t>   Vec2I;
+  typedef flEXPORT Vector3<int32_t>   Vec3I;
+  typedef flEXPORT Vector4<int32_t>   Vec4I;
 
-  typedef flEXPORT ctVector2<int64_t>   Vec2I64;
-  typedef flEXPORT ctVector3<int64_t>   Vec3I64;
-  typedef flEXPORT ctVector4<int64_t>   Vec4I64;
+  typedef flEXPORT Vector2<int64_t>   Vec2I64;
+  typedef flEXPORT Vector3<int64_t>   Vec3I64;
+  typedef flEXPORT Vector4<int64_t>   Vec4I64;
 
-  typedef flEXPORT ctVector2<float>     Vec2F;
-  typedef flEXPORT ctVector3<float>     Vec3F;
-  typedef flEXPORT ctVector4<float>     Vec4F;
+  typedef flEXPORT Vector2<float>     Vec2F;
+  typedef flEXPORT Vector3<float>     Vec3F;
+  typedef flEXPORT Vector4<float>     Vec4F;
 
-  typedef flEXPORT ctVector2<double>    Vec2D;
-  typedef flEXPORT ctVector3<double>    Vec3D;
-  typedef flEXPORT ctVector4<double>    Vec4D;
+  typedef flEXPORT Vector2<double>    Vec2D;
+  typedef flEXPORT Vector3<double>    Vec3D;
+  typedef flEXPORT Vector4<double>    Vec4D;
 
-  typedef flEXPORT ctMatrix4<double>    Mat4D;
-  typedef flEXPORT ctMatrix4<float>     Mat4F;
+  typedef flEXPORT Matrix4<double>    Mat4D;
+  typedef flEXPORT Matrix4<float>     Mat4F;
 
-  typedef flEXPORT ctQuaternion<double> QuatD;
-  typedef flEXPORT ctQuaternion<float>  QuatF;
+  typedef flEXPORT Quaternion<double> QuatD;
+  typedef flEXPORT Quaternion<float>  QuatF;
 }

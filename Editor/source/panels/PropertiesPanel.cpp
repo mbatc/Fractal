@@ -48,13 +48,13 @@ void PropertiesPanel::DrawComponent(Component* pComponent)
     Vec3D scl = localTransform ? pTransform->GetLocalScale() : pTransform->GetScale();
     Vec3D rot = (localTransform ? pTransform->GetLocalOrientation() : pTransform->GetOrientation()).EulerAngles();
 
-    rot = ctRads2Degs(rot);
+    rot = Vec3D(Rads2Degs(rot.x), Rads2Degs(rot.y), Rads2Degs(rot.z));
 
     bool changed = Widgets::Input("Position", &pos.x, 3);
     changed |= Widgets::Input("Scale   ", &scl.x, 3);
     changed |= Widgets::Input("Rotation", &rot.x, 3);
 
-    rot = ctDegs2Rads(rot);
+    rot = Vec3D(Degs2Rads(rot.x), Degs2Rads(rot.y), Degs2Rads(rot.z));
 
     if (changed)
     {

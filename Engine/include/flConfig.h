@@ -9,15 +9,20 @@
 #include <memory>
 
 #ifdef flSTATICLIB
-#define flEXPORT
-#define flCCONV
+  #define flEXPORT
+  #define flCCONV
 #else
-#ifdef flCOMPILESHARED
-#define flEXPORT _declspec(dllexport)
-#else
-#define flEXPORT _declspec(dllimport)
-#endif
-#define flCCONV _cdecl
+  #ifdef flCOMPILESHARED
+    #define flEXPORT __declspec(dllexport)
+  #else
+    #define flEXPORT __declspec(dllimport)
+  #endif
+
+  #ifdef __GNUC__
+    #define flCCONV __attribute__ ((cdecl))
+  #else
+    #define flCCONV __cdecl
+  #endif
 #endif
 
 #define flPLATFORM_WINDOWS 0
@@ -34,6 +39,7 @@ static_assert(false, "The current platform is not supported. Must be Windows or 
 #endif
 
 #define flUSING(x) x
+#define flUNUSED(...) __VA_ARGS__;
 
 #define flOUT
 #define flIN

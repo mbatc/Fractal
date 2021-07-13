@@ -60,7 +60,7 @@ namespace Fractal
     : m_pState(GLDeviceState::Create())
   {
     // Create a temporary window to make our fake GL context
-    Window tempWindow("tmp", Window::Flag_None, Window::DM_Windowed);
+    Window tempWindow("tmp", Flag_None, DM_Windowed);
 
     HWND hTempWnd       = (HWND)tempWindow.GetNativeHandle();
     HDC hTempDC         = GetDC(hTempWnd);

@@ -124,7 +124,8 @@ namespace Fractal
       Lambda m_func;
     };
 
-    return MakeRef<Wrapper>(lambda).StaticCast<Task>();
+    Ref<Wrapper> pTask = MakeRef<Wrapper>(lambda);
+    return MakeRef((Task*)pTask.Get(), true);
   }
 
   inline Ref<Task> MakeTask(TaskFunc func, void* pUserData = nullptr)
@@ -142,6 +143,7 @@ namespace Fractal
       TaskFunc m_func = 0;
     };
 
-    return MakeRef<Wrapper>(func, pUserData).StaticCast<Task>();
+    Ref<Wrapper> pTask = MakeRef<Wrapper>(func, pUserData);
+    return MakeRef((Task*)pTask.Get(), true);
   }
 }
