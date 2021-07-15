@@ -35,8 +35,8 @@ namespace Fractal
 
       flInfo("Initialising Application");
       m_pApp = pApp;
-      m_taskQueue = MakeRef<TaskQueue>();
-      m_mainThreadID = GetThreadID();
+      m_pTaskQueue = MakeRef(Fractal_CreateTaskQueue(), false);
+      m_mainThreadID = Fractal_GetThreadID();
 
       flInfo("Initialising Event System");
       m_pSystemEvents = MakeRef<EventQueue>();
@@ -52,7 +52,7 @@ namespace Fractal
       flInfo("Creating Graphics API (%s)", graphicsAPIName);
       RenderTargetOptions opts;
       opts.sampleCount = 4; // Enable multisampling
-      m_pGraphics = MakeRef(API::Create(graphicsAPIName, m_pMainWindow.Get(), &opts), false);
+      m_pGraphics = MakeRef(Fractal_CreateAPI(graphicsAPIName, m_pMainWindow.Get(), &opts), false);
 
       char cwd[1024] = {0};
       GetCurrentDirectoryA(1024, cwd);
@@ -113,8 +113,8 @@ namespace Fractal
 
     void Render()
     {
-      GetMainWindow()->GetRenderTarget()->Bind();
-      GetMainWindow()->GetRenderTarget()->Clear();
+      Fractal_GetMainWindow()->GetRenderTarget()->Bind();
+      Fractal_GetMainWindow()->GetRenderTarget()->Clear();
       InvokeBehaviour(&ApplicationBehaviour::OnRender);
     }
 
@@ -140,8 +140,8 @@ namespace Fractal
     {
       uint64_t allocatedTime = 1000000; // 1 ms
       uint64_t start = HighResClock();
-      while (HighResClock() - start < allocatedTime && m_taskQueue->HasNext())
-        m_taskQueue->RunNext();
+      while (HighResClock() - start < allocatedTime && m_pTaskQueue->HasNext())
+        m_pTaskQueue->RunNext();
     }
 
     // Application state
@@ -154,7 +154,7 @@ namespace Fractal
     Ref<EventQueue> m_pSystemEvents = nullptr;
 
     int64_t m_mainThreadID = 0;
-    Ref<TaskQueue> m_taskQueue; // The applications task queue. These are executed on the main thread
+    Ref<ITaskQueue> m_pTaskQueue; // The applications task queue. These are executed on the main thread
 
     // Custom application sub systems
     ctVector<ctKeyValue<ctString, Ref<Module>>> m_subSystems;
@@ -169,25 +169,25 @@ namespace Fractal
     Impl()->m_isRunning = false;
   }
 
-  Task* Application::EnqueueTask(flIN Task* pTask)
+  ITask* Application::EnqueueTask(flIN ITask* pTask)
   {
-    Application* pApp = GetApplication();
-    if (GetThreadID() == MainThreadID())
+    Application* pApp = Fractal_GetApplication();
+    if (Fractal_GetThreadID() == MainThreadID())
       pTask->DoTask();
     else
-      pApp->Impl()->m_taskQueue->Add(pTask);
+      pApp->Impl()->m_pTaskQueue->Add(pTask);
 
     return pTask;
   }
 
-  int64_t Application::Await(flIN Task* pTask)
+  int64_t Application::Await(flIN ITask* pTask)
   {
     return EnqueueTask(pTask)->Await();
   }
 
   int64_t Application::MainThreadID()
   {
-    return GetApplication()->Impl()->m_mainThreadID;
+    return Fractal_GetApplication()->Impl()->m_mainThreadID;
   }
 
   Application::Application(char const* graphicsAPIName)
@@ -231,14 +231,15 @@ namespace Fractal
       Impl()->Update();
       Impl()->PostUpdate();
 
-      GetMainWindow()->GetRenderTarget()->Clear();
+      Fractal_GetMainWindow()->GetRenderTarget()->Clear();
+
       Impl()->PreRender();
       Impl()->Render();
       Impl()->PostRender();
 
       Impl()->ProcessQueuedTasks();
 
-      GetMainWindow()->GetRenderTarget()->Swap();
+      Fractal_GetMainWindow()->GetRenderTarget()->Swap();
 
       Impl()->EndFrame();
     }
@@ -246,19 +247,30 @@ namespace Fractal
     Impl()->Shutdown();
     return 0;
   }
+}
 
-  Window* GetMainWindow()
+extern "C" {
+  /**
+   * @brief Returns a pointer to the applications main window.
+   */
+  flEXPORT Fractal::IWindow* Fractal_GetMainWindow()
   {
-    return GetApplication()->Impl()->m_pMainWindow;
+    return Fractal::_pApplication->m_pGraphics;
   }
 
-  API* GetGraphicsAPI()
+  /**
+   * @brief Returns a pointer to the applications graphics API.
+   */
+  flEXPORT Fractal::API* Fractal_GetGraphicsAPI()
   {
-    return GetApplication()->Impl()->m_pGraphics;
+    return Fractal::_pApplication->m_pGraphics;
   }
 
-  Application* GetApplication()
+  /**
+   * @brief Get the global Application instance.
+   **/
+  flEXPORT Fractal::Application* Fractal_GetApplication()
   {
-    return _pApplication;
+    return Fractal::_pApplication;
   }
 }

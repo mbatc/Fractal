@@ -6,44 +6,44 @@
 
 namespace Fractal
 {
-  static ctVector<Ref<APIFactory>> g_apis;
-
-  static Ref<APIFactory> FindFactory(ctString const& identifier)
+  namespace Impl
   {
-    for (Ref<APIFactory> const& factory : g_apis)
-      if (identifier.compare(factory->GetIdentifier(), atSCO_None))
-        return factory;
-    return nullptr;
-  }
+    static ctVector<Ref<APIFactory>> g_apis;
 
-  bool API::RegisterAPI(flIN APIFactory* pFactory)
-  {
-    if (FindFactory(pFactory->GetIdentifier()))
-      return false;
+    static Ref<APIFactory> FindFactory(ctString const& identifier)
+    {
+      for (Ref<APIFactory> const& factory : g_apis)
+        if (identifier.compare(factory->GetIdentifier(), atSCO_None))
+          return factory;
+      return nullptr;
+    }
 
-    g_apis.push_back(MakeRef(pFactory, true));
-    return true;
-  }
+    extern "C" {
+      bool Fractal_RegisterAPI(flIN APIFactory* pFactory)
+      {
+        if (FindFactory(pFactory->GetIdentifier()))
+          return false;
 
-  int64_t API::GetAPICount()
-  {
-    return g_apis.size();
-  }
+        g_apis.push_back(MakeRef(pFactory, true));
+        return true;
+      }
 
-  char const* API::GetAPIIdentifier(flIN int64_t index)
-  {
-    return g_apis[index]->GetIdentifier();
-  }
+      int64_t Fractal_GetAPICount()
+      {
+        return g_apis.size();
+      }
 
-  API* API::Create(char const* apiIdentifier, Window* pWindow, RenderTargetOptions* pOptions)
-  {
-    Ref<APIFactory> pFactory = FindFactory(apiIdentifier);
+      char const* Fractal_GetAPIIdentifier(flIN int64_t index)
+      {
+        return g_apis[index]->GetIdentifier();
+      }
 
-    return pFactory ? pFactory->Create(pWindow, pOptions) : nullptr;
-  }
+      API* Fractal_CreateAPI(char const* apiIdentifier, Window* pWindow, RenderTargetOptions* pOptions = nullptr)
+      {
+        Ref<APIFactory> pFactory = FindFactory(apiIdentifier);
 
-  RenderMesh* API::CreateRenderMesh(flIN Mesh* pMesh)
-  {
-    return RenderMesh::Create(this, pMesh);
+        return pFactory ? pFactory->Create(pWindow, pOptions) : nullptr;
+      }
+    }
   }
 }

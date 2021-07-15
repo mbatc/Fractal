@@ -12,76 +12,65 @@ namespace Fractal
   class Component;
   class Transform;
 
-  class flEXPORT Node : public Interface
+  class flEXPORT INode : public Interface
   {
-    flPIMPL_DEF(Node);
-
     friend class SceneGraph;
 
   public:
-    /**
-     * @brief Construct a new node with the given ID and name.
-     *
-     * @param [in] pScene A pointer to the scene that created the node.
-     * @param [in] id     The ID to assign to the node.
-     * @param [in] name   The name of the node.
-     */
-    Node(flIN SceneGraph* pScene, flIN int64_t id, flIN char const* name = "Node");
-
     /**
      * @brief Get the ID of the Node.
      *
      * @return The int ID of the node
      */
-    int64_t GetID() const;
+    virtual int64_t GetID() const = 0;
 
     /**
      * @brief Get the name of this node.
      *
      * @return The name of the node as a c-string.
      */
-    char const* GetName() const;
+    virtual char const* GetName() const = 0;
 
     /**
      * @brief Set the name of this node.
      *
      * @param [in] name The name to assign to the node.
      */
-    void SetName(flIN char const* name);
+    virtual void SetName(flIN char const* name) = 0;
 
     /**
      * @brief Check if the node is active.
      */
-    bool IsActive() const;
+    virtual bool IsActive() const = 0;
 
-    void SetActive(flIN bool active);
+    virtual void SetActive(flIN bool active) = 0;
 
     /**
      * @brief Check if the node should be visible.
      */
-    bool IsVisible() const;
+    virtual bool IsVisible() const = 0;
 
-    void SetVisible(flIN bool visible);
+    virtual void SetVisible(flIN bool visible) = 0;
 
     /**
      * @brief Get the number of components attached to this node.
      *
      * @return The number of components attached to the node.
      */
-    int64_t GetComponentCount() const;
+    virtual int64_t GetComponentCount() const = 0;
 
     /**
      * @brief Get this nodes parent.
      *
      * @return A pointer this nodes parent Node.
      */
-    Node* GetParent();
-    Node const* GetParent() const;
+    virtual INode* GetParent() = 0;
+    virtual INode const* GetParent() const = 0;
 
     /**
      * @brief Set this nodes parent
      */
-    void SetParent(flIN Node* pParent);
+    virtual void SetParent(flIN INode* pParent) = 0;
 
     /**
      * @brief Get a child of this node
@@ -90,64 +79,64 @@ namespace Fractal
      *
      * @return A pointer to the child Node, or nullptr if index is out of bounds.
      */
-    Node* GetChild(flIN int64_t index);
-    Node const* GetChild(flIN int64_t index) const;
+    virtual INode* GetChild(flIN int64_t index) = 0;
+    virtual INode const* GetChild(flIN int64_t index) const = 0;
 
     /**
      * @brief Get the number of children attached to this node.
      *
      * @return The number of children.
      */
-    int64_t GetChildCount() const;
+    virtual int64_t GetChildCount() const = 0;
 
-    bool RemoveChild(flIN int64_t index);
+    virtual bool RemoveChild(flIN int64_t index) = 0;
 
     /**
      * @brief Get a pointer to the SceneGraph that this Node belongs to.
      *
      * @return A pointer to the scene.
      */
-    SceneGraph* GetScene();
-    SceneGraph const* GetScene() const;
+    virtual SceneGraph* GetScene() = 0;
+    virtual SceneGraph const* GetScene() const = 0;
 
     /**
      * @brief Get a component attached to this node using it's type ID
      */
-    Component* GetComponentByType(flIN int64_t typeID);
-    Component const* GetComponentByType(flIN int64_t typeID) const;
+    virtual Component* GetComponentByType(flIN int64_t typeID) = 0;
+    virtual Component const* GetComponentByType(flIN int64_t typeID) const = 0;
 
     /**
      * @brief Get a component attached to this node using it's registered type name.
      */
-    Component* GetComponentByType(flIN char const* typeName);
-    Component const* GetComponentByType(flIN char const* typeName) const;
+    virtual Component* GetComponentByType(flIN char const* typeName) = 0;
+    virtual Component const* GetComponentByType(flIN char const* typeName) const = 0;
 
     /**
      * @brief Get a component attached to this node using it's index
      */
-    Component* GetComponent(flIN int64_t index);
-    Component const* GetComponent(flIN int64_t index) const;
+    virtual Component* GetComponent(flIN int64_t index) = 0;
+    virtual Component const* GetComponent(flIN int64_t index) const = 0;
 
     /**
      * @brief Get the transform component attached to this node.
      */
-    Transform* GetTransform();
-    Transform const* GetTransform() const;
+    virtual Transform* GetTransform() = 0;
+    virtual Transform const* GetTransform() const = 0;
 
     /**
      * @brief Find the index of a component attached to this node.
      *
      * @return The index of the component, or -1 if it does not exist.
      */
-    int64_t FindComponent(flIN int64_t typeID) const;
-    int64_t FindComponent(flIN char const* typeName) const;
+    virtual int64_t FindComponent(flIN int64_t typeID) const = 0;
+    virtual int64_t FindComponent(flIN char const* typeName) const = 0;
 
     /**
      * @brief Remove a component from the node.
      */
-    bool RemoveComponent(flIN int64_t index);
-    bool RemoveComponentByType(flIN int64_t typeID);
-    bool RemoveComponentByType(flIN char const* typeName);
+    virtual bool RemoveComponent(flIN int64_t index) = 0;
+    virtual bool RemoveComponentByType(flIN int64_t typeID) = 0;
+    virtual bool RemoveComponentByType(flIN char const* typeName) = 0;
 
     /**
      * @brief Add a component to the node.
@@ -189,27 +178,28 @@ namespace Fractal
       return RemoveComponent(T::TypeID());
     }
 
-    inline std::vector<Node const*> GetChildren() const
+    inline std::vector<INode const*> GetChildren() const
     {
       int64_t childCount = GetChildCount();
-      std::vector<Node const*> ret;
+      std::vector<INode const*> ret;
       ret.reserve(childCount);
       for (int64_t i = 0; i < childCount; ++i)
         ret.push_back(GetChild(i));
       return ret;
     }
 
-    inline std::vector<Node*> GetChildren()
+    inline std::vector<INode*> GetChildren()
     {
       int64_t childCount = GetChildCount();
-      std::vector<Node*> ret;
+      std::vector<INode*> ret;
       ret.reserve(childCount);
       for (int64_t i = 0; i < childCount; ++i)
         ret.push_back(GetChild(i));
       return ret;
     }
-
-  private:
-    Component* AddComponent(flIN Component* pComponent);
   };
+}
+
+extern "C" {
+  flEXPORT Fractal::INode* Fractal_CreateNode(flIN Fractal::SceneGraph* pScene, flIN int64_t id, flIN char const* name);
 }

@@ -1,50 +1,49 @@
-#ifndef fl_Graphics_GLGeometry_h__
-#define fl_Graphics_GLGeometry_h__
+#pragma once
 
 #include "flVertexArray.h"
-#include "ctString.h"
 #include "flRef.h"
+
+#include "ctVector.h"
 
 namespace Fractal
 {
   class VertexBuffer;
   class IndexBuffer;
 
-  class GLVertexArray : public VertexArray
+  namespace Impl
   {
-    GLVertexArray(API* pAPI);
-  public:
-    ~GLVertexArray();
+    class GLVertexArray : public VertexArray
+    {
+    public:
+      GLVertexArray(API* pAPI);
+      ~GLVertexArray();
 
-    static GLVertexArray* Create(API* pAPI);
+      virtual void Bind() override;
+      virtual void Unbind() override;
 
-    void Bind() override;
-    void Unbind() override;
+      virtual void AddVertexBuffer(flIN VertexBuffer* pBuffer) override;
+      virtual void SetIndexBuffer(flIN IndexBuffer* pBuffer) override;
 
-    void AddVertexBuffer(flIN VertexBuffer* pBuffer) override;
-    void SetIndexBuffer(flIN IndexBuffer* pBuffer) override;
+      virtual void RemoveVertexBuffer(flIN int64_t index) override;
+      virtual int64_t GetVertexBufferCount() override;
 
-    void RemoveVertexBuffer(flIN int64_t index) override;
-    int64_t GetVertexBufferCount() override;
+      virtual VertexBuffer* GetVertexBuffer(flIN int64_t index) override;
+      virtual IndexBuffer* GetIndexBuffer() override;
 
-    VertexBuffer* GetVertexBuffer(flIN int64_t index) override;
-    IndexBuffer* GetIndexBuffer() override;
+      virtual int64_t GetVertexCount() const override;
+      virtual int64_t GetIndexCount() const override;
 
-    int64_t GetVertexCount() const override;
-    int64_t GetIndexCount() const override;
+      virtual void* GetNativeResource() override;
 
-    void* GetNativeResource() override;
+    private:
+      uint32_t m_vao = 0;
+      int64_t  m_numVBOsBounds = 0;
+      int64_t  m_attributeRound = 0;
+      bool     m_rebindVBOs = true;
 
-  private:
-    uint32_t m_vao = 0;
-    int64_t  m_numVBOsBounds = 0;
-    int64_t  m_attributeRound = 0;
-    bool     m_rebindVBOs = true;
-
-    Ref<IndexBuffer>            m_indexBuffer;
-    ctVector<Ref<VertexBuffer>> m_vertexBuffers;
-    ctVector<uint32_t>          m_boundLocations;
-  };
+      Ref<IndexBuffer>            m_indexBuffer;
+      ctVector<Ref<VertexBuffer>> m_vertexBuffers;
+      ctVector<uint32_t>          m_boundLocations;
+    };
+  }
 }
-
-#endif // flGeometry_h__

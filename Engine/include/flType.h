@@ -35,18 +35,20 @@ namespace Fractal
 
   template<typename T> inline constexpr Type TypeOf(T const&) { return TypeOf<T>(); }
 
-  flEXPORT int64_t SizeOf(flIN Type type);
-
-  flEXPORT char const* NameOfType(flIN Type type);
-
-  flEXPORT void ConvertPrimitive(void* pDest, Type destType, void const* pSrc, Type srcType, int64_t count);
-
-  flEXPORT int64_t GetNextTypeID();
-
   template<typename T>
   int64_t TypeID()
   {
-    static int64_t id = GetNextTypeID();
+    static int64_t id = Fractal_GetNextTypeID();
     return id;
   }
+}
+
+extern "C" {
+  flEXPORT int64_t Fractal_GetNextTypeID();
+
+  flEXPORT void Fractal_ConvertPrimitive(void* pDest, Fractal::Type destType, void const* pSrc, Fractal::Type srcType, int64_t count);
+
+  flEXPORT int64_t Fractal_SizeOf(flIN Fractal::Type type);
+
+  flEXPORT char const* Fractal_NameOfType(flIN Fractal::Type type);
 }

@@ -1,12 +1,12 @@
 #include "flComponent.h"
-#include "flNode.h"
+#include "flINode.h"
 
 namespace Fractal
 {
   class Impl_Component
   {
   public:
-    Node* m_pNode;
+    INode* m_pNode;
   };
 
   flPIMPL_IMPL(Component);
@@ -32,17 +32,17 @@ namespace Fractal
     return this && (typeID == GetTypeID() || ComponentRegistry::IsBase(typeID, GetTypeID()));
   }
 
-  Node const* Component::GetNode() const
+  INode const* Component::GetNode() const
   {
     return Impl()->m_pNode;
   }
 
-  void Component::SetNode(Node* pParent)
+  void Component::SetNode(INode* pParent)
   {
     Impl()->m_pNode = pParent;
   }
 
-  Node* Component::GetNode()
+  INode* Component::GetNode()
   {
     return Impl()->m_pNode;
   }

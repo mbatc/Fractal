@@ -171,7 +171,7 @@ namespace Fractal
       IM_ASSERT(io.Fonts->IsBuilt() && "Font atlas not built! It is generally built by the renderer back-end. Missing call to renderer _NewFrame() function? e.g. ImGui_ImplOpenGL3_NewFrame().");
 
       // Setup display size (every frame to accommodate for window resizing)
-      Window *pWindow = GetMainWindow();
+      IWindow *pWindow = GetMainWindow();
       io.DisplaySize = ImVec2((float)pWindow->GetWidth(), (float)pWindow->GetHeight());
 
       // Setup time step

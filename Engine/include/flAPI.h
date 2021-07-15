@@ -46,28 +46,6 @@ namespace Fractal
   {
   public:
     /**
-     * @brief Register a Graphics API implementation with the engine.
-     *
-     * @param [in] pFactory A factory object that will create instances of the implementation.
-     */
-    static bool RegisterAPI(flIN APIFactory* pFactory);
-
-    /**
-     * @brief Get the number of APIs registered.
-     */
-    static int64_t GetAPICount();
-
-    /**
-     * @brief Get the string identifier for a graphics API.
-     */
-    static char const* GetAPIIdentifier(flIN int64_t index);
-
-    /**
-     * @brief Create a graphics API using it's string identifier
-     */
-    static API* Create(char const* apiIdentifier, Window* pWindow, RenderTargetOptions* pOptions = nullptr);
-
-    /**
     * @brief Get a pointer the the GPU's state interface.
     */
     virtual DeviceState* GetState() = 0;
@@ -145,6 +123,30 @@ namespace Fractal
     /**
      * @brief
      */
-    RenderMesh* CreateRenderMesh(flIN Mesh* pMesh);
+    virtual RenderMesh* CreateRenderMesh(flIN Mesh* pMesh) = 0;
   };
+}
+
+extern "C" {
+  /**
+   * @brief Register a Graphics API implementation with the engine.
+   *
+   * @param [in] pFactory A factory object that will create instances of the implementation.
+   */
+  flEXPORT bool Fractal_RegisterAPI(flIN Fractal::APIFactory* pFactory);
+
+  /**
+   * @brief Get the number of APIs registered.
+   */
+  flEXPORT int64_t Fractal_GetAPICount();
+
+  /**
+   * @brief Get the string identifier for a graphics API.
+   */
+  flEXPORT char const* Fractal_GetAPIIdentifier(flIN int64_t index);
+
+  /**
+   * @brief Create a graphics API using it's string identifier
+   */
+  flEXPORT Fractal::API* Fractal_CreateAPI(char const* apiIdentifier, Fractal::Window* pWindow, Fractal::RenderTargetOptions* pOptions = nullptr);
 }

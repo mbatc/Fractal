@@ -7,8 +7,6 @@ namespace Fractal
 {
   class SurfaceMaterial;
 
-  class Impl_Mesh;
-
   struct Vertex
   {
     Vec3D position;
@@ -17,61 +15,55 @@ namespace Fractal
     Vec4D colour;
   };
 
-  class flEXPORT Mesh : public Interface
+  class flEXPORT IMesh : public Interface
   {
-    flPIMPL_DEF(Mesh);
   public:
-    /**
-     * @brief Create a Mesh instance
-     */
-    static Mesh* Create();
-
     /**
      * @brief Reset the mesh to it's default state.
      */
-    void Clear();
+    virtual void Clear() = 0;
 
     /**
      * @brief Get the source file path for the Mesh data.
      *
      * @return The source file path as a c-string.
      */
-    char const* GetSourcePath();
+    virtual char const* GetSourcePath() = 0;
 
     /**
      * @brief Get the directory that contains the Mesh data.
      *
      * @return The source directory as a c-string.
      */
-    char const* GetSourceDirectory();
+    virtual char const* GetSourceDirectory() = 0;
 
     /**
      * @brief Set the source file path for the Mesh data.
      *
      * @param [in] path The new source file path.
      */
-    void SetSourcePath(flIN char const* path);
+    virtual void SetSourcePath(flIN char const* path) = 0;
 
     /**
      * @brief Get the number of vertices the Mesh has.
      *
      * @return The vertex count
      */
-    int64_t GetVertexCount() const;
+    virtual int64_t GetVertexCount() const = 0;
 
     /**
      * @brief Get a pointer to the meshes Vertex buffer.
      *
      * @return A pointer to the first Vertex in the mesh.
      */
-    Vertex* GetVertices();
+    virtual Vertex* GetVertices() = 0;
 
     /**
      * @brief Get a pointer to the meshes Vertex buffer. (const)
      *
      * @return A pointer to the first Vertex in the mesh.
      */
-    Vertex const* GetVertices() const;
+    virtual Vertex const* GetVertices() const = 0;
 
     /**
      * @brief Get a Vertex by index.
@@ -81,7 +73,7 @@ namespace Fractal
      *
      * @return True if the index is valid. Otherwise, False.
      */
-    bool GetVertex(flIN int64_t index, flOUT Vertex* pVertex) const;
+    virtual bool GetVertex(flIN int64_t index, flOUT Vertex* pVertex) const = 0;
 
     /**
      * @brief Set a Vertex by index.
@@ -94,7 +86,7 @@ namespace Fractal
      *
      * @return True if the index is valid. Otherwise, False.
      */
-    bool SetVertex(flIN int64_t index, flIN Vec3D position, flIN Vec3D normal, flIN Vec2D texcoord, flIN Vec4D colour);
+    virtual bool SetVertex(flIN int64_t index, flIN Vec3D position, flIN Vec3D normal, flIN Vec2D texcoord, flIN Vec4D colour) = 0;
 
     /**
      * @brief Set a contiguous group of Vertices.
@@ -105,14 +97,14 @@ namespace Fractal
      *
      * @return True if the start index is valid and there is enough space for the new vertices. Otherwise, False.
      */
-    bool SetVertices(flIN int64_t index, flIN Vertex const* pVertices, flIN int64_t count);
+    virtual bool SetVertices(flIN int64_t index, flIN Vertex const* pVertices, flIN int64_t count) = 0;
 
     /**
      * @brief Set the number of vertices in the Mesh.
      *
      * @param [in] count The number of vertices to allocate.
      */
-    void SetVertexCount(flIN int64_t count);
+    virtual void SetVertexCount(flIN int64_t count) = 0;
 
     /**
      * @brief Add a Vertex to the Mesh.
@@ -127,7 +119,7 @@ namespace Fractal
      *
      * @return The index of the new vertex.
      */
-    int64_t AddVertex(flIN Vec3D position, flIN Vec3D normal, flIN Vec2D texcoord, flIN Vec4D colour);
+    virtual int64_t AddVertex(flIN Vec3D position, flIN Vec3D normal, flIN Vec2D texcoord, flIN Vec4D colour) = 0;
 
     /**
      * @brief Add multiple Vertices to the Mesh.
@@ -137,7 +129,7 @@ namespace Fractal
      *
      * @return The index of the first new Vertex added.
      */
-    int64_t AddVertices(flIN Vertex const* pVertices, flIN int64_t count);
+    virtual int64_t AddVertices(flIN Vertex const* pVertices, flIN int64_t count) = 0;
 
     /**
      * @brief Set the Vertices in the Mesh.
@@ -148,14 +140,14 @@ namespace Fractal
      * @param [in] pVertices A pointer to the new array of vertices.
      * @param [in] count     The number of vertices to copy.
      */
-    void SetVertices(flIN Vertex const* pVertices, flIN int64_t count);
+    virtual void SetVertices(flIN Vertex const* pVertices, flIN int64_t count) = 0;
 
     /**
      * @brief Get the number of polygons in the Mesh.
      *
      * @return The polygon count.
      */
-    int64_t GetPolygonCount() const;
+    virtual int64_t GetPolygonCount() const = 0;
 
     /**
      * @brief Get the number of Vertices assigned to a polygon.
@@ -164,7 +156,7 @@ namespace Fractal
      *
      * @return The number of Vertex indices.
      */
-    int64_t GetPolygonSize(flIN int64_t polyIndex) const;
+    virtual int64_t GetPolygonSize(flIN int64_t polyIndex) const = 0;
 
     /**
      * @brief Get a pointer to a Polygons vertex indices.
@@ -173,7 +165,7 @@ namespace Fractal
      *
      * @return A pointer to the polygon's vertex indices.
      */
-    int64_t* GetPolygonVertices(flIN int64_t polyIndex);
+    virtual int64_t* GetPolygonVertices(flIN int64_t polyIndex) = 0;
 
     /**
      * @brief Get a pointer to a Polygons vertex indices. (const)
@@ -182,7 +174,7 @@ namespace Fractal
      *
      * @return A pointer to the polygon's vertex indices.
      */
-    int64_t const* GetPolygonVertices(flIN int64_t polyIndex) const;
+    virtual int64_t const* GetPolygonVertices(flIN int64_t polyIndex) const = 0;
 
     /**
      * @brief Get an index of a Vertex in a Polygon.
@@ -192,7 +184,7 @@ namespace Fractal
      *
      * @return The index of the polygons vertex. This is an index into the Mesh's Vertex array.
      */
-    int64_t GetPolygonVertex(flIN int64_t polyIndex, flIN int64_t vertIndex) const;
+    virtual int64_t GetPolygonVertex(flIN int64_t polyIndex, flIN int64_t vertIndex) const = 0;
 
     /**
      * @brief Get the material index assigned to a Polygon.
@@ -201,14 +193,14 @@ namespace Fractal
      *
      * @return The Material index. This is an index onto the Mesh's Material array.
      */
-    int64_t GetPolygonMaterial(flIN int64_t polyIndex) const;
+    virtual int64_t GetPolygonMaterial(flIN int64_t polyIndex) const = 0;
 
     /**
      * @brief Add an empty Polygon to the Mesh.
      *
      * @return The index of the new Polygon.
      */
-    int64_t AddPolygon();
+    virtual int64_t AddPolygon() = 0;
 
     /**
      * @brief Add a Polygon with some initial data.
@@ -219,7 +211,7 @@ namespace Fractal
      *
      * @return The index of the new Polygon.
      */
-    int64_t AddPolygon(flIN int64_t const* pIndices, flIN int64_t vertexCount, flIN int64_t material);
+    virtual int64_t AddPolygon(flIN int64_t const* pIndices, flIN int64_t vertexCount, flIN int64_t material) = 0;
 
     /**
      * @brief Add a Vertex index to a Polygon.
@@ -229,7 +221,7 @@ namespace Fractal
      *
      * @return The index of the new Vertex within the Polygon.
      */
-    int64_t AddPolygonVertex(flIN int64_t polyIndex, flIN int64_t vertIndex);
+    virtual int64_t AddPolygonVertex(flIN int64_t polyIndex, flIN int64_t vertIndex) = 0;
 
     /**
      * @brief Set the Material index assigned to a Polygon.
@@ -239,7 +231,7 @@ namespace Fractal
      *
      * @return True if polyIndex is valid. Otherwise, False.
      */
-    bool SetPolygonMaterial(flIN int64_t polyIndex, flIN int64_t material);
+    virtual bool SetPolygonMaterial(flIN int64_t polyIndex, flIN int64_t material) = 0;
 
     /**
      * @brief Set the number of Vertices assigned to a Polygon.
@@ -249,7 +241,7 @@ namespace Fractal
      *
      * @return True if polyIndex is valid. Otherwise, False.
      */
-    bool SetPolygonSize(flIN int64_t polyIndex, flIN int64_t vertexCount);
+    virtual bool SetPolygonSize(flIN int64_t polyIndex, flIN int64_t vertexCount) = 0;
 
     /**
      * @brief Set the index of a Vertex in a Polygon.
@@ -260,7 +252,7 @@ namespace Fractal
      *
      * @return True if polyIndex, and vertIndex, are valid. Otherwise, False.
      */
-    bool SetPolygonVertex(flIN int64_t polyIndex, flIN int64_t vertIndex, flIN int64_t index);
+    virtual bool SetPolygonVertex(flIN int64_t polyIndex, flIN int64_t vertIndex, flIN int64_t index) = 0;
 
     /**
      * @brief Set the indices assigned to a Polygon.
@@ -271,21 +263,21 @@ namespace Fractal
      *
      * @return True if polyIndex is valid. Otherwise, false.
      */
-    bool SetPolygonVertices(flIN int64_t polyIndex, flIN int64_t const* pIndices, flIN int64_t count);
+    virtual bool SetPolygonVertices(flIN int64_t polyIndex, flIN int64_t const* pIndices, flIN int64_t count) = 0;
 
     /**
      * @brief Add a new SurfaceMaterial to the Mesh.
      *
      * @return The index of the new SurfaceMaterial in the Mesh.
      */
-    int64_t AddMaterial();
+    virtual int64_t AddMaterial() = 0;
 
     /**
      * @brief Add an existing SurfaceMaterial to the Mesh.
      *
      * @return The index of the SurfaceMaterial in the Mesh.
      */
-    int64_t AddMaterial(flIN SurfaceMaterial* pMaterial);
+    virtual int64_t AddMaterial(flIN SurfaceMaterial* pMaterial) = 0;
 
     /**
      * @brief Get the index of a Material in the Mesh by name.
@@ -294,7 +286,7 @@ namespace Fractal
      *
      * @return The index of the Material or -1 if it was not found.
      */
-    int64_t FindMaterial(flIN char const* name) const;
+    virtual int64_t FindMaterial(flIN char const* name) const = 0;
 
     /**
      * @brief Get a SurfaceMaterial by its index.
@@ -303,7 +295,7 @@ namespace Fractal
      *
      * @return A pointer to a SurfaceMaterial if it exists. Otherwise, null is returned.
      */
-    SurfaceMaterial* GetMaterial(flIN int64_t materialIndex);
+    virtual SurfaceMaterial* GetMaterial(flIN int64_t materialIndex) = 0;
 
     /**
      * @brief Get a SurfaceMaterial by its index. (const)
@@ -312,14 +304,14 @@ namespace Fractal
      *
      * @return A const pointer to a SurfaceMaterial if it exists. Otherwise, null is returned.
      */
-    SurfaceMaterial const* GetMaterial(flIN int64_t materialIndex) const;
+    virtual SurfaceMaterial const* GetMaterial(flIN int64_t materialIndex) const = 0;
 
     /**
      * @brief Get the number of Materials in the Mesh.
      *
      * @return The Material count.
      */
-    int64_t GetMaterialCount() const;
+    virtual int64_t GetMaterialCount() const = 0;
 
     /**
      * @brief Triangulate the Mesh.
@@ -330,6 +322,13 @@ namespace Fractal
      *
      * @return The number of new polygons added. If 0 is returned the mesh is already Triangulated.
      */
-    int64_t Triangulate();
+    virtual int64_t Triangulate() = 0;
   };
+}
+
+extern "C" {
+  /**
+     * @brief Create a Mesh instance
+     */
+  static Fractal::IMesh* Fractal_CreateMesh();
 }

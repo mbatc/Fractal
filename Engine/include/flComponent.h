@@ -30,7 +30,7 @@ private:
 
 namespace Fractal
 {
-  class Node;
+  class INode;
 
   class Impl_Component;
 
@@ -42,7 +42,7 @@ namespace Fractal
    */
   class flEXPORT Component : public Interface
   {
-    friend Node;
+    friend INode;
 
     flPIMPL_DEF(Component);
 
@@ -115,14 +115,14 @@ namespace Fractal
      *
      * @return A pointer to the Node.
      */
-    Node* GetNode();
+    INode* GetNode();
 
     /**
      * @brief Get the Node that the component is attached to.
      *
      * @return A const pointer to the Node.
      */
-    Node const* GetNode() const;
+    INode const* GetNode() const;
 
     /**
      * @brief Check if a component instance is of a specific component type.
@@ -159,6 +159,6 @@ namespace Fractal
     static bool Register();
 
   private:
-    void SetNode(Node* pParent);
+    void SetNode(INode* pParent);
   };
 }

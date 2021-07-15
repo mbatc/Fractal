@@ -24,7 +24,7 @@ namespace Fractal
      * DecRef() call (unless the interface is explicitly destroyed using
      * the Destroy() function, though be careful doing this).
      */
-    void IncRef();
+    virtual void IncRef() = 0;
 
     /**
      * @brief Decrement the Interface reference count.
@@ -36,7 +36,7 @@ namespace Fractal
      * For that reason, after calling this function the pointer to the interface
      * should not be used (although there is nothing stopping you from doing so).
      */
-    void DecRef();
+    virtual void DecRef() = 0;
 
     /**
      * @brief Explicitly destroy the Interface instance.
@@ -47,34 +47,13 @@ namespace Fractal
      *
      * This will invalidate the pointer to the interface.
      */
-    virtual void Destroy();
-
-    /**
-     * @brief Get the active reference count.
-     *
-     * This function returns the number of references acquired through the IncRef
-     * function. This will always return 1 or greater.
-     */
-    int64_t GetReferenceCount() const;
-
-  protected:
-    /**
-    * @brief Construct a new Interface.
-    *
-    * Interface object constructor. This is protected as only derived classes should
-    * construct Interface instances.
-    */
-    Interface();
-
-    /**
-    * @brief Destruct an Interface instance.
-    *
-    * Interface object destructor. This is protected as Engine API objects should only be
-    * destroyed via the DecRef() or Destroy() functions.
-    */
-    virtual ~Interface();
-
-  private:
-    int64_t m_refCount = 0; // Internal reference count
+    virtual void Destroy() = 0;
   };
 }
+
+#define FRACTAL_DEFAULT_INTERFACE \
+public:\
+  virtual void IncRef()  override { if (this != nullptr) ++m_refCount; } \
+  virtual void DecRef()  override { if (this != nullptr) if (--m_refCount == 0) Destroy(); } \
+  virtual void Destroy() override { flDelete this; }\
+private: int64_t m_refCount = 1;

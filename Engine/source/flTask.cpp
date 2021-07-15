@@ -1,27 +1,66 @@
 #include "flThreads.h"
 #include "flTask.h"
 
+extern "C" {
+  Fractal::ITask* Fractal_CreateTask(Fractal::TaskFunc func, Fractal::Interface* pUserData)
+  {
+    return flNew Fractal::Impl::Task;
+  }
+}
+
 namespace Fractal
 {
-  class Impl_Task
+  namespace Impl
   {
-  public:
-    Task::Status GetStatus() const
+    Task::Task(TaskFunc func, Interface* pTaskData)
+      : m_func(func)
+      , m_pTaskData(MakeRef(pTaskData, true))
+    {}
+
+    int64_t Task::Run()
+    {
+      int64_t result = -1;
+
+      Lock();
+      // Return result if the task has already been complete
+      if (m_status == TaskStatus_Complete)
+      {
+        result = m_result;
+      }
+      else if (m_status == TaskStatus_Running)
+      {
+        Unlock();
+        result = Await();
+
+        return result;
+      }
+      else
+      {
+        m_status = TaskStatus_Running;
+        Unlock();
+
+        // Run the task
+        int64_t result = DoTask();
+
+        // Update the status and the result
+        Lock();
+        m_status = TaskStatus_Complete;
+        m_result = result;
+      }
+
+      Unlock();
+      return result;
+    }
+
+    TaskStatus Task::GetStatus() const
     {
       Lock();
-      Task::Status status = m_status;
+      TaskStatus status = m_status;
       Unlock();
       return status;
     }
 
-    void SetStatus(Task::Status const& status)
-    {
-      Lock();
-      m_status = status;
-      Unlock();
-    }
-
-    int64_t GetResult() const
+    int64_t Task::GetResult() const
     {
       Lock();
       int64_t res = m_result;
@@ -29,104 +68,55 @@ namespace Fractal
       return res;
     }
 
-    void Lock() const
+    int64_t Task::Await()
     {
-      m_lock->lock();
-    }
-
-    void Unlock() const
-    {
-      m_lock->unlock();
-    }
-
-    int64_t Wait()
-    {
-      while (GetStatus() != Task::Status_Complete)
+      while (GetStatus() != TaskStatus_Complete)
         Sleep(1ll);
       return GetResult();
     }
 
-    void Reset()
+    void Task::Reset()
     {
       Lock();
       m_result = -1;
-      m_status = Task::Status_Waiting;
+      m_status = TaskStatus_Waiting;
       Unlock();
     }
 
-    int64_t m_result = -1;
-    Task::Status m_status = Task::Status_Waiting;
-
-    std::unique_ptr<Mutex> m_lock = std::make_unique<Mutex>();
-  };
-
-  flPIMPL_IMPL(Task);
-
-  int64_t Task::Run()
-  {
-    int64_t result = -1;
-
-    Impl()->Lock();
-    // Return result if the task has already been complete
-    if (Impl()->m_status == Status_Complete)
+    int64_t Task::DoTask()
     {
-      result = Impl()->m_result;
-    }
-    else if (Impl()->m_status == Status_Running)
-    {
-      Impl()->Unlock();
-      result = Impl()->Wait();
-
-      return result;
-    }
-    else
-    {
-      Impl()->m_status = Status_Running;
-      Impl()->Unlock();
-
-      // Run the task
-      int64_t result = DoTask();
-
-      // Update the status and the result
-      Impl()->Lock();
-      Impl()->m_status = Status_Complete;
-      Impl()->m_result = result;
+      return m_func(m_pTaskData.Get());
     }
 
-    Impl()->Unlock();
-    return result;
-  }
+    bool Task::Cancel()
+    {
+      Lock();
+      if (m_status != TaskStatus_Waiting)
+      {
+        Unlock();
+        return false;
+      }
 
-  int64_t Task::Await()
-  {
-    return Impl()->Wait();
-  }
+      m_status = TaskStatus_Cancelled;
+      Unlock();
+      return true;
+    }
 
-  bool Task::Reset()
-  {
-    if (!OnReset())
-      return false;
-    Impl()->Reset();
-    return true;
-  }
+    void Task::SetStatus(TaskStatus status)
+    {
+      Lock();
+      m_status = status;
+      Unlock();
+    }
 
-  bool Fractal::Task::Cancel()
-  {
-    return false;
-  }
+    void Task::Lock() const
+    {
+      m_lock->lock();
+    }
 
-  bool Task::OnReset()
-  {
-    return true;
-  }
-
-  Task::Status Task::GetStatus() const
-  {
-    return Impl()->GetStatus();
-  }
-
-  int64_t Task::GetResult() const
-  {
-    return Impl()->GetResult();
+    void Task::Unlock() const
+    {
+      m_lock->unlock();
+    }
   }
 }

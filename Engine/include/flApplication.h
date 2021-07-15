@@ -7,8 +7,8 @@ namespace Fractal
 {
   struct Event;
 
-  class Window;
-  class Task;
+  class IWindow;
+  class ITask;
   class API;
 
   class Impl_Application;
@@ -36,73 +36,70 @@ namespace Fractal
 
   public:
     template<typename T, typename... Args>
-    void AddModule(Args&& ... args)
-    {
+    void AddModule(Args&& ... args) {
       AddModule(flNew T(std::forward<Args>(args)...), typeid(T).name());
     }
 
     template<typename T>
-    T* GetModule()
-    {
+    T* GetModule() {
       return (T*)GetModule(typeid(T).name());
     }
 
     /**
      * @brief Close the application.
      */
-    void Close();
+    virtual void Close() = 0;
 
-    /**
-     * @brief Get the ID of the applications main thread.
-     */
-    static int64_t MainThreadID();
+    virtual int Run() = 0;
+    
+    virtual void AddModule(Module* pSystem, char const* name) = 0;
 
-    /**
-     * @brief Await the completion of a task.
-     *
-     * The task will be executed on the main thread. If this function is
-     * called from the applications main thread, the task will be executed
-     * immediately.
-     *
-     * @param [in] pTask The task to execute.
-     */
-    static Task* EnqueueTask(flIN Task* pTask);
-
-    /**
-     * @brief Await the completion of a task.
-     *
-     * The task will be executed on the main thread. If this function is
-     * called from the applications main thread, the task will be executed
-     * immediately.
-     *
-     * @param [in] pTask The task to execute.
-     *
-     * @return The result returned by the task.
-     */
-    static int64_t Await(flIN Task* pTask);
-
-  protected:
-    Application(char const* graphicsAPIName);
-
-  private:
-    void AddModule(Module* pSystem, char const* name);
-    Module* GetModule(char const* name);
-
-    int Run(); // Application entry point
+    virtual Module* GetModule(char const* name) = 0;
   };
+}
 
+extern "C" {
   /**
    * @brief Returns a pointer to the applications main window.
    */
-  flEXPORT Window* GetMainWindow();
+  flEXPORT Fractal::IWindow* flCCONV Fractal_GetMainWindow();
 
   /**
    * @brief Returns a pointer to the applications graphics API.
    */
-  flEXPORT API* GetGraphicsAPI();
+  flEXPORT Fractal::API* flCCONV Fractal_GetGraphicsAPI();
 
   /**
    * @brief Get the global Application instance.
    **/
-  flEXPORT Application* GetApplication();
+  flEXPORT Fractal::Application* flCCONV Fractal_GetApplication();
+
+  /**
+   * @brief Get the ID of the applications main thread.
+   */
+  flEXPORT int64_t flCCONV Fractal_Application_MainThreadID();
+
+  /**
+   * @brief Await the completion of a task.
+   *
+   * The task will be executed on the main thread. If this function is
+   * called from the applications main thread, the task will be executed
+   * immediately.
+   *
+   * @param [in] pTask The task to execute.
+   */
+  flEXPORT Fractal::ITask* flCCONV Fractal_Application_EnqueueTask(flIN Fractal::ITask* pTask);
+
+  /**
+   * @brief Await the completion of a task.
+   *
+   * The task will be executed on the main thread. If this function is
+   * called from the applications main thread, the task will be executed
+   * immediately.
+   *
+   * @param [in] pTask The task to execute.
+   *
+   * @return The result returned by the task.
+   */
+  flEXPORT int64_t flCCONV Fractal_Application_Await(flIN Fractal::ITask* pTask);
 }

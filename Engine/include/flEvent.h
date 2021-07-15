@@ -4,7 +4,7 @@
 
 namespace Fractal
 {
-  class Window;
+  class IWindow;
 
   /**
    * @brief List of event type groupings.

@@ -10,14 +10,22 @@ namespace Fractal
   class HardwareBuffer;
   class API;
 
-  struct flEXPORT VertexElement
+  struct VertexElement
   {
-    VertexElement();
+    inline VertexElement(uint32_t _location, Type _type, int64_t _width, bool _normalize = false)
+      : location(_location)
+      , type(_type)
+      , width(_width)
+      , normalize(_normalize)
+      , offset(0)
+    {}
 
-    VertexElement(uint32_t location, Type type, int64_t width, bool normalize = false);
+    inline VertexElement()
+      : VertexElement(0, Type_Unknown, 0)
+    {}
 
     uint32_t   location;
-    Type type;
+    Type       type;
     int64_t    width;
     bool       normalize;
     int64_t    offset;
@@ -25,9 +33,6 @@ namespace Fractal
 
   class flEXPORT VertexBuffer : public APIResource
   {
-  protected:
-    VertexBuffer(API* pAPI);
-
   public:
     /**
      * @brief Bind the VertexBuffer to the the graphics API context

@@ -95,7 +95,7 @@ namespace Fractal
       Log(LogLevel_Error, callingFunc, line, "OpenGL error %d occurred in %s(%s)", err, apiFunc, TupleToString(args, std::make_index_sequence<sizeof...(Args)> {}).c_str());
     });
 
-    if (GetThreadID() != Application::MainThreadID())
+    if (Fractal_GetThreadID() != Application::MainThreadID())
       flFail("OpenGL '%s' function was not called on the main thread", apiFunc);
 
     return func((Args)std::forward<Args2>(args)...);

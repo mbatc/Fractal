@@ -6,7 +6,7 @@
 
 namespace Fractal
 {
-  class Window;
+  class IWindow;
   class API;
   class Application;
 

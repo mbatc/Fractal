@@ -24,26 +24,28 @@ namespace Fractal
   * @brief Alias for std::recursive_mutex
   */
   typedef std::recursive_mutex RecursiveMutex;
+}
 
+extern "C" {
   /**
    * @brief Stop execution of the current thread for a given amount of time.
    *
    * @param [in] milli How long to sleep for in milliseconds
    */
-  flEXPORT void Sleep(flIN int64_t milli);
+  flEXPORT void flCCONV Fractal_Sleep(flIN int64_t milli);
 
   /**
   * @brief Attempt to reschedule this thread, so that another may be run.
   */
-  flEXPORT void Yield();
+  flEXPORT void flCCONV Fractal_Yield();
 
   /**
    * @brief Get the number of concurrent CPU threads supported.
    */
-  flEXPORT int64_t GetCPUThreadCount();
+  flEXPORT int64_t flCCONV Fractal_GetCPUThreadCount();
 
   /**
    * @brief Get the ID of the current thread.
    */
-  flEXPORT int64_t GetThreadID();
+  flEXPORT int64_t flCCONV Fractal_GetThreadID();
 }
