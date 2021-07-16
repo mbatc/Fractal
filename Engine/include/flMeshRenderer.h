@@ -15,14 +15,14 @@ namespace Fractal
     FL_IMPLEMENT_COMPONENT(MeshRenderer, "MeshRenderer", Component);
     flPIMPL_DEF(MeshRenderer);
   public:
-    void SetMesh(RenderMesh* pMesh);
+    void SetMesh(IRenderMesh* pMesh);
 
-    RenderMesh* GetMesh();
-    RenderMesh const* GetMesh() const;
+    IRenderMesh* GetMesh();
+    IRenderMesh const* GetMesh() const;
 
     int64_t GetSubMeshCount() const;
 
-    RenderMesh::SubMesh const* GetSubMesh(flIN int64_t subMesh) const;
+    IRenderMesh::SubMesh const* GetSubMesh(flIN int64_t subMesh) const;
 
     void SetShader(flIN int64_t subMesh, flIN Program* pShader);
     void SetMaterial(flIN int64_t subMesh, flIN ShaderMaterial* pMaterial);

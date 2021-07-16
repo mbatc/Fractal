@@ -5,36 +5,34 @@
 
 namespace Fractal
 {
-  class PixelBuffer;
-
   class GLWindowRenderTarget : public WindowRenderTarget
   {
-  protected:
-    GLWindowRenderTarget(API* pAPI, flIN Window* pWindow, flIN const RenderTargetOptions* pOptions);
+    FRACTAL_DEFAULT_INTERFACE;
 
   public:
+    GLWindowRenderTarget(API* pAPI, flIN IWindow* pWindow, flIN const RenderTargetOptions* pOptions);
     ~GLWindowRenderTarget();
 
-    static WindowRenderTarget* Create(API* pAPI, flIN Window* pWindow, flIN const RenderTargetOptions* pOptions);
+    virtual Window* GetWindow() const override;
+    virtual bool SetFormat(flIN RenderTargetOptions const* pOptions) override;
 
-    Window* GetWindow() const override;
-    bool SetFormat(flIN RenderTargetOptions const* pOptions) override;
+    virtual int64_t GetWidth() const override;
+    virtual int64_t GetHeight() const override;
 
-    int64_t GetWidth() const override;
-    int64_t GetHeight() const override;
+    virtual void Clear(flIN Colour colour = 0, flIN float depth = 1, flIN int32_t stencil = 0) override;
+    virtual void ClearDepth(flIN float depth = 1.0f) override;
+    virtual void ClearColour(flIN Colour colour = 0) override;
+    virtual void ClearStencil(flIN int32_t colour = 0) override;
+    virtual void Swap() override;
+    virtual void Bind(bool read, bool draw) override;
+    virtual void* GetNativeResource() const override;
 
-    void Clear(flIN Colour colour = 0, flIN float depth = 1, flIN int32_t stencil = 0) override;
-    void ClearDepth(flIN float depth = 1.0f) override;
-    void ClearColour(flIN Colour colour = 0) override;
-    void ClearStencil(flIN int32_t colour = 0) override;
-    void Swap() override;
-    void Bind(bool read, bool draw) override;
-    void* GetNativeResource() const override;
+    virtual API* GetAPI() const override;
 
   private:
     void MakeCurrent();
-
-    Window* m_pWindow = nullptr;
+    API* m_pAPI;
+    IWindow* m_pWindow = nullptr;
 
 #if flUSING(flPLATFORM_WINDOWS)
     void* m_hDC = nullptr;

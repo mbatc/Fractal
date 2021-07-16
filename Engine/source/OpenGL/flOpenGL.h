@@ -14,12 +14,12 @@ namespace Fractal
       FRACTAL_DEFAULT_INTERFACE;
 
     public:
-      OpenGL(Window* pWindow, const RenderTargetOptions* pOptions);
+      OpenGL(IWindow* pWindow, const RenderTargetOptions* pOptions);
 
       virtual DeviceState* GetState() override;
       virtual void Render(DrawMode drawMode, bool indexed, uint64_t elementOffset, uint64_t elementCount) override;
 
-      virtual WindowRenderTarget* CreateWindowRenderTarget(Window* pWindow, RenderTargetOptions* pOptions) override;
+      virtual WindowRenderTarget* CreateWindowRenderTarget(IWindow* pWindow, RenderTargetOptions* pOptions) override;
       virtual TextureRenderTarget* CreateTextureRenderTarget() override;
       virtual VertexArray* CreateVertexArray() override;
       virtual HardwareBuffer* CreateBuffer(BufferBinding binding, BufferUsage bufferUsage) override;
@@ -33,7 +33,7 @@ namespace Fractal
       virtual Texture2D* CreateTexture2D(PixelFormat pixelFormat, PixelComponentType type) override;
       virtual Sampler* CreateSampler() override;
 
-      virtual RenderMesh* CreateRenderMesh(flIN Mesh* pMesh) override;
+      virtual IRenderMesh* CreateRenderMesh(flIN IMesh* pMesh) override;
 
       static bool RegisterAPI();
 

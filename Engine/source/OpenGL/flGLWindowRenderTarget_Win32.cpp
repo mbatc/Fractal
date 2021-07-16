@@ -5,7 +5,7 @@
 
 #include <windows.h>
 #include "ctVector.h"
-#include "../flWindow_Impl.h"
+#include "flWindow.h"
 
 // Extern some variables from the OpenGL implementation
 extern HDC   flEngine_GL_hCurrentDC;
@@ -13,13 +13,13 @@ extern HGLRC flEngine_GL_hCurrentGLRC;
 
 namespace Fractal
 {
-  GLWindowRenderTarget::GLWindowRenderTarget(API* pAPI, flIN Window* pWindow, flIN const RenderTargetOptions* pOptions)
-    : WindowRenderTarget(pAPI)
+  GLWindowRenderTarget::GLWindowRenderTarget(API* pAPI, flIN IWindow* pWindow, flIN const RenderTargetOptions* pOptions)
+    : m_pAPI(pAPI)
+    , m_pWindow(pWindow)
   {
-    m_pWindow = pWindow;
     if (!m_pWindow || m_pWindow->GetRenderTarget() == this)
       return;
-    m_pWindow->Impl()->BindRenderTarget(this);
+    ((Impl::Window*)m_pWindow)->BindRenderTarget(this);
     SetFormat(pOptions);
   }
 

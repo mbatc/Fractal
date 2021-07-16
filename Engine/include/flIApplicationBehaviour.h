@@ -4,7 +4,7 @@
 
 namespace Fractal
 {
-  class flEXPORT ApplicationBehaviour : public EventDispatcher
+  class flEXPORT IApplicationBehaviour : public EventDispatcher
   {
   public:
     /**
@@ -14,7 +14,7 @@ namespace Fractal
      *
      * You can override this function to implement any extra functionality your application needs.
     **/
-    virtual bool OnStartup();
+    virtual bool OnStartup() = 0;
 
     /**
      * @brief Perform shutdown tasks.
@@ -23,7 +23,7 @@ namespace Fractal
      *
      * You can override this function to implement any extra functionality your application needs.
      **/
-    virtual void OnShutdown();
+    virtual void OnShutdown() = 0;
 
     /**
      * @brief Perform shutdown tasks.
@@ -32,7 +32,7 @@ namespace Fractal
      *
      * You can override this function to implement any extra functionality your application needs.
      **/
-    virtual void OnUpdate();
+    virtual void OnUpdate() = 0;
 
     /**
      * @brief Perform shutdown tasks.
@@ -41,7 +41,7 @@ namespace Fractal
      *
      * You can override this function to implement any extra functionality your application needs.
      **/
-    virtual void OnRender();
+    virtual void OnRender() = 0;
 
     /**
      * @brief Perform pre-update tasks.
@@ -50,7 +50,7 @@ namespace Fractal
      *
      * You can override this function to implement any extra functionality your application needs.
      **/
-    virtual void OnPreUpdate();
+    virtual void OnPreUpdate() = 0;
 
     /**
      * @brief Perform pre-render tasks.
@@ -59,7 +59,7 @@ namespace Fractal
      *
      * You can override this function to implement any extra functionality your application needs.
      **/
-    virtual void OnPreRender();
+    virtual void OnPreRender() = 0;
 
     /**
      * @brief Perform post-update tasks.
@@ -68,7 +68,7 @@ namespace Fractal
      *
      * You can override this function to implement any extra functionality your application needs.
      **/
-    virtual void OnPostUpdate();
+    virtual void OnPostUpdate() = 0;
 
     /**
      * @brief Perform post-render tasks.
@@ -77,6 +77,6 @@ namespace Fractal
      *
      * You can override this function to implement any extra functionality your application needs.
      **/
-    virtual void OnPostRender();
+    virtual void OnPostRender() = 0;
   };
 }

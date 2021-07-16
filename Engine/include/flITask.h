@@ -112,7 +112,7 @@ namespace Fractal
 
     // Create a task that wraps the LambdaWrapper class and calls the function
     ITask* pTask = Fractal_CreateTask([](Interface *pUserData) {
-      ((LambdaWrapper*)pUserData)->m_func();
+      return ((LambdaWrapper*)pUserData)->m_func();
     }, flNew LambdaWrapper(lambda));
 
     return MakeRef(pTask, false);

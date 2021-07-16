@@ -5,7 +5,7 @@
 
 namespace Fractal
 {
-  class Mesh;
+  class IMesh;
 
   class API;
   class VertexArray;
@@ -20,9 +20,8 @@ namespace Fractal
     Vec4F colour;
   };
 
-  class flEXPORT RenderMesh : public APIResource
+  class flEXPORT IRenderMesh : public APIResource
   {
-    flPIMPL_DEF(RenderMesh);
   public:
     struct SubMesh
     {
@@ -31,50 +30,32 @@ namespace Fractal
     };
 
     /**
-     * @brief Construct a RenderMesh instance.
-     *
-     * @param [in] pAPI  The API to create the Mesh with.
-     * @param [in] pMesh The Mesh to create the geometry from.
-     */
-    RenderMesh(flIN API* pAPI, flIN Mesh* pMesh);
-
-    /**
-     * @brief Create a RenderMesh instance.
-     *
-     * @param [in] pAPI  See constructor.
-     * @param [in] pMesh See constructor.
-     *
-     * @return A pointer to a new RenderMesh instance.
-     */
-    static RenderMesh* Create(flIN API* pAPI, flIN Mesh* pMesh);
-
-    /**
      * @brief The size of the RenderMesh's vertex buffer.
      *
      * @return The vertex count.
      */
-    int64_t GetVertexCount() const;
+    virtual int64_t GetVertexCount() const = 0;
 
     /**
      * @brief The size of the RenderMesh's index buffer.
      *
      * @return The index count.
      */
-    int64_t GetIndexCount() const;
+    virtual int64_t GetIndexCount() const = 0;
 
     /**
      * @brief Get the VertexArray that contains the RenderMesh geometry.
      *
      * @return A pointer to the VertexArray.
      */
-    VertexArray* GetVertexArray();
+    virtual VertexArray* GetVertexArray() = 0;
 
     /**
      * @brief Get the VertexArray that contains the RenderMesh geometry. (const)
      *
      * @return A const pointer to the VertexArray.
      */
-    VertexArray const* GetVertexArray() const;
+    virtual VertexArray const* GetVertexArray() const = 0;
 
     /**
      * @brief Get the number of sub-meshes in the RenderMesh.
@@ -83,7 +64,7 @@ namespace Fractal
      *
      * @return The sub-mesh count.
      */
-    int64_t GetSubmeshCount() const;
+    virtual int64_t GetSubmeshCount() const = 0;
 
     /**
      * @brief Get the details of a sub-mesh by index.
@@ -92,7 +73,7 @@ namespace Fractal
      *
      * @return A pointer to the sub-mesh.
      */
-    SubMesh* GetSubmesh(flIN int64_t index);
+    virtual SubMesh* GetSubmesh(flIN int64_t index) = 0;
 
     /**
      * @brief Get the details of a sub-mesh by index. (const)
@@ -101,6 +82,18 @@ namespace Fractal
      *
      * @return A const pointer to the sub-mesh.
      */
-    SubMesh const* GetSubmesh(flIN int64_t index) const;
+    virtual SubMesh const* GetSubmesh(flIN int64_t index) const = 0;
   };
+}
+
+extern "C" {
+  /**
+   * @brief Create a RenderMesh instance.
+   *
+   * @param [in] pAPI  See constructor.
+   * @param [in] pMesh See constructor.
+   *
+   * @return A pointer to a new RenderMesh instance.
+   */
+  flEXPORT Fractal::IRenderMesh* flCCONV Fractal_CreateRenderMesh(flIN Fractal::API* pAPI, flIN Fractal::IMesh* pMesh);
 }

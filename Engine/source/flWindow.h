@@ -1,6 +1,9 @@
 #pragma once
 
 #include "flIWindow.h"
+#include "flRef.h"
+
+#include "ctVector.h"
 
 namespace Fractal
 {
@@ -16,37 +19,41 @@ namespace Fractal
       Window(const char* title, WindowFlags flags, WindowDisplayMode displayMode);
       ~Window();
 
-      void SetTitle(flIN const char* title) override;
-      void SetDisplayMode(flIN WindowDisplayMode mode) override;
-      void SetFocus(flIN WindowFocusFlags flags, flIN bool focused) override;
-      void SetSize(flIN int64_t width, flIN int64_t height) override;
-      void SetPosition(flIN int64_t posX, flIN int64_t posY) override;
-      void SetRect(flIN int64_t posX, flIN int64_t posY, flIN int64_t width, flIN int64_t height) override;
+      void SetTitle(const char* title) override;
+      void SetDisplayMode(WindowDisplayMode mode) override;
+      void SetFocus(WindowFocusFlags flags, bool focused) override;
+      void SetSize(int64_t width, int64_t height) override;
+      void SetPosition(int64_t posX, int64_t posY) override;
+      void SetRect(int64_t posX, int64_t posY, int64_t width, int64_t height) override;
       const char* GetTitle() const override;
       WindowDisplayMode GetDisplayMode() const override;
       WindowFocusFlags GetFocusFlags() const override;
       WindowFlags GetFlags() const override;
-      void GetSize(flOUT int64_t* pWidth, flOUT int64_t* pHeight) const override;
+      void GetSize(int64_t* pWidth, int64_t* pHeight) const override;
       int64_t GetWidth() const override;
       int64_t GetHeight() const override;
-      void GetPosition(flOUT int64_t* pPosX, flOUT int64_t* pPosY) const override;
+      void GetPosition(int64_t* pPosX, int64_t* pPosY) const override;
       int64_t GetX() const override;
       int64_t GetY() const override;
-      void GetRect(flOUT int64_t* pPosX, flOUT int64_t* pPosY, flOUT int64_t* pWidth, flOUT int64_t* pHeight) const override;
-      bool ReceivedEvent(flIN EventID id, flIN bool reset = true) override;
+      void GetRect(int64_t* pPosX, int64_t* pPosY, int64_t* pWidth, int64_t* pHeight) const override;
+      bool ReceivedEvent(EventID id, bool reset = true) override;
       bool IsEventSource(const Event* pEvent) const override;
       void* GetNativeHandle() const override;
       WindowRenderTarget* GetRenderTarget() const override;
 
-      static Window * GetFocusedWindow(flIN WindowFocusFlags focusFlags);
+      bool BindRenderTarget(WindowRenderTarget* pTarget);
+      void UnbindRenderTarget();
+
+      static IWindow * GetFocusedWindow(WindowFocusFlags focusFlags);
 
     protected:
       void Create(const char* title, WindowFlags flags, void* hInstance);
+      void DestroyWnd();
 
       Ref<IEventQueue> m_pEvents;
       bool m_receivedEvents[Event_Count] = { 0 };
 
-      WindowDisplayMode m_displayMode = DM_Windowed;
+      WindowDisplayMode m_displayMode = WindowDisplayMode_Windowed;
 
       WindowRenderTarget* m_pRenderTarget = nullptr;
 

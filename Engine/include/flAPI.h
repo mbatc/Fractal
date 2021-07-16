@@ -9,9 +9,8 @@
 
 namespace Fractal
 {
-  class Mesh;
-
-  class Window;
+  class IMesh;
+  class IWindow;
 
   class DeviceState;
   class HardwareBuffer;
@@ -27,7 +26,7 @@ namespace Fractal
   class Program;
   class Sampler;
   class ShaderMaterial;
-  class RenderMesh;
+  class IRenderMesh;
   class APIResource;
 
   struct PixelBufferDesc;
@@ -39,7 +38,8 @@ namespace Fractal
   {
   public:
     virtual char const* GetIdentifier() const = 0;
-    virtual API* Create(Window* pWindow, RenderTargetOptions* pOptions) = 0;
+
+    virtual API* Create(IWindow* pWindow, RenderTargetOptions* pOptions) = 0;
   };
 
   class flEXPORT API : public Interface
@@ -63,7 +63,7 @@ namespace Fractal
      *
      * @return A pointer to a WindowRenderTarget instance.
      */
-    virtual WindowRenderTarget* CreateWindowRenderTarget(flIN Window* pWindow, flIN RenderTargetOptions* pOptions) = 0;
+    virtual WindowRenderTarget* CreateWindowRenderTarget(flIN IWindow* pWindow, flIN RenderTargetOptions* pOptions) = 0;
 
     /**
      * @brief
@@ -123,7 +123,7 @@ namespace Fractal
     /**
      * @brief
      */
-    virtual RenderMesh* CreateRenderMesh(flIN Mesh* pMesh) = 0;
+    virtual IRenderMesh* CreateRenderMesh(flIN IMesh* pMesh) = 0;
   };
 }
 
@@ -148,5 +148,5 @@ extern "C" {
   /**
    * @brief Create a graphics API using it's string identifier
    */
-  flEXPORT Fractal::API* Fractal_CreateAPI(char const* apiIdentifier, Fractal::Window* pWindow, Fractal::RenderTargetOptions* pOptions = nullptr);
+  flEXPORT Fractal::API* Fractal_CreateAPI(char const* apiIdentifier, Fractal::IWindow* pWindow, Fractal::RenderTargetOptions* pOptions = nullptr);
 }

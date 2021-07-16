@@ -11,8 +11,6 @@ namespace Fractal
   class ITask;
   class API;
 
-  class Impl_Application;
-
   /**
    * @brief The Application class is used to implement your client application.
    *
@@ -28,12 +26,8 @@ namespace Fractal
    * Fractal::CreateApplication() function you implement.
    *
    **/
-  class flEXPORT Application : public ApplicationBehaviour
+  class flEXPORT IApplication : public IApplicationBehaviour
   {
-    flPIMPL_DEF(Application);
-
-    friend class FractalEntryHandler;
-
   public:
     template<typename T, typename... Args>
     void AddModule(Args&& ... args) {
@@ -72,7 +66,7 @@ extern "C" {
   /**
    * @brief Get the global Application instance.
    **/
-  flEXPORT Fractal::Application* flCCONV Fractal_GetApplication();
+  flEXPORT Fractal::IApplication* flCCONV Fractal_GetApplication();
 
   /**
    * @brief Get the ID of the applications main thread.

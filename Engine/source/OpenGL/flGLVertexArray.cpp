@@ -115,5 +115,9 @@ namespace Fractal
     {
       return flNativeFromGLID(m_vao);
     }
+    API* GLVertexArray::GetAPI() const
+    {
+      return m_pAPI;
+    }
   }
 }

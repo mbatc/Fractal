@@ -1,5 +1,6 @@
 #include "flLog.h"
 #include "flOpenGL.h"
+#include "flRenderMesh.h"
 #include "flGLUtil.h"
 #include "flGLProgram.h"
 #include "flGLVertexArray.h"
@@ -20,13 +21,15 @@ namespace Fractal
   {
     class GLAPIFactory : public APIFactory
     {
+      FRACTAL_DEFAULT_INTERFACE;
+
     public:
       char const* GetIdentifier() const override
       {
         return "OpenGL";
       }
 
-      API* Create(Window* pWindow, RenderTargetOptions* pOptions) override
+      API* Create(IWindow* pWindow, RenderTargetOptions* pOptions) override
       {
         return flNew OpenGL(pWindow, pOptions);
       }
@@ -56,9 +59,9 @@ namespace Fractal
         flVerifyGL(glDrawArrays, glDrawMode, (GLsizei)elementOffset, (GLsizei)elementCount);
     }
 
-    WindowRenderTarget* OpenGL::CreateWindowRenderTarget(Window* pWindow, RenderTargetOptions* pOptions)
+    WindowRenderTarget* OpenGL::CreateWindowRenderTarget(IWindow* pWindow, RenderTargetOptions* pOptions)
     {
-      return GLWindowRenderTarget::Create(this, pWindow, pOptions);
+      return flNew GLWindowRenderTarget(this, pWindow, pOptions);
     }
 
     TextureRenderTarget* OpenGL::CreateTextureRenderTarget()
@@ -68,7 +71,7 @@ namespace Fractal
 
     VertexArray* OpenGL::CreateVertexArray()
     {
-      return GLVertexArray::Create(this);
+      return flNew GLVertexArray(this);
     }
 
     HardwareBuffer* OpenGL::CreateBuffer(BufferBinding binding, BufferUsage bufferUsage)
@@ -83,7 +86,7 @@ namespace Fractal
 
     VertexBuffer* OpenGL::CreateVertexBuffer(int64_t size, void const* pInitialData, BufferUsage bufferUsage)
     {
-      return GLVertexBuffer::Create(this, size, pInitialData, bufferUsage);
+      return flNew GLVertexBuffer(this, size, pInitialData, bufferUsage);
     }
 
     UniformBuffer* OpenGL::CreateUniformBuffer(int64_t size, void const* pInitialData, BufferUsage bufferUsage)
@@ -116,10 +119,15 @@ namespace Fractal
       return GLSampler::Create(this);
     }
 
+    IRenderMesh* OpenGL::CreateRenderMesh(flIN IMesh* pMesh)
+    {
+      return Fractal_CreateRenderMesh(this, pMesh);
+    }
+
     bool OpenGL::RegisterAPI()
     {
       GLAPIFactory* pFactory = new GLAPIFactory();
-      bool success = API::RegisterAPI(pFactory);
+      bool success = Fractal_RegisterAPI(pFactory);
       pFactory->DecRef();
       return success;
     }

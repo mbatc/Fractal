@@ -22,24 +22,26 @@ namespace Fractal
     static int64_t _windowInitCount = 0;
     static ctString _windowClsName = "FractalEngine_WindowClass";
     static ATOM _atom = 0;
-    static ctHashMap<void*, Window*> _windowLookup;
-    static Window* _pHoveredWindow = nullptr;
+    static ctHashMap<void*, IWindow*> _windowLookup;
+    static IWindow* _pHoveredWindow = nullptr;
 
-    static Window* _GetWindowFromHandle(HWND hWnd);
+    static IWindow* _GetWindowFromHandle(HWND hWnd);
 
     Window::Window(const char* title, WindowFlags flags, WindowDisplayMode displayMode)
     {
       HINSTANCE hInstance = ::GetModuleHandle(NULL);
 
       // Setup the event filter, so we only receive events for this window
-      m_pEvents->SetFilter([](Event* pEvent, void* pUserData)
+      m_pEvents->SetFilter(
+        [](Event* pEvent, void* pUserData)
         {
           Window* pWnd = (Window*)pUserData;
           return pWnd->IsEventSource(pEvent) || pEvent->nativeEvent.hWnd == nullptr;
         }, this);
 
       // Setup the event callback
-      m_pEvents->SetEventCallback([](Event* pEvent, void* pUserData)
+      m_pEvents->SetEventCallback(
+        [](Event* pEvent, void* pUserData)
         {
           Window* pWnd = (Window*)pUserData;
           pWnd->m_receivedEvents[pEvent->id] = true;
@@ -59,13 +61,15 @@ namespace Fractal
       if (_windowInitCount++ == 0)
       {
         // Create the window class for flEngine win32 windows
-        EventQueue::GetEventThread()->Add([](void* pUserData)
+        Fractal_GetEventThread()->Add(
+          MakeTask(
+          [=]()
           {
             WNDCLASSEX wndCls = { 0 };
             wndCls.cbSize = sizeof(WNDCLASSEX);
             wndCls.style = 0;
             wndCls.lpfnWndProc = _flWindowProc;
-            wndCls.hInstance = (HINSTANCE)pUserData;
+            wndCls.hInstance = (HINSTANCE)hInstance;
             wndCls.hIcon = ::LoadIcon(NULL, IDI_APPLICATION);
             wndCls.hCursor = ::LoadCursor(NULL, IDC_ARROW);
             wndCls.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
@@ -75,7 +79,7 @@ namespace Fractal
             _atom = RegisterClassEx(&wndCls);
 
             return 0ll;
-          }, hInstance);
+          }));
       }
       _windowInitLock.unlock();
 
@@ -93,11 +97,13 @@ namespace Fractal
 
       if (--_windowInitCount == 0)
       {
-        EventQueue::GetEventThread()->Add([](void*)
+        Fractal_GetEventThread()->Add(
+          MakeTask(
+          []()
           {
             UnregisterClass(_windowClsName.c_str(), ::GetModuleHandle(NULL));
             return 0ll;
-          });
+          }));
       }
       _windowInitLock.unlock();
     }
@@ -107,7 +113,7 @@ namespace Fractal
       ITask* pCreateTask = nullptr;
 
       // Create the window
-      EventQueue::GetEventThread()->Add(
+      Fractal_GetEventThread()->Add(
         MakeTask([=]() {
           // TODO: Add error reporting
           m_hWnd = CreateWindowEx(
@@ -127,7 +133,7 @@ namespace Fractal
           int show = SW_HIDE;
 
           ::UpdateWindow((HWND)m_hWnd);
-          if ((flags & Flag_Visible) > 0)
+          if ((flags & WindowFlag_Visible) > 0)
             ::ShowWindow((HWND)m_hWnd, SW_SHOW);
           return 0ll;
         })
@@ -138,42 +144,18 @@ namespace Fractal
       pCreateTask->DecRef();
     }
 
-    void Window::Destroy()
+    void Window::DestroyWnd()
     {
       if (!m_hWnd)
         return;
 
-      EventQueue::GetEventThread()->Add([](void* pHandle)
+      Fractal_GetEventThread()->Add(MakeTask(
+        [=]()
         {
-          ::DestroyWindow((HWND)pHandle);
-          _windowLookup.Remove(pHandle);
+          ::DestroyWindow((HWND)m_hWnd);
+          _windowLookup.Remove(m_hWnd);
           return 0ll;
-        }, m_hWnd);
-    }
-
-    Window* Window::GetFocusedWindow(WindowFocusFlags focusFlags)
-    {
-      HWND capturedWindow = ::GetCapture();
-      HWND focusedWindow = ::GetFocus();
-
-      Window* pKeyboardWnd = _GetWindowFromHandle(focusedWindow);
-      Window* pMouseWnd = nullptr;
-
-      if (capturedWindow == 0)
-        pMouseWnd = _pHoveredWindow;
-      else
-        pMouseWnd = _GetWindowFromHandle(capturedWindow);
-
-
-      bool keyboard = (focusFlags & FF_Keyboard) > 0;
-      bool mouse = (focusFlags & FF_Mouse) > 0;
-      if (keyboard && mouse)
-        return pKeyboardWnd == pMouseWnd ? pKeyboardWnd : nullptr;
-      else if (keyboard)
-        return pKeyboardWnd;
-      else if (mouse)
-        return pMouseWnd;
-      return nullptr;
+        }));
     }
 
     void Window::SetTitle(const char* title)
@@ -187,10 +169,10 @@ namespace Fractal
         return;
 
       HWND hWnd = (HWND)m_hWnd;
-      if (m_displayMode == DM_Windowed)
+      if (m_displayMode == WindowDisplayMode_Windowed)
       {
         // Store the windowed window state
-        m_windowedState.maximized = (GetFlags() & Flag_Maximized) > 0;
+        m_windowedState.maximized = (GetFlags() & WindowFlag_Maximized) > 0;
 
         if (m_windowedState.maximized)
           ::SendMessage(hWnd, WM_SYSCOMMAND, SC_RESTORE, 0);
@@ -206,10 +188,10 @@ namespace Fractal
 
       switch (mode)
       {
-      case DM_Fullscreen:
+      case WindowDisplayMode_Fullscreen:
       {
       } break;
-      case DM_FullscreenWindowed:
+      case WindowDisplayMode_FullscreenWindowed:
       {
         // Set new window style and size.
         ::SetWindowLong(hWnd, GWL_STYLE, (LONG)m_windowedState.style & ~(WS_CAPTION | WS_THICKFRAME));
@@ -222,7 +204,7 @@ namespace Fractal
         RECT windowRect(monitorInfo.rcMonitor); // TODO: Add a Monitor API to the engine
         ::SetWindowPos(hWnd, NULL, windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
       } break;
-      case DM_Windowed:
+      case WindowDisplayMode_Windowed:
       {
         // Restore window sizes
         ::SetWindowLong(hWnd, GWL_STYLE, (LONG)m_windowedState.style);
@@ -243,10 +225,10 @@ namespace Fractal
     void Window::SetFocus(WindowFocusFlags flags, bool focused)
     {
       HWND hWnd = (HWND)m_hWnd;
-      if (flags & FF_Mouse)
+      if (flags & WindowFocusFlag_Mouse)
         ::SetFocus(focused ? hWnd : 0);
 
-      if (flags & FF_Keyboard)
+      if (flags & WindowFocusFlag_Keyboard)
       {
         if (focused)
           ::SetCapture(hWnd);
@@ -290,23 +272,23 @@ namespace Fractal
 
     WindowFocusFlags Window::GetFocusFlags() const
     {
-      Window* pKeyboard = GetFocusedWindow(FF_Keyboard);
-      Window* pMouse = GetFocusedWindow(FF_Mouse);
-      WindowFocusFlags flags = FF_None;
+      IWindow* pKeyboard = GetFocusedWindow(WindowFocusFlag_Keyboard);
+      IWindow* pMouse    = GetFocusedWindow(WindowFocusFlag_Mouse);
+      WindowFocusFlags flags = WindowFocusFlag_None;
       if (pKeyboard && pKeyboard == this)
-        flags = flags | FF_Keyboard;
+        flags = flags | WindowFocusFlag_Keyboard;
       if (pMouse && pMouse == this)
-        flags = flags | FF_Keyboard;
+        flags = flags | WindowFocusFlag_Keyboard;
       return flags;
     }
 
     WindowFlags Window::GetFlags() const
     {
       HWND hWnd = (HWND)m_hWnd;
-      WindowFlags flags = Flag_None;
-      flags = flags | (::IsWindowVisible(hWnd) ? Flag_Visible : Flag_None);
-      flags = flags | (::IsZoomed(hWnd) ? Flag_Maximized : Flag_None);
-      flags = flags | (::IsIconic(hWnd) ? Flag_Minimized : Flag_None);
+      WindowFlags flags = WindowFlag_None;
+      flags = flags | (::IsWindowVisible(hWnd) ? WindowFlag_Visible : WindowFlag_None);
+      flags = flags | (::IsZoomed(hWnd) ? WindowFlag_Maximized : WindowFlag_None);
+      flags = flags | (::IsIconic(hWnd) ? WindowFlag_Minimized : WindowFlag_None);
       return flags;
     }
 
@@ -323,6 +305,13 @@ namespace Fractal
         *pWidth = rect.right - rect.left;
       if (pHeight)
         *pHeight = rect.bottom - rect.top;
+    }
+
+    bool Window::ReceivedEvent(EventID id, bool reset)
+    {
+      bool received = m_receivedEvents[id];
+      m_receivedEvents[id] &= !reset;
+      return received;
     }
 
     void Window::GetSize(int64_t* pWidth, int64_t* pHeight) const
@@ -374,10 +363,10 @@ namespace Fractal
       Event evnt;
       Event_Create(&evnt, &nativeEvent);
 
-      Window** ppWindow = _windowLookup.TryGet(hwnd);
+      IWindow** ppWindow = _windowLookup.TryGet(hwnd);
       evnt.pWindow = ppWindow ? *ppWindow : nullptr;
 
-      EventQueue::PostGlobalEvent(&evnt);
+      Fractal_PostGlobalEvent(&evnt);
 
       if (evnt.id == E_Wnd_Close)
         return 0;
@@ -402,7 +391,7 @@ namespace Fractal
 
     bool Window::BindRenderTarget(WindowRenderTarget* pTarget)
     {
-      if (m_pRenderTarget)
+      if (m_pRenderTarget != nullptr)
         return false;
 
       pTarget->IncRef();
@@ -412,42 +401,52 @@ namespace Fractal
 
     void Window::UnbindRenderTarget()
     {
-      if (m_pRenderTarget)
+      if (m_pRenderTarget != nullptr)
         m_pRenderTarget->DecRef();
       m_pRenderTarget = nullptr;
     }
 
-    static Window* _GetWindowFromHandle(HWND hWnd)
+    static IWindow* _GetWindowFromHandle(HWND hWnd)
     {
-      struct TaskData
-      {
-        HWND hWnd;
-        Window* pWindow;
-      };
-
-      TaskData tskData = { 0 };
-      tskData.hWnd = hWnd;
-      Task* pTask = nullptr;
-
-      EventQueue::GetEventThread()->Add([](void* pUserData)
+      IWindow* pWindow = nullptr;
+      ITask* pTask = MakeTask([&]()
         {
-          TaskData* pData = (TaskData*)pUserData;
-          Window** ppWindow = _windowLookup.TryGet(pData->hWnd);
-          if (ppWindow)
-            pData->pWindow = *ppWindow;
+          pWindow = _windowLookup.GetOr(hWnd, 0);
           return 0ll;
-        }, &tskData, &pTask);
+        });
+
+      Fractal_GetEventThread()->Add(pTask);
 
       pTask->Await();
       pTask->DecRef();
 
-      return tskData.pWindow;
+      return pWindow;
     }
-  }
 
-  static Window* Window::GetFocusedWindow(flIN WindowFocusFlags focusFlags)
-  {
+    IWindow* Window::GetFocusedWindow(flIN WindowFocusFlags focusFlags)
+    {
+      HWND capturedWindow = ::GetCapture();
+      HWND focusedWindow = ::GetFocus();
 
+      IWindow* pKeyboardWnd = _GetWindowFromHandle(focusedWindow);
+      IWindow* pMouseWnd = nullptr;
+
+      if (capturedWindow == 0)
+        pMouseWnd = _pHoveredWindow;
+      else
+        pMouseWnd = _GetWindowFromHandle(capturedWindow);
+
+
+      bool keyboard = (focusFlags & WindowFocusFlag_Keyboard) > 0;
+      bool mouse = (focusFlags & WindowFocusFlag_Mouse) > 0;
+      if (keyboard && mouse)
+        return pKeyboardWnd == pMouseWnd ? pKeyboardWnd : nullptr;
+      else if (keyboard)
+        return pKeyboardWnd;
+      else if (mouse)
+        return pMouseWnd;
+      return nullptr;
+    }
   }
 }
 

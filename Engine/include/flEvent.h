@@ -92,7 +92,7 @@ namespace Fractal
      * This is a pointer to the fractal window instance that this event corresponds to.
      * To access the native OS window handle, check the 'nativeEvent' member.
      */
-    Window* pWindow;
+    IWindow* pWindow;
 
     union
     {

@@ -31,9 +31,6 @@ namespace Fractal
 
   class flEXPORT RenderTarget : public APIResource
   {
-  protected:
-    RenderTarget(API* pAPI);
-
   public:
     /**
      * @brief Set the format of the RenderTarget.

@@ -18,32 +18,33 @@ namespace Fractal
       return nullptr;
     }
 
-    extern "C" {
-      bool Fractal_RegisterAPI(flIN APIFactory* pFactory)
-      {
-        if (FindFactory(pFactory->GetIdentifier()))
-          return false;
+  }
+}
 
-        g_apis.push_back(MakeRef(pFactory, true));
-        return true;
-      }
+extern "C" {
+  bool Fractal_RegisterAPI(flIN Fractal::APIFactory* pFactory)
+  {
+    if (Fractal::Impl::FindFactory(pFactory->GetIdentifier()))
+      return false;
 
-      int64_t Fractal_GetAPICount()
-      {
-        return g_apis.size();
-      }
+    Fractal::Impl::g_apis.push_back(MakeRef(pFactory, true));
+    return true;
+  }
 
-      char const* Fractal_GetAPIIdentifier(flIN int64_t index)
-      {
-        return g_apis[index]->GetIdentifier();
-      }
+  int64_t Fractal_GetAPICount()
+  {
+    return Fractal::Impl::g_apis.size();
+  }
 
-      API* Fractal_CreateAPI(char const* apiIdentifier, Window* pWindow, RenderTargetOptions* pOptions = nullptr)
-      {
-        Ref<APIFactory> pFactory = FindFactory(apiIdentifier);
+  char const* Fractal_GetAPIIdentifier(flIN int64_t index)
+  {
+    return Fractal::Impl::g_apis[index]->GetIdentifier();
+  }
 
-        return pFactory ? pFactory->Create(pWindow, pOptions) : nullptr;
-      }
-    }
+  Fractal::API* Fractal_CreateAPI(char const* apiIdentifier, Fractal::IWindow* pWindow, Fractal::RenderTargetOptions* pOptions = nullptr)
+  {
+    Fractal::Ref<Fractal::APIFactory> pFactory = Fractal::Impl::FindFactory(apiIdentifier);
+
+    return pFactory ? pFactory->Create(pWindow, pOptions) : nullptr;
   }
 }

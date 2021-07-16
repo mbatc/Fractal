@@ -13,6 +13,9 @@ namespace Fractal
     class GLVertexBuffer : public VertexBuffer
     {
       friend class OpenGL;
+
+      FRACTAL_DEFAULT_INTERFACE;
+
     public:
       GLVertexBuffer(API* pAPI, int64_t size, void const* pInitialData, BufferUsage bufferUsage);
 

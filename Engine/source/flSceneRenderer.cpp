@@ -93,7 +93,7 @@ namespace Fractal
         {
           Program*        pShader   = pMesh->GetShader(subMesh);
           ShaderMaterial* pMaterial = pMesh->GetMaterial(subMesh);
-          RenderMesh::SubMesh const* pSubMesh = pMesh->GetSubMesh(subMesh);
+          IRenderMesh::SubMesh const* pSubMesh = pMesh->GetSubMesh(subMesh);
 
           job.pShader       = MakeRef(pShader, true);
           job.pMaterial     = MakeRef(pMaterial, true);

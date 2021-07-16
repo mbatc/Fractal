@@ -14,10 +14,10 @@ namespace Fractal
      */
   enum WindowDisplayMode : int64_t
   {
-    DM_Windowed,           ///< Windowed mode
-    DM_Fullscreen,         ///< Fullscreen mode
-    DM_FullscreenWindowed, ///< Fullscreen Windowed mode
-    DM_Count = 3           ///< Number of window display modes
+    WindowDisplayMode_Windowed,           ///< Windowed mode
+    WindowDisplayMode_Fullscreen,         ///< Fullscreen mode
+    WindowDisplayMode_FullscreenWindowed, ///< Fullscreen Windowed mode
+    WindowDisplayMode_Count = 3           ///< Number of window display modes
   };
 
   /**
@@ -25,11 +25,11 @@ namespace Fractal
      */
   enum WindowFocusFlags : int64_t
   {
-    FF_None = 0,          ///< The window has no input focus
-    FF_Keyboard = 1 << 0, ///< The window has keyboard focus
-    FF_Mouse = 1 << 1,    ///< The window has mouse focus
-    FF_Grabbed = 1 << 2,  ///< Did the window just gain focus
-    FF_Count = 3          ///< Number of window focus flags
+    WindowFocusFlag_None = 0,          ///< The window has no input focus
+    WindowFocusFlag_Keyboard = 1 << 0, ///< The window has keyboard focus
+    WindowFocusFlag_Mouse = 1 << 1,    ///< The window has mouse focus
+    WindowFocusFlag_Grabbed = 1 << 2,  ///< Did the window just gain focus
+    WindowFocusFlag_Count = 3          ///< Number of window focus flags
   };
 
   /**
@@ -37,14 +37,14 @@ namespace Fractal
      */
   enum WindowFlags : int64_t
   {
-    Flag_None = 0,                                ///< Special No-Flags value
-    Flag_Visible = 1 << 0,                        ///< The window is visible
-    Flag_Resizable = 1 << 1,                      ///< The window can be resized using the borders
-    Flag_Borderless = 1 << 2,                     ///< The window has a border
-    Flag_Minimized = 1 << 3,                      ///< The window is minimized
-    Flag_Maximized = 1 << 4,                      ///< The window is maximized
-    Flag_Count = 5,                               ///< Number of window flags
-    Flag_Default = Flag_Visible | Flag_Resizable, ///< The default window flags
+    WindowFlag_None = 0,                                ///< Special No-Flags value
+    WindowFlag_Visible = 1 << 0,                        ///< The window is visible
+    WindowFlag_Resizable = 1 << 1,                      ///< The window can be resized using the borders
+    WindowFlag_Borderless = 1 << 2,                     ///< The window has a border
+    WindowFlag_Minimized = 1 << 3,                      ///< The window is minimized
+    WindowFlag_Maximized = 1 << 4,                      ///< The window is maximized
+    WindowFlag_Count = 5,                               ///< Number of window flags
+    WindowFlag_Default = WindowFlag_Visible | WindowFlag_Resizable, ///< The default window flags
   };
 
   class flEXPORT IWindow : public Interface

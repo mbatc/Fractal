@@ -45,8 +45,8 @@ namespace Fractal
     Ref<Mesh> pMesh = MakeRef(meshImporter.GetResult(), true);
     pMesh->Triangulate();
 
-    Ref<RenderMesh>   pRenderMesh;
-    Application::Await(MakeTask([&]() { pRenderMesh = MakeRef<RenderMesh>(pGraphics, pMesh); return 0; }));
+    Ref<IRenderMesh>   pRenderMesh;
+    Application::Await(MakeTask([&]() { pRenderMesh = MakeRef<IRenderMesh>(pGraphics, pMesh); return 0; }));
 
     Ref<MeshRenderer> pRenderer = pNode->AddComponent<MeshRenderer>();
 

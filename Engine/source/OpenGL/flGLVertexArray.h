@@ -14,6 +14,8 @@ namespace Fractal
   {
     class GLVertexArray : public VertexArray
     {
+      FRACTAL_DEFAULT_INTERFACE;
+
     public:
       GLVertexArray(API* pAPI);
       ~GLVertexArray();
@@ -35,7 +37,11 @@ namespace Fractal
 
       virtual void* GetNativeResource() override;
 
+      virtual API* GetAPI() const override;
+
     private:
+      API* m_pAPI = nullptr;
+
       uint32_t m_vao = 0;
       int64_t  m_numVBOsBounds = 0;
       int64_t  m_attributeRound = 0;

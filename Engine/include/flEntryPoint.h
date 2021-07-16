@@ -7,21 +7,14 @@ namespace Fractal
   /**
    * @brief Create the client application. INTERNAL USE ONLY.
    *
-   * You need to implement this function to return an application instance
-   * for the engine.
+   * You need to implement this function to configure the application instance
+   * for the engine at startup.
+   * 
+   * This usually involves setting the root behavior for the Application.
    *
    * Do not call this function yourself if you are using Fractals built in entry point.
    */
-  extern Application* CreateApplication(char** argv, int argc);
-
-  /**
-   * @brief This is a helper class used to.
-   */
-  class flEXPORT FractalEntryHandler
-  {
-  public:
-    static int Run(char** argv, int argc);
-  };
+  extern bool Fractal_Startup(char** argv, int argc);
 }
 
 #ifndef flCOMPILESHARED
@@ -42,8 +35,11 @@ int main(char** argv, int argc)
   // Create the application
   Fractal::Application* pApp = Fractal::CreateApplication(argv, argc);
 
+  // Call the startup function to allow the client to configure the application
+  Fractal_Startup(argv, argc);
+
   // Run it and wait for the result
-  int result = Fractal::FractalEntryHandler::Run(argv, argc);
+  pApp->Run();
 
   // Release the application reference
   pApp->DecRef();

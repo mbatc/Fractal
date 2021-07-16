@@ -1,6 +1,6 @@
 #pragma once
 
-#include "flApplicationBehaviour.h"
+#include "flIApplicationBehaviour.h"
 #include "flKeyboard.h"
 #include "flMouse.h"
 
@@ -8,11 +8,11 @@ namespace Fractal
 {
   class IWindow;
   class API;
-  class Application;
+  class IApplication;
 
   class Impl_Module;
 
-  class flEXPORT Module : public ApplicationBehaviour
+  class flEXPORT Module : public IApplicationBehaviour
   {
     flPIMPL_DEF(Module);
 

@@ -9,7 +9,7 @@ namespace Fractal
   class Impl_MeshRenderer
   {
   public:
-    Ref<RenderMesh> pRenderMesh;
+    Ref<IRenderMesh> pRenderMesh;
 
     ctVector<Ref<Program>> shaders;
     ctVector<Ref<ShaderMaterial>> materials;
@@ -17,7 +17,7 @@ namespace Fractal
 
   flPIMPL_IMPL(MeshRenderer);
 
-  void MeshRenderer::SetMesh(RenderMesh* pMesh)
+  void MeshRenderer::SetMesh(IRenderMesh* pMesh)
   {
     Impl()->pRenderMesh = MakeRef(pMesh, true);
 
@@ -25,12 +25,12 @@ namespace Fractal
     Impl()->materials.resize(pMesh->GetSubmeshCount());
   }
 
-  RenderMesh* MeshRenderer::GetMesh()
+  IRenderMesh* MeshRenderer::GetMesh()
   {
     return Impl()->pRenderMesh;
   }
 
-  RenderMesh const* MeshRenderer::GetMesh() const
+  IRenderMesh const* MeshRenderer::GetMesh() const
   {
     return Impl()->pRenderMesh;
   }
@@ -40,7 +40,7 @@ namespace Fractal
     return Impl()->pRenderMesh ? Impl()->pRenderMesh->GetSubmeshCount() : 0;
   }
 
-  RenderMesh::SubMesh const* MeshRenderer::GetSubMesh(flIN int64_t subMesh) const
+  IRenderMesh::SubMesh const* MeshRenderer::GetSubMesh(flIN int64_t subMesh) const
   {
     return Impl()->pRenderMesh->GetSubmesh(subMesh);
   }

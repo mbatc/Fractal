@@ -56,62 +56,65 @@ namespace Fractal
       flLog(level, ("OpenGL Error: " + ctString(message)).c_str());
   }
 
-  OpenGL::OpenGL(Window* pWindow, const RenderTargetOptions* pOptions)
-    : m_pState(GLDeviceState::Create())
+  namespace Impl
   {
-    // Create a temporary window to make our fake GL context
-    Window tempWindow("tmp", Flag_None, DM_Windowed);
-
-    HWND hTempWnd       = (HWND)tempWindow.GetNativeHandle();
-    HDC hTempDC         = GetDC(hTempWnd);
-    int tempPixelFormat = ChoosePixelFormat(hTempDC, &_defaultPfd);
-
-    SetPixelFormat(hTempDC, tempPixelFormat, &_defaultPfd);
-    HGLRC hTempGLRC = wglCreateContext(hTempDC);
-    wglMakeCurrent(hTempDC, hTempGLRC);
-
-    flEngine_glChoosePixelFormatARB    = reinterpret_cast<PFNWGLCHOOSEPIXELFORMATARBPROC>(wglGetProcAddress("wglChoosePixelFormatARB"));
-    flEngine_glCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>(wglGetProcAddress("wglCreateContextAttribsARB"));
-
-    const int major_min = 4;
-    const int minor_min = 5;
-    int contextAttribs[] =
+    OpenGL::OpenGL(IWindow* pWindow, const RenderTargetOptions* pOptions)
+      : m_pState(GLDeviceState::Create())
     {
-      WGL_CONTEXT_MAJOR_VERSION_ARB, major_min,
-      WGL_CONTEXT_MINOR_VERSION_ARB, minor_min,
-      WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-      0
-    };
+      // Create a temporary window to make our fake GL context
+      Window tempWindow("tmp", WindowFlag_None, WindowDisplayMode_Windowed);
 
-    // Create the render target for the actual window
-    WindowRenderTarget* pWndRenderTarget = GLWindowRenderTarget::Create(this, pWindow, pOptions);
-    HWND  hWnd  = (HWND)tempWindow.GetNativeHandle();
-    HDC   hDC   = (HDC)pWndRenderTarget->GetNativeResource();
-    HGLRC hGLRC = flEngine_glCreateContextAttribsARB(hDC, nullptr, contextAttribs);
+      HWND hTempWnd = (HWND)tempWindow.GetNativeHandle();
+      HDC hTempDC = GetDC(hTempWnd);
+      int tempPixelFormat = ChoosePixelFormat(hTempDC, &_defaultPfd);
 
-    // Destroy the temporary context
-    wglMakeCurrent(nullptr, nullptr);
-    wglDeleteContext(hTempGLRC);
-    ReleaseDC(hTempWnd, hTempDC);
+      SetPixelFormat(hTempDC, tempPixelFormat, &_defaultPfd);
+      HGLRC hTempGLRC = wglCreateContext(hTempDC);
+      wglMakeCurrent(hTempDC, hTempGLRC);
 
-    // Make the new context current
-    if (hGLRC)
-    {
-      wglMakeCurrent(hDC, hGLRC);
-      wglewInit();
-      glewInit();
+      flEngine_glChoosePixelFormatARB = reinterpret_cast<PFNWGLCHOOSEPIXELFORMATARBPROC>(wglGetProcAddress("wglChoosePixelFormatARB"));
+      flEngine_glCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>(wglGetProcAddress("wglCreateContextAttribsARB"));
 
-      flEngine_GL_hCurrentDC   = hDC;
-      flEngine_GL_hCurrentGLRC = hGLRC;
-    }
+      const int major_min = 4;
+      const int minor_min = 5;
+      int contextAttribs[] =
+      {
+        WGL_CONTEXT_MAJOR_VERSION_ARB, major_min,
+        WGL_CONTEXT_MINOR_VERSION_ARB, minor_min,
+        WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+        0
+      };
+
+      // Create the render target for the actual window
+      WindowRenderTarget* pWndRenderTarget = flNew GLWindowRenderTarget(this, pWindow, pOptions);
+      HWND  hWnd = (HWND)tempWindow.GetNativeHandle();
+      HDC   hDC = (HDC)pWndRenderTarget->GetNativeResource();
+      HGLRC hGLRC = flEngine_glCreateContextAttribsARB(hDC, nullptr, contextAttribs);
+
+      // Destroy the temporary context
+      wglMakeCurrent(nullptr, nullptr);
+      wglDeleteContext(hTempGLRC);
+      ReleaseDC(hTempWnd, hTempDC);
+
+      // Make the new context current
+      if (hGLRC)
+      {
+        wglMakeCurrent(hDC, hGLRC);
+        wglewInit();
+        glewInit();
+
+        flEngine_GL_hCurrentDC = hDC;
+        flEngine_GL_hCurrentGLRC = hGLRC;
+      }
 
 #ifdef _DEBUG // Enable error logging in debug
-    glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback(_ErrorMessageCallback, 0);
+      glEnable(GL_DEBUG_OUTPUT);
+      glDebugMessageCallback(_ErrorMessageCallback, 0);
 #endif
 
-    m_pState->SetFeatureEnabled(DeviceFeature_Multisampling, true);
-    m_pState->SetFeatureEnabled(DeviceFeature_DepthTest, true);
+      m_pState->SetFeatureEnabled(DeviceFeature_Multisampling, true);
+      m_pState->SetFeatureEnabled(DeviceFeature_DepthTest, true);
+    }
   }
 }
 
